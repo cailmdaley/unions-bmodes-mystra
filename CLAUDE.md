@@ -55,6 +55,40 @@ version, scale cuts) from the root via `from: ../<decision_id>`.
 | Fiber tree | `~/loom/.felt/` (project surface in `/automnt/n17data/cdaley/unions/pure_eb/.felt/`) | Lab-notebook record; primary source for prior_insights and decision rationale |
 | Literature PDFs | `/automnt/n17data/cdaley/unions/pure_eb/docs/arxiv/<id>/` | Full sources for citation extraction |
 
+### Deployment mirror (the online viewer)
+
+The MyST report is viewed at
+`https://myst-viewer.vercel.app/cailmdaley/unions-bmodes-mystra/<commit-sha>`
+(sha-addressed; the tip of `main` is the "current" view). That viewer builds
+a **separate repo, `cailmdaley/unions-bmodes-mystra`** — NOT this repo
+(`LightconeResearch/Reproductions`). The mirror is a hand-maintained snapshot
+of *this* `UNIONS/pure_eb` subtree. **Fixes here do not deploy until the mirror
+is re-synced and pushed** — this decoupling silently stranded two days of fixes
+once (see fiber `astra-report-migration/plugin-dogfood-findings` #14).
+
+Manual re-sync (no automation yet — a proper `git subtree`/CI mirror is still
+an open task):
+```bash
+# from a clone of the mirror repo, with this repo at the desired HEAD:
+git -C <Reproductions> archive HEAD:UNIONS/pure_eb | tar -x -C <mirror-clone>
+cd <mirror-clone>
+rm -rf _build
+# CRITICAL: strip CosmoCov integration temp blocks — the archive drags in the
+# whole analyses/covariance/results tree, ~1.6 GB of cov_tmp_ssss_* (~70 MB
+# each) that no report element references. Left in, they time out every push.
+# (.gitignore carries **/cov_tmp_* but archive-then-add can still stage them.)
+find . -name 'cov_tmp_*' -delete
+git add -A
+git commit -m "Re-sync mirror from Reproductions@<sha>" && git push origin main
+```
+MySTRA v0.0.7 needs only the git-tracked files (figures/tables/`evidence.json`/
+`*.csv`); it does NOT read `.lightcone-manifest.json` (produced-detection is
+"a non-dotfile exists in the output dir"). Verify before pushing: a clean
+`myst build` should report all figures resolved, 0 pending, 0 unresolved values.
+The live tip is a clean-root history at `e4d741d` (28.5 MB); a re-sync that
+follows the strip step above stays lean. An automated mirror **must** replicate
+the `cov_tmp*` strip.
+
 ### Input bundle (Paper2ASTRA-style staging)
 
 | File | Purpose |

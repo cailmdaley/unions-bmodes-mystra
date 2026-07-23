@@ -285,15 +285,15 @@ The reported PTEs are therefore conservative: a null test that passes with Gauss
      bare integers — a metric/table bridge is needed for exact "12–83 arcmin"
      phrasing (transpile-map §2f queryability nuance). -->
 :::{astra} outputs.pte_table_appendix
-:caption: '$B$-mode PTE values across catalog versions at fiducial and full-range scale cuts. Fiducial scale cuts are {astra:value}`decisions.fiducial_scale_cuts`; the full range is $1$--$250$ arcmin / $8 \leq \ell \leq 2048$. Only the fiducial catalog passes all statistics at the adopted cuts. Bold values indicate PTE $< 0.05$ (null-test failure).'
+:caption: '$B$-mode PTE values across catalog versions at fiducial and full-range scale cuts. Fiducial scale cuts are {astra:value}`decisions.fiducial_scale_cuts`; the full range is $1$--$250$ arcmin / $8 \leq \ell \leq 2048$. Only the fiducial catalog passes all statistics at the adopted cuts; PTE $< 0.05$ indicates a null-test failure.'
 :::
 
 
-<!-- Fragment: methods.scale_cuts (TeX lines 421–438) — footnote number 0.18 is
-     claim-macro-backed (\configPteSixThreeCombined) and now bound via
-     outputs.pte_promoted_values (map §0 bridge); the dof-penalized 0.09 has no
-     separate macro/carrier and stays literal. 0.05 (the adopted PTE threshold)
-     is a genuine decision convention, not a macro. -->
+<!-- Fragment: methods.scale_cuts (TeX lines 421–438). The un-penalized combined
+     PTE (0.18) resolves from the canonical pte_table_appendix grid; the
+     dof-penalized 0.09 remains literal pending a pte_combined_dof_penalized
+     metric (see footnote). 0.05 (the adopted PTE threshold) is a decision
+     convention, not a measured value. -->
 
 ## $B$-mode significance
 
@@ -314,11 +314,13 @@ For $C_\ell^{BB}$, we apply the same framework across multipole ranges.
 We adopt a uniform threshold of PTE $=0.05$ for all tests.
 We do not attempt an explicit correction for look-elsewhere effects across the many scale-cut combinations, because the tests are strongly correlated both within and across statistics; we instead require the adopted cuts to lie in broad stable regions that pass across all three frameworks.
 
-[^dof]: Doing so lowers the minimum PTE across all statistics from {astra:value col=pte where="macro=configPteSixThreeCombined" sig=2}`outputs.pte_promoted_values` to 0.09, still above the 0.05 threshold.
-<!-- \configPteSixThreeCombined bound via outputs.pte_promoted_values (map §0 bridge);
-     the dof-penalized value 0.09 has no separate macro/carrier and stays literal.
-     Was: unresolvable because config_space_pte_evidence is a type:figure output (nested-dict
-     evidence.json), not tabular (transpile-map §0). TeX values restored. -->
+[^dof]: Doing so lowers the minimum PTE across all statistics from {astra:value col=xitot_B where="version=size_cuts cut=fiducial" sig=2}`outputs.pte_table_appendix` to 0.09, still above the 0.05 threshold.
+<!-- Un-penalized combined PTE now resolves from the canonical pte_table_appendix grid
+     (col=xitot_B, size_cuts/fiducial). The dof-penalized 0.09 is the one remaining
+     computed literal: it re-derives the combined PTE with nu-2, which the stored PTE
+     evidence does not carry the raw chi2/nu to reproduce — it needs a dedicated
+     metric output (pte_combined_dof_penalized) from the null-test recipe. Tracked. -->
+
 
 
 ## Validation on simulations
@@ -380,17 +382,12 @@ Even so, the fiducial range $300 < \ell < 1600$ passes the null test, while $C_\
 The version-comparison panels ({astra:ref}`Fig. %s <outputs.fig_versions_pure_eb>`, {astra:ref}`%s <outputs.fig_versions_cl>`, {astra:ref}`%s <outputs.fig_versions_cosebis>`) compare the $B$-mode measurements across catalog versions, and {astra:ref}`Table %s <outputs.pte_table_appendix>` summarizes the PTEs.
 Each statistic shows a different pattern of failures.
 In configuration space, the initial and relaxed-flags catalogs fail in $\xi_-^{\mathrm{B}}$ and in $\xi_{\mathrm{tot}}^{\mathrm{B}}$ at the fiducial cuts.
-The relaxed-flags catalog has a similar acceptance region to the fiducial in $\xi_+^{\mathrm{B}}$, but a narrower one in $\xi_-^{\mathrm{B}}$, with the failure boundary approaching the adopted cuts (PTE $= 9.40\times10^{-4}$).
-<!-- TODO-GAP: configPteElevenThreeXim = \num{9.40e-04}. Binding
-     {astra:value col=pte where="version=relaxed_flags statistic=xim cut=fiducial"}`null_tests.outputs.config_space_pte_evidence`
-     is unresolvable: config_space_pte_evidence is a type:figure output
-     (nested-dict evidence.json), not tabular (transpile-map §0). TeX value restored. -->
+The relaxed-flags catalog has a similar acceptance region to the fiducial in $\xi_+^{\mathrm{B}}$, but a narrower one in $\xi_-^{\mathrm{B}}$, with the failure boundary approaching the adopted cuts (PTE $=$ {astra:value col=xim_B where="version=relaxed_flags cut=fiducial" sig=3}`outputs.pte_table_appendix`).
+<!-- Resolved: relaxed-flags xi_minus fiducial PTE now reads from the canonical
+     pte_table_appendix grid (col=xim_B, version=relaxed_flags, cut=fiducial). -->
 
 The masked catalog fails all three pure-mode tests despite passing in harmonic space and COSEBIs ($n \leq 6$).
-The PTE maps ({astra:ref}`Fig. %s <outputs.fig_pte_heatmaps>`) show that masking increases the $B$-mode significance on both the largest and smallest scales, although the $\xi_-^{\mathrm{B}}$ PTE falls only marginally below threshold ({astra:value col=pte where="macro=configPteEightXim" sig=2}`outputs.pte_promoted_values`).
-<!-- \configPteEightXim bound via outputs.pte_promoted_values (map §0 bridge).
-     Was: unresolvable because config_space_pte_evidence is a type:figure output
-     (nested-dict evidence.json), not tabular (transpile-map §0). -->
+The PTE maps ({astra:ref}`Fig. %s <outputs.fig_pte_heatmaps>`) show that masking increases the $B$-mode significance on both the largest and smallest scales, although the $\xi_-^{\mathrm{B}}$ PTE falls only marginally below threshold ({astra:value col=xim_B where="version=masked cut=fiducial" sig=2}`outputs.pte_table_appendix`).
 In harmonic space ({astra:ref}`Fig. %s <outputs.fig_cl_pte_heatmap>`), the initial and relaxed-flags catalogs fail across most multipole combinations, whereas the fiducial and masked catalogs show broad acceptance regions.
 
 COSEBI $B_n$ tests with $n \leq 6$ pass for all four versions at fiducial cuts, despite pure-mode and harmonic-space failures in three of them ({astra:ref}`Table %s <outputs.pte_table_appendix>`).
@@ -443,15 +440,10 @@ The converse also holds: a $B$-mode failure in any statistic should raise concer
 
 {astra:ref}`Fig. %s <outputs.fig_harmonic_config_cosebis_full>` compares COSEBIs computed from configuration-space $\xi_\pm$ and from harmonic-space bandpowers.
 Both $E_n$ and $B_n$ agree across the two computation paths for all twenty modes, with the tightest correspondence in the first six modes validated on GLASS simulations.
-<!-- harmCosebisPteSixThreeFid, cfgCosebisPteSixThreeFid bound via outputs.pte_promoted_values
-     (map §0 bridge); sources: cosebis.outputs.cosebis_harmonic_modes evidence.json
-     harmonic_b_mode_ptes.SP_v1.4.6.3_leak_corr.pte and config_b_mode_ptes.….pte. -->
-At fiducial scale cuts, both paths yield $B$-modes consistent with zero (PTE $=$ {astra:value col=pte where="macro=harmCosebisPteSixThreeFid" sig=2}`outputs.pte_promoted_values` harmonic, {astra:value col=pte where="macro=cfgCosebisPteSixThreeFid" sig=2}`outputs.pte_promoted_values` configuration; $n \leq 6$).
-<!-- cfgCosebisPteSixThreeFull and harmCosebisPteSixThreeFull both bound via
-     outputs.pte_promoted_values (map §0 bridge). Full-range harmonic COSEBIs
-     materialized 2026-07-20 (cosebis.cosebis_harmonic_modes_full); reproduced
-     values match the paper macros exactly (harmonic 1.61e-5, config 1.37e-5). -->
-At full range, both detect the same structure (PTE $=$ {astra:value col=pte where="macro=harmCosebisPteSixThreeFull" sig=3}`outputs.pte_promoted_values` harmonic and {astra:value col=pte where="macro=cfgCosebisPteSixThreeFull" sig=3}`outputs.pte_promoted_values` configuration).
+<!-- Harmonic and config-space COSEBI PTEs resolve from the canonical
+     cosebis_harmonic_config table (path=harmonic / path=config). -->
+At fiducial scale cuts, both paths yield $B$-modes consistent with zero (PTE $=$ {astra:value col=pte where="version=size_cuts path=harmonic cut=fiducial" sig=2}`outputs.cosebis_harmonic_config` harmonic, {astra:value col=pte where="version=size_cuts path=config cut=fiducial" sig=2}`outputs.cosebis_harmonic_config` configuration; $n \leq 6$).
+At full range, both detect the same structure (PTE $=$ {astra:value col=pte where="version=size_cuts path=harmonic cut=full_range" sig=3}`outputs.cosebis_harmonic_config` harmonic and {astra:value col=pte where="version=size_cuts path=config cut=full_range" sig=3}`outputs.cosebis_harmonic_config` configuration).
 This confirms that the sensitivity to systematic contamination is set by the filter functions, not by the basis in which the two-point function is measured.
 Throughout this analysis, we use Gaussian-only covariance, which underestimates variances for the UNIONS geometry ({astra}`covariance`); the reported PTEs are therefore conservative.
 

@@ -1,7 +1,0 @@
-macro,version,statistic,cut,pte,source_evidence
-configPteSixThreeCombined,SP_v1.4.6.3_leak_corr,combined,fiducial,0.1757862186527048,/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/config_space_pte_evidence/evidence.json
-configPteEightXim,SP_v1.4.8_leak_corr,xim,fiducial,0.04839013232026534,/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/config_space_pte_evidence/evidence.json
-harmCosebisPteSixThreeFid,SP_v1.4.6.3_leak_corr,cosebis_harmonic,fiducial,0.5979028806198698,/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_harmonic_modes/evidence.json
-cfgCosebisPteSixThreeFid,SP_v1.4.6.3_leak_corr,cosebis_config,fiducial,0.7766087895181015,/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_harmonic_modes/evidence.json
-cfgCosebisPteSixThreeFull,SP_v1.4.6.3_leak_corr,cosebis_config,full_range,1.3663695812716416e-05,/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/config_space_pte_evidence/evidence.json
-harmCosebisPteSixThreeFull,SP_v1.4.6.3_leak_corr,cosebis_harmonic,full_range,1.6081004189691543e-05,/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_harmonic_modes_full/evidence.json

@@ -139,10 +139,28 @@ outputs:
       across all four catalog variants (initial, size-cut,
       masked, relaxed-flags) at fiducial and full-range cuts;
       structurally an N×6 grid with version-by-version rows.
+
+      Canonical artifact is `pte_table_appendix.csv` (MySTRA
+      renders it as the appendix table AND resolves every
+      per-version PTE `{astra:value}` against it — no LaTeX
+      tabular, no value-promotion bridge). Columns:
+      `version` (slug: initial / size_cuts / masked /
+      relaxed_flags), `cut` (fiducial / full_range), and the six
+      statistic columns `cosebis_n6`, `cosebis_n20`, `xip_B`,
+      `xim_B`, `xitot_B`, `cl_BB` (plus `version_full` carrying
+      the raw `SP_v1.4.x_leak_corr` string). Every cell is the
+      verbatim evidence value: config-space stats from
+      `null_tests.config_space_pte_evidence`
+      (`versions.<V>.<stat>_stats.pte_at_<cut>`) and the `cl_BB`
+      column from `null_tests.harmonic_space_pte_evidence`
+      (`versions.<V>.pte_at_<cut>`). The sibling
+      `pte_table_appendix.tex` is derived presentation for the
+      LaTeX manuscript; the CSV is the source MySTRA reads.
     recipe:
       # Same generate_paper_macros.py CLI as pte_table_results (one run emits both
-      # tables); this output is the appendix N×6 grid, pte_table_appendix.tex,
-      # written under {output}.
+      # tables). This output's canonical artifact is pte_table_appendix.csv (the
+      # N×6 grid, queryable + renderable); pte_table_appendix.tex is emitted
+      # alongside as LaTeX presentation. Both written under {output}.
       command: >
         apptainer exec
         --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
@@ -155,44 +173,45 @@ outputs:
         --claims-dir /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/tapestry
         --out {output}
 
-  - id: pte_promoted_values
+  - id: cosebis_harmonic_config
     type: table
     description: |
-      Flat, {astra:value}-queryable table of six headline PTE
-      numbers quoted in prose (footnote, Results, Discussion)
-      that otherwise live only inside nested-dict evidence.json
-      files belonging to `type: figure`/`type: data` outputs
-      (null_tests.config_space_pte_evidence,
-      cosebis.cosebis_harmonic_modes,
-      cosebis.cosebis_harmonic_modes_full) — see
-      `work/transpile-map.md` §0/§2d for the value-binding gap
-      this closes. One row per macro: configPteSixThreeCombined,
-      configPteEightXim, harmCosebisPteSixThreeFid,
-      cfgCosebisPteSixThreeFid, cfgCosebisPteSixThreeFull,
-      harmCosebisPteSixThreeFull (the harmonic-space full-range
-      COSEBI PTE, sourced from
-      [cosebis_harmonic_modes_full](#cosebis.outputs.cosebis_harmonic_modes_full)).
-      Columns: macro, version, statistic, cut, pte,
-      source_evidence. Does not recompute anything — reads the
-      three evidence.json files verbatim.
+      COSEBI B-mode PTEs computed two ways — the config-space
+      integral of ξ± and the harmonic-space synthesis from Cℓ —
+      for all four catalog versions at both fiducial and
+      full-range cuts. Supports the harmonic-vs-config COSEBI
+      consistency argument in the Discussion, and is the
+      queryable source for the harmonic-COSEBI PTEs quoted in
+      prose (which the N×6 `pte_table_appendix` grid does not
+      carry — that grid's COSEBI columns are the config-space
+      path only). Columns: `version` (slug: initial / size_cuts
+      / masked / relaxed_flags), `path` (harmonic / config),
+      `cut` (fiducial / full_range), `pte`, `chi2`, `dof` (chi2
+      and dof are populated for the harmonic path, which is a
+      χ²(ν=6) test; the config-space PTE is empirical, so its
+      chi2/dof are blank). Harmonic values from
+      `cosebis.cosebis_harmonic_modes` (fiducial) and
+      `cosebis.cosebis_harmonic_modes_full` (full range),
+      `harmonic_b_mode_ptes.<V>.{pte,chi2,dof}`; config values
+      from `null_tests.config_space_pte_evidence`,
+      `versions.<V>.cosebis_stats.pte_at_<cut>`. This output,
+      together with the per-version `pte_table_appendix` grid,
+      replaces the former `pte_promoted_values` bridge — every
+      PTE in prose now resolves against a canonical table.
     recipe:
-      # OWN COMPUTE (thin) — promote_pte_values.py reads the three already-
-      # materialized evidence.json files below by absolute lc results path
-      # and writes pte_promoted_values.csv (+ evidence.json) under {output}.
-      # Explicit `cd` to the absolute project root before invoking apptainer:
-      # {output} is a path relative to the project root, and a dask/srun-
-      # launched worker's cwd is not reliably the project root (observed
-      # empirically — the relative --out silently resolved elsewhere on a
-      # remote worker node while genuinely succeeding, an easy provenance
-      # trap). Absolute `cd` makes the relative {output} path correct
-      # regardless of which node/process actually runs the recipe.
+      # OWN COMPUTE (thin) — emit_cosebis_harmonic_config.py reads the three
+      # already-materialized evidence.json files below by absolute lc results
+      # path and writes cosebis_harmonic_config.csv (+ evidence.json) under
+      # {output}. Explicit `cd` to the project root so the relative {output}
+      # resolves correctly regardless of which worker node runs the recipe
+      # (same provenance trap noted on the retired promote_pte_values recipe).
       command: >
         cd /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb &&
         apptainer exec
         --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
         --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
         /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/promote_pte_values.py
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/emit_cosebis_harmonic_config.py
         --config-space-evidence /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/config_space_pte_evidence/evidence.json
         --cosebis-evidence /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_harmonic_modes/evidence.json
         --cosebis-evidence-full /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_harmonic_modes_full/evidence.json

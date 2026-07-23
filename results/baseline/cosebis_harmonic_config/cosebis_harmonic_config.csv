@@ -1,0 +1,17 @@
+version,path,cut,pte,chi2,dof
+initial,harmonic,fiducial,0.732,3.59,6
+initial,harmonic,full_range,6.41e-09,49.3,6
+initial,config,fiducial,0.938,,
+initial,config,full_range,7.37e-10,,
+size_cuts,harmonic,fiducial,0.598,4.59,6
+size_cuts,harmonic,full_range,1.61e-05,32.0,6
+size_cuts,config,fiducial,0.777,,
+size_cuts,config,full_range,1.37e-05,,
+masked,harmonic,fiducial,0.405,6.17,6
+masked,harmonic,full_range,4.72e-05,29.6,6
+masked,config,fiducial,0.604,,
+masked,config,full_range,4.94e-06,,
+relaxed_flags,harmonic,fiducial,0.854,2.63,6
+relaxed_flags,harmonic,full_range,4.64e-18,93.9,6
+relaxed_flags,config,fiducial,0.824,,
+relaxed_flags,config,full_range,1.70e-10,,
