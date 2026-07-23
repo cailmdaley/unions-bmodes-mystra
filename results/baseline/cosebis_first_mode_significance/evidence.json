@@ -1,0 +1,15 @@
+{
+  "spec_id": "cosebis_first_mode_significance",
+  "spec_path": "papers/bmodes/scripts/emit_cosebis_first_mode_significance.py",
+  "evidence": {
+    "description": "First-mode COSEBI B-mode significance B_1/sigma_1 for the fiducial catalog, from the config-space COSEBI modes npz.",
+    "version": "SP_v1.4.6.3_leak_corr",
+    "full_range_significance": 4.08998422120677,
+    "fiducial_cut_significance": 0.6592777172194298,
+    "mode": 1,
+    "source_npz": "/automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_modes_data/cosebis_modes_SP_v1.4.6.3_leak_corr.npz"
+  },
+  "output": {
+    "metric": "cosebis_first_mode_significance.json"
+  }
+}

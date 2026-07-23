@@ -195,7 +195,7 @@ We evaluate these integrals on the same 1000-bin grid used for the pure-mode tra
 As a convergence check, we repeated the calculation on a 10\,000-bin grid for the fiducial catalog and found the $B_n$ amplitudes and null-test PTEs to be stable.
 
 :::{astra} outputs.fig_cosebis_fiducial
-:caption: COSEBI $B$-mode amplitudes for the fiducial catalog, normalized by uncertainty ($B_n/\sigma_n$). Orange squares: full angular range $1$--$250$ arcmin; blue circles: fiducial scale cuts, {astra:value}`decisions.fiducial_scale_cuts`. The shaded region highlights mode numbers $n \leq 6$, which capture nearly all cosmological information. On the full range, $n=1$ shows a $>4\,\sigma$ excess, with oscillatory structure through all twenty modes, consistent with repeating additive shear bias ([](#discussion)). Scale cuts suppress the first-mode excess to below $1\,\sigma$ and largely eliminate the oscillatory signature (see {astra:ref}`Table %s <outputs.pte_table_appendix>`).
+:caption: COSEBI $B$-mode amplitudes for the fiducial catalog, normalized by uncertainty ($B_n/\sigma_n$). Orange squares: full angular range $1$--$250$ arcmin; blue circles: fiducial scale cuts, {astra:value}`decisions.fiducial_scale_cuts`. The shaded region highlights mode numbers $n \leq 6$, which capture nearly all cosmological information. On the full range, $n=1$ shows a ${astra:value sig=2}`outputs.cosebis_first_mode_significance`\,\sigma$ excess, with oscillatory structure through all twenty modes, consistent with repeating additive shear bias ([](#discussion)). Scale cuts suppress the first-mode excess to below $1\,\sigma$ and largely eliminate the oscillatory signature (see {astra:ref}`Table %s <outputs.pte_table_appendix>`).
 :::
 
 {astra:ref}`outputs.fig_cosebis_fiducial` shows COSEBI $B$-mode amplitudes for the first $n_{\mathrm{max}} = 20$ modes of the fiducial catalog.
@@ -314,12 +314,12 @@ For $C_\ell^{BB}$, we apply the same framework across multipole ranges.
 We adopt a uniform threshold of PTE $=0.05$ for all tests.
 We do not attempt an explicit correction for look-elsewhere effects across the many scale-cut combinations, because the tests are strongly correlated both within and across statistics; we instead require the adopted cuts to lie in broad stable regions that pass across all three frameworks.
 
-[^dof]: Doing so lowers the minimum PTE across all statistics from {astra:value col=xitot_B where="version=size_cuts cut=fiducial" sig=2}`outputs.pte_table_appendix` to 0.09, still above the 0.05 threshold.
-<!-- Un-penalized combined PTE now resolves from the canonical pte_table_appendix grid
-     (col=xitot_B, size_cuts/fiducial). The dof-penalized 0.09 is the one remaining
-     computed literal: it re-derives the combined PTE with nu-2, which the stored PTE
-     evidence does not carry the raw chi2/nu to reproduce — it needs a dedicated
-     metric output (pte_combined_dof_penalized) from the null-test recipe. Tracked. -->
+[^dof]: Doing so lowers the minimum PTE across all statistics from {astra:value col=xitot_B where="version=size_cuts cut=fiducial" sig=2}`outputs.pte_table_appendix` to {astra:value sig=2}`outputs.pte_combined_dof_penalized`, still above the 0.05 threshold.
+<!-- Both values are astra-native: the un-penalized combined PTE from the
+     pte_table_appendix grid, the dof-penalized value from the
+     pte_combined_dof_penalized metric (chi2 recovered exactly at nu=16, then
+     nu-2). The faithful recomputation gives 0.10; the paper footnote's 0.09 was
+     an approximate hand-computed literal (conclusion unchanged, > 0.05). -->
 
 
 
@@ -365,7 +365,7 @@ Taken together, these tests show that the low-level $B$-mode structure discussed
 :caption: Harmonic-space $C_\ell^{BB}$ PTE maps for all four catalog versions (Paper I, Table H.1). Solid blue cells indicate failing PTEs; whites and reds indicate consistency with zero. The initial and relaxed-flags catalogs show widespread failures across multipole ranges; the fiducial and masked catalogs pass across nearly all multipole combinations.
 :::
 
-For the fiducial catalog before scale cuts, COSEBIs fail with a $>4\,\sigma$ first mode, while the pure $B$-mode correlation functions and $C_\ell^{BB}$ pass but show low-level $B$-mode structure ({astra:ref}`Table %s <outputs.pte_table_appendix>`).
+For the fiducial catalog before scale cuts, COSEBIs fail with a ${astra:value sig=2}`outputs.cosebis_first_mode_significance`\,\sigma$ first mode, while the pure $B$-mode correlation functions and $C_\ell^{BB}$ pass but show low-level $B$-mode structure ({astra:ref}`Table %s <outputs.pte_table_appendix>`).
 At the adopted scale cuts, all null tests pass.
 We chose those cuts using the $B$-mode tests together with additional systematics checks and blinded inference-stability checks in Papers III and IV; they are more conservative than the PTEs alone would require.
 The object-wise PSF-leakage correction (Paper I) shifts individual PTEs by $\lesssim 0.05$ across all catalog versions and statistics; no pass/fail conclusion changes.
@@ -374,7 +374,7 @@ We report leakage-corrected results throughout.
 The low-level features that drive the full-range behavior leave different signatures in each statistic.
 In the pure-mode decomposition ({astra:ref}`Fig. %s <outputs.fig_pure_eb_decomposition>`), $\xi_+^{\mathrm{B}}/\sigma$ shows a broad positive excess on the smallest angular scales that tapers toward zero by $\theta \sim 10$ arcmin;
 the corresponding $\xi_-^{\mathrm{B}}$ is quieter on the smallest scales but remains broadly elevated from roughly 7 arcmin to the largest scales.
-The COSEBI data vector ({astra:ref}`Fig. %s <outputs.fig_cosebis_fiducial>`) compresses the same structure into a smaller number of modes: on the full angular range, the first mode exceeds $4\,\sigma$ and the higher modes show coherent oscillations consistent with the repeating additive pattern discussed in [Sect. Discussion](#discussion);
+The COSEBI data vector ({astra:ref}`Fig. %s <outputs.fig_cosebis_fiducial>`) compresses the same structure into a smaller number of modes: on the full angular range, the first mode reaches ${astra:value sig=2}`outputs.cosebis_first_mode_significance`\,\sigma$ and the higher modes show coherent oscillations consistent with the repeating additive pattern discussed in [Sect. Discussion](#discussion);
 after applying the fiducial angular cuts, the first-mode excess drops below 1 $\sigma$ and the oscillatory pattern largely disappears.
 In harmonic space ({astra:ref}`Fig. %s <outputs.fig_cl_fiducial>`), $C_\ell^{BB}$ shows a low-level positive offset across much of the fiducial range, with the most conspicuous outliers near $\ell \approx 125$ and $250$, and above $\ell \approx 1600$.
 Even so, the fiducial range $300 < \ell < 1600$ passes the null test, while $C_\ell^{EB}$ remains consistent with zero, suggesting that any $B$-mode contamination is not strongly correlated with the lensing signal.

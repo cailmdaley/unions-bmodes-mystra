@@ -1,6 +1,5 @@
 _build/
 work/*.log
 
-# CosmoCov integration temp blocks — pipeline intermediates, never report inputs
-**/cov_tmp_*
+# CosmoCov integration temps — never report inputs
 **/*cov_tmp*

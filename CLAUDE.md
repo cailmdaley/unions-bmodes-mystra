@@ -73,11 +73,13 @@ an open task):
 git -C <Reproductions> archive HEAD:UNIONS/pure_eb | tar -x -C <mirror-clone>
 cd <mirror-clone>
 rm -rf _build
-# CRITICAL: strip CosmoCov integration temp blocks — the archive drags in the
-# whole analyses/covariance/results tree, ~1.6 GB of cov_tmp_ssss_* (~70 MB
-# each) that no report element references. Left in, they time out every push.
-# (.gitignore carries **/cov_tmp_* but archive-then-add can still stage them.)
-find . -name 'cov_tmp_*' -delete
+# CRITICAL: strip CosmoCov integration temps — the archive drags in the whole
+# analyses/covariance/results tree: ~1.6 GB of cov_tmp_ssss_* blocks (~70 MB
+# each) PLUS small order_cov_tmp_i_* index files. None are report inputs; the
+# big ones time out every push. Match cov_tmp ANYWHERE in the name (the
+# order_cov_tmp_* files do NOT start with "cov_tmp", so a cov_tmp_* glob misses
+# them). .gitignore carries **/*cov_tmp* but archive-then-add can still stage.
+find . -name '*cov_tmp*' -delete
 git add -A
 git commit -m "Re-sync mirror from Reproductions@<sha>" && git push origin main
 ```

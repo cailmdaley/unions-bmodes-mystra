@@ -1,0 +1,27 @@
+{
+  "spec_id": "pte_combined_dof_penalized",
+  "spec_path": "papers/bmodes/scripts/emit_pte_combined_dof_penalized.py",
+  "evidence": {
+    "description": "Degrees-of-freedom-penalized combined B-mode PTE for the fiducial catalog at fiducial scale cuts: the un-penalized combined PTE recomputed with nu-2 (two fitted scale-cut boundaries). chi2_obs recovered exactly by inverting the stored un-penalized PTE at the known nu.",
+    "statistic": "combined_xitot_B",
+    "cut": "fiducial",
+    "scale_cut_arcmin": [
+      12.0,
+      83.0
+    ],
+    "bin_indices": [
+      8,
+      15
+    ],
+    "nu": 16,
+    "nu_penalized": 14,
+    "n_fitted_boundaries": 2,
+    "pte_unpenalized": 0.1757862186527048,
+    "chi2_obs": 21.0712976214505,
+    "pte_penalized": 0.09981933315625924,
+    "source_npz": "/automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_pte_per_cut/SP_v1.4.6.3_leak_corr_A_pure_eb_ptes.npz"
+  },
+  "output": {
+    "metric": "pte_combined_dof_penalized.json"
+  }
+}

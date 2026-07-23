@@ -217,6 +217,60 @@ outputs:
         --cosebis-evidence-full /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_harmonic_modes_full/evidence.json
         --out {output}
 
+  - id: cosebis_first_mode_significance
+    type: metric
+    description: |
+      First-mode COSEBI B-mode significance B_1/σ_1 for the
+      fiducial catalog (config-space COSEBIs). The headline
+      `value` is the full-range (1–250 arcmin) significance — the
+      ">4σ" first-mode excess quoted in the fig_cosebis_fiducial
+      caption and Discussion; the sibling evidence.json also
+      carries the fiducial-cut significance (which drops below
+      1σ). Thin transform of the already-materialized
+      `cosebis.cosebis_modes_data` npz (B_1 / σ_1, no COSEBI
+      recomputation). Metric JSON: {value, uncertainty, unit}.
+    recipe:
+      # OWN COMPUTE (thin) — emit_cosebis_first_mode_significance.py reads the
+      # config-space COSEBI modes npz and writes the metric JSON (+ evidence.json)
+      # under {output}. Pure numpy (np.load + one division); runs in seconds.
+      command: >
+        cd /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb &&
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/emit_cosebis_first_mode_significance.py
+        --cosebis-modes-npz /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_modes_data/cosebis_modes_SP_v1.4.6.3_leak_corr.npz
+        --out {output}
+
+  - id: pte_combined_dof_penalized
+    type: metric
+    description: |
+      Degrees-of-freedom-penalized combined B-mode PTE for the
+      fiducial catalog at fiducial scale cuts: the un-penalized
+      combined PTE (0.176, on the pte_table_appendix grid)
+      recomputed with ν−2, treating the two fitted scale-cut
+      boundaries as fitted parameters. χ²_obs is recovered exactly
+      by inverting the stored un-penalized PTE at the known ν=16
+      (fiducial cut 12–83 arcmin → 8 θ-bins × 2 for ξ_+/ξ_-), then
+      PTE = χ²_sf(χ²_obs, ν−2=14). The faithful reproduction gives
+      **0.10** (the paper's footnote states an approximate 0.09);
+      the conclusion — still above the 0.05 threshold — is
+      unchanged. Metric JSON: {value, uncertainty, unit}.
+    recipe:
+      # OWN COMPUTE (thin) — emit_pte_combined_dof_penalized.py reads the pure_eb
+      # per-cut PTE grid npz and writes the metric JSON (+ evidence.json) under
+      # {output}. numpy + scipy.stats only; exact (no MC re-run); runs in seconds.
+      command: >
+        cd /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb &&
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/emit_pte_combined_dof_penalized.py
+        --pte-per-cut-npz /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_pte_per_cut/SP_v1.4.6.3_leak_corr_A_pure_eb_ptes.npz
+        --out {output}
+
   - id: fig_pure_eb_decomposition
     type: figure
     description: |
