@@ -1,0 +1,20 @@
+version: 1
+project:
+  title: "UNIONS-3500 Weak Lensing II. B-mode validation for cosmic shear"
+  bibliography:
+    - references.bib
+  description: >-
+    ASTRA-backed edition of arXiv:2604.03227 — the paper's prose with every
+    measured value and figure resolved live from the reproduced analysis spec.
+  subject: Reproduction
+  venue:
+    title: Lightcone Research
+  open_access: true
+  plugins:
+    # Pinned, not `releases/latest/...`: that URL is a 302 and sandboxed
+    # builders (e.g. the MyST viewer) may not follow it.
+    - https://github.com/LightconeResearch/MySTRA/releases/download/v0.0.7/mystra.mjs
+  toc:
+    - file: index.md
+site:
+  template: book-theme

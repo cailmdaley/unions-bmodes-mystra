@@ -1,0 +1,163 @@
+version: "1.0"
+name: "Catalog preparation"
+
+narrative:
+  summary: |
+    Materialises one of the four
+    [ShapePipe v1.4 catalog variants](#../decisions.fiducial_catalog)
+    along with its photo-z distribution per blind, footprint
+    mask, and survey properties (area, n_eff, σ_e). All
+    downstream sub-analyses consume these products via the
+    [packaged shear catalog](#outputs.shear_catalog), the
+    [redshift distribution](#outputs.redshift_distribution),
+    and the [survey-property summary](#outputs.survey_properties);
+    no sub-analysis re-resolves catalog paths from `cat_config.yaml`.
+  inputs: |
+    The four variants enter via the parent's
+    [ShapePipe v1.4 catalogs](#inputs.shapepipe_v14_catalogs);
+    their photo-z files via the parent's
+    [redshift distributions](#inputs.redshift_distributions); the
+    standard / star-halo footprint masks via the parent's
+    [footprint masks](#inputs.footprint_masks).
+  methods: |
+    The variant is selected by the parent's
+    [fiducial_catalog](#../decisions.fiducial_catalog) decision
+    and combined with the
+    [PSF-leakage correction](#../decisions.leakage_correction) toggle
+    inherited from the parent. Path resolution goes through
+    `cat_config.yaml` in the source repo's
+    `code/sp_validation/notebooks/cosmo_val/` directory:
+    `cc[ver]['shear']['path']` is the FITS catalog,
+    `cc[ver]['shear']['redshift_path']` is the n(z), and
+    `cc[ver]['mask']` is the appropriate footprint mask.
+    Each base version has a single n(z) regardless of leakage
+    correction, so leak-corrected variants strip `_leak_corr`
+    before lookup. Loading is read-only — no shape recalibration
+    or reweighting happens here.
+  outputs: |
+    The packaged
+    [shear catalog](#outputs.shear_catalog),
+    [redshift distribution](#outputs.redshift_distribution), and
+    [footprint mask power spectrum](#outputs.mask_power_spectrum)
+    are passed to
+    [two_point](#../analyses.two_point) and
+    [covariance](#../analyses.covariance); the
+    [survey-property summary](#outputs.survey_properties)
+    feeds CosmoCov's `cov_th` block (n_eff, σ_e, area).
+
+inputs:
+  - id: shapepipe_v14_catalogs
+    type: data
+    from: ../shapepipe_v14_catalogs
+
+  - id: redshift_distributions
+    type: data
+    from: ../redshift_distributions
+
+  - id: footprint_masks
+    type: data
+    from: ../footprint_masks
+
+outputs:
+  - id: shear_catalog
+    type: data
+    description: |
+      One of the four ShapePipe v1.4 FITS catalogs selected by
+      the parent's
+      [fiducial_catalog](#../decisions.fiducial_catalog) decision,
+      with [PSF-leakage correction](#../decisions.leakage_correction)
+      applied per the parent default. Read-only; consumed by
+      `rule xi` and `rule xi_highres` in `workflow/Snakefile`
+      via the `get_shear_catalog` input function.
+    decisions: [fiducial_catalog, leakage_correction]
+    recipe:
+      # Resolve the fiducial FITS via cat_config (base version SP_v1.4.6.3,
+      # _leak_corr stripped for lookup per common.get_shear_catalog) and
+      # symlink it into {output} — the catalog is 15G, a copy is wasteful.
+      # Fail-loud: assert the resolved path exists before linking.
+      command: >
+        mkdir -p {output} &&
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python -c "import os, yaml; cc = yaml.safe_load(open('/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml')); src = cc['SP_v1.4.6.3']['shear']['path']; assert os.path.exists(src), src; dst = os.path.join('{output}', os.path.basename(src)); os.path.lexists(dst) or os.symlink(src, dst)"
+      resources: { cpus: 1, memory: "2GB", time_limit: "15min" }
+
+  - id: redshift_distribution
+    type: data
+    description: |
+      Per-blind n(z) text file for the selected base version.
+      Path keyed by `cc[ver]['shear']['redshift_path']` in the
+      catalog config. Each base version has a single n(z) shared
+      between the leakage-corrected and uncorrected variants
+      (correction is in ellipticity calibration, not photometry).
+    decisions: [fiducial_catalog, fiducial_blind]
+    recipe:
+      # cp the blind-A n(z) resolved via cat_config
+      # (cc['SP_v1.4.6.3']['shear']['redshift_path'] is already the _A file).
+      command: >
+        mkdir -p {output} &&
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python -c "import os, shutil, yaml; cc = yaml.safe_load(open('/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml')); src = cc['SP_v1.4.6.3']['shear']['redshift_path']; shutil.copy(src, os.path.join('{output}', os.path.basename(src)))"
+      resources: { cpus: 1, memory: "2GB", time_limit: "15min" }
+
+  - id: mask_power_spectrum
+    type: data
+    description: |
+      Footprint mask power spectrum at HEALPix nside=4096,
+      apodised and normalised, selected per catalog variant
+      (standard 2894 deg² for v1.4.5 / v1.4.6.3 / v1.4.11.3,
+      star-halo-masked 2517 deg² for v1.4.8). Consumed by
+      CosmoCov via the `mask_cl_path` field of the generated
+      `.ini` file.
+    decisions: [fiducial_catalog]
+    recipe:
+      # cp the standard-footprint mask power spectrum (nside=4096, apodised +
+      # normalised) that the covariance sub-analysis feeds CosmoCov as
+      # c_footprint_file. This is the fiducial (v1.4.6.3 -> standard footprint);
+      # the star-halo variant applies only to v1.4.8.
+      command: >
+        mkdir -p {output} &&
+        cp /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_nside_4096_norm.txt {output}/mask_cls_footprint_nside_4096_norm.txt
+      resources: { cpus: 1, memory: "2GB", time_limit: "15min" }
+
+  - id: survey_properties
+    type: data
+    description: |
+      Per-version survey-property summary used to seed CosmoCov:
+      area in deg², effective galaxy density n_eff in arcmin⁻²,
+      and the combined two-component shape noise σ_e (paper text
+      quotes per-component). Sourced from the `cov_th` block of
+      `cat_config.yaml` for the selected version. For the
+      fiducial size-cut catalog: 2894 deg², n_eff = 4.957
+      arcmin⁻², σ_e = 0.378 (combined; ≈ 0.27 per-component as
+      quoted in the paper Abstract).
+    decisions: [fiducial_catalog]
+    recipe:
+      # Read the fiducial cov_th block (keys A / n_e / sigma_e, exactly as
+      # generate_cosmocov_ini.py consumes them) and dump area / n_eff /
+      # sigma_e_combined to survey_properties.json. dict(...) avoids literal
+      # braces so lc's {output} substitution stays unambiguous.
+      command: >
+        mkdir -p {output} &&
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python -c "import os, json, yaml; c = yaml.safe_load(open('/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml'))['SP_v1.4.6.3']['cov_th']; d = dict(area=c['A'], n_eff=c['n_e'], sigma_e_combined=c['sigma_e']); json.dump(d, open(os.path.join('{output}', 'survey_properties.json'), 'w'), indent=2)"
+      resources: { cpus: 1, memory: "2GB", time_limit: "15min" }
+
+decisions:
+
+  fiducial_catalog:
+    from: ../fiducial_catalog
+
+  fiducial_blind:
+    from: ../fiducial_blind
+
+  leakage_correction:
+    from: ../leakage_correction

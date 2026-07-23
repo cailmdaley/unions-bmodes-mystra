@@ -1,0 +1,14 @@
+{
+  "extraKnownMarketplaces": {
+    "lightcone-research": {
+      "source": {
+        "source": "github",
+        "repo": "LightconeResearch/agent-skills",
+        "ref": "astra-plugin-rework"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "lightcone@lightcone-research": true
+  }
+}

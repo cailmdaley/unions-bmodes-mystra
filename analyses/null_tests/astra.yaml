@@ -1,0 +1,366 @@
+version: "1.0"
+name: "B-mode null tests, PTE matrices, and blind-independence checks"
+
+narrative:
+  summary: |
+    Gather stage. Composes per-statistic per-(scale-cut) PTEs
+    from [pure_eb](#../analyses.pure_eb),
+    [cosebis](#../analyses.cosebis), and
+    [cl_bb](#../analyses.cl_bb) into the
+    [main-text PTE summary](#../outputs.pte_table_results)
+    (six PTE values for the size-cut catalog at
+    [adopted](#../decisions.fiducial_scale_cuts) and
+    [full-range](#../decisions.fiducial_scale_cuts) cuts), the
+    [appendix PTE table](#../outputs.pte_table_appendix) (all
+    four catalog variants × six statistics × two cuts), and
+    two PTE-matrix composite figures (one for configuration
+    space, one for harmonic space). Also runs the
+    [BB-covariance blind-independence cross-check
+    ](#outputs.bb_covariance_blind_independence_evidence) that
+    underwrites the source workflow's
+    [blind-A fiducial choice](#../decisions.fiducial_blind) for the
+    reported data vectors. Cosmological inference is out of
+    scope for this paper; this sub-analysis exists to discharge
+    the paper's measurement-side findings.
+  inputs: |
+    The PTE composition consumes scale-cut grids of B-mode PTEs
+    from the three statistic families: the
+    [pure-mode PTE matrix](#inputs.pure_eb_pte_per_cut), the
+    [COSEBI PTE scatter](#inputs.cosebis_pte_per_cut), and the
+    [Cℓ^BB PTE matrix](#inputs.cl_pte_per_cut), each
+    materialised by the corresponding sub-analysis. The
+    blind-independence cross-check pulls
+    per-(blind ∈ {A,B,C}) MC-propagated pure-mode covariances
+    from [pure_eb](#inputs.pure_eb_per_blind_covariances), the
+    [integration covariance](#inputs.cov_integration_per_blind)
+    from [covariance](#../analyses.covariance), and per-blind
+    [pseudo-Cℓ bandpower covariances](#inputs.cl_cov_per_blind);
+    these are produced at the v1.4.6
+    [mock_version](#decisions.bb_blind_check_version) since
+    blind independence is a property of survey geometry, not
+    catalog version.
+  methods: |
+    The PTE composition is a thin gather: it reads per-statistic
+    PTEs over all scale-cut pairs and arranges them into the
+    paper's [main-text](#outputs.pte_summary_evidence) and
+    [appendix](#outputs.pte_summary_evidence) tables. The
+    [healthy PTE band](#../decisions.healthy_pte_range) of
+    [0.05, 0.95] is the colour-coding threshold;
+    [PTE definition](#../decisions.pte_definition) is the
+    χ²-tail probability, with no Hartlap correction at the χ²
+    stage for COSEBIs and Cℓ^BB (the inputs are theory
+    covariances) and the
+    [pure_eb Hartlap correction](#../analyses.pure_eb)
+    applied internally before the PTE values land here.
+
+    The [config-space PTE composite
+    ](#outputs.config_space_pte_evidence) renders three columns
+    (ξ_+^B, ξ_-^B, COSEBI B_n) over (i_min, i_max) bandpower
+    pairs of `geomspace(1', 250', 21)`, with rows for each
+    catalog variant and the
+    [adopted 12'–83' fiducial cut](#../decisions.fiducial_scale_cuts)
+    marked as a black square; the three statistic panels
+    share that θ-grid so the adopted-cut cell sits at the
+    same (i, j) position in every panel
+    ([scale-cut grid alignment
+    ](#decisions.scale_cut_pair_grid_alignment)). The
+    [harmonic-space PTE composite
+    ](#outputs.harmonic_space_pte_evidence) renders the same
+    grid over (ℓ_min, ℓ_max) bandpower pairs, with the
+    [adopted 300 < ℓ < 1600 cut
+    ](#../decisions.fiducial_scale_cuts) marked. Both
+    composites are produced as one paper-facing PDF (fiducial
+    catalog only) plus an appendix PDF that tiles all four
+    catalog variants.
+
+    The
+    [BB-covariance blind-independence
+    check](#outputs.bb_covariance_blind_independence_evidence)
+    is a separate one-shot analysis. It generates per-blind
+    pure-mode, COSEBI, and harmonic covariances at the
+    [v1.4.6 mock version](#decisions.bb_blind_check_version)
+    and compares the diagonal BB-block variance across blinds
+    A, B, C against the analogous EE-block variance. Geometry
+    determines the BB variance under the null hypothesis, so
+    the check predicts B-mode covariance ratios closer to unity
+    than E-mode ratios, with MC sampling noise limiting that
+    statement in the pure-mode branch. The figure is evidence
+    for the source workflow's
+    [blind-A fiducial](#../decisions.fiducial_blind) being
+    representative; the paper does not include it in the
+    main-text figures, but it underwrites the validity of the
+    blind-A PTE table.
+
+    Three of the paper's measurement-side findings are
+    evidenced from the same JSON:
+    the [size-cut catalog's unique simultaneous pass
+    ](#../findings.size_cut_unique_pass) and the
+    [multi-statistic concurrence requirement
+    ](#../findings.multi_statistic_consensus)
+    both read the [appendix PTE table evidence
+    ](#outputs.pte_summary_evidence), while the
+    [full-range COSEBI failure
+    ](#../findings.cosebis_full_range_failure) reads its COSEBI
+    rows at the full-range cut. The fourth paper finding,
+    [filter-function sensitivity
+    ](#../findings.filter_sets_sensitivity), is evidenced
+    upstream in the [COSEBI sub-analysis](#../analyses.cosebis)
+    from the
+    [harmonic-vs-config COSEBI cross-check
+    ](#../cosebis.outputs.cosebis_harmonic_modes), not from this
+    PTE gather.
+  outputs: |
+    The [PTE summary JSON](#outputs.pte_summary_evidence) is
+    the evidence backing the
+    [main-text PTE table](#../outputs.pte_table_results) and
+    the
+    [appendix PTE table](#../outputs.pte_table_appendix); the
+    `paper_macros` rule reads it to render the LaTeX `\num{}`
+    macros in `paper/claims_macros.tex`.
+    The [configuration-space PTE evidence
+    ](#outputs.config_space_pte_evidence) feeds the
+    [paper config-space PTE
+    composite](#../outputs.fig_pte_heatmaps), and
+    the [harmonic-space PTE evidence
+    ](#outputs.harmonic_space_pte_evidence) feeds the
+    [paper Cℓ^BB PTE
+    composite](#../outputs.fig_cl_pte_heatmap). The
+    [BB blind-independence figure
+    ](#outputs.bb_covariance_blind_independence_evidence)
+    is not in the paper but is referenced by the
+    [workflow blind-A justification](#../decisions.fiducial_blind).
+
+inputs:
+  - id: pure_eb_pte_per_cut
+    type: analysis
+    from: ../pure_eb.pure_eb_pte_per_cut
+
+  - id: cosebis_pte_per_cut
+    type: analysis
+    from: ../cosebis.cosebis_pte_per_cut
+
+  - id: cl_pte_per_cut
+    type: analysis
+    from: ../cl_bb.cl_pte_per_cut
+
+  - id: pure_eb_per_blind_covariances
+    type: analysis
+    from: ../pure_eb.pure_eb_semianalytic_data
+
+  - id: cov_integration_per_blind
+    type: analysis
+    from: ../covariance.cov_integration_g
+
+  - id: cl_cov_per_blind
+    type: analysis
+    from: ../covariance.cl_cov_reporting
+
+outputs:
+  - id: pte_summary_evidence
+    type: data
+    description: |
+      Aggregated JSON evidence holding the six paper PTE values
+      (ξ_+^B, ξ_-^B, ξ_tot^B, COSEBI B_n n ≤ 6, COSEBI B_n
+      n ≤ 20, Cℓ^BB) at the
+      [adopted 12'–83' / 300 < ℓ < 1600
+      cuts](#../decisions.fiducial_scale_cuts) and at full
+      range, for all four catalog variants. Materialised by
+      `paper_macros` from the per-statistic scatter outputs;
+      consumed by both the main-text and appendix PTE-table
+      LaTeX renderers in `paper/claims_macros.tex`.
+    recipe:
+      # generate_paper_macros.py CLI. Terminal gather: reads the two PTE-matrix
+      # evidence.json files (config-space + harmonic-space) by ABSOLUTE lc results
+      # path and writes claims_macros.tex + pte_table_results.tex +
+      # pte_table_appendix.tex + evidence.json under {output}. --claims-dir points
+      # at the original tapestry tree for the extra (non-table) claims_macros
+      # entries (cosebis / pure_eb / harmonic_config); the two PTE tables need
+      # only the two --*-evidence paths (produced by this same sub-analysis).
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/generate_paper_macros.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --config-space-evidence /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/config_space_pte_evidence/evidence.json
+        --harmonic-space-evidence /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/harmonic_space_pte_evidence/evidence.json
+        --claims-dir /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/tapestry
+        --out {output}
+
+  - id: config_space_pte_evidence
+    type: figure
+    description: |
+      Configuration-space PTE composite figures (paper Figure
+      6 plus appendix Figure C.x): per-version 4×3 tile of
+      ξ_+^B / ξ_-^B / COSEBI B_n PTE matrices over
+      (θ_min, θ_max) bandpower pairs of
+      `geomspace(1', 250', 21)`, with the
+      [adopted 12'–83' fiducial
+      cut](#../decisions.fiducial_scale_cuts) marked as a black
+      square. Generated by the source `config_space_pte_matrices`
+      rule; produces both the main-text fiducial-only PDF
+      (`config_space_pte_fiducial.pdf`) and the appendix
+      composite (`config_space_pte_composite_appendix.pdf`).
+    recipe:
+      # config_space_pte_matrices.py CLI. The 7-version (leak-corrected +
+      # uncorrected) sweep lives INSIDE the script, reading each version's PTE
+      # intermediates from the lc Design-B sweep outputs by ABSOLUTE path:
+      #   --pte-intermediate-dir : pure_eb_ptes sweep — {ver}_{blind}_pure_eb_ptes.npz
+      #   --cosebis-pte-dir      : cosebis_ptes sweep — gathered cosebis_ptes_{ver}_{blind}.npz
+      # (the gathered NPZ is auto-detected and adapted to the per-pair PTE matrix,
+      # so fiducial and sweep versions share provenance). Writes evidence.json +
+      # figure_{fiducial,appendix}.png + config_space_pte_{fiducial,composite_appendix}.pdf
+      # under {output}.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/config_space_pte_matrices.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --pte-intermediate-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_ptes
+        --cosebis-pte-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_ptes
+        --blind A
+        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-pure-eb-pte-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_pte_per_cut/SP_v1.4.6.3_leak_corr_A_pure_eb_ptes.npz
+        --fiducial-cosebis-pte-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_pte_per_cut/cosebis_ptes_SP_v1.4.6.3_leak_corr_A.npz
+        --out {output}
+
+  - id: harmonic_space_pte_evidence
+    type: figure
+    description: |
+      Harmonic-space PTE composite figures: per-version 4×1
+      tile of Cℓ^BB PTE matrices over (ℓ_min, ℓ_max) bandpower
+      pairs, with the
+      [adopted 300 < ℓ < 1600 cut
+      ](#../decisions.fiducial_scale_cuts) marked. Generated
+      by `harmonic_space_pte_matrices`; produces both the
+      main-text PDF (`cl_pte_heatmap.pdf`) and the appendix
+      composite (`cl_pte_composite_appendix.pdf`).
+    recipe:
+      # harmonic_space_pte_matrices.py CLI (one artifact serving 3 ids:
+      # cl_bb.cl_pte_per_cut, this output, and root fig_cl_pte_heatmap). Like
+      # config_space, the 7-version (leak-corrected + uncorrected) sweep lives
+      # INSIDE the script: --results-dir is the lc cl_sweep output dir from which
+      # it reconstructs per-version pseudo_cl_* / pseudo_cl_cov_* (blind A) FITS.
+      # Writes the cl_pte_matrices NPZ + cl_pte_heatmap.pdf +
+      # cl_pte_composite_appendix.pdf + figure PNGs + evidence.json under {output}.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/harmonic_space_pte_matrices.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --results-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_sweep
+        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_reporting/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
+        --fiducial-pseudo-cl-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cl_cov_reporting/pseudo_cl_cov_SP_v1.4.6.3_leak_corr.fits
+        --out {output}
+
+  - id: bb_covariance_blind_independence_evidence
+    type: figure
+    description: |
+      Cross-statistic blind-independence figure: BB-block
+      diagonal variance across blinds A, B, C compared
+      against the EE-block diagonal variance, in all three
+      statistic spaces (pure E/B, COSEBI, harmonic Cℓ).
+      Generated by `bb_covariance_blind_independence` at the
+      [v1.4.6 mock version](#decisions.bb_blind_check_version)
+      since blind independence is a geometric property
+      independent of catalog selection. Underwrites the
+      paper's [blind-A fiducial
+      choice](#../decisions.fiducial_blind) without entering
+      the main-text figures.
+    recipe:
+      # bb_covariance_blind_independence.py CLI. Per-blind (A/B/C) mock-version
+      # covariances are read by absolute path; the version defaults to
+      # <fiducial.mock_version>_leak_corr (SP_v1.4.6.3_leak_corr):
+      #   --pure-eb-dir    : {ver}_{blind}_pure_eb_semianalytic.npz
+      #   --cosmo-val-dir  : pseudo_cl_cov_{ver}_blind={b}_powspace_nbins=32.fits + pseudo_cl (A) + xi_integration
+      #   --covariance-dir : Gaussian integration-grid masked covariances per blind
+      # Writes figure.png + evidence.json under {output}.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/bb_covariance_blind_independence.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --pure-eb-dir /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/paper_plots/intermediate
+        --cosmo-val-dir /n17data/cdaley/unions/code/sp_validation/cosmo_val/output
+        --covariance-dir /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance
+        --out {output}
+
+decisions:
+
+  bb_blind_check_version:
+    label: "Catalog version for the BB-covariance blind-independence check"
+    tags: [null_tests, blinding, validation]
+    rationale: |
+      The
+      [BB-covariance blind-independence
+      check](#outputs.bb_covariance_blind_independence_evidence)
+      generates per-blind covariances at the
+      [v1.4.6 mock version](#../decisions.fiducial_catalog)
+      rather than the fiducial v1.4.6.3, because the check
+      validates a geometric property of the survey footprint
+      and not a catalog-selection-dependent property: B-mode
+      covariance ratios are expected to sit closer to unity
+      across blinds than E-mode ratios, while finite MC sampling
+      can still introduce visible B-mode covariance scatter.
+      Re-generating per-blind covariances at v1.4.6.3 (or the
+      other variants) would triple the covariance compute
+      budget without revealing new B-mode information.
+    default: mock_version_v146
+    options:
+      mock_version_v146:
+        label: "Mock version v1.4.6 (paper fiducial)"
+        description: |
+          The same v1.4.6 catalog used for the
+          [350 GLASS mock realisations](#../inputs.glass_mock_realisations).
+      fiducial_version_v1463:
+        label: "Fiducial size-cut v1.4.6.3"
+        description: |
+          Per-blind covariance regeneration on the fiducial
+          variant; not used because the blind-independence
+          property is geometric.
+        excluded: true
+        excluded_reason: |
+          Geometric independence of blind from catalog
+          selection makes per-blind regeneration redundant
+          on the fiducial variant; mock_version exposes the
+          same property at lower compute cost.
+
+  scale_cut_pair_grid_alignment:
+    label: "Scale-cut grid alignment across statistics"
+    tags: [null_tests, scale_cuts]
+    rationale: |
+      The configuration-space PTE composite renders the same
+      `geomspace(1', 250', 21)` index pairs for ξ_+^B, ξ_-^B,
+      and COSEBI B_n, so that the
+      [adopted 12'–83' fiducial cut
+      ](#../decisions.fiducial_scale_cuts) maps to the same
+      (i = 9, j = 16) cell in every panel. The COSEBI
+      [stable-pair grid
+      ](#../analyses.cosebis) is a strict subset of the
+      pure-mode grid (the pure-mode grid has no
+      polynomial-root instability), so missing COSEBI cells
+      appear as NaN tiles in the composite; this is the
+      intended behaviour and the paper figure caption notes
+      the exclusions. The
+      harmonic-space composite uses an independent
+      (ℓ_min, ℓ_max) bandpower-pair grid over 8 ≤ ℓ ≤ 2048;
+      no cross-grid alignment is enforced because the
+      adopted ℓ-cut is a separate decision from the adopted
+      θ-cut.
+    default: aligned_with_cosebis_subset
+    options:
+      aligned_with_cosebis_subset:
+        label: "Aligned θ-grids with COSEBI subset (paper fiducial)"
+      independent_grids:
+        label: "Independent grids per statistic"
+        description: |
+          Would prevent direct visual comparison of the
+          adopted-cut cell across panels; not used.

@@ -1,0 +1,79 @@
+{
+  "spec_id": "harmonic_config_cosebis_comparison",
+  "spec_path": "papers/bmodes/config/harmonic_config_cosebis_comparison.md",
+  "generated": "2026-07-04T14:06:39.364846",
+  "evidence": {
+    "nmodes": 20,
+    "reliable_modes": 6,
+    "scale_cut": [
+      11.99700953168291,
+      82.8613504334997
+    ],
+    "powspace_nbins": 96,
+    "versions_compared": [
+      "SP_v1.4.5_leak_corr",
+      "SP_v1.4.6.3_leak_corr",
+      "SP_v1.4.6_ecut07_leak_corr",
+      "SP_v1.4.8_leak_corr",
+      "SP_v1.4.11.3_leak_corr",
+      "SP_v1.4.11.3_ecut07_leak_corr"
+    ],
+    "harmonic_b_mode_ptes": {
+      "SP_v1.4.6.3_leak_corr": {
+        "chi2": 4.5859478553391835,
+        "pte": 0.5979028806198698,
+        "dof": 6
+      },
+      "SP_v1.4.11.3_leak_corr": {
+        "chi2": 2.629513562304623,
+        "pte": 0.8537007680040174,
+        "dof": 6
+      },
+      "SP_v1.4.5_leak_corr": {
+        "chi2": 3.5885878780379272,
+        "pte": 0.7321485895076039,
+        "dof": 6
+      },
+      "SP_v1.4.8_leak_corr": {
+        "chi2": 6.167972472368846,
+        "pte": 0.40463934542560365,
+        "dof": 6
+      }
+    },
+    "config_b_mode_ptes": {
+      "SP_v1.4.6.3_leak_corr": {
+        "chi2": 3.2520714423594157,
+        "pte": 0.7766087895181015,
+        "dof": 6
+      },
+      "SP_v1.4.11.3_leak_corr": {
+        "chi2": 2.879403325220976,
+        "pte": 0.8238237127290963,
+        "dof": 6
+      },
+      "SP_v1.4.5_leak_corr": {
+        "chi2": 1.7918779305977521,
+        "pte": 0.937810097254718,
+        "dof": 6
+      },
+      "SP_v1.4.8_leak_corr": {
+        "chi2": 4.537919413400733,
+        "pte": 0.604286416242688,
+        "dof": 6
+      }
+    },
+    "note": "Harmonic-space COSEBIS computed via cosmo_numba cosebis_from_Cell() from 96-bin powspace pseudo-C_ell. With 96 bins, modes 1-6 are reliably recovered (validated on GLASS mocks: E_n/config within 2%). Higher modes are limited by W_n(ell) numerical precision at ~10^-14 amplitudes, not binning. Harmonic B-mode PTEs use modes 1-6 with propagated covariance."
+  },
+  "output": {
+    "figure": "figure.png",
+    "figure_v1.4.11.3": "figure_v1.4.11.3.png",
+    "figure_v1.4.11.3_uncorrected": "figure_v1.4.11.3_uncorrected.png",
+    "figure_v1.4.6.3": "figure_v1.4.6.3.png",
+    "figure_v1.4.6.3_uncorrected": "figure_v1.4.6.3_uncorrected.png",
+    "figure_v1.4.5": "figure_v1.4.5.png",
+    "figure_v1.4.5_uncorrected": "figure_v1.4.5_uncorrected.png",
+    "figure_v1.4.8": "figure_v1.4.8.png",
+    "figure_v1.4.8_uncorrected": "figure_v1.4.8_uncorrected.png",
+    "figure_versions": "figure_versions.png"
+  }
+}

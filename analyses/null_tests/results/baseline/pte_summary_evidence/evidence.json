@@ -1,0 +1,26 @@
+{
+  "spec_id": "pte_summary_evidence",
+  "spec_path": "analyses/null_tests/astra.yaml#pte_summary_evidence",
+  "depends_on": [
+    "config_space_pte_matrices",
+    "harmonic_space_pte_matrices"
+  ],
+  "generated": "2026-07-04T13:54:05.755366",
+  "evidence": {
+    "type": "paper_integration",
+    "description": "Aggregates quantitative claims for paper reporting",
+    "dependencies_summary": {
+      "config_space_pte_matrices": {
+        "has_evidence": true,
+        "generated": "2026-03-17T19:02:05.173816"
+      },
+      "harmonic_space_pte_matrices": {
+        "has_evidence": true,
+        "generated": "2026-04-03T17:42:21.884852"
+      }
+    }
+  },
+  "output": {
+    "macros": "claims_macros.tex"
+  }
+}

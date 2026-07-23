@@ -1,0 +1,21 @@
+{
+  "spec_id": "cosebis_data_vector",
+  "generated": "2026-07-04T13:13:21.520891",
+  "evidence": {
+    "version": "SP_v1.4.6.3_leak_corr",
+    "fiducial_scale_cut": [
+      12.0,
+      83.0
+    ],
+    "full_scale_cut": [
+      1.0,
+      250.0
+    ],
+    "nmodes": 20,
+    "note": "COSEBI B_n/E_n data vector + paper figure. PTEs in cosebis_pte_per_cut."
+  },
+  "output": {
+    "data": "cosebis_modes_SP_v1.4.6.3_leak_corr.npz",
+    "figure": "figure.png"
+  }
+}

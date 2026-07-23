@@ -1,0 +1,492 @@
+version: "1.0"
+name: "Harmonic-space pseudo-Cℓ^BB and Cℓ^EB"
+
+narrative:
+  summary: |
+    Pseudo-Cℓ^EB and Cℓ^BB bandpowers measured directly on the
+    discrete shear catalog via the
+    [Wolz et al. 2025 catalog-based
+    estimator](#decisions.estimator_choice) — spin-2 spherical
+    harmonics evaluated at source positions through the `ducc`
+    library, with mask-induced mode coupling deconvolved by
+    NaMaster (MASTER algorithm; Hivon et al. 2002; Alonso et
+    al. 2019). The
+    [paper data vector](#outputs.cl_bandpowers_reporting) is on
+    the [32-bandpower √ℓ-linear reporting grid
+    ](#decisions.bandpower_binning) over 8 ≤ ℓ ≤ 2048; the
+    [adopted scale cut](#../decisions.fiducial_scale_cuts) is
+    300 < ℓ < 1600. A
+    [96-bandpower fine variant](#outputs.cl_bandpowers_fine)
+    is materialised for the [COSEBI harmonic-space validation
+    path](#../cosebis.outputs.cosebis_harmonic_modes); both
+    share the same NaMaster invocation pipeline.
+  inputs: |
+    The harmonic-space estimator consumes the
+    [shear catalog](#inputs.shear_catalog),
+    [redshift distribution](#inputs.redshift_distribution),
+    and [footprint mask power spectrum
+    ](#inputs.mask_power_spectrum) materialised by the
+    [catalog sub-analysis](#../analyses.catalog). The
+    bandpower covariance is supplied by the
+    [covariance sub-analysis](#../analyses.covariance) via its
+    [iNKA Gaussian Cℓ covariance
+    ](#../analyses.covariance) — the same NaMaster invocation
+    that produces the data-vector bandpowers also produces
+    its iNKA covariance, but the spec splits the production:
+    the bandpower estimator lives here, and the bandpower
+    covariance lives in the covariance sub-analysis (where it
+    co-locates with the configuration-space CosmoCov
+    matrices).
+  methods: |
+    The Wolz et al. (2025) catalog-based estimator represents
+    the survey mask as delta functions at source positions and
+    computes the spin-2 transforms on this irregular grid using
+    the `ducc` library (Reinecke & Seljebotn 2023), avoiding
+    the pixelization artifacts that complicate map-based
+    pseudo-Cℓ implementations on the UNIONS footprint. The
+    same metacalibration weights and ellipticities that enter
+    the [TreeCorr ξ_± measurement](#../analyses.two_point) are
+    used here (paper Eq. 9). NaMaster decouples the measured
+    bandpowers via the mode-coupling matrix induced by the
+    [footprint mask power spectrum
+    ](#inputs.mask_power_spectrum) and applies an
+    [analytic shot-noise correction
+    ](#decisions.noise_bias_correction) following the
+    implementation in Paper IV; no Monte-Carlo bias subtraction
+    is needed because the Wolz et al. construction yields
+    unbiased Cℓ̂^{αβ} estimators directly.
+
+    Two binning schemes coexist on the same NaMaster call. The
+    [32-bandpower reporting grid
+    ](#decisions.bandpower_binning) is the paper data-vector
+    binning and the input to the
+    [Cℓ^BB null test](#outputs.cl_pte_per_cut); the
+    [96-bandpower fine grid](#outputs.cl_bandpowers_fine) is
+    the COSEBI cross-check binning, dense enough to resolve
+    the W_n(ℓ) filter oscillations through n ≤ 6 and chosen
+    by [cosebis](#../analyses.cosebis) for the harmonic-path
+    Eq. 19. Both grids span the same 8 ≤ ℓ ≤ 2048 native
+    range; the
+    [√ℓ-linear spacing](#decisions.bandpower_binning) (`power
+    = 0.5` in the source `pseudo_cl` rule) gives constant
+    fractional ℓ-resolution, the standard cosmic-shear
+    convention.
+
+    Cℓ^BB null tests use the iNKA Gaussian
+    bandpower covariance from the
+    [covariance sub-analysis](#../analyses.covariance), which
+    is theory-derived (no Hartlap correction needed, paralleling
+    the [root hartlap_correction decision
+    ](#../decisions.hartlap_correction)) and validated by Paper
+    IV against 10,000 Gaussian simulations. The
+    [PTE-per-(ℓ_min, ℓ_max)
+    matrix](#outputs.cl_pte_per_cut) drives the
+    harmonic-space PTE composite figure that
+    [null_tests](#../analyses.null_tests) gathers,
+    and follows the same
+    [blind-A paper strategy](#decisions.pte_blind_strategy) as
+    [pure_eb](#../analyses.pure_eb): paper-facing PTEs use
+    blind A only, with per-blind generation reserved for the
+    BB-covariance blind-independence cross-check.
+  outputs: |
+    [cl_bandpowers_reporting](#outputs.cl_bandpowers_reporting)
+    is the primary data vector consumed by the
+    [paper Cℓ figure rule](#outputs.cl_data_vector_figure)
+    that produces
+    [paper Figure 4](#../outputs.fig_cl_fiducial) and by the
+    [version comparison](#outputs.cl_version_comparison_figure)
+    that feeds the
+    [paper Figure 5 stack](#../outputs.fig_pure_eb_versions).
+    [cl_bandpowers_fine](#outputs.cl_bandpowers_fine) is the
+    sole consumer of the 96-bin grid: the
+    [cosebis sub-analysis](#../analyses.cosebis) reads it for
+    the harmonic-path Eq. 19 evaluation. The
+    [PTE matrix](#outputs.cl_pte_per_cut) feeds the
+    [harmonic Cℓ^BB PTE composite
+    ](#../outputs.fig_cl_pte_heatmap) and the corresponding
+    appendix table row when
+    [null_tests](#../analyses.null_tests) gathers it.
+
+inputs:
+  - id: shear_catalog
+    type: analysis
+    from: ../catalog.shear_catalog
+
+  - id: redshift_distribution
+    type: analysis
+    from: ../catalog.redshift_distribution
+
+  - id: mask_power_spectrum
+    type: analysis
+    from: ../catalog.mask_power_spectrum
+
+outputs:
+  - id: cl_bandpowers_reporting
+    type: data
+    description: |
+      Per-(version, blind) FITS file holding pseudo-Cℓ^EE,
+      Cℓ^EB, Cℓ^BB bandpowers on the
+      [32-bandpower √ℓ-linear grid](#decisions.bandpower_binning)
+      over 8 ≤ ℓ ≤ 2048, NaMaster-decoupled and
+      shot-noise-corrected. Generated by the source
+      `pseudo_cl` rule with `binning = powspace`, `nbins = 32`,
+      `power = 0.5`. The fiducial-version artifact is the
+      source for the
+      [paper Cℓ data-vector figure
+      ](#../outputs.fig_cl_fiducial).
+    decisions: [fiducial_catalog, fiducial_blind]
+    recipe:
+      # Clean lc-native recipe (see two_point.xi_reporting for form rationale).
+      # generate_pseudo_cl.py CLI mode; fiducial version + blind A hardcoded
+      # (single-version output, faithful to the DAG). Native filename
+      # pseudo_cl_<ver>.fits written under {output}.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/workflow/scripts/generate_pseudo_cl.py
+        --ver SP_v1.4.6.3_leak_corr
+        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
+        --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A
+        --out {output}
+      resources: { cpus: 12, memory: "32GB", time_limit: "2h" }
+
+  - id: cl_bandpowers_fine
+    type: data
+    description: |
+      Per-(version, blind) FITS file holding pseudo-Cℓ^EE,
+      Cℓ^EB, Cℓ^BB bandpowers on the 96-bandpower √ℓ-linear
+      grid (`cl.cosebis_nbins = 96` in the source config).
+      Sole consumer is the [COSEBI harmonic-validation binning
+      choice](#../cosebis.decisions.harmonic_validation_binning)
+      — the bin count is dense enough to resolve the W_n(ℓ)
+      filter oscillations through n ≤ 6 modes (paper §3.2).
+    decisions: [fiducial_catalog, fiducial_blind]
+    recipe:
+      # Same generate_pseudo_cl.py CLI as cl_bandpowers_reporting, 96-bandpower
+      # fine grid (--nbins 96). Distinct {output} dir avoids the native-filename
+      # skip-if-exists cache collision with the 32-bin reporting run.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/workflow/scripts/generate_pseudo_cl.py
+        --ver SP_v1.4.6.3_leak_corr
+        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
+        --nside 1024 --npatch 1 --binning powspace --nbins 96 --power 0.5 --blind A
+        --out {output}
+      resources: { cpus: 12, memory: "32GB", time_limit: "2h" }
+
+  - id: cl_sweep
+    type: data
+    description: |
+      Design-B producer sweep: pseudo-Cℓ data vector (32-bin
+      √ℓ-linear, blind A) and its NaMaster iNKA Gaussian
+      bandpower covariance for every non-fiducial, non-ecut
+      catalog version (7 variants — 3 leak-corrected + 4
+      uncorrected), each renamed to the canonical
+      `pseudo_cl_{ver}_blind=A_powspace_nbins=32.fits` /
+      `pseudo_cl_cov_{ver}_blind=A_powspace_nbins=32.fits` that
+      [cl_version_comparison](#outputs.cl_version_comparison_figure)
+      (`--results-dir`) reads. This is the version-swept analogue
+      of [cl_bandpowers_reporting](#outputs.cl_bandpowers_reporting)
+      + the covariance sub-analysis's `cl_cov_reporting`, bundled
+      here since one estimator invocation yields both. Per-version
+      footprint masks resolve internally from cat_config. The
+      fiducial version stays in the single-output recipes and is
+      passed to the comparison plotter via `--fiducial-pseudo-cl-*`.
+    decisions: [fiducial_catalog, fiducial_blind]
+    recipe:
+      # run_cl_sweep.py loops the non-fiducial version list (sweep_versions.py) and
+      # calls generate_pseudo_cl + generate_pseudo_cl_cov once per version, renaming
+      # each native pseudo_cl_{ver}.fits / pseudo_cl_cov_{ver}.fits to the tagged
+      # canonical name the comparison plotter reconstructs. Serial over versions.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/run_cl_sweep.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
+        --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A
+        --out {output}
+      resources: { cpus: 12, memory: "32GB", time_limit: "24h" }
+
+  - id: cl_data_vector_figure
+    type: figure
+    description: |
+      Paper Figure 4: Cℓ^BB and Cℓ^EB normalised by uncertainty
+      for the [fiducial catalog](#../decisions.fiducial_catalog)
+      at blind A, with the
+      [adopted ℓ-range](#../decisions.fiducial_scale_cuts) of
+      300 < ℓ < 1600 shaded. Generated by `cl_data_vector`;
+      one paper PDF + 4 leak-corrected and 4 uncorrected
+      per-version variants in the standard 9-figure pattern.
+    recipe:
+      # cl_data_vector.py CLI produces paper Figure 4 (fiducial) plus the 9-figure
+      # per-version set (4 leak-corrected + 4 uncorrected). The version sweep lives
+      # inside the plotter: it reconstructs each version's pseudo_cl / pseudo_cl_cov
+      # (32-bin, blind A) from --results-dir by the canonical naming pattern. All
+      # figures + evidence.json land under {output}.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/cl_data_vector.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --results-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_sweep
+        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_reporting/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
+        --fiducial-pseudo-cl-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cl_cov_reporting/pseudo_cl_cov_SP_v1.4.6.3_leak_corr.fits
+        --out {output}
+      resources: { cpus: 2, memory: "8GB", time_limit: "30m" }
+
+  - id: cl_version_comparison_figure
+    type: figure
+    description: |
+      Per-bandpower Cℓ^BB overlay across the four leak-corrected
+      catalog variants, contributing the harmonic-space row of
+      the [paper Figure 5 stack](#../outputs.fig_pure_eb_versions).
+      Uncorrected variants not stacked.
+    recipe:
+      # cl_version_comparison.py CLI overlays Cℓ^BB / Cℓ^EB across the 4
+      # leak-corrected catalogs. The version sweep lives inside the plotter:
+      # per-version pseudo_cl / pseudo_cl_cov (32-bin, blind A) are reconstructed
+      # from --results-dir by the canonical naming pattern. Writes figure.png +
+      # cl_versions.pdf + evidence.json under {output}.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/cl_version_comparison.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --results-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_sweep
+        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_reporting/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
+        --fiducial-pseudo-cl-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cl_cov_reporting/pseudo_cl_cov_SP_v1.4.6.3_leak_corr.fits
+        --out {output}
+      resources: { cpus: 2, memory: "8GB", time_limit: "30m" }
+
+  - id: cl_pte_per_cut
+    type: data
+    description: |
+      Per-(version, blind) PTE evaluation of Cℓ^BB versus the
+      iNKA Gaussian bandpower covariance from the
+      [covariance sub-analysis](#../analyses.covariance), over
+      a grid of (ℓ_min, ℓ_max) bandpower index pairs. The
+      [adopted 300 < ℓ < 1600
+      cut](#../decisions.fiducial_scale_cuts) is one row of
+      this matrix; the full grid backs the
+      [harmonic-space PTE composite
+      ](#../outputs.fig_cl_pte_heatmap). Computed inside
+      `harmonic_space_pte_matrices`, which materialises both
+      the per-version data and the composite figure.
+    recipe:
+      # harmonic_space_pte_matrices.py CLI (one artifact serving 3 ids: this
+      # output, null_tests.harmonic_space_pte_evidence, root fig_cl_pte_heatmap).
+      # The per-version sweep lives inside the script; --results-dir is the
+      # COSMO_VAL tree it reads per-version pseudo_cl_* / pseudo_cl_cov_* (blind A)
+      # FITS from. The per-version Cℓ^BB PTE matrices land under {output} as
+      # cl_pte_matrices_A.npz (this data artifact) alongside the heatmap PDFs +
+      # evidence.json. lc does not wire cross-output inputs, so all upstream data
+      # is read by absolute path.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/harmonic_space_pte_matrices.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --results-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_sweep
+        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_reporting/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
+        --fiducial-pseudo-cl-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cl_cov_reporting/pseudo_cl_cov_SP_v1.4.6.3_leak_corr.fits
+        --out {output}
+
+decisions:
+
+  fiducial_catalog:
+    from: ../fiducial_catalog
+
+  fiducial_blind:
+    from: ../fiducial_blind
+
+  estimator_choice:
+    label: "Pseudo-Cℓ estimator"
+    tags: [cl_bb, method, primary]
+    rationale: |
+      The Wolz et al. (2025) catalog-based estimator evaluates
+      spin-2 spherical-harmonic transforms at source positions
+      through the `ducc` library (Reinecke & Seljebotn 2023),
+      avoiding the pixelization artifacts that map-based
+      pseudo-Cℓ pipelines develop at the UNIONS footprint
+      angular resolution. Paper IV's cosmological inference
+      adopts the same estimator; this paper's null tests use
+      it for parity. Map-based NaMaster pseudo-Cℓ is exposed
+      as the alternative because it is the legacy
+      Stage-III reference and the implementation against which
+      Wolz et al. cross-validate.
+    default: wolz25_catalog_based
+    options:
+      wolz25_catalog_based:
+        label: "Wolz et al. 2025 catalog-based (paper fiducial)"
+        description: |
+          Discrete-source spin-2 transforms via `ducc`;
+          NaMaster-decoupled bandpowers; analytic shot-noise
+          subtraction.
+        insights: [wolz25_catalog_based_pseudo_cl]
+      map_based_pseudo_cl:
+        label: "Map-based pseudo-Cℓ on HEALPix"
+        description: |
+          Standard map-based NaMaster pipeline; develops
+          pixelization artifacts at the UNIONS footprint
+          angular scale. Not used by the paper.
+
+  bandpower_binning:
+    label: "Bandpower binning scheme"
+    tags: [cl_bb, binning, primary]
+    rationale: |
+      32 bandpowers with √ℓ-linear spacing
+      (`binning = powspace`, `power = 0.5`) over 8 ≤ ℓ ≤ 2048
+      is the paper data-vector grid: it gives constant
+      fractional ℓ resolution and balances per-bandpower SNR
+      against bandpower count (32 modes constrained at the
+      fiducial cut leave a comfortable degrees-of-freedom
+      margin). 96 bandpowers in the same √ℓ-linear scheme is
+      the cross-check grid — required by the
+      [cosebis harmonic path](#../analyses.cosebis) to resolve
+      the W_n(ℓ) filter oscillations through n ≤ 6. Linear ℓ
+      binning would bunch resolution at low ℓ; log-ℓ binning
+      coarsens at high ℓ.
+    default: bandpowers_32_powspace
+    options:
+      bandpowers_32_powspace:
+        label: "32 √ℓ-linear over 8 ≤ ℓ ≤ 2048 (paper fiducial)"
+      bandpowers_96_powspace:
+        label: "96 √ℓ-linear over 8 ≤ ℓ ≤ 2048 (COSEBI cross-check)"
+        description: |
+          Paper-fiducial fine variant for paper Eq. 19; not
+          used by the Cℓ^BB null test itself.
+      bandpowers_16_powspace:
+        label: "16 √ℓ-linear"
+        description: |
+          Coarser bandpowers; would compress the PTE
+          degrees-of-freedom margin without an SNR gain
+          commensurate with the loss of ℓ-resolution.
+      bandpowers_64_powspace:
+        label: "64 √ℓ-linear"
+        description: |
+          Higher resolution; per-bandpower SNR drops without
+          a clear gain on the BB null test.
+
+  noise_bias_correction:
+    label: "Shot-noise / noise-bias correction"
+    tags: [cl_bb, calibration]
+    rationale: |
+      Pseudo-Cℓ estimators on shear data carry a noise bias
+      from the intrinsic ellipticity dispersion that scales
+      with the inverse galaxy density. Paper IV implements an
+      analytic shot-noise subtraction inside the catalog-based
+      estimator (Wolz et al. 2025); this paper inherits that
+      correction. A Monte-Carlo noise-bias estimator is
+      available but not used because the analytic form is
+      exact under the uncorrelated shape-noise model and avoids
+      mock-noise injection.
+    default: analytic_shot_noise
+    options:
+      analytic_shot_noise:
+        label: "Analytic shot-noise subtraction (Paper IV; paper fiducial)"
+        insights: [wolz25_catalog_based_pseudo_cl]
+      mc_noise_bias:
+        label: "Monte-Carlo noise-bias estimator"
+        description: |
+          Generates ellipticity-randomised mocks and subtracts
+          their mean Cℓ; not used by the paper or Paper IV.
+
+  pte_blind_strategy:
+    label: "Per-blind PTE evaluation strategy"
+    tags: [cl_bb, blinding, validation]
+    rationale: |
+      `harmonic_space_pte_matrices` consumes per-version
+      pseudo-Cℓ data vectors at blind A only and uses the
+      blind-A bandpower covariance for the PTE evaluation, by
+      analogy with the
+      [pure_eb PTE blind strategy](#../analyses.pure_eb).
+      The bb_covariance_blind_independence cross-check
+      generates per-blind bandpower covariances on the mock
+      version (v1.4.6) to compare B-mode and E-mode covariance
+      stability across blinds; that check lives in
+      [null_tests](#../analyses.null_tests).
+    default: blind_a_for_paper
+    options:
+      blind_a_for_paper:
+        label: "Blind A for paper PTEs (paper fiducial)"
+      all_blinds_for_paper:
+        label: "All three blinds in paper PTEs"
+        description: |
+          Exposed but not used; would triple the PTE table
+          width without revealing new B-mode information given
+          the workflow blind-independence check.
+
+prior_insights:
+
+  wolz25_catalog_based_pseudo_cl:
+    id: wolz25_catalog_based_pseudo_cl
+    claim: |
+      The Wolz, Alonso & Nicola (2025) catalog-based pseudo-Cℓ
+      formalism extracts angular power spectra from fields
+      sampled at a finite number of arbitrary source positions
+      by forgoing pixelized maps and evaluating spherical
+      harmonic transforms directly on the discrete catalog.
+      Its analytic treatment of the discrete-mask shot-noise
+      contribution makes the resulting estimator immune to
+      small-scale pixelization and aliasing effects, and
+      unbiased against measurement noise uncorrelated between
+      sources. This is the methodological basis for Paper II's
+      harmonic-space Cℓ^EB / Cℓ^BB bandpowers and their
+      analytic shot-noise correction.
+    created_at: "2026-04-25"
+    evidence:
+      - id: ev1
+        doi: "10.1088/1475-7516/2025/01/028"
+        quote:
+          exact: |
+            We present a formalism to extract the angular
+            power spectrum of fields sampled at a finite
+            number of points with arbitrary positions -- a
+            common situation for several catalog-based
+            astrophysical probes -- through a simple extension
+            of the standard pseudo-$C_\ell$ algorithm.
+          prefix: "Abstract."
+          suffix: "A key complication in this case is the need to handle the shot noise component of the associated discrete angular mask"
+        location:
+          page: 1
+      - id: ev2
+        doi: "10.1088/1475-7516/2025/01/028"
+        quote:
+          exact: |
+            The resulting estimator is immune to small-scale
+            pixelization effects and aliasing, and, more
+            interestingly, unbiased against the contribution
+            from measurement noise uncorrelated between
+            different sources.
+          prefix: "We show that this problem can be solved easily by estimating this contribution analytically and subtracting it."
+          suffix: "We demonstrate the validity of the method in the context of cosmic shear datasets"
+        location:
+          page: 1
+    scope: |
+      Wolz, Alonso & Nicola 2025, JCAP 01, 028 — abstract.
+      Source: arxiv 2407.21013 main.tex line 71. Cited as the
+      methodological foundation for the [cl_bb sub-analysis
+      ](#analyses.cl_bb)'s catalog-level pseudo-Cℓ estimator
+      and the analytic shot-noise / noise-bias correction the
+      paper inherits from Paper IV's implementation. Paper II's
+      implementation evaluates spin-2 spherical-harmonic
+      transforms at source positions through the `ducc` library
+      (Reinecke & Seljebotn 2023), with NaMaster decoupling of
+      the mode-coupling matrix.

@@ -1,0 +1,58 @@
+{
+  "spec_id": "pure_eb_covariance",
+  "generated": "2026-07-04T14:03:45.099769",
+  "evidence": {
+    "condition_number": 27356685060.187065,
+    "is_positive_definite": true,
+    "min_eigenvalue": 1.0348135196644621e-20,
+    "max_eigenvalue": 2.8309067553484383e-10,
+    "matrix_shape": [
+      120,
+      120
+    ],
+    "n_bins": 20,
+    "n_blocks": 6,
+    "block_analysis": {
+      "xi_E": {
+        "condition_number": 154669.97106528876,
+        "is_positive_definite": true,
+        "min_eigenvalue": 6.977428066678239e-16,
+        "max_eigenvalue": 1.0791985971832569e-10,
+        "block_size": [
+          40,
+          40
+        ],
+        "description": "xi_+^E and xi_-^E combined (40x40)"
+      },
+      "xi_B": {
+        "condition_number": 200344.6643633773,
+        "is_positive_definite": true,
+        "min_eigenvalue": 5.164811684320736e-16,
+        "max_eigenvalue": 1.0347424633952873e-10,
+        "block_size": [
+          40,
+          40
+        ],
+        "description": "xi_+^B and xi_-^B combined (40x40)"
+      },
+      "xi_amb": {
+        "condition_number": 18274717297.606777,
+        "is_positive_definite": true,
+        "min_eigenvalue": 1.0897768677298985e-20,
+        "max_eigenvalue": 1.9915364175235309e-10,
+        "block_size": [
+          40,
+          40
+        ],
+        "description": "xi_+^amb and xi_-^amb combined (40x40)"
+      }
+    }
+  },
+  "parameters": {
+    "version": "SP_v1.4.6.3_leak_corr",
+    "blind": "A"
+  },
+  "output": {
+    "figure": "figure.png"
+  }
+}

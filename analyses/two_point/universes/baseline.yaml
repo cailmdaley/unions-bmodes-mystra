@@ -1,0 +1,10 @@
+id: baseline
+description: |
+  UNIONS Paper II two-point fiducial: TreeCorr at the 20-bin
+  reporting grid and the 1000-bin integration grid, single
+  patch. Inherits the parent's [integration_grid](../../astra.yaml
+  decision: integration_grid) selection (1000 bins) for the
+  integration run.
+decisions:
+  reporting_binning: bins_20
+  patch_count: npatch_1

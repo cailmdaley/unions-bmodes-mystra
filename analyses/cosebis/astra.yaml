@@ -1,0 +1,515 @@
+version: "1.0"
+name: "COSEBI B-mode amplitudes"
+
+narrative:
+  summary: |
+    COSEBI E_n / B_n mode amplitudes for n = 1 … 20 computed
+    from ξ_±(θ) via the T_{±n}(θ) filter integration of Eq. 16
+    in `paper/unions_bmodes.tex` §3.2, evaluated on the
+    [1000-bin integration grid](#../decisions.integration_grid)
+    over θ ∈ [θ_min, θ_max]. The
+    [load-bearing PTE is the n ≤ 6 subset
+    ](#decisions.mode_subsets), where the cosmological E-mode
+    information saturates and where the
+    [full-range first-mode excess](#../findings.cosebis_full_range_failure)
+    of >4σ collapses below 1σ once the
+    [adopted 12'–83' cut is applied
+    ](#../decisions.fiducial_scale_cuts). The [10,000-bin
+    convergence variant](#outputs.cosebis_binning_convergence)
+    confirms B_n stability against integration-grid resolution
+    (paper §3.3 convergence check), and the
+    [harmonic-space evaluation
+    ](#outputs.cosebis_harmonic_modes) of Eq. 19 cross-checks
+    the angular-space modes against the same filters expressed
+    in ℓ.
+  inputs: |
+    The COSEBI integrands are the
+    [1000-bin ξ_±](#inputs.xi_integration) materialised by
+    [two_point](#../analyses.two_point) and the corresponding
+    [Gaussian covariance](#inputs.cov_integration_g) from the
+    [covariance sub-analysis](#../analyses.covariance). The
+    one-shot
+    [10,000-bin convergence run
+    ](#inputs.xi_integration_convergence) feeds the
+    binning-comparison output; it is not used by paper PTEs.
+    The harmonic cross-check consumes the
+    [fine-binned pseudo-Cℓ](#inputs.cl_bandpowers_fine) at 96
+    √ℓ-linear bandpowers from the cl_bb sub-analysis.
+  methods: |
+    The angular-space mode amplitudes follow paper Eq. 16 with
+    logarithmic T_{±n}(θ) filter functions whose orthogonality
+    on [θ_min, θ_max] removes the
+    [ambiguous-mode content](#../analyses.pure_eb)
+    that pure-mode ξ_±^{E/B} carry as a separate component. We
+    evaluate the integral on the
+    [1000-bin grid](#../decisions.integration_grid) for paper
+    PTEs and on the 10,000-bin grid for the §3.3
+    [convergence cross-check](#outputs.cosebis_binning_convergence).
+    Mode amplitudes are computed for all n up to the
+    [paper's mode-count cap of 20](#decisions.mode_count);
+    PTEs are reported for the
+    [two mode subsets](#decisions.mode_subsets) that the paper
+    table carries (n ≤ 6 cosmologically informative, n ≤ 20
+    full transparency).
+
+    The B_n covariance is the linear transform
+    `C_{B_n B_m} = T^T C_ξ T` of the
+    [Gaussian integration-grid covariance
+    ](#../analyses.covariance), exploiting the closed-form
+    derivative of the COSEBI mode integral with respect to ξ_±.
+    Equivalently — and as a self-consistency check — the same
+    covariance is also produced by passing the
+    [2000 Monte-Carlo samples](#../decisions.mc_samples) of
+    ξ_±(θ) through the COSEBI integrals and computing the
+    sample covariance of the resulting B_n vectors. The
+    [PTE scatter-gather](#outputs.cosebis_pte_per_cut)
+    materialises one JSON per (version, blind, i_min, i_max)
+    tuple from the
+    [stable-pair scale-cut grid](#decisions.scale_cut_pair_grid)
+    surrounding the
+    [adopted 12'–83' fiducial cut](#../decisions.fiducial_scale_cuts);
+    the gather step folds them into the
+    [config-space PTE composite](#../outputs.fig_pte_heatmaps).
+
+    The
+    [harmonic-space cross-check](#outputs.cosebis_harmonic_modes)
+    realises Eq. 19, summing the same FFT-log Fourier-dual
+    filters W_n(ℓ) against the
+    [96 √ℓ-linear pseudo-Cℓ bandpowers
+    ](#decisions.harmonic_validation_binning); this bin count
+    balances W_n(ℓ) oscillation resolution against
+    mode-coupling matrix conditioning, and the GLASS
+    validation in the
+    [covariance sub-analysis](#../analyses.covariance)
+    confirms agreement to within 2% for n ≤ 6, the modes
+    carrying nearly all cosmological information (paper §3.2,
+    Figure 8).
+  outputs: |
+    [cosebis_modes_data](#outputs.cosebis_modes_data) is the
+    primary B_n / E_n data vector consumed by the paper's
+    [single-version COSEBI plot](#../outputs.fig_cosebis_fiducial)
+    and by the
+    [version-comparison composite](#outputs.cosebis_version_comparison)
+    feeding the
+    [paper Figure 5 stack](#../outputs.fig_pure_eb_versions).
+    [cosebis_pte_per_cut](#outputs.cosebis_pte_per_cut)
+    discharges the COSEBI rows of the
+    [main-text PTE summary](#../outputs.pte_table_results) and
+    the [appendix PTE table](#../outputs.pte_table_appendix)
+    after the [null_tests sub-analysis](#../analyses.null_tests)
+    composes the multi-statistic PTE matrices. The
+    [10,000-bin binning convergence
+    artifact](#outputs.cosebis_binning_convergence) backs the
+    paper's §3.3 convergence statement, and the
+    [harmonic-config comparison
+    ](#outputs.cosebis_harmonic_modes) feeds the cross-check
+    figure [(paper Figure 8)](#../outputs.fig_harmonic_config_cosebis).
+
+inputs:
+  - id: xi_integration
+    type: analysis
+    from: ../two_point.xi_integration
+
+  - id: xi_integration_convergence
+    type: analysis
+    from: ../two_point.xi_integration_convergence
+
+  - id: cov_integration_g
+    type: analysis
+    from: ../covariance.cov_integration_g
+
+  - id: cl_bandpowers_fine
+    type: analysis
+    from: ../cl_bb.cl_bandpowers_fine
+
+outputs:
+  - id: cosebis_modes_data
+    type: data
+    description: |
+      Per-(version, blind) NPZ holding the E_n / B_n vectors
+      for n = 1 … 20, the mode covariance matrix obtained from
+      the linear transform `T^T C_ξ T`, and the diagonal σ_n
+      used for the B_n / σ_n normalisation in the paper figure.
+      The fiducial-version artifact is the source for the
+      [paper data-vector figure](#../outputs.fig_cosebis_fiducial).
+    recipe:
+      # cosebis_data_vector.py CLI computes the fiducial E_n/B_n data vector and
+      # the T^T C_xi T mode covariance at both scale cuts, writing
+      # cosebis_modes_<ver>.npz (+ paper figure) under {output}. Upstream xi/cov
+      # are read by absolute path from the canonical COSMO_VAL / COSMO_INFERENCE
+      # trees — bit-identical to the DAG (the lc pipeline reproduces only the
+      # fiducial version; the multi-version cosebis figures read the same trees).
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/cosebis_data_vector.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --xi-integration /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
+        --cov-integration /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
+        --out {output}
+      resources: { cpus: 8, memory: "16GB", time_limit: "1h" }
+
+  - id: cosebis_pte_per_cut
+    type: data
+    description: |
+      Per-(version, blind) NPZ holding the COSEBI B_n PTE
+      matrices over the full scale-cut pair grid — all stable
+      index pairs of `geomspace(1', 250', 21)` from
+      [scale_cut_pair_grid](#decisions.scale_cut_pair_grid) —
+      for both reported mode subsets (n ≤ 6, n ≤ 20). Generated
+      by gathering `compute_cosebis_pte` outputs per scale-cut
+      pair. The
+      [config-space PTE composite](#../outputs.fig_pte_heatmaps)
+      assembles this along with the pure-mode PTE matrices.
+    decisions: [fiducial_catalog, fiducial_blind]
+    recipe:
+      # Reconciliation: the DAG SCATTERED one JSON per (version, blind, i_min,
+      # i_max) via compute_cosebis_pte_single.py and gathered them downstream. The
+      # refactored CLI loops the same stable scale-cut pair grid internally (same
+      # theta grid, nmodes=20, NaN-on-convergence-failure handling) and writes ONE
+      # gathered NPZ cosebis_ptes_<ver>_<blind>.npz — no scatter, no per-pair deps.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/compute_cosebis_pte_single.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --xi-integration /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
+        --cov-integration /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
+        --out {output}
+      resources: { cpus: 8, memory: "16GB", time_limit: "6h" }
+
+  - id: cosebis_ptes
+    type: data
+    description: |
+      Design-B Tier-2 producer sweep: gathered COSEBI B_n PTE
+      matrices (n ≤ 6, n ≤ 20) over the full scale-cut pair grid
+      for every non-fiducial, non-ecut catalog version (7 variants
+      — 3 leak-corrected + 4 uncorrected), each written to the
+      canonical `cosebis_ptes_{ver}_{blind}.npz` — the same
+      gathered layout as the fiducial
+      [cosebis_pte_per_cut](#outputs.cosebis_pte_per_cut). The
+      appendix config-space PTE heatmap
+      ([config_space_pte_evidence](#../null_tests.outputs.config_space_pte_evidence),
+      [fig_pte_heatmaps](#../outputs.fig_pte_heatmaps)) reads these
+      via `--cosebis-pte-dir` and adapts the gathered NPZ back to
+      the per-pair PTE matrix, so fiducial and sweep versions share
+      provenance. Per version it runs the *identical*
+      `compute_cosebis_pte_single` per-pair compute (version-
+      independent theta grid + nmodes), reading that version's
+      1000-bin integration ξ_± from
+      [xi_sweep](#../two_point.outputs.xi_sweep) and its Gaussian
+      integration covariance from
+      [cov_sweep](#../covariance.outputs.cov_sweep) by absolute path
+      (lc does not wire cross-output deps — run xi_sweep and
+      cov_sweep first). The fiducial version stays in the single-
+      output recipe above and is passed to the heatmap via
+      `--fiducial-cosebis-pte-path`.
+    decisions: [fiducial_catalog, fiducial_blind]
+    recipe:
+      # run_cosebis_ptes_sweep.py loops the non-fiducial version list
+      # (sweep_versions.py) and calls compute_cosebis_pte_single.main once per
+      # version (--version/--blind override the fiducial default), reading each
+      # version's integration xi from the xi_sweep dir and cov from the cov_sweep
+      # dir by absolute path, emitting the gathered cosebis_ptes_{ver}_{blind}.npz
+      # into {output}. Serial over versions (~25 min/version, 206 pairs — the pole).
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/run_cosebis_ptes_sweep.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --xi-sweep-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_sweep
+        --cov-sweep-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_sweep
+        --out {output}
+      resources: { cpus: 24, memory: "48GB", time_limit: "6h" }
+
+  - id: cosebis_binning_convergence
+    type: figure
+    description: |
+      One-shot 1000-bin vs 10,000-bin comparison of B_n and
+      n ≤ 6 / n ≤ 20 PTEs for the
+      [fiducial catalog](#../decisions.fiducial_catalog) at
+      blind A. Demonstrates ≤ 2% B_n drift across modes 1–20
+      between the two grids, justifying the choice of 1000
+      bins as the production integrand grid. Materialised once;
+      not re-run per iteration.
+    recipe:
+      # Diagnostic (not in the paper): cosebis_binning_comparison.py CLI computes
+      # B_n from the 1000-bin and 10000-bin integration grids and writes figure.png
+      # + evidence.json under {output}. All three inputs now read from lc outputs
+      # (never the canonical COSMO_VAL tree): the 1k xi from two_point.xi_integration,
+      # the 10k xi from two_point.xi_integration_convergence (run that MPI output
+      # first — lc wires no cross-output dep), the 1k Gaussian cov from
+      # covariance.cov_integration_g.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/cosebis_binning_comparison.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --xi-1k /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
+        --xi-10k /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration_convergence/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt
+        --cov-1k /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
+        --out {output}
+      resources: { cpus: 8, memory: "16GB", time_limit: "3h" }
+
+  - id: cosebis_version_comparison
+    type: figure
+    description: |
+      Per-mode B_n stack across the four leak-corrected catalog
+      variants (size-cut, initial, masked, relaxed-flags),
+      contributing the COSEBI row of the
+      [paper Figure 5 version composite
+      ](#../outputs.fig_pure_eb_versions). Uncorrected variants
+      are not stacked — the comparison plot is leak-corrected
+      only.
+    recipe:
+      # cosebis_version_comparison.py CLI overlays B_n across the 4 leak-corrected
+      # catalogs. The version sweep lives inside the plotter: it reconstructs each
+      # version's integration-grid xi (--results-dir) and Gaussian covariance
+      # (--cov-dir) by the canonical naming pattern and recomputes COSEBIs per
+      # version. Writes figure_stacked.png + cosebis_bmode_stacked.pdf under {output}.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/cosebis_version_comparison.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --results-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_sweep
+        --cov-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_sweep
+        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-xi-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
+        --fiducial-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
+        --out {output}
+      resources: { cpus: 8, memory: "16GB", time_limit: "2h" }
+
+  - id: cosebis_harmonic_modes
+    type: data
+    description: |
+      Harmonic-path B_n via paper Eq. 19, summing FFT-log
+      Fourier-dual W_n(ℓ) filters against the 96-bin √ℓ-linear
+      pseudo-Cℓ bandpowers (`cl.cosebis_nbins = 96`,
+      computed by the source `pseudo_cl` rule). Compared
+      mode-by-mode against the angular-space
+      [cosebis_modes_data](#outputs.cosebis_modes_data) for
+      the [paper cross-check figure
+      ](#../outputs.fig_harmonic_config_cosebis); GLASS
+      validation underwrites the agreement at n ≤ 6. The
+      96-bin pseudo-Cℓ input is declared as
+      [cl_bandpowers_fine](#inputs.cl_bandpowers_fine); the
+      snakemake rule resolves the corresponding FITS file
+      through the harmonic-space DAG.
+    recipe:
+      # harmonic_config_cosebis_comparison.py CLI (shared with the root
+      # fig_harmonic_config_cosebis figure output) computes the harmonic-path
+      # (96-bin pseudo-Cl -> cosebis_from_Cell, Eq. 19) and config-path COSEBIs
+      # for the fiducial catalog at both scale cuts, and writes
+      # cosebis_harmonic_modes_<ver>.npz — En/Bn/cov for both paths — under
+      # {output} (alongside the combined Figure 8 PDF). Per-version pseudo-Cl,
+      # 96-bin covariance and xi are read from the canonical trees.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --angular-range fiducial --blind A
+        --cosmo-val-dir /n17data/cdaley/unions/code/sp_validation/cosmo_val/output
+        --covariance-dir /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance
+        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_fine/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
+        --fiducial-xi-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
+        --fiducial-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
+        --out {output}
+      resources: { cpus: 8, memory: "16GB", time_limit: "3h" }
+
+  - id: cosebis_harmonic_modes_full
+    type: data
+    description: |
+      Full-angular-range twin of
+      [cosebis_harmonic_modes](#outputs.cosebis_harmonic_modes):
+      the same harmonic-path Eq. 19 vs. config-path COSEBI
+      cross-check, run with `--angular-range full` instead of
+      `fiducial`. The script computes both scale cuts internally
+      per invocation (the NPZ payload already carries
+      `full_*`/`fiducial_*` fields either way), but the
+      evidence.json `harmonic_b_mode_ptes` / `config_b_mode_ptes`
+      PTE+χ² dicts are keyed to whichever cut was passed via
+      `--angular-range`. This is the only carrier for the
+      harmonic-space full-range COSEBI PTE
+      ([harmCosebisPteSixThreeFull](#../findings.cosebis_full_range_failure),
+      quoted in the paper §5) and its χ², and (redundantly with
+      [null_tests.config_space_pte_evidence](#../null_tests.outputs.config_space_pte_evidence))
+      the config-space full-range COSEBI χ² — see
+      `work/transpile-map.md` §2c/§2d for the gap this closes.
+      Feeds the [full-range cross-check
+      figure](#../outputs.fig_harmonic_config_cosebis_full)
+      (paper Figure 8, `fig:harmonic_config_cosebis_full`).
+    recipe:
+      # Same CLI as cosebis_harmonic_modes, --angular-range full instead of
+      # fiducial (shared with root fig_harmonic_config_cosebis_full). Identical
+      # inputs/container; only the flag differs.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --angular-range full --blind A
+        --cosmo-val-dir /n17data/cdaley/unions/code/sp_validation/cosmo_val/output
+        --covariance-dir /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance
+        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_fine/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
+        --fiducial-xi-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
+        --fiducial-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
+        --out {output}
+      resources: { cpus: 8, memory: "16GB", time_limit: "3h" }
+
+
+decisions:
+
+  fiducial_catalog:
+    from: ../fiducial_catalog
+
+  fiducial_blind:
+    from: ../fiducial_blind
+
+  mode_count:
+    label: "Number of COSEBI modes computed"
+    tags: [cosebis, modes]
+    rationale: |
+      n_max = 20 is the production mode count: the orthogonal
+      basis fully covers the ξ_±(θ) information on
+      [θ_min, θ_max] in the limit n → ∞, but the cosmological
+      E-mode amplitude saturates by n ≈ 5–6 at this survey's
+      depth (paper §3.2). 20 modes is therefore conservative
+      relative to information saturation while staying inside
+      the numerically stable regime — beyond ~25 modes,
+      polynomial-root accuracy in the T_{±n} construction
+      degrades on standard double precision. Lower mode counts
+      exclude information needed for the full-range
+      oscillatory diagnostic the paper reports as
+      [the COSEBI failure signature
+      ](#../findings.cosebis_full_range_failure).
+    default: n_max_20
+    options:
+      n_max_20:
+        label: "20 modes (paper fiducial)"
+      n_max_15:
+        label: "15 modes"
+        description: |
+          Drops information at the high-n end where the
+          full-range repeating-additive signature is most
+          visible.
+      n_max_30:
+        label: "30 modes"
+        description: |
+          Polynomial-root construction degrades; not used.
+        excluded: true
+        excluded_reason: |
+          Numerical instability at n > 25 in the T_{±n}
+          double-precision construction.
+
+  mode_subsets:
+    label: "PTE-reported mode subsets"
+    tags: [cosebis, statistics, primary]
+    rationale: |
+      The paper reports COSEBI PTEs for two mode subsets: n ≤ 6
+      and n ≤ 20. n ≤ 6 is the cosmologically informative range
+      where the E-mode amplitude has saturated; PTEs in this
+      subset weight the modes most likely to carry residual
+      systematic content visible at the survey-deep angular
+      scales the paper probes. n ≤ 20 reports the full
+      orthogonal basis for transparency, especially for the
+      full-range oscillatory pattern that motivates the lower
+      angular cut. Subsets larger than 20 are not exposed
+      because the [mode count](#decisions.mode_count) is
+      capped at 20.
+    default: n_le_6_and_n_le_20
+    options:
+      n_le_6_and_n_le_20:
+        label: "Both subsets (paper fiducial)"
+      n_le_6_only:
+        label: "n ≤ 6 only"
+        description: |
+          Hides the n ≤ 20 transparency check; not used by the
+          paper but exposed for sensitivity analyses.
+      n_le_20_only:
+        label: "n ≤ 20 only"
+        description: |
+          Hides the cosmologically informative subset; not
+          used.
+
+  harmonic_validation_binning:
+    label: "Pseudo-Cℓ bandpower count for the harmonic COSEBI path"
+    tags: [cosebis, harmonic, validation]
+    rationale: |
+      The harmonic-path COSEBI evaluation (paper Eq. 19) sums
+      the W_n(ℓ) filters against pseudo-Cℓ bandpowers. The bin
+      count balances two competing requirements: too few bins
+      cannot resolve the W_n(ℓ) oscillations at high n, while
+      too many bins lead to an unstable mode-coupling matrix
+      deconvolution at the NaMaster step. 96 √ℓ-linear bins
+      were chosen and validated on GLASS simulations to
+      recover the n ≤ 6 angular-space modes within 2%
+      (paper §3.2). 32 bins (the harmonic-space PTE binning,
+      [cl_bb](#../analyses.cl_bb)) cannot resolve the
+      oscillations beyond n ≈ 4 and is reserved for the
+      Cℓ^BB null test itself.
+    default: bins_96
+    options:
+      bins_96:
+        label: "96 √ℓ-linear bandpowers (paper fiducial)"
+      bins_128:
+        label: "128 √ℓ-linear bandpowers"
+        description: |
+          Higher resolution, but the W_n(ℓ) oscillation
+          benefit saturates and the deconvolution is
+          incrementally less stable; <1% gain.
+      bins_32:
+        label: "32 √ℓ-linear bandpowers (cl_bb fiducial)"
+        excluded: true
+        excluded_reason: |
+          Insufficient resolution for W_n(ℓ) at n > 4; would
+          break the harmonic cross-check the paper reports.
+
+  scale_cut_pair_grid:
+    label: "Scale-cut pair grid for COSEBI PTE matrices"
+    tags: [cosebis, scale_cuts, statistics]
+    rationale: |
+      The scatter-gather PTE pipeline evaluates COSEBIs over a
+      grid of [i_min, i_max] index pairs of the 21-bin
+      `geomspace(1', 250')` reporting grid, excluding numerically
+      unstable subsets where the polynomial-root construction
+      of T_{±n}(θ) fails (the (9, 10), (10, 11), (11, 12), (13,
+      14) pairs in the production list `PTE_SCALE_CUT_PAIRS`).
+      The grid is dense enough to render the
+      [PTE composite figure](#../outputs.fig_pte_heatmaps) at
+      the resolution the paper shows; it is not exhaustive
+      because the unstable pairs would inject NaNs into the
+      composite without informational gain.
+    default: production_grid
+    options:
+      production_grid:
+        label: "Stable index pairs of geomspace(1', 250', 21) (paper fiducial)"
+        description: |
+          ~110 stable pairs; excludes (9,10), (10,11), (11,12),
+          (13,14) for polynomial-root instability. Defined in
+          the source Snakefile as `PTE_SCALE_CUT_PAIRS`.
+      single_fiducial_pair:
+        label: "Single fiducial pair only (i=9, j=16)"
+        description: |
+          Reports only the
+          [adopted 12'–83' fiducial cut
+          ](#../decisions.fiducial_scale_cuts); hides scale-cut
+          sensitivity — not used by the paper, but exposed
+          as a multiverse minimal cut.

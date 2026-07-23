@@ -1,0 +1,47 @@
+{
+  "id": "cosebis_binning_comparison",
+  "generated": "2026-07-05T22:44:37.417857",
+  "input": {
+    "xi_1k": "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt",
+    "xi_10k": "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration_convergence/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt",
+    "cov_1k": "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt"
+  },
+  "output": {
+    "figure": "figure.png"
+  },
+  "params": {
+    "nbins_1k": 1000,
+    "nbins_10k": 10000,
+    "nmodes": 20,
+    "fiducial_scale_cut": [
+      12.0,
+      83.0
+    ],
+    "full_scale_cut": [
+      1.0,
+      250.0
+    ]
+  },
+  "evidence": {
+    "fiducial_max_delta_Bn_over_sigma": 0.9071136979149836,
+    "fiducial_rms_delta_Bn_over_sigma": 0.4130240350494857,
+    "fiducial_pte_1k_20": 0.871284007194291,
+    "fiducial_pte_10k_20": 0.8629107791731903,
+    "fiducial_chi2_1k_20": 13.14028919561582,
+    "fiducial_chi2_10k_20": 13.32714069739362,
+    "fiducial_pte_1k_6": 0.5856226472919654,
+    "fiducial_pte_10k_6": 0.7097495555723379,
+    "fiducial_chi2_1k_6": 4.678767504906526,
+    "fiducial_chi2_10k_6": 3.7553061609615663,
+    "full_max_delta_Bn_over_sigma": 1.342095351454007,
+    "full_rms_delta_Bn_over_sigma": 0.6766499342755978,
+    "full_pte_1k_20": 0.00010827553839591339,
+    "full_pte_10k_20": 0.00041152512466767726,
+    "full_chi2_1k_20": 52.14967632526481,
+    "full_chi2_10k_20": 48.10257281243453,
+    "full_pte_1k_6": 1.3663695812716416e-05,
+    "full_pte_10k_6": 1.5541585608516363e-05,
+    "full_chi2_1k_6": 32.401842011459706,
+    "full_chi2_10k_6": 32.1103688349182
+  }
+}

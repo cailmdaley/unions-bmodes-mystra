@@ -1,0 +1,110 @@
+% Auto-generated from claim evidence
+% Regenerate: snakemake paper_macros
+% See workflow/config/bmodes_paper.md for paper choices
+
+% cosebis (SP_v1.4.6.3_leak_corr, n=6)
+
+% pure_eb_data_vector (min across blinds per spec)
+\newcommand{\ebthetaXipMin}{\num{12}}
+\newcommand{\ebthetaXipMax}{\num{83}}
+\newcommand{\ebthetaXimMin}{\num{12}}
+\newcommand{\ebthetaXimMax}{\num{83}}
+
+% pure_eb_covariance (block condition numbers)
+\newcommand{\ebcovCondE}{\num{1.5e+05}}
+\newcommand{\ebcovCondB}{\num{2.0e+05}}
+\newcommand{\ebcovCondAmb}{\num{1.8e+10}}
+\newcommand{\ebcovCondFull}{\num{2.7e+10}}
+\newcommand{\ebcovNbins}{\num{20}}
+
+% config_space_pte_matrices (all versions)
+
+\newcommand{\configPteSixThreeXip}{\num{0.31}}
+\newcommand{\configPteSixThreeXim}{\num{0.26}}
+\newcommand{\configPteSixThreeCombined}{\num{0.18}}
+\newcommand{\configPteSixThreeCosebis}{\num{0.78}}
+\newcommand{\configPteSixThreeCosebisTwenty}{\num{0.94}}
+\newcommand{\configPteSixThreeXipFull}{\num{0.45}}
+\newcommand{\configPteSixThreeXimFull}{\num{0.16}}
+\newcommand{\configPteSixThreeCombinedFull}{\num{0.40}}
+\newcommand{\configPteSixThreeCosebisFull}{\num{1.37e-05}}
+\newcommand{\configPteSixThreeCosebisTwentyFull}{\num{1.08e-04}}
+\newcommand{\configPteFiveXip}{\num{0.51}}
+\newcommand{\configPteFiveXim}{\num{0.005}}
+\newcommand{\configPteFiveCombined}{\num{0.030}}
+\newcommand{\configPteFiveCosebis}{\num{0.94}}
+\newcommand{\configPteFiveCosebisTwenty}{\num{0.61}}
+\newcommand{\configPteFiveXipFull}{\num{0.026}}
+\newcommand{\configPteFiveXimFull}{\num{7.71e-04}}
+\newcommand{\configPteFiveCombinedFull}{\num{0.004}}
+\newcommand{\configPteFiveCosebisFull}{\num{7.37e-10}}
+\newcommand{\configPteFiveCosebisTwentyFull}{\num{4.15e-07}}
+\newcommand{\configPteEightXip}{\num{0.020}}
+\newcommand{\configPteEightXim}{\num{0.047}}
+\newcommand{\configPteEightCombined}{\num{0.014}}
+\newcommand{\configPteEightCosebis}{\num{0.60}}
+\newcommand{\configPteEightCosebisTwenty}{\num{0.81}}
+\newcommand{\configPteEightXipFull}{\num{0.039}}
+\newcommand{\configPteEightXimFull}{\num{0.020}}
+\newcommand{\configPteEightCombinedFull}{\num{0.018}}
+\newcommand{\configPteEightCosebisFull}{\num{4.94e-06}}
+\newcommand{\configPteEightCosebisTwentyFull}{\num{2.50e-05}}
+\newcommand{\configPteElevenThreeXip}{\num{0.78}}
+\newcommand{\configPteElevenThreeXim}{\num{9.40e-04}}
+\newcommand{\configPteElevenThreeCombined}{\num{0.014}}
+\newcommand{\configPteElevenThreeCosebis}{\num{0.82}}
+\newcommand{\configPteElevenThreeCosebisTwenty}{\num{0.83}}
+\newcommand{\configPteElevenThreeXipFull}{\num{0.10}}
+\newcommand{\configPteElevenThreeXimFull}{\num{2.94e-06}}
+\newcommand{\configPteElevenThreeCombinedFull}{\num{9.07e-04}}
+\newcommand{\configPteElevenThreeCosebisFull}{\num{1.70e-10}}
+\newcommand{\configPteElevenThreeCosebisTwentyFull}{\num{1.16e-08}}
+
+% harmonic_space_pte_matrices (all versions)
+
+\newcommand{\clPteFiveFid}{\num{0.003}}
+\newcommand{\clPteFiveFull}{\num{2.53e-04}}
+\newcommand{\clPteSixThreeFid}{\num{0.30}}
+\newcommand{\clPteSixThreeFull}{\num{0.14}}
+\newcommand{\clPteEightFid}{\num{0.43}}
+\newcommand{\clPteEightFull}{\num{0.11}}
+\newcommand{\clPteElevenThreeFid}{\num{5.74e-10}}
+\newcommand{\clPteElevenThreeFull}{\num{1.78e-12}}
+
+% harmonic_config_cosebis_comparison_full (B-mode COSEBIS PTEs)
+
+\newcommand{\harmCosebisPteSixThreeFull}{\num{1.61e-05}}
+\newcommand{\harmCosebisChisqSixThreeFull}{\num{32.03}}
+\newcommand{\harmCosebisPteElevenThreeFull}{\num{4.64e-18}}
+\newcommand{\harmCosebisChisqElevenThreeFull}{\num{93.92}}
+\newcommand{\harmCosebisPteFiveFull}{\num{6.41e-09}}
+\newcommand{\harmCosebisChisqFiveFull}{\num{49.33}}
+\newcommand{\harmCosebisPteEightFull}{\num{4.72e-05}}
+\newcommand{\harmCosebisChisqEightFull}{\num{29.58}}
+\newcommand{\cfgCosebisPteSixThreeFull}{\num{1.37e-05}}
+\newcommand{\cfgCosebisChisqSixThreeFull}{\num{32.40}}
+\newcommand{\cfgCosebisPteElevenThreeFull}{\num{1.70e-10}}
+\newcommand{\cfgCosebisChisqElevenThreeFull}{\num{57.15}}
+\newcommand{\cfgCosebisPteFiveFull}{\num{7.37e-10}}
+\newcommand{\cfgCosebisChisqFiveFull}{\num{54.00}}
+\newcommand{\cfgCosebisPteEightFull}{\num{4.94e-06}}
+\newcommand{\cfgCosebisChisqEightFull}{\num{34.69}}
+
+% harmonic_config_cosebis_comparison_fiducial (B-mode COSEBIS PTEs)
+
+\newcommand{\harmCosebisPteSixThreeFid}{\num{0.60}}
+\newcommand{\harmCosebisChisqSixThreeFid}{\num{4.59}}
+\newcommand{\harmCosebisPteElevenThreeFid}{\num{0.85}}
+\newcommand{\harmCosebisChisqElevenThreeFid}{\num{2.63}}
+\newcommand{\harmCosebisPteFiveFid}{\num{0.73}}
+\newcommand{\harmCosebisChisqFiveFid}{\num{3.59}}
+\newcommand{\harmCosebisPteEightFid}{\num{0.40}}
+\newcommand{\harmCosebisChisqEightFid}{\num{6.17}}
+\newcommand{\cfgCosebisPteSixThreeFid}{\num{0.78}}
+\newcommand{\cfgCosebisChisqSixThreeFid}{\num{3.25}}
+\newcommand{\cfgCosebisPteElevenThreeFid}{\num{0.82}}
+\newcommand{\cfgCosebisChisqElevenThreeFid}{\num{2.88}}
+\newcommand{\cfgCosebisPteFiveFid}{\num{0.94}}
+\newcommand{\cfgCosebisChisqFiveFid}{\num{1.79}}
+\newcommand{\cfgCosebisPteEightFid}{\num{0.60}}
+\newcommand{\cfgCosebisChisqEightFid}{\num{4.54}}

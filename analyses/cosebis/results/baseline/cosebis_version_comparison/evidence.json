@@ -1,0 +1,46 @@
+{
+  "spec_id": "cosebis_version_comparison",
+  "generated": "2026-07-05T19:10:38.201028",
+  "evidence": {
+    "scale_cuts": {
+      "fiducial": [
+        12.0,
+        83.0
+      ],
+      "full": [
+        1.0,
+        250.0
+      ]
+    },
+    "nmodes": 20,
+    "versions": {
+      "SP_v1.4.5_leak_corr_pte_B_fiducial": 0.5528189339061831,
+      "SP_v1.4.5_leak_corr_chi2_B_fiducial": 18.52571470236124,
+      "SP_v1.4.5_leak_corr_dof_B_fiducial": 20,
+      "SP_v1.4.5_leak_corr_pte_B_full": 4.146297941586874e-07,
+      "SP_v1.4.5_leak_corr_chi2_B_full": 67.80066913101687,
+      "SP_v1.4.5_leak_corr_dof_B_full": 20,
+      "SP_v1.4.6.3_leak_corr_pte_B_fiducial": 0.8712840071942909,
+      "SP_v1.4.6.3_leak_corr_chi2_B_fiducial": 13.140289195615821,
+      "SP_v1.4.6.3_leak_corr_dof_B_fiducial": 20,
+      "SP_v1.4.6.3_leak_corr_pte_B_full": 0.00010827553839591423,
+      "SP_v1.4.6.3_leak_corr_chi2_B_full": 52.14967632526478,
+      "SP_v1.4.6.3_leak_corr_dof_B_full": 20,
+      "SP_v1.4.8_leak_corr_pte_B_fiducial": 0.7033624855121479,
+      "SP_v1.4.8_leak_corr_chi2_B_fiducial": 16.212407134849435,
+      "SP_v1.4.8_leak_corr_dof_B_fiducial": 20,
+      "SP_v1.4.8_leak_corr_pte_B_full": 2.5012048099190057e-05,
+      "SP_v1.4.8_leak_corr_chi2_B_full": 56.43285146166499,
+      "SP_v1.4.8_leak_corr_dof_B_full": 20,
+      "SP_v1.4.11.3_leak_corr_pte_B_fiducial": 0.811181793768825,
+      "SP_v1.4.11.3_leak_corr_chi2_B_fiducial": 14.371309646383796,
+      "SP_v1.4.11.3_leak_corr_dof_B_fiducial": 20,
+      "SP_v1.4.11.3_leak_corr_pte_B_full": 1.1561122465836586e-08,
+      "SP_v1.4.11.3_leak_corr_chi2_B_full": 77.22351493189501,
+      "SP_v1.4.11.3_leak_corr_dof_B_full": 20
+    }
+  },
+  "output": {
+    "figure_stacked": "figure_stacked.png"
+  }
+}

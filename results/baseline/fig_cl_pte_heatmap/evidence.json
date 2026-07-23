@@ -1,0 +1,157 @@
+{
+  "spec_id": "harmonic_space_pte_matrices",
+  "generated": "2026-07-05T19:07:50.499738",
+  "evidence": {
+    "blind": "A",
+    "versions": {
+      "SP_v1.4.5": {
+        "role": "appendix",
+        "pte_at_full_range": 0.00010234650112823355,
+        "n_evaluated": 496,
+        "ell_range": [
+          12.5,
+          1988.5000000000002
+        ],
+        "n_ell_bins": 32,
+        "mean": 0.05358667691578375,
+        "median": 0.008281289976610404,
+        "std": 0.13873436612958107,
+        "pte_at_fiducial": 0.002911286596424166,
+        "fiducial_ell_range": [
+          300,
+          1600
+        ]
+      },
+      "SP_v1.4.5_leak_corr": {
+        "role": "appendix",
+        "pte_at_full_range": 0.00025180616975914466,
+        "n_evaluated": 496,
+        "ell_range": [
+          12.5,
+          1988.5000000000002
+        ],
+        "n_ell_bins": 32,
+        "mean": 0.060642517032307434,
+        "median": 0.0110532233541575,
+        "std": 0.1477707167582852,
+        "pte_at_fiducial": 0.003113417058093531,
+        "fiducial_ell_range": [
+          300,
+          1600
+        ]
+      },
+      "SP_v1.4.6.3": {
+        "role": "appendix",
+        "pte_at_full_range": 0.07707123677682307,
+        "n_evaluated": 496,
+        "ell_range": [
+          12.5,
+          1988.5000000000002
+        ],
+        "n_ell_bins": 32,
+        "mean": 0.2134869686670062,
+        "median": 0.15002054885645238,
+        "std": 0.18131439082326808,
+        "pte_at_fiducial": 0.29213295739213213,
+        "fiducial_ell_range": [
+          300,
+          1600
+        ]
+      },
+      "SP_v1.4.6.3_leak_corr": {
+        "role": "fiducial",
+        "pte_at_full_range": 0.1361091116055381,
+        "n_evaluated": 496,
+        "ell_range": [
+          12.5,
+          1988.5000000000002
+        ],
+        "n_ell_bins": 32,
+        "mean": 0.24352428123115788,
+        "median": 0.19087400840844965,
+        "std": 0.1785055087268636,
+        "pte_at_fiducial": 0.29856471250463257,
+        "fiducial_ell_range": [
+          300,
+          1600
+        ]
+      },
+      "SP_v1.4.8": {
+        "role": "appendix",
+        "pte_at_full_range": 0.07189190879847501,
+        "n_evaluated": 496,
+        "ell_range": [
+          12.5,
+          1988.5000000000002
+        ],
+        "n_ell_bins": 32,
+        "mean": 0.2647221690439392,
+        "median": 0.1742242508466444,
+        "std": 0.2390784297785238,
+        "pte_at_fiducial": 0.4278326630564436,
+        "fiducial_ell_range": [
+          300,
+          1600
+        ]
+      },
+      "SP_v1.4.8_leak_corr": {
+        "role": "appendix",
+        "pte_at_full_range": 0.1309595326480958,
+        "n_evaluated": 496,
+        "ell_range": [
+          12.5,
+          1988.5000000000002
+        ],
+        "n_ell_bins": 32,
+        "mean": 0.28685037105600564,
+        "median": 0.2064889845682616,
+        "std": 0.23356919500480133,
+        "pte_at_fiducial": 0.4412552776118032,
+        "fiducial_ell_range": [
+          300,
+          1600
+        ]
+      },
+      "SP_v1.4.11.3": {
+        "role": "appendix",
+        "pte_at_full_range": 6.720378125906399e-13,
+        "n_evaluated": 496,
+        "ell_range": [
+          12.5,
+          1988.5000000000002
+        ],
+        "n_ell_bins": 32,
+        "mean": 0.01871696071306172,
+        "median": 3.356475653059115e-06,
+        "std": 0.08730020821789794,
+        "pte_at_fiducial": 5.585308854055409e-10,
+        "fiducial_ell_range": [
+          300,
+          1600
+        ]
+      },
+      "SP_v1.4.11.3_leak_corr": {
+        "role": "appendix",
+        "pte_at_full_range": 1.7806111675285076e-12,
+        "n_evaluated": 496,
+        "ell_range": [
+          12.5,
+          1988.5000000000002
+        ],
+        "n_ell_bins": 32,
+        "mean": 0.022660900068582488,
+        "median": 3.948464046091652e-06,
+        "std": 0.09928934458072723,
+        "pte_at_fiducial": 5.846468871584254e-10,
+        "fiducial_ell_range": [
+          300,
+          1600
+        ]
+      }
+    }
+  },
+  "output": {
+    "figure_fiducial": "figure_fiducial.png",
+    "figure_appendix": "figure_appendix.png"
+  }
+}

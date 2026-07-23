@@ -1,0 +1,30 @@
+{
+  "spec_id": "cl_data_vector",
+  "generated": "2026-07-05T19:07:52.996458",
+  "evidence": {
+    "pte_eb_full": 0.9557637726877001,
+    "chi2_eb_full": 19.731606461915526,
+    "dof_eb_full": 32,
+    "pte_bb_full": 0.1361091116055381,
+    "chi2_bb_full": 40.83281396158673,
+    "dof_bb_full": 32,
+    "pte_eb_cut": 0.6192328705257985,
+    "chi2_eb_cut": 14.670067813856013,
+    "dof_eb_cut": 17,
+    "pte_bb_cut": 0.29856471250463257,
+    "chi2_bb_cut": 19.53752067808362,
+    "dof_bb_cut": 17,
+    "version": "SP_v1.4.6.3_leak_corr"
+  },
+  "output": {
+    "figure": "figure.png",
+    "figure_v1.4.11.3": "figure_v1.4.11.3.png",
+    "figure_v1.4.11.3_uncorrected": "figure_v1.4.11.3_uncorrected.png",
+    "figure_v1.4.6.3": "figure_v1.4.6.3.png",
+    "figure_v1.4.6.3_uncorrected": "figure_v1.4.6.3_uncorrected.png",
+    "figure_v1.4.5": "figure_v1.4.5.png",
+    "figure_v1.4.5_uncorrected": "figure_v1.4.5_uncorrected.png",
+    "figure_v1.4.8": "figure_v1.4.8.png",
+    "figure_v1.4.8_uncorrected": "figure_v1.4.8_uncorrected.png"
+  }
+}

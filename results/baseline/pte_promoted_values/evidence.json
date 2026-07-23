@@ -1,0 +1,18 @@
+{
+  "spec_id": "pte_promoted_values",
+  "spec_path": "papers/bmodes/scripts/promote_pte_values.py",
+  "generated": "2026-07-20T20:05:26.484284+00:00",
+  "evidence": {
+    "type": "value_promotion",
+    "description": "Flattens headline paper PTE values out of the nested config_space_pte_evidence, cosebis_harmonic_modes, and cosebis_harmonic_modes_full evidence.json carriers into a queryable table. See work/transpile-map.md \u00a70/\u00a72d for the value-binding gap this closes.",
+    "source_evidence": {
+      "config_space": "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/config_space_pte_evidence/evidence.json",
+      "cosebis": "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_harmonic_modes/evidence.json",
+      "cosebis_full": "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_harmonic_modes_full/evidence.json"
+    },
+    "rows_written": 6
+  },
+  "output": {
+    "table": "pte_promoted_values.csv"
+  }
+}

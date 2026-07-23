@@ -1,0 +1,148 @@
+{
+  "spec_id": "bb_covariance_blind_independence",
+  "spec_path": "workflow/config/bb_covariance_blind_independence.md",
+  "depends_on": [
+    "covariance",
+    "pure_eb",
+    "cosebis",
+    "pseudo_cl"
+  ],
+  "generated": "2026-07-04T14:04:29.893984",
+  "evidence": {
+    "pure_eb": {
+      "xip_B": {
+        "B_to_A": {
+          "max_dev": 0.11940308107755171,
+          "mean_dev": 0.02831285222655789,
+          "min_ratio": 0.9369209151127811,
+          "max_ratio": 1.1194030810775517
+        },
+        "C_to_A": {
+          "max_dev": 0.10126493539650316,
+          "mean_dev": 0.03645328688124548,
+          "min_ratio": 0.9398804050085086,
+          "max_ratio": 1.1012649353965032
+        }
+      },
+      "xim_B": {
+        "B_to_A": {
+          "max_dev": 0.0597118651915729,
+          "mean_dev": 0.017865566894249302,
+          "min_ratio": 0.9753218960276319,
+          "max_ratio": 1.059711865191573
+        },
+        "C_to_A": {
+          "max_dev": 0.059567849091146874,
+          "mean_dev": 0.015736763948187717,
+          "min_ratio": 0.9537930408347514,
+          "max_ratio": 1.0595678490911469
+        }
+      },
+      "xip_E": {
+        "B_to_A": {
+          "max_dev": 0.06753244957230287,
+          "mean_dev": 0.0321749056334845,
+          "min_ratio": 0.9324675504276971,
+          "max_ratio": 1.0633269520164343
+        },
+        "C_to_A": {
+          "max_dev": 0.12156771348382245,
+          "mean_dev": 0.04302648159933842,
+          "min_ratio": 0.9425027674390911,
+          "max_ratio": 1.1215677134838224
+        }
+      },
+      "xim_E": {
+        "B_to_A": {
+          "max_dev": 0.11249244668862446,
+          "mean_dev": 0.023862055250895946,
+          "min_ratio": 0.8875075533113755,
+          "max_ratio": 1.0165487642077589
+        },
+        "C_to_A": {
+          "max_dev": 0.1393941669622596,
+          "mean_dev": 0.03720256109664331,
+          "min_ratio": 0.9083575569423478,
+          "max_ratio": 1.1393941669622596
+        }
+      }
+    },
+    "harmonic": {
+      "BB": {
+        "B_to_A": {
+          "max_dev": 0.02838613026181891,
+          "mean_dev": 0.004272778959363378,
+          "min_ratio": 0.9716138697381811,
+          "max_ratio": 0.9999352823179637
+        },
+        "C_to_A": {
+          "max_dev": 0.15153967893971565,
+          "mean_dev": 0.02068463148198761,
+          "min_ratio": 1.0002709207467144,
+          "max_ratio": 1.1515396789397156
+        }
+      },
+      "EE": {
+        "B_to_A": {
+          "max_dev": 0.04091314019698289,
+          "mean_dev": 0.014980610253702294,
+          "min_ratio": 0.9590868598030171,
+          "max_ratio": 0.9982973966693084
+        },
+        "C_to_A": {
+          "max_dev": 0.19091321918550452,
+          "mean_dev": 0.06695710508482869,
+          "min_ratio": 1.006877890288507,
+          "max_ratio": 1.1909132191855045
+        }
+      }
+    },
+    "cosebis": {
+      "B": {
+        "B_to_A": {
+          "max_dev": 1.419140778735617e-05,
+          "mean_dev": 5.118090279387921e-06,
+          "min_ratio": 0.9999858085922126,
+          "max_ratio": 0.9999988487220632
+        },
+        "C_to_A": {
+          "max_dev": 1.380879342338659e-05,
+          "mean_dev": 5.010432464058745e-06,
+          "min_ratio": 1.0000011590259328,
+          "max_ratio": 1.0000138087934234
+        }
+      },
+      "E": {
+        "B_to_A": {
+          "max_dev": 0.09575731024267087,
+          "mean_dev": 0.057660863884414174,
+          "min_ratio": 0.9042426897573291,
+          "max_ratio": 0.9706751295613072
+        },
+        "C_to_A": {
+          "max_dev": 0.09657021122196174,
+          "mean_dev": 0.0574953094584826,
+          "min_ratio": 1.0286517100846646,
+          "max_ratio": 1.0965702112219617
+        }
+      },
+      "nmodes": 20,
+      "theta_min": 1.0,
+      "theta_max": 250.0
+    },
+    "summary": {
+      "cosebis_bb_max_deviation": 1.419140778735617e-05,
+      "cosebis_ee_max_deviation": 0.09657021122196174,
+      "cosebis_bb_blind_independent": true,
+      "ee_varies_as_expected": true,
+      "bb_max_deviation": 0.15153967893971565,
+      "ee_max_deviation": 0.19091321918550452,
+      "bb_closer_to_unity": true,
+      "bb_within_2pct": false
+    },
+    "version": "SP_v1.4.6.3"
+  },
+  "output": {
+    "figure": "figure.png"
+  }
+}

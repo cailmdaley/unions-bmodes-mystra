@@ -1,0 +1,263 @@
+version: "1.0"
+name: "Two-point correlation measurement"
+
+narrative:
+  summary: |
+    TreeCorr ξ_±(θ) measurement of the
+    [packaged shear catalog](#../catalog.outputs.shear_catalog) on
+    two grids: a 20-bin
+    [reporting grid](#decisions.reporting_binning) over [1', 250']
+    used by the pure-mode and Cℓ data vectors, and a
+    [1000-bin integration grid](#../decisions.integration_grid)
+    over [0.5', 300'] feeding COSEBI mode integration and
+    Monte-Carlo propagation of the covariance. Both grids run on
+    the same catalog; the integration run is single-threaded
+    sequential at 1000 bins or MPI-distributed at 10,000 for the
+    one-shot convergence test.
+  inputs: |
+    The two-point measurement consumes the
+    [packaged shear catalog](#inputs.shear_catalog) materialised
+    by the [catalog sub-analysis](#../analyses.catalog), which
+    has already resolved per-version PSF-leakage correction and
+    masking. No other input enters at this stage; the redshift
+    distribution and footprint mask flow downstream to
+    [covariance](#../analyses.covariance) directly from
+    [catalog](#../analyses.catalog).
+  methods: |
+    Both grids invoke the same TreeCorr `GGCorrelation`
+    estimator weighted by the `metacalibration` shear weights
+    `w_i` from Paper I, accumulating tangential and cross
+    products in the angular bins defined by
+    [reporting_binning](#decisions.reporting_binning) and the
+    parent's
+    [integration_grid](#../decisions.integration_grid)
+    decisions. The reporting run uses a single TreeCorr process
+    on 24 OpenMP threads; the 1000-bin integration run uses the
+    same process with a longer wall time, while the 10,000-bin
+    convergence variant distributes patch-pair correlations
+    over 30 MPI tasks (paper §3.3 convergence check).
+
+    The patch decomposition is held at
+    [npatch = 1](#decisions.patch_count): the survey has no
+    natural patch structure for spatial jackknife, and the
+    semi-analytical CosmoCov covariance described in
+    [covariance](#../analyses.covariance) replaces empirical
+    jackknife. The [120-patch
+    alternative](#decisions.patch_count.options.npatch_120) was
+    considered but does not enter any paper PTE; it is exposed
+    for cross-check sensitivities only.
+  outputs: |
+    [Reporting-scale ξ_±](#outputs.xi_reporting) is the input to
+    the [pure E/B sub-analysis](#../analyses.pure_eb) and the
+    [Cℓ^BB sub-analysis](#../analyses.cl_bb).
+    [Integration-scale ξ_±](#outputs.xi_integration) is the
+    input to the
+    [pure E/B sub-analysis](#../analyses.pure_eb) again (for
+    the integration-grid Gaussian draws via the
+    [covariance sub-analysis](#../analyses.covariance)) and to
+    the [COSEBI sub-analysis](#../analyses.cosebis). The
+    [10,000-bin convergence variant
+    ](#outputs.xi_integration_convergence) is materialised once
+    for the size-cut catalog and is the evidence behind the
+    paper's §3.3 convergence statement.
+
+inputs:
+  - id: shear_catalog
+    type: analysis
+    from: ../catalog.shear_catalog
+
+outputs:
+  - id: xi_reporting
+    type: data
+    description: |
+      TreeCorr ξ_±(θ) on the reporting grid: 20 logarithmic
+      bins over [1', 250']. Stored as a TreeCorr text dump plus
+      ξ_+ and ξ_- FITS files. The same file is consumed at
+      reporting binning by the pure E/B and Cℓ data-vector
+      figures (paper Figures 1, 4, 5).
+    decisions: [fiducial_catalog]
+    recipe:
+      # Clean lc-native recipe: lc drives execution (runtime:none), the recipe
+      # calls the compute directly inside the sp_validation apptainer container
+      # via `apptainer exec` (no nested snakemake). PYTHONPATH shadows the
+      # container's editable install so the repro/paper-ii-astra worktree code
+      # is used. TODO(fan-out): resolve --ver from {decisions.fiducial_catalog}
+      # instead of hardcoding; baseline (size_cut) = SP_v1.4.6.3_leak_corr.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/workflow/scripts/run_2pcf.py
+        --ver SP_v1.4.6.3_leak_corr --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1
+        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
+        --out {output}
+      resources: { cpus: 24, memory: "30GB", time_limit: "6h" }
+
+  - id: xi_integration
+    type: data
+    description: |
+      TreeCorr ξ_±(θ) on the integration grid: 1000 logarithmic
+      bins over [0.5', 300']. Filter integration for pure E/B
+      mode and COSEBI B_n consumes this run; the integration
+      grid extends below the reporting θ_min and above the
+      reporting θ_max so the filters' extended kernels are
+      evaluated on real catalog measurements rather than zero
+      padding. 2.5 h on 24 cores per catalog version.
+    decisions: [fiducial_catalog]
+    recipe:
+      # Same run_2pcf.py CLI as xi_reporting, integration grid: 1000 bins
+      # over [0.5', 300']. See xi_reporting for the recipe-form rationale.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/workflow/scripts/run_2pcf.py
+        --ver SP_v1.4.6.3_leak_corr --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1
+        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
+        --out {output}
+      resources: { cpus: 24, memory: "30GB", time_limit: "6h" }
+
+  - id: xi_integration_convergence
+    type: data
+    description: |
+      One-shot 10,000-bin TreeCorr ξ_± over [0.5', 300'] for the
+      size-cut catalog only, used to demonstrate COSEBI mode
+      stability against the 1000-bin fiducial. MPI-distributed
+      across 30 tasks × 12 OpenMP threads on 6 nodes, ~22 h
+      wall time. Materialised once; not re-run per iteration.
+    decisions: [fiducial_catalog]
+    recipe:
+      # Path (B) — produced BARE-HOST by a standalone OpenMPI sbatch, then adopted
+      # here by copy. TreeCorr needs no container; the container is an MPI dead end
+      # (MPICH mpi4py vs OpenMPI launchers, no multi-node launcher — see fiber
+      # tenk-xi-mpi-recipe-fork). The producer is COMMITTED at
+      # producers/run_10k_xi_barehost.sbatch (relative to the project dir) —
+      # `mpiexec --map-by ppr:5:node python … run_2pcf_highres.py`, 180 cores on 3
+      # nodes, ~3.8 h — and run_2pcf_highres.py is committed on the sp_validation
+      # worktree (repro/paper-ii-astra). TO REGENERATE FROM SCRATCH:
+      # `sbatch producers/run_10k_xi_barehost.sbatch`, wait for the grid to land in
+      # the staging dir below, then `lc run two_point.xi_integration_convergence`.
+      # This recipe only COPIES staging -> {output}; `lc run` alone does NOT
+      # recompute the grid (the bare-host MPI step is outside lc by necessity).
+      # It must copy, not verify-in-place: lc/snakemake removes {output} before
+      # running any recipe, so a `test -f {output}/…` would delete the grid first.
+      # Staging lives outside {output}, so lc never touches it.
+      command: |
+        stage=/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/_scratch/tenk_xi/production_out
+        mkdir -p {output}
+        cp -f "$stage"/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt {output}/
+        cp -f "$stage"/xi_plus_SP_v1.4.6.3_leak_corr_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.fits {output}/
+        cp -f "$stage"/xi_minus_SP_v1.4.6.3_leak_corr_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.fits {output}/
+        test -f {output}/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt
+      resources: { cpus: 1, memory: "2GB", time_limit: "15m" }
+
+  - id: xi_sweep
+    type: data
+    description: |
+      Design-B producer sweep: TreeCorr ξ_±(θ) for every
+      non-fiducial, non-ecut catalog version (7 variants — 3
+      leak-corrected + 4 uncorrected) on both the 20-bin
+      reporting and 1000-bin integration grids, all written into
+      one directory under run_2pcf's native, already-canonical
+      `{ver}_xi_minsep=..._nbins=..._npatch=1.txt` name. The
+      integration-grid dumps feed
+      [cosebis_version_comparison](#../cosebis.outputs.cosebis_version_comparison)
+      (`--results-dir`) and the
+      [pure E/B sweep](#../pure_eb.outputs.pure_eb_sweep); the
+      reporting-grid dumps feed the pure E/B sweep's output
+      binning. This is the version-swept analogue of
+      [xi_reporting](#outputs.xi_reporting) +
+      [xi_integration](#outputs.xi_integration), recomputing the
+      version-comparison inputs through lc rather than reading
+      them from the canonical CosmoStat tree; the fiducial
+      version stays in the single-output recipes above and is
+      passed to the comparison plotters via their `--fiducial-*`
+      overrides.
+    decisions: [fiducial_catalog]
+    recipe:
+      # run_xi_sweep.py loops the non-fiducial version list (sweep_versions.py)
+      # and calls run_2pcf.run_2pcf once per (version, grid), writing every
+      # version's canonical ξ± dump into {output}. Serial over versions; TreeCorr
+      # uses the full core allocation per call. lc's dask parallelises across
+      # sibling sweep outputs.
+      command: >
+        apptainer exec
+        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
+        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
+        /n17data/cdaley/containers/containers/
+        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/run_xi_sweep.py
+        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
+        --out {output}
+      resources: { cpus: 24, memory: "30GB", time_limit: "12h" }
+
+decisions:
+
+  fiducial_catalog:
+    from: ../fiducial_catalog
+
+  reporting_binning:
+    label: "Reporting-grid angular binning"
+    tags: [two_point, binning]
+    rationale: |
+      The reporting grid [1', 250'] in 20 logarithmic bins is
+      the historical UNIONS convention for cosmic-shear ξ_±
+      and is shared with Papers III and IV's cosmological
+      inference. The geometric bin edges define the indices
+      used by the
+      [adopted scale cuts](#../decisions.fiducial_scale_cuts)
+      (the size-cut catalog's 12'–83' fiducial maps to indices
+      9 and 16 of `geomspace(1, 250, 21)`). 1' is below the PSF
+      coherence length and is the smallest scale at which
+      shape measurement remains well-defined; 250' is large
+      enough to cover the survey but small enough to avoid the
+      large-scale variance regime where the Gaussian
+      covariance approximation breaks down.
+    default: bins_20
+    options:
+      bins_20:
+        label: "20 log bins over [1', 250'] (paper fiducial)"
+        description: |
+          `min_sep=1.0`, `max_sep=250.0`, `nbins=20` in
+          `workflow/config/config.yaml.fiducial`.
+      bins_40:
+        label: "40 log bins over [1', 250']"
+        description: |
+          Finer reporting grid; not used in the paper, exposed
+          for sensitivity studies only.
+
+  patch_count:
+    label: "TreeCorr patch decomposition"
+    tags: [two_point, covariance]
+    rationale: |
+      `npatch = 1` is the production value (config
+      `fiducial.npatch: 1`). The UNIONS-3500 footprint has no
+      natural spatial-jackknife structure that yields stable
+      empirical covariance at the relevant angular scales —
+      neighbouring patches are too correlated and the corner
+      patches are too small. The
+      [covariance sub-analysis](#../analyses.covariance) uses
+      semi-analytical CosmoCov, so empirical jackknife is not
+      needed for the paper PTEs. The 120-patch alternative was
+      built for cross-check sensitivity studies and is
+      explicitly excluded from the production fiducial.
+    default: npatch_1
+    options:
+      npatch_1:
+        label: "1 patch (paper fiducial)"
+        description: |
+          Single-patch TreeCorr; spatial-jackknife covariance
+          unavailable.
+      npatch_120:
+        label: "120 patches"
+        description: |
+          120-patch decomposition for spatial-jackknife
+          sensitivity tests; not used by paper PTEs.
+        excluded: true
+        excluded_reason: |
+          Empirical jackknife covariance is not the paper's
+          covariance source; CosmoCov is. The 120-patch run is
+          retained in `config.yaml.npatches` for one-off
+          checks but does not enter any reported PTE.

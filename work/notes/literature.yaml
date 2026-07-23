@@ -1,0 +1,225 @@
+# Prior insights seed for the UNIONS B-modes paper ASTRA reproduction.
+#
+# Format mirrors astra-spec Insight class. Each entry is a candidate
+# `prior_insight` to be merged into astra.yaml's prior_insights map by
+# the SPECIFY agent or by a ralph iteration. `decision_links` is a
+# Paper2ASTRA-style hint — it names which decision options should
+# carry this insight in their `insights:` list.
+#
+# Verified entries: identified from arxiv source under
+# /automnt/n17data/cdaley/unions/pure_eb/docs/arxiv/<id>/ and quoted
+# verbatim. Stub entries (marked `status: stub`): the claim and target
+# decision_links are scoped, but the exact-quote evidence has not yet
+# been extracted — to be filled by the ralph iteration drafting that
+# sub-analysis.
+
+prior_insights:
+
+  # ============================================================
+  # asgari.etal19a -- 8× cited; the load-bearing reference for the
+  # paper's interpretation of B-mode features as systematic origin.
+  # ============================================================
+
+  repeating_additive_bias_oscillatory_signature:
+    id: repeating_additive_bias_oscillatory_signature
+    claim: |
+      A regular repeating additive shear pattern fixed to the camera
+      (chip-level features, on the order of 1-2 arcmin) produces an
+      oscillatory B-mode signature in COSEBIs that distinguishes it
+      from PSF-leakage and random PSF residual systematics, where the
+      E and B mode response are very different.
+    created_at: "2026-04-25T00:00:00"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201834379"
+        version: 1
+        quote:
+          exact: "As we have seen from our repeating additive bias systematic, where the E and B mode behaviour is very different, it will be crucial to look"
+          prefix: "(Section 6.1, Conclusions of Asgari et al. 2019a)"
+          suffix: "[continuation describing future use of B-mode tests]"
+        location:
+          page: 11
+        scope: |
+          Conclusions.tex line 16 in arxiv:1810.02353 source bundle.
+          Asgari et al. 2019, A&A 624, A134 — KiDS-450 / DES-SV /
+          CFHTLenS B-mode reanalysis using COSEBIs.
+    decision_links:
+      cosebis.mode_range:
+        - n_le_six
+      null_tests.systematic_attribution:
+        - repeating_additive
+
+  cfhtlens_repeating_additive_chip_scale:
+    id: cfhtlens_repeating_additive_chip_scale
+    claim: |
+      Detector-level additive shear contributions on KiDS OmegaCam are
+      stable per-CCD and on the order 0.0002-0.005 in ε_1, suggesting
+      that the relevant correlation lengths to test for repeating
+      additive bias are the CCD chip scale (~1.6 arcmin) and the
+      pointing scale (~43 arcmin).
+    created_at: "2026-04-25T00:00:00"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201834379"
+        version: 1
+        quote:
+          exact: "We investigate two kernel sizes with a correlation length of roughly the CCD chip level ($\\sim$1.6 arcmin) and the pointing scale level ($\\sim$43 arcmin)."
+          prefix: "we mimic the impact of random but correlated PSF residual errors..."
+          suffix: "The resulting systematic patterns are shown in the two right panels of Fig.~\\ref{fig:Sys}"
+        location:
+          page: 5
+        scope: |
+          Systematics.tex line 48 in arxiv:1810.02353. KiDS-450 OmegaCam.
+          UNIONS uses MegaCam (40 CCDs, 6.4×14.4 arcmin each, FoV
+          ~0.96°) so the analogous chip scale is larger than KiDS — see
+          the boulade.etal03 reference for MegaCam geometry.
+    decision_links:
+      two_point.scale_cuts:
+        - fiducial_12_to_83
+      cosebis.mode_range:
+        - n_le_six
+
+  cfhtlens_b_modes_at_two_to_five_sigma:
+    id: cfhtlens_b_modes_at_two_to_five_sigma
+    claim: |
+      Stage-III cosmic-shear catalogues (KiDS-450, DES-SV, CFHTLenS),
+      analysed with COSEBIs, exhibit B-mode features at the 2-5σ level
+      that resemble the response of repeating additive shear bias
+      systematics; this identifies B-mode null tests as essential
+      validation, not optional cross-checks.
+    created_at: "2026-04-25T00:00:00"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201834379"
+        version: 1
+        quote:
+          exact: "We analyse three public cosmic shear surveys (KiDS-450, DES-SV, CFHTLenS) using COSEBIs to separate E-modes from B-modes. We detect B-modes at 2--5σ levels."
+          prefix: "(Asgari et al. 2019a abstract)"
+          suffix: "KiDS-450 and CFHTLenS B-modes show features consistent with repeating additive shear bias."
+        location:
+          page: 1
+        scope: "Asgari et al. 2019, A&A 624, A134 — abstract."
+    decision_links:
+      null_tests.systematic_attribution:
+        - repeating_additive
+      root.b_mode_test_motivation:
+        - is_essential
+
+  # ============================================================
+  # schneider.etal22 -- 5× cited. Pure-mode CFs derivation; the
+  # source of the E/B/ambiguous decomposition equations we apply.
+  # arxiv:2110.09774 (locally available).
+  # ============================================================
+
+  pure_mode_decomposition_unique_on_finite_interval:
+    id: pure_mode_decomposition_unique_on_finite_interval
+    claim: |
+      The pure-mode shear correlation functions ξ±^E, ξ±^B, ξ±^amb can
+      be derived from measured ξ±(θ) on a finite angular interval
+      [θ_min, θ_max] such that ξ+ = ξ+^E + ξ+^B + ξ+^amb and
+      ξ- = ξ-^E - ξ-^B + ξ-^amb decompose uniquely; this is the
+      foundation of the configuration-space null test used in this
+      analysis.
+    status: verified
+    created_at: "2026-04-25T00:00:00"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/202142450"
+        version: 1
+        quote:
+          exact: |
+            we derive explicit equations for the pure-mode
+            shear correlation functions, ξ_±^E/B(θ), and their
+            ambiguous components, ξ_±^amb(θ), that can be
+            derived from the measured ξ_±(θ) on a finite
+            angular interval, θ_min ≤ θ ≤ θ_max, such that
+            ξ_±(θ) can be decomposed uniquely into pure-mode
+            functions as ξ_+ = ξ_+^E + ξ_+^B + ξ_+^amb and
+            ξ_- = ξ_-^E − ξ_-^B + ξ_-^amb.
+          prefix: "ambiguous modes that cannot uniquely be assigned to either E- or B-mode shear. In this paper"
+          suffix: "The derivation is obtained by defining a new set of Complete Orthogonal Sets of E and B mode-separating Integrals (COSEBIs)"
+        location:
+          page: 1
+        scope: "Schneider, Asgari, Heydenreich & Joachimi 2022, A&A 664, A77 — abstract."
+    decision_links:
+      pure_eb.decomposition_method:
+        - schneider22_integral_transform
+    promoted_to_root: "2026-04-25 (pilot iteration 2: pure_eb sub-analysis)"
+
+  # ============================================================
+  # schneider.eifler.krause10 -- 3× cited. COSEBIs introduction;
+  # source for the orthogonal-mode framework. arxiv:1002.2136.
+  # ============================================================
+
+  cosebis_complete_eb_separation:
+    id: cosebis_complete_eb_separation
+    claim: |
+      COSEBIs (Complete Orthogonal Sets of E/B-mode Integrals) extract
+      the full E/B-mode information available in cosmic shear two-point
+      correlation functions on a finite interval, providing exact mode
+      separation in finite samples (no leakage from finite ξ± range).
+    status: verified
+    promoted_to_root: "2026-04-25 (iteration 3: cited in root narrative methods paragraph as the COSEBI logarithmic basis foundation)"
+    decision_links:
+      cosebis.basis:
+        - log_orthogonal
+
+  # ============================================================
+  # becker.rozo16 -- 1× cited (HybridEB). arxiv:1412.3851.
+  # ============================================================
+
+  hybrideb_filter_optimisation_alternative:
+    id: hybrideb_filter_optimisation_alternative
+    claim: |
+      The Hybrid E/B (HybridEB) Fourier band-power estimator of Becker
+      & Rozo 2016 belongs to the same family as pure-mode and COSEBIs —
+      all are linear functionals of ξ± with ambiguous-mode projection
+      — but optimises filter compactness in ℓ rather than in θ. This
+      is the alternative B-mode estimator used in Jefferson et al.
+      2025's Stage-III reanalysis where DES-Y3 and HSC-Y3 fail under
+      HybridEB but pass under their original estimators.
+    status: verified
+    promoted_to_root: "2026-04-25 (iteration 3: cited in root narrative methods paragraph as the family-mate alternative not adopted; rationale via Jefferson et al. 2025)"
+    decision_links:
+      null_tests.estimator_family:
+        - pure_eb
+        - cosebis
+        - hybrideb_excluded
+
+  # ============================================================
+  # hartlap07 -- inverse-covariance bias correction. arxiv:0608064 (local copy not bundled).
+  # ============================================================
+
+  hartlap_correction_inverse_covariance:
+    id: hartlap_correction_inverse_covariance
+    claim: |
+      The naive inverse of an empirical covariance estimated from N_s
+      simulations of a data vector of length p is biased; the unbiased
+      inverse-covariance estimator scales by (N_s - p - 2) / (N_s - 1).
+      This Hartlap factor is required for any χ² statistic that uses
+      a sample-estimated inverse covariance.
+    status: verified
+    promoted_to_root: "2026-04-25 (iteration 3: hartlap07_correction in root prior_insights, with §3.1 Eq. 8 quote; cited from pure_eb.hartlap_application and root.hartlap_correction options)"
+    decision_links:
+      null_tests.hartlap_correction:
+        - applied
+        - omitted
+
+  # ============================================================
+  # planck20 -- fiducial cosmology. arxiv:1807.06209.
+  # ============================================================
+
+  planck18_fiducial_cosmology:
+    id: planck18_fiducial_cosmology
+    claim: |
+      The Planck 2018 TT,TE,EE+lowE+lensing baseline ΛCDM parameters
+      (Ω_m, σ_8, h, Ω_b, n_s) are adopted as the fiducial cosmology
+      for the semi-analytical CosmoCov covariance and for any
+      reference-theory comparison in this analysis. The Planck18+BAO
+      variant tightens Ω_m at the 0.5% level relative to TT,TE,EE
+      alone.
+    status: verified
+    promoted_to_root: "2026-04-25 (iteration 3: cited as insight on root.fiducial_cosmology.options.planck18; abstract late-Universe parameters quote)"
+    decision_links:
+      root.fiducial_cosmology:
+        - planck18_bao

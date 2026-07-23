@@ -1,0 +1,46 @@
+id: baseline
+description: |
+  UNIONS Paper II fiducial selection — what the snakemake DAG runs
+  for the published B-mode null-test PTEs. Mirrors the `default:`
+  on every root decision; if a default changes, update it here too.
+  Source-of-truth pointers per selection are inline below.
+
+decisions:
+  # workflow/config/config.yaml: fiducial.version = SP_v1.4.6.3_leak_corr
+  fiducial_catalog: size_cut
+  # all four `versions:` carry `_leak_corr`; uncorrected used only
+  # for cross-checks
+  leakage_correction: applied
+  # workflow/config/config.yaml: fiducial.blind = A
+  fiducial_blind: blind_a
+  # workflow/config/config.yaml: fiducial.fiducial_xip_scale_cut = [12, 83],
+  # cl.fiducial_ell_min/max = 300/1600
+  fiducial_scale_cuts: adopted
+  # workflow/config/config.yaml: fiducial.nbins_int = 1000
+  integration_grid: bins_1000
+  # workflow/scripts/precompute_pure_eb_chunk.py: 20 chunks × 100 = 2000
+  mc_samples: n_2000
+  # CosmoCov is theory; no Hartlap correction applied
+  hartlap_correction: none
+  # workflow/scripts/calculate_pure_eb_ptes.py: scipy.stats.chi2.sf
+  pte_definition: chi2_tail
+  # conventional 2σ band; affects table colouring
+  healthy_pte_range: two_sigma
+  # sp_validation.cosmology.PLANCK18
+  fiducial_cosmology: planck18
+
+analyses:
+  catalog:
+    universe: baseline
+  two_point:
+    universe: baseline
+  pure_eb:
+    universe: baseline
+  cosebis:
+    universe: baseline
+  cl_bb:
+    universe: baseline
+  covariance:
+    universe: baseline
+  null_tests:
+    universe: baseline
