@@ -17,4 +17,4 @@ project:
   toc:
     - file: index.md
 site:
-  template: book-theme
+  template: article-theme

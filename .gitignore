@@ -1,5 +1,4 @@
 _build/
 work/*.log
 
-# CosmoCov integration temps — never report inputs
 **/*cov_tmp*
