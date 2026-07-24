@@ -1,9 +1,23 @@
 ---
-title: "UNIONS-3500 Weak Lensing II. B-mode validation for cosmic shear"
+title: "UNIONS-3500 Weak Lensing: II. B-mode validation for cosmic shear"
 short_title: "B-mode validation"
 ---
 
 > This is the ASTRA-backed edition of [arXiv:2604.03227](https://arxiv.org/abs/2604.03227) (Daley et al., submitted to A&A): the paper's prose, with every measured value and figure resolved live from the reproduced analysis spec (`astra.yaml`) rather than typeset by hand. Values marked TODO-GAP await materialization of the corresponding analysis branch.
+
++++ {"part": "abstract"}
+
+At Stage-III sensitivities, cosmic shear $B$ modes unambiguously indicate systematic contamination and are often used to inform data selection and scale cuts for cosmological inference.
+We validate $B$ modes for the Ultraviolet Near-Infrared Optical Northern Survey (UNIONS)-3500 (2894 deg², $n_{\mathrm{eff}} \approx 5.0\,\mathrm{arcmin}^{-2}$) using three $E$/$B$-separable statistics: pure-mode correlation functions $\xi_\pm^{\mathrm{B}}(\theta)$, Complete Orthogonal Sets of $E$/$B$-mode Integrals (COSEBI) $B$-mode amplitudes $B_n$, and harmonic-space power spectra $C_\ell^{BB}$.
+For each statistic, we compute probability-to-exceed (PTE) values over a two-dimensional grid of scale-cut boundaries; our adopted cuts lie in broad stable regions of acceptable PTE.
+$B$-mode detections and PTE failures on initial catalog versions led us to investigate galaxy size cuts and stellar halo masking.
+After cuts, all three statistics pass the null test (minimum PTE $=$ {astra:value col=ξₜₒₜᴮ where="Version=size_cuts Cut=fiducial" sig=2}`outputs.pte_table_appendix`).
+Before scale cuts, we measure an oscillatory COSEBI $B$-mode pattern consistent with repeating additive shear bias, a detector-level effect seen across multiple Stage-III surveys including CFHTLenS, which used the same MegaCam camera; scale cuts that exclude the charge-coupled device (CCD) angular scale suppress it.
+Although these statistics probe the same two-point shear field, scale cuts in one do not map exactly onto cuts in another, because their respective filter functions weight angular scales differently.
+The most conservative validation therefore requires scale and sample selections that pass null tests across all frameworks simultaneously, an approach that applies directly to Stage-IV surveys where systematic errors dominate.
+
++++
+
 
 <!-- Fragment: introduction (TeX lines 156–213) — no claim macros or figure floats in range -->
 
@@ -34,7 +48,7 @@ These statistics represent $B$-mode power in complementary bases, and the mappin
 Comparing across bases can expose systematics that any single framework would absorb.
 
 Stage-III analyses have found $B$-mode contamination from a range of systematic effects.
-COSEBI analyses of the Canada-France-Hawaii Telescope Lensing Survey (CFHTLenS), KiDS-450, and DES-SV detected significant $B$ modes at 2--5 $\sigma$, linked to repeating additive shear bias, PSF leakage, and photometric selection effects {cite:p}`asgari.etal19a`.
+COSEBI analyses of the Canada-France-Hawaii Telescope Lensing Survey (CFHTLenS), KiDS-450, and DES-SV detected significant $B$ modes at 2–5 $\sigma$, linked to repeating additive shear bias, PSF leakage, and photometric selection effects {cite:p}`asgari.etal19a`.
 Repeating additive shear biases can arise from detector-level defects that imprint a constant ellipticity offset on each CCD, varying across the focal plane; because this pattern is fixed in instrument coordinates, it repeats with every pointing.
 The bias is constant within each CCD but jumps at chip boundaries; these discontinuities carry curl, generating $B$-mode power at CCD angular scales.
 Hyper Suprime-Cam (HSC) Y3 used harmonic-space power spectra and found significant large-scale $B$ modes {cite:p}`li.etal23,dalal.etal23`. A dedicated PSF-systematics study identified PSF fourth-moment leakage as a leading additive contaminant in the affected region {cite:p}`zhang.etal23`.
@@ -98,7 +112,7 @@ We report results from the leakage-corrected catalogs, which are used for cosmol
 # Methods
 
 :::{astra} outputs.fig_pure_eb_decomposition
-:caption: Pure $E$/$B$-mode decomposition of the measured shear correlation functions for the fiducial catalog. Panels show $\xi_+$ (left) and $\xi_-$ (right) decomposed into total (black circles), $E$-mode (teal squares), $B$-mode (crimson $\times$), and ambiguous (purple triangles) components following {cite:t}`schneider.etal22`. The $E$ modes trace the lensing signal, while $B$ modes---which should vanish for pure gravitational lensing---diagnose systematic contamination. Ambiguous modes capture boundary effects from the finite angular range. Shaded regions indicate fiducial scale cuts. Error bars are derived from semi-analytical covariance propagation ({astra}`covariance`).
+:caption: Pure $E$/$B$-mode decomposition of the measured shear correlation functions for the fiducial catalog. Panels show $\xi_+$ (left) and $\xi_-$ (right) decomposed into total (black circles), $E$-mode (teal squares), $B$-mode (crimson $\times$), and ambiguous (purple triangles) components following {cite:t}`schneider.etal22`. The $E$ modes trace the lensing signal, while $B$ modes—which should vanish for pure gravitational lensing—diagnose systematic contamination. Ambiguous modes capture boundary effects from the finite angular range. Shaded regions indicate fiducial scale cuts. Error bars are derived from semi-analytical covariance propagation ({astra}`covariance`).
 :::
 
 
@@ -114,13 +128,13 @@ $$
 $$ (eq-xi_estimator)
 
 Here $\gamma_{\mathrm{t}}$ and $\gamma_{\times}$ are the tangential and cross components of the ellipticity in the coordinate frame defined by the pair-separation vector, $\Pi(\theta_{ij}, \theta_k)$ is the binning kernel selecting pairs with separations in bin $k$, and $\theta_{ij} = \arccos(\hat{\mathbf{n}}_i \cdot \hat{\mathbf{n}}_j)$.
-We evaluate [](#eq-xi_estimator) using the tree-based correlation package `TreeCorr` {cite:p}`jarvis04`.
-We bin into 20 logarithmic bins over $\theta = 1$--$250$~arcmin, matching the configuration-space data-vector binning adopted in Paper III.
+We evaluate [Eq. (%s)](#eq-xi_estimator) using the tree-based correlation package `TreeCorr` {cite:p}`jarvis04`.
+We bin into 20 logarithmic bins over $\theta = 1$–$250$ arcmin, matching the configuration-space data-vector binning adopted in Paper III.
 
 In harmonic space, the analogous statistics are the angular power spectra $C_\ell^{EE}$ and $C_\ell^{BB}$.
 We estimate these using the MASTER algorithm {cite:p}`hivon.etal02`, which recovers the true $C_\ell$ by deconvolving the mode-coupling matrix induced by the survey geometry, as implemented in `NaMaster` {cite:p}`alonso.etal19`.
 Traditional implementations operate on pixelized maps, but {cite:t}`wolz.etal25` introduced a catalog-based estimator that evaluates spherical harmonic transforms directly at source positions, avoiding pixelization artifacts.
-The same weighted ellipticities from [](#eq-xi_estimator) enter this estimator:
+The same weighted ellipticities from [Eq. (%s)](#eq-xi_estimator) enter this estimator:
 
 $$
 \tilde{C}_\ell^{\alpha\beta} = \sum_{i,j} w_i w_j \, \gamma_i^a \, \gamma_j^b \; \frac{1}{2\ell+1} \sum_m {}_2 Y_{\ell m}^{a\alpha *}(\hat{\mathbf{n}}_i) \; {}_2 Y_{\ell m}^{b\beta}(\hat{\mathbf{n}}_j),
@@ -195,11 +209,11 @@ We evaluate these integrals on the same 1000-bin grid used for the pure-mode tra
 As a convergence check, we repeated the calculation on a 10\,000-bin grid for the fiducial catalog and found the $B_n$ amplitudes and null-test PTEs to be stable.
 
 :::{astra} outputs.fig_cosebis_fiducial
-:caption: COSEBI $B$-mode amplitudes for the fiducial catalog, normalized by uncertainty ($B_n/\sigma_n$). Orange squares: full angular range $1$--$250$ arcmin; blue circles: the fiducial scale cuts. The shaded region highlights mode numbers $n \leq 6$, which capture nearly all cosmological information. On the full range, $n=1$ shows a $>4\,\sigma$ excess, with oscillatory structure through all twenty modes, consistent with repeating additive shear bias ([](#discussion)). Scale cuts suppress the first-mode excess to below $1\,\sigma$ and largely eliminate the oscillatory signature (see [](#output-pte_table_appendix)).
+:caption: COSEBI $B$-mode amplitudes for the fiducial catalog, normalized by uncertainty ($B_n/\sigma_n$). Orange squares: full angular range $1$–$250$ arcmin; blue circles: fiducial scale cuts $12$–$83$ arcmin. The shaded region highlights mode numbers $n \leq 6$, which capture nearly all cosmological information. On the full range, $n=1$ shows a $>4\,\sigma$ excess, with oscillatory structure through all twenty modes, consistent with repeating additive shear bias ([](#discussion)). Scale cuts suppress the first-mode excess to below $1\,\sigma$ and largely eliminate the oscillatory signature (see [](#output-pte_table_appendix)).
 :::
 
 {astra:ref}`outputs.fig_cosebis_fiducial` shows COSEBI $B$-mode amplitudes for the first $n_{\mathrm{max}} = 20$ modes of the fiducial catalog.
-For the UNIONS data vector, the $E$-mode signal saturates by $n \approx 5$--$6$ (see [](#discussion)), so we use $n \leq 6$ as the set of modes carrying most of the cosmological information.
+For the UNIONS data vector, the $E$-mode signal saturates by $n \approx 5$–$6$ (see [](#discussion)), so we use $n \leq 6$ as the set of modes carrying most of the cosmological information.
 We also report $B$-mode probability-to-exceed (PTE) statistics for $n \leq 20$; at full angular range, the oscillatory pattern extends across the full mode range, characteristic of the repeating additive shear bias identified by {cite:t}`asgari.etal19a` (see [](#discussion)).
 
 The COSEBI coefficients can reconstruct pure-mode correlation functions ([](#methods-pure-eb)):
@@ -211,7 +225,7 @@ The COSEBI coefficients can reconstruct pure-mode correlation functions ([](#met
 
 where $\bar{\theta} = (\theta_{\mathrm{min}} + \theta_{\mathrm{max}})/2$ and $\beta_\theta = (\theta_{\mathrm{max}} - \theta_{\mathrm{min}})/(\theta_{\mathrm{max}} + \theta_{\mathrm{min}})$.
 In practice, we compute the pure-mode correlation functions directly from the finely binned $\xi_\pm$ measurements rather than reconstructing them from the COSEBI coefficients.
-COSEBIs require consistent angular ranges for $\xi_+$ and $\xi_-$, while the pure-mode integral transforms [](#eq-xip-eb) and [](#eq-xim-eb) permit independent scale cuts for each.
+COSEBIs require consistent angular ranges for $\xi_+$ and $\xi_-$, while the pure-mode integral transforms [Eqs. (%s)](#eq-xip-eb) and [(%s)](#eq-xim-eb) permit independent scale cuts for each.
 
 The COSEBI modes can equivalently be computed from harmonic-space power spectra:
 
@@ -223,7 +237,7 @@ X_n = \sum_i \frac{\Delta\ell_i \, \ell_i}{2\pi} \, W_n(\ell_i) \, C_{\ell_i}^{X
 where $W_n(\ell)$ are the harmonic-space COSEBI filter functions (Fourier duals of $T_{\pm n}(\theta)$, computed via FFT-log) and the sum runs over 96 square-root-spaced bandpower bins.
 Each $W_n(\ell)$ oscillates $n+1$ times, mirroring its real-space counterpart.
 The number of bandpower bins balances two requirements: too few cannot resolve the filter oscillations at high $n$, while too many lead to an unstable mode-coupling matrix deconvolution.
-We chose 96 bins and validated the transform on GLASS simulations, confirming that modes $n \leq 6$---the range carrying nearly all cosmological $E$-mode information---agree between the two paths.
+We chose 96 bins and validated the transform on GLASS simulations, confirming that modes $n \leq 6$—the range carrying nearly all cosmological $E$-mode information—agree between the two paths.
 The comparison on data is presented in [](#discussion) and {astra:ref}`outputs.fig_harmonic_config_cosebis_full`.
 
 
@@ -231,7 +245,7 @@ The comparison on data is presented in [](#discussion) and {astra:ref}`outputs.f
 
 ## Catalog-based harmonic-space power spectra
 
-We estimate $C_\ell^{EB}$ and $C_\ell^{BB}$ [](#eq-cl_definition) directly from the discrete catalog, providing $\ell$-dependent $B$-mode diagnostics that complement the angular-space statistics.
+We estimate $C_\ell^{EB}$ and $C_\ell^{BB}$ [Eq. (%s)](#eq-cl_definition) directly from the discrete catalog, providing $\ell$-dependent $B$-mode diagnostics that complement the angular-space statistics.
 The {cite:t}`wolz.etal25` estimator represents the survey mask as delta functions at source positions and computes the spin-2 transforms on this irregular grid using the `ducc` library {cite:p}`reinecke.seljebotn23`.
 We subtract an analytic shot-noise contribution following the implementation in Paper IV.
 We bin into 32 bandpowers with square-root spacing ($\ell^{0.5}$) over $8 \leq \ell \leq 2048$.
@@ -249,13 +263,13 @@ We bin into 32 bandpowers with square-root spacing ($\ell^{0.5}$) over $8 \leq \
 ## Covariance estimation
 
 For each $B$-mode statistic, we start from the same covariance prescriptions adopted in the companion cosmology papers.
-In configuration space, Paper III uses `CosmoCov` {cite:p}`krause.eifler17; fang.eifler.krause20` to model the covariance of the shear correlation functions $\xi_\pm$.
+In configuration space, Paper III uses `CosmoCov` {cite:p}`krause.eifler17,fang.eifler.krause20` to model the covariance of the shear correlation functions $\xi_\pm$.
 In harmonic space, Paper IV uses the Gaussian covariance from `NaMaster`'s iNKA framework for the $EB$ and $BB$ spectra, with separate non-Gaussian terms added only for the $EE$ cosmology analysis.
 Here we use those same inputs to construct the covariances needed for the derived $B$-mode data vectors.
 
 For $C_\ell^{BB}$ and $C_\ell^{EB}$, the harmonic-space covariance is used directly.
 Paper IV validates this $B$-mode covariance against 10,000 Gaussian simulations and finds good agreement away from the lowest multipoles (Appendix C therein).
-For the configuration-space statistics, we begin from the finely binned `CosmoCov` covariance of $\xi_\pm(\theta)$ on a 1000-bin logarithmic grid spanning $\theta = 0.5$--$300$ arcmin, using the survey properties of Paper I and the Planck 2018 fiducial cosmology {cite:p}`planck20`.
+For the configuration-space statistics, we begin from the finely binned `CosmoCov` covariance of $\xi_\pm(\theta)$ on a 1000-bin logarithmic grid spanning $\theta = 0.5$–$300$ arcmin, using the survey properties of Paper I and the Planck 2018 fiducial cosmology {cite:p}`planck20`.
 
 For COSEBIs, the covariance follows directly from the linear transformation
 
@@ -265,7 +279,7 @@ $$ (eq-cosebi-cov)
 
 where $\mathbf{T}$ encodes the COSEBI filter functions.
 For the pure-mode correlation functions, no equivalent direct transformation is available.
-Instead, we draw $N_{\mathrm{samples}} = 2000$ realizations of $\xi_\pm(\theta)$ from the same finely binned `CosmoCov` covariance, propagate each realization through the integral transforms in [](#eq-xip-eb) and [](#eq-xim-eb), and compute the empirical covariance of the reconstructed $\xi_\pm^{\mathrm{E/B}}$.
+Instead, we draw $N_{\mathrm{samples}} = 2000$ realizations of $\xi_\pm(\theta)$ from the same finely binned `CosmoCov` covariance, propagate each realization through the integral transforms in [Eqs. (%s)](#eq-xip-eb) and [(%s)](#eq-xim-eb), and compute the empirical covariance of the reconstructed $\xi_\pm^{\mathrm{E/B}}$.
 This captures the cross-covariance between $\xi_+$ and $\xi_-$, correlations between $E$/$B$/ambiguous mode types, and angular-bin correlations induced by the overlapping filter support.
 When computing $\chi^2$ statistics for PTE assessments, we apply the correction factor $(N_{\mathrm{samples}} - N_{\mathrm{obs}} - 2)/(N_{\mathrm{samples}} - 1)$ to the inverse covariance of the Monte Carlo pure-mode estimate {cite:p}`hartlap07`;
 for $N_{\mathrm{samples}} = 2000$ and the data-vector dimensions used here ($N_{\mathrm{obs}} \leq 40$), this amounts to at most a 2% correction.
@@ -285,7 +299,7 @@ The reported PTEs are therefore conservative: a null test that passes with Gauss
      bare integers — a metric/table bridge is needed for exact "12–83 arcmin"
      phrasing (transpile-map §2f queryability nuance). -->
 :::{astra} outputs.pte_table_appendix
-:caption: '$B$-mode PTE values across catalog versions at fiducial and full-range scale cuts. Fiducial scale cuts are $12''$--$83''$ (configuration) and $300 < \ell < 1600$ (harmonic); the full range is $1$--$250$ arcmin / $8 \leq \ell \leq 2048$. Only the fiducial catalog passes all statistics at the adopted cuts; PTE $< 0.05$ indicates a null-test failure.'
+:caption: '$B$-mode PTE values across catalog versions at fiducial and full-range scale cuts. Fiducial scale cuts are $12''$–$83''$ (configuration) and $300 < \ell < 1600$ (harmonic); the full range is $1$–$250$ arcmin / $8 \leq \ell \leq 2048$. Only the fiducial catalog passes all statistics at the adopted cuts; PTE $< 0.05$ indicates a null-test failure.'
 :::
 
 
@@ -352,14 +366,8 @@ Taken together, these tests show that the low-level $B$-mode structure discussed
 :::
 
 :::{astra} outputs.fig_pte_heatmaps
-:caption: Configuration-space PTE maps for all four catalog versions (Paper I, Table H.1). Columns show $\xi_+^{\mathrm{B}}$, $\xi_-^{\mathrm{B}}$, and COSEBI $B_n$ PTEs as a function of angular scale cuts; rows show different catalog versions. Solid blue cells indicate PTE $< 0.05$; whites and reds indicate consistency with zero. Black squares mark the adopted fiducial cuts. The size cut (fiducial versus initial) expands the acceptance region, while stellar masking contracts it.
+:caption: Configuration-space PTE maps for all four catalog versions (Paper I, Table H.1). Columns show $\xi_+^{\mathrm{B}}$, $\xi_-^{\mathrm{B}}$, and COSEBI $B_n$ PTEs as a function of angular scale cuts; rows show different catalog versions. Solid blue cells indicate PTE $< 0.05$; whites and reds indicate consistency with zero. Black squares mark the adopted cuts ($12$–$83$ arcmin). The size cut (fiducial versus initial) expands the acceptance region, while stellar masking contracts it.
 :::
-
-% Caption binding note: the TeX range "$\ebthetaXipMin$--$\ebthetaXipMax$~arcmin"
-% (12--83 arcmin) is carried by the single decision-carried reference
-% {astra:value}`decisions.fiducial_scale_cuts`, which renders the adopted
-% option's label ("12'--83'") — covering both macros ebthetaXipMin and
-% ebthetaXipMax per transpile-map §2f.
 
 :::{astra} outputs.fig_cl_pte_heatmap
 :caption: Harmonic-space $C_\ell^{BB}$ PTE maps for all four catalog versions (Paper I, Table H.1). Solid blue cells indicate failing PTEs; whites and reds indicate consistency with zero. The initial and relaxed-flags catalogs show widespread failures across multipole ranges; the fiducial and masked catalogs pass across nearly all multipole combinations.
@@ -370,10 +378,6 @@ At the adopted scale cuts, all null tests pass.
 We chose those cuts using the $B$-mode tests together with additional systematics checks and blinded inference-stability checks in Papers III and IV; they are more conservative than the PTEs alone would require.
 The object-wise PSF-leakage correction (Paper I) shifts individual PTEs by $\lesssim 0.05$ across all catalog versions and statistics; no pass/fail conclusion changes.
 We report leakage-corrected results throughout.
-
-:::{astra} outputs.pte_table_results
-:caption: '$B$-mode PTE values for the fiducial size-cut catalog, at the adopted scale cuts (Fiducial) and over the full angular range (Full range). Columns are the two COSEBI tests ($B_n$ with $n\leq6$ and $n\leq20$), the three pure-mode tests ($\xi_+^{\mathrm{B}}$, $\xi_-^{\mathrm{B}}$, and the joint $\xi_{\mathrm{tot}}^{\mathrm{B}}$), and harmonic-space $C_\ell^{BB}$. All statistics pass (PTE $> 0.05$) at the adopted cuts; over the full range the low-level $B$-mode structure drives several below threshold.'
-:::
 
 The low-level features that drive the full-range behavior leave different signatures in each statistic.
 In the pure-mode decomposition ({astra:ref}`Fig. %s <outputs.fig_pure_eb_decomposition>`), $\xi_+^{\mathrm{B}}/\sigma$ shows a broad positive excess on the smallest angular scales that tapers toward zero by $\theta \sim 10$ arcmin;
@@ -416,8 +420,11 @@ When they disagree, we treat that as evidence of contamination in the sample eve
 At full range, all four catalogs show a COSEBI first-mode excess exceeding $4\,\sigma$ and oscillatory structure across all twenty modes.
 Because COSEBIs are orthogonal over a finite angular range ({astra}`cosebis`), a feature compact in angle spreads across the mode spectrum; the full-range oscillations are qualitatively consistent with contamination at CCD angular scales ([Results](#results), {astra:ref}`outputs.fig_cosebis_fiducial`).
 In the pure-mode and harmonic-space data vectors, no comparably localized feature is apparent: $\xi_+^{\mathrm{B}}$ shows mild excess at the smallest and largest separations, and $C_\ell^{BB}$ has a few ${\gtrsim}2\,\sigma$ outliers at low $\ell$ and elevated power in the highest multipole bins, but neither displays a sharp angular signature that would point unambiguously to CCD-scale contamination.
-<!-- ebthetaXipMin → decisions.fiducial_scale_cuts (map §2f); note: renders the adopted-option label, not the bare integer 12 — metric/table bridge needed to emit \num{12} -->
-MegaCam's 40 CCDs span $6$--$14$ arcmin individually, and our adopted scale cuts, {astra:value}`decisions.fiducial_scale_cuts`, exclude most pair separations at these scales; at the adopted scale cuts, the COSEBI features are suppressed and all four catalogs pass.
+<!-- Lower cut (12 arcmin) hard-written to match the paper's "lower cut of \ebthetaXipMin~arcmin"
+     and the config-space caption at pte_table_appendix; {astra:value}`decisions.fiducial_scale_cuts`
+     renders the compound "12'–83' (config), 300<ℓ<1600 (harmonic)" label, wrong for this config-space,
+     single-scalar context. An astra-native fix wants a config-only scale-cut metric (see fiber). -->
+MegaCam's 40 CCDs span $6$–$14$ arcmin individually, and our adopted lower cut of $12$ arcmin excludes most pair separations at these scales; at the adopted scale cuts, the COSEBI features are suppressed and all four catalogs pass.
 Pure-mode correlation functions and $C_\ell^{BB}$ on the other hand pass at the adopted cuts only for the size-cut catalog and for the size-cut and masked versions, respectively.
 These equivocal results lead us to argue against relying on any single null test; taken together, we choose the size-cut catalog and our adopted scale cuts as the combination least affected by systematic contamination for cosmological inference in Papers III and IV.
 
@@ -437,9 +444,9 @@ COSEBIs apply filter functions to the two-point statistics that concentrate cosm
 Pure-mode and COSEBI filters also discard ambiguous modes ({astra}`pure_eb`) that cannot be uniquely classified as $E$ or $B$ on a finite angular interval.
 The harmonic-space estimator used here does not deproject ambiguous modes; it assigns all power to $C_\ell^{EE}$ or $C_\ell^{BB}$, and any residual mask-induced $E$-to-$B$ leakage after mode-coupling deconvolution is absorbed into $C_\ell^{BB}$.
 
-We show directly that $C_\ell^{BB}$ and COSEBIs have different sensitivity to systematic features, even when computed from the same data, by transforming the harmonic-space bandpowers into COSEBIs ([](#eq-cosebi-harmonic)).
-The $C_\ell^{BB}$ power spectrum passes the null test at our fiducial multipole range, yet COSEBIs computed from the same $C_\ell^{BB}$ fail at full angular range---because the COSEBI filter functions $W_n(\ell)$ weight the power spectrum differently, concentrating sensitivity on the scales where the contamination resides.
-This provides empirical support for the argument of {cite:t}`asgari.etal19a` that a null test in one representation cannot validate another; {cite:t}`jefferson.etal25` reached the same conclusion across DES-Y3, KiDS-1000, and HSC-Y3, finding that tomographic bins passing pseudo-$C_\ell$ $B$-mode tests can fail when reanalyzed with HybridEB.
+We show directly that $C_\ell^{BB}$ and COSEBIs have different sensitivity to systematic features, even when computed from the same data, by transforming the harmonic-space bandpowers into COSEBIs ([Eq. (%s)](#eq-cosebi-harmonic)).
+The $C_\ell^{BB}$ power spectrum passes the null test at our fiducial multipole range, yet COSEBIs computed from the same $C_\ell^{BB}$ fail at full angular range—because the COSEBI filter functions $W_n(\ell)$ weight the power spectrum differently, concentrating sensitivity on the scales where the contamination resides.
+This provides empirical support for the argument of {cite:t}`asgari.etal19a` that a null test in one representation cannot validate another; {cite:t}`jefferson.etal25` reached the same conclusion across DES-Y3, KiDS-1000, and HSC-Y3, finding that tomographic bins passing pseudo-$C_\ell$ $B$-mode tests can fail when reanalyzed with **HybridEB**.
 The converse also holds: a $B$-mode failure in any statistic should raise concern for cosmological inference in all of them, since the underlying contamination is present in the data regardless of how it is projected.
 
 {astra:ref}`Fig. %s <outputs.fig_harmonic_config_cosebis_full>` compares COSEBIs computed from configuration-space $\xi_\pm$ and from harmonic-space bandpowers.
@@ -451,13 +458,13 @@ At full range, both detect the same structure (PTE $=$ {astra:value col=pte wher
 This confirms that the sensitivity to systematic contamination is set by the filter functions, not by the basis in which the two-point function is measured.
 Throughout this analysis, we use Gaussian-only covariance, which underestimates variances for the UNIONS geometry ({astra}`covariance`); the reported PTEs are therefore conservative.
 
-{cite:t}`asgari.etal19a` identified an oscillatory COSEBI $B$-mode pattern in multiple Stage-III surveys---CFHTLenS, KiDS-450, and DES-SV---tracing it to a repeating additive shear bias (i.e. a spatially varying $c$-term) from detector-level effects fixed in focal-plane coordinates.
-Its appearance across three Stage-III surveys points to a detector-level phenomenon rather than a pipeline-specific artifact, a point especially relevant for UNIONS because CFHTLenS also used MegaCam on CFHT {cite:p}`heymans.etal12; guinot.etal22`.
+{cite:t}`asgari.etal19a` identified an oscillatory COSEBI $B$-mode pattern in multiple Stage-III surveys—CFHTLenS, KiDS-450, and DES-SV—tracing it to a repeating additive shear bias (i.e. a spatially varying $c$-term) from detector-level effects fixed in focal-plane coordinates.
+Its appearance across three Stage-III surveys points to a detector-level phenomenon rather than a pipeline-specific artifact, a point especially relevant for UNIONS because CFHTLenS also used MegaCam on CFHT {cite:p}`heymans.etal12,guinot.etal22`.
 The dither strategy, however, differs substantially.
 CFHTLenS and KiDS used small dithers designed to bridge chip gaps, so the focal-plane pattern maps almost directly onto the sky.
 UNIONS dithers by ${\sim}1/3$ of the MegaCam field of view {cite:p}`gwyn.etal25`, larger than a single CCD, so each sky position averages the additive bias from several different CCDs across exposures.
 {cite:t}`asgari.etal19a` note that the $B$-mode signature of a repeating additive pattern depends on the dithering strategy, pointing to DES-SV's half-field dithers as one reason its pattern differs from the small-dither surveys.
-The larger UNIONS dithers may similarly attenuate the amplitude of the repeating pattern, but are unlikely to fully eliminate it: the effective pattern is the per-CCD bias convolved with the dither geometry, potentially spreading the characteristic angular scale beyond the $6$--$14$ arcmin CCD footprint.
+The larger UNIONS dithers may similarly attenuate the amplitude of the repeating pattern, but are unlikely to fully eliminate it: the effective pattern is the per-CCD bias convolved with the dither geometry, potentially spreading the characteristic angular scale beyond the $6$–$14$ arcmin CCD footprint.
 
 Several mechanisms can create additive shear structure at CCD angular scales.
 The $\rho$-statistics and $\xi_{\mathrm{sys}}$ diagnostics in Paper I show scale-dependent PSF residuals with a feature near the ${\sim}10$ arcmin MegaCam CCD scale, consistent with per-CCD PSF contributions; astrometric residuals may also play a role.
@@ -469,7 +476,7 @@ Paper V identifies a pipeline-specific source arising from the improper propagat
 In the current multi-exposure fitting procedure, objects are effectively assumed to be centered on the pixel grid of each individual exposure.
 However, a consistent treatment would require recentering the model using the World Coordinate System (WCS), anchored to the detection position defined at the tile level.
 In areas where CCDs overlap, the relative pixel offsets between exposures can induce a preferred orientation in the inferred galaxy shapes, corresponding to the vector displacements between exposure pixel grids.
-As a result, a coherent additive shear pattern may be imprinted across the CCD overlap regions, on angular scales between the per-CCD footprint ($\sim 6$--$14$ arcmin) and the UNIONS dither spacing ($1/3$ MegaCam FoV, or $\sim 19$ arcmin).
+As a result, a coherent additive shear pattern may be imprinted across the CCD overlap regions, on angular scales between the per-CCD footprint ($\sim 6$–$14$ arcmin) and the UNIONS dither spacing ($1/3$ MegaCam FoV, or $\sim 19$ arcmin).
 The observed $B$-mode contamination concentrates at $\theta_\mathrm{min} \lesssim 12$ arcmin ({astra:ref}`outputs.fig_pte_heatmaps`), close to the per-CCD scale but below the dither offsets.
 Whether this mechanism is responsible for the observed $B$ modes remains an open question.
 Even so, a contamination localized near the CCD scale would be cut away in configuration space, while its Hankel transform to harmonic space would spread across multipoles, beyond any single $\ell$ cut.
