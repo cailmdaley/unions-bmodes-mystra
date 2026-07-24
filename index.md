@@ -3,7 +3,7 @@ title: "UNIONS-3500 Weak Lensing: II. B-mode validation for cosmic shear"
 short_title: "B-mode validation"
 ---
 
-> This is the ASTRA-backed edition of [arXiv:2604.03227](https://arxiv.org/abs/2604.03227) (Daley et al., submitted to A&A): the paper's prose, with every measured value and figure resolved live from the reproduced analysis spec (`astra.yaml`) rather than typeset by hand. Values marked TODO-GAP await materialization of the corresponding analysis branch.
+> This is the ASTRA-backed edition of [arXiv:2604.03227](https://arxiv.org/abs/2604.03227) (Daley et al., submitted to A&A): the paper's prose, with every measured value and figure resolved live from the reproduced analysis spec (`astra.yaml`) rather than typeset by hand.
 
 +++ {"part": "abstract"}
 
