@@ -17,4 +17,4 @@ project:
   toc:
     - file: index.md
 site:
-  template: https://github.com/EiffL/astra-article-theme
+  template: https://github.com/EiffL/astra-article-theme.git
