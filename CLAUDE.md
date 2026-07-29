@@ -91,6 +91,29 @@ The live tip is a clean-root history at `e4d741d` (28.5 MB); a re-sync that
 follows the strip step above stays lean. An automated mirror **must** replicate
 the `cov_tmp*` strip.
 
+**Figure outputs ship PNG, never PDF.** Chrome does not render a PDF inside an
+`<img>` (Safari does), and the viewer's build sandbox has no imagemagick, so a
+PDF artifact reaches the browser unconverted and the figure is simply blank for
+most readers. Candide *does* have `convert`, so a local `myst build` silently
+converts and looks correct — **a clean local build does not prove the deployed
+page renders.** The invariant, per figure output directory:
+
+```
+<output_id>/
+  <output_id>.png     the single rendered image, 300 dpi
+  variants/           the .pdf original and any alternate renderings
+  evidence.json, *.csv, *.npz   untouched
+```
+
+MySTRA's `resolveArtifact` lists the directory, drops dotfiles and
+subdirectories, sorts, then takes the first file whose stem equals the output id
+— falling back to the alphabetically-first file when none matches. Naming the
+PNG `<output_id>.png` is therefore a deterministic selector that survives a
+recipe re-run dropping a fresh descriptive-named PDF into the directory. Convert
+with `convert -density 300 -background white -alpha remove -alpha off in.pdf
+out.png`. Note that `foo.pdf` sorts before `foo.png`, so a same-named PNG beside
+a PDF does *not* win.
+
 ### Input bundle (Paper2ASTRA-style staging)
 
 | File | Purpose |

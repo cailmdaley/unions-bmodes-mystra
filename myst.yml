@@ -1,8 +1,7 @@
 version: 1
 project:
-  title: "UNIONS-3500 Weak Lensing II. B-mode validation for cosmic shear"
-  bibliography:
-    - references.bib
+  title: "UNIONS-3500 Weak Lensing: II. B-mode validation for cosmic shear"
+  subtitle: An ASTRA-backed edition, with every value and figure resolved from the reproduced analysis spec
   description: >-
     ASTRA-backed edition of arXiv:2604.03227 — the paper's prose with every
     measured value and figure resolved live from the reproduced analysis spec.
@@ -10,6 +9,163 @@ project:
   venue:
     title: Lightcone Research
   open_access: true
+  license:
+    content: CC-BY-4.0
+    code: MIT
+  github: https://github.com/cailmdaley/unions-bmodes-mystra
+  thumbnail: results/baseline/fig_pure_eb_decomposition/fig_pure_eb_decomposition.png
+  bibliography:
+    - references.bib
+  # Author list and affiliations are the paper's, verbatim from the A&A source
+  # (`paper/unions_bmodes.tex`): this document is that paper's prose. Names use
+  # the paper's initials form; ORCIDs disambiguate. No CRediT `roles:` are
+  # declared — the TeX carries none, and inventing them would be fabrication.
+  authors:
+    - name: C. Daley
+      orcid: 0000-0002-3760-2086
+      email: cail.daley@cea.fr
+      corresponding: true
+      affiliation: aim-saclay-first
+    - name: A. Guinot
+      orcid: 0000-0002-5068-7918
+      affiliation: cmu
+    - name: S. Guerrini
+      orcid: 0009-0004-3655-4870
+      affiliation: aim-cite-first
+    - name: F. Hervas-Peters
+      orcid: 0009-0008-1839-2969
+      affiliation: aim-saclay-first
+    - name: L. W. K. Goh
+      orcid: 0000-0002-0104-8132
+      affiliations:
+        - roe-edinburgh
+        - higgs-edinburgh
+    - name: C. Murray
+      orcid: 0000-0002-4668-1273
+      affiliation: aim-saclay-first
+    - name: M. Kilbinger
+      orcid: 0000-0001-9513-7138
+      affiliation: aim-saclay-first
+    - name: A. Wittje
+      orcid: 0000-0002-8173-3438
+      affiliation: airub
+    - name: H. Hildebrandt
+      orcid: 0000-0002-9814-3338
+      affiliation: airub
+    - name: M. J. Hudson
+      orcid: 0000-0002-1437-3786
+      affiliations:
+        - waterloo-physics
+        - waterloo-astro
+        - perimeter
+    - name: L. van Waerbeke
+      orcid: 0000-0002-2637-8728
+      affiliation: ubc
+    - name: A. W. McConnachie
+      orcid: 0000-0003-4666-6564
+      affiliation: nrc-herzberg
+  affiliations:
+    - id: aim-saclay-first
+      institution: Université Paris-Saclay, Université Paris Cité, CEA, CNRS, AIM
+      city: Gif-sur-Yvette
+      postal_code: F-91191
+      country: France
+      ror: https://ror.org/0015h8611
+    - id: cmu
+      institution: Carnegie Mellon University
+      department: Department of Physics, McWilliams Center for Cosmology and Astrophysics
+      city: Pittsburgh
+      region: Pennsylvania
+      postal_code: "15213"
+      country: USA
+    - id: aim-cite-first
+      institution: Université Paris Cité, Université Paris-Saclay, CEA, CNRS, AIM
+      city: Gif-sur-Yvette
+      postal_code: F-91191
+      country: France
+      ror: https://ror.org/0015h8611
+    - id: roe-edinburgh
+      institution: University of Edinburgh
+      department: Institute for Astronomy, Royal Observatory, Blackford Hill
+      city: Edinburgh
+      postal_code: EH9 3HJ
+      country: UK
+    - id: higgs-edinburgh
+      institution: The University of Edinburgh
+      department: Higgs Centre for Theoretical Physics, School of Physics and Astronomy
+      city: Edinburgh
+      postal_code: EH9 3FD
+      country: UK
+    - id: airub
+      institution: Ruhr University Bochum
+      department: Faculty of Physics and Astronomy, Astronomical Institute (AIRUB), German Centre for Cosmological Lensing
+      city: Bochum
+      postal_code: "44780"
+      country: Germany
+    - id: waterloo-physics
+      institution: University of Waterloo
+      department: Department of Physics and Astronomy
+      address: 200 University Avenue West
+      city: Waterloo
+      region: Ontario
+      postal_code: N2L 3G1
+      country: Canada
+    - id: waterloo-astro
+      institution: University of Waterloo
+      department: Waterloo Centre for Astrophysics
+      city: Waterloo
+      region: Ontario
+      postal_code: N2L 3G1
+      country: Canada
+    - id: perimeter
+      institution: Perimeter Institute for Theoretical Physics
+      address: 31 Caroline St. North
+      city: Waterloo
+      region: Ontario
+      postal_code: N2L 2Y5
+      country: Canada
+    - id: ubc
+      institution: University of British Columbia
+      department: Department of Physics and Astronomy
+      address: 6224 Agricultural Road
+      city: Vancouver
+      region: British Columbia
+      postal_code: V6T 1Z1
+      country: Canada
+    - id: nrc-herzberg
+      institution: NRC Herzberg Astronomy and Astrophysics
+      address: 5071 West Saanich Road
+      city: Victoria
+      region: British Columbia
+      postal_code: V8Z 6M7
+      country: Canada
+  keywords:
+    - cosmology
+    - weak lensing
+    - gravitational lensing
+    - "methods: statistical"
+  funding: >-
+    CD and MK acknowledge support from the Agence Nationale de la Recherche
+    (ANR-22-CE31-0014-01) TOSCA project. This work was made possible by
+    utilizing the CANDIDE cluster at the Institut d'Astrophysique de Paris.
+  abbreviations:
+    UNIONS: Ultraviolet Near-Infrared Optical Northern Survey
+    COSEBI: Complete Orthogonal Sets of E/B-mode Integrals
+    COSEBIs: Complete Orthogonal Sets of E/B-mode Integrals
+    PTE: probability to exceed
+    CCD: charge-coupled device
+    PSF: point spread function
+    CFHT: Canada-France-Hawaii Telescope
+    CFIS: Canada-France Imaging Survey
+    CFHTLenS: Canada-France-Hawaii Telescope Lensing Survey
+    KiDS: Kilo-Degree Survey
+    DES: Dark Energy Survey
+    HSC: Hyper Suprime-Cam
+    CMB: cosmic microwave background
+    LSST: Legacy Survey of Space and Time
+    WCS: World Coordinate System
+    WISHES: Wide Imaging with Subaru HSC of the Euclid Sky
+    WHIGS: Waterloo-Hawai'i Institute for Astronomy g-band Survey
   plugins:
     # Pinned, not `releases/latest/...`: that URL is a 302 and sandboxed
     # builders (e.g. the MyST viewer) may not follow it.
@@ -17,4 +173,16 @@ project:
   toc:
     - file: index.md
 site:
+  # The template URL MUST end in `.git` (or `.zip`). myst only treats a URL as a
+  # downloadable template when it does; otherwise it GETs the URL expecting JSON
+  # template metadata and dies on GitHub's HTML with
+  # `Unexpected token '<' ... is not valid JSON`.
   template: https://github.com/EiffL/astra-article-theme.git
+  title: "UNIONS-3500 Weak Lensing II — B-mode validation"
+  options:
+    # Lightcone Research brand marks (mirrored from EiffL/myst_proto); the dark
+    # variant swaps the wordmark so it reads on charcoal.
+    logo: images/logo-primary.svg
+    logo_dark: images/logo-primary-dark.svg
+    logo_alt: Lightcone Research
+    favicon: images/logo-mark-gold.svg

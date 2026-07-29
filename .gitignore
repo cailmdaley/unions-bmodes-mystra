@@ -1,4 +1,2 @@
 _build/
 work/*.log
-
-**/*cov_tmp*

@@ -1,6 +1,8 @@
 ---
 title: "UNIONS-3500 Weak Lensing: II. B-mode validation for cosmic shear"
 short_title: "B-mode validation"
+subtitle: An ASTRA-backed edition, with every value and figure resolved from the reproduced analysis spec
+thumbnail: results/baseline/fig_pure_eb_decomposition/fig_pure_eb_decomposition.png
 ---
 
 > This is the ASTRA-backed edition of [arXiv:2604.03227](https://arxiv.org/abs/2604.03227) (Daley et al., submitted to A&A): the paper's prose, with every measured value and figure resolved live from the reproduced analysis spec (`astra.yaml`) rather than typeset by hand.
