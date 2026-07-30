@@ -51,13 +51,13 @@ outputs:
       downstream. Block runtimes range from minutes on the
       reporting grid to hours on the integration grid.
     decisions: [fiducial_catalog, fiducial_blind, covariance_class]
+    inputs: [cov_reporting_ng]
     recipe:
       # Projection: the concatenated raw CosmoCov blocks (++/--/+-) produced
       # inside the cov_reporting_ng run (its covariance.txt = covariance_cat).
       command: >
         mkdir -p {output} &&
         cp /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_reporting_ng/covariance.txt {output}/covariance.txt
-      inputs: [cov_reporting_ng]
 
   - id: cov_reporting_g
     type: data
@@ -68,13 +68,13 @@ outputs:
       footprint mask applied. Used as the Gaussian seed for
       reporting-grid Monte-Carlo cross-checks and as the
       Gaussian-only diagonal extracted by `cosmocov_process.py`.
+    inputs: [cov_reporting_ng]
     recipe:
       # Projection: the Gaussian-only extract (covariance_processed_g.txt) of the
       # cov_reporting_ng run, exposed as this output's covariance_processed.txt.
       command: >
         mkdir -p {output} &&
         cp /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_reporting_ng/covariance_processed_g.txt {output}/covariance_processed.txt
-      inputs: [cov_reporting_ng]
 
   - id: cov_reporting_ng
     type: data
@@ -90,6 +90,7 @@ outputs:
       throughout, so this matrix is materialised for
       cross-checking variance ratios but does not enter the
       headline PTEs.
+    inputs: [cosmology_snapshot]
     recipe:
       # Primary reporting-grid CosmoCov run (reporting grid, ng=1, masked). Its
       # {output} holds the .ini, the 3 raw blocks, covariance.txt (concatenated
@@ -107,7 +108,6 @@ outputs:
         --mask-cls /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_nside_4096_norm.txt
         --out {output}
       resources: { cpus: 4, memory: "16GB", time_limit: "3h" }
-      inputs: [cosmology_snapshot]
 
   - id: cov_integration_g
     type: data
@@ -125,6 +125,7 @@ outputs:
       this binning — the
       [Gaussian-only choice](#decisions.covariance_class) is
       forced by tractability on the 1000-bin integration grid.
+    inputs: [cosmology_snapshot]
     recipe:
       # Clean lc-native: run_cosmocov_chain.sh does the full CosmoCov chain
       # (generate .ini from planck18.json + cat_config cov_th -> 3 blocks
@@ -141,7 +142,6 @@ outputs:
         --mask-cls /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_nside_4096_norm.txt
         --out {output}
       resources: { cpus: 4, memory: "16GB", time_limit: "12h" }
-      inputs: [cosmology_snapshot]
 
   - id: cov_processed_qa
     type: figure
@@ -151,13 +151,13 @@ outputs:
       the diagonal variance, off-diagonal correlation
       structure, and condition number diagnostics. Used in the
       covariance review notebooks; not in the paper.
+    inputs: [cov_reporting_ng]
     recipe:
       # Projection: the covariance QA correlation-structure plot produced by
       # cosmocov_process inside the cov_reporting_ng run.
       command: >
         mkdir -p {output} &&
         cp /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_reporting_ng/covariance_processed_plot.pdf {output}/covariance_processed_plot.pdf
-      inputs: [cov_reporting_ng]
 
   - id: cov_glass_xi_reporting
     type: data
@@ -207,6 +207,7 @@ outputs:
       [pseudo-Cℓ bandpower covariance](#outputs.cl_cov_reporting)
       for reporting-grid agreement.
     decisions: [fiducial_catalog, glass_validation_strategy]
+    inputs: [cov_glass_xi_reporting]
     recipe:
       # Projection: the pseudo-Cl sample covariance is emitted by the same
       # compute_glass_mock_covariance.py invocation that produces
@@ -216,7 +217,6 @@ outputs:
         mkdir -p {output} &&
         cp /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_glass_xi_reporting/cl_covariance.npy {output}/cl_covariance.npy &&
         cp /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_glass_xi_reporting/cl_mean.npy {output}/cl_mean.npy
-      inputs: [cov_glass_xi_reporting]
       resources: { cpus: 1, memory: "2GB", time_limit: "15min" }
 
   - id: cl_cov_reporting
@@ -272,6 +272,7 @@ outputs:
       differs outright, and the uncorrected variants differ in
       σ_e — so all 7 get a full CosmoCov chain.
     decisions: [fiducial_catalog, fiducial_blind, covariance_class]
+    inputs: [cosmology_snapshot]
     recipe:
       # run_cov_sweep.sh loops the non-fiducial version list (sweep_versions.py)
       # and calls run_cosmocov_chain.sh once per version (integration grid,
@@ -287,7 +288,6 @@ outputs:
         --mask-base /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask
         --out {output}
       resources: { cpus: 4, memory: "16GB", time_limit: "48h" }
-      inputs: [cosmology_snapshot]
 
 decisions:
 

@@ -65,6 +65,7 @@ outputs:
       by `pure_eb_data_vector`; one paper PDF + 4 leak-corrected
       and 4 uncorrected per-version variants in the standard
       [9-figure pattern](#../decisions.fiducial_catalog).
+    inputs: [pure_eb_semianalytic_data]
     recipe:
       # pure_eb_data_vector.py CLI (refactored from the snakemake rule): paper
       # Figure 1, fiducial only. Reads the lc-produced semianalytic NPZ by
@@ -82,7 +83,6 @@ outputs:
       # Cross-sub-analysis dep on covariance.cov_reporting_ng (the reporting-grid
       # masked ng CosmoCov ξ± covariance) — the total-curve error bars. Wired by
       # absolute path (cross-sub-analysis inputs: aren't validator-expressible yet).
-      inputs: [pure_eb_semianalytic_data]
 
   - id: pure_eb_covariance_figure
     type: figure
@@ -96,6 +96,7 @@ outputs:
       ](#../outputs.fig_pure_eb_decomposition) is co-located
       with Figure 1; the covariance plot itself anchors paper
       Figure 2.
+    inputs: [pure_eb_semianalytic_data]
     recipe:
       # pure_eb_covariance.py CLI (refactored from the snakemake rule): paper
       # Figure 2, fiducial only. Reads the lc-produced semianalytic NPZ by
@@ -109,7 +110,6 @@ outputs:
         --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
         --pure-eb-data /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_semianalytic_data/SP_v1.4.6.3_leak_corr_A_pure_eb_semianalytic.npz
         --out {output}
-      inputs: [pure_eb_semianalytic_data]
 
   - id: pure_eb_version_comparison_figure
     type: figure
@@ -119,6 +119,7 @@ outputs:
       relaxed-flags), contributing the pure-mode row of the
       [paper Figure 5 stack](#../outputs.fig_pure_eb_versions).
       Uncorrected variants not stacked.
+    inputs: [pure_eb_semianalytic_data]
     recipe:
       # pure_eb_version_comparison.py CLI (refactored from the snakemake rule):
       # pure-mode row of paper Figure 5. The 4-leak-corrected-version sweep lives
@@ -136,7 +137,6 @@ outputs:
         --fiducial-version SP_v1.4.6.3_leak_corr
         --fiducial-pure-eb-data /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_semianalytic_data/SP_v1.4.6.3_leak_corr_A_pure_eb_semianalytic.npz
         --out {output}
-      inputs: [pure_eb_semianalytic_data]
 
   - id: pure_eb_pte_per_cut
     type: data
@@ -151,6 +151,7 @@ outputs:
       correction](#decisions.hartlap_application) on the inverse
       MC covariance.
     decisions: [fiducial_catalog, fiducial_blind]
+    inputs: [pure_eb_semianalytic_data]
     recipe:
       # Clean lc-native: calculate_pure_eb_ptes.py CLI reads the gathered
       # semianalytic npz + integration cov, evaluates the ξ_+^B/ξ_-^B/ξ_tot^B χ²
@@ -166,7 +167,6 @@ outputs:
         --cov-integration /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
         --npatch 1 --n-samples 2000
         --out {output}
-      inputs: [pure_eb_semianalytic_data]
 
   - id: pure_eb_sweep
     type: data
