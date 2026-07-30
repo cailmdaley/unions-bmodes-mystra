@@ -70,9 +70,13 @@ Manual re-sync (no automation yet — a proper `git subtree`/CI mirror is still
 an open task):
 ```bash
 # from a clone of the mirror repo, with this repo at the desired HEAD:
-git -C <Reproductions> archive HEAD:UNIONS/pure_eb | tar -x -C <mirror-clone>
 cd <mirror-clone>
-rm -rf _build
+# CRITICAL: wipe first. `git archive | tar -x` only ADDS and OVERWRITES — it never
+# deletes. Without this step, a file removed upstream survives in the mirror and
+# keeps deploying (this is how the replaced PDFs outlived the PNG fix). The sync
+# must be a true mirror, not an overlay.
+find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+git -C <Reproductions> archive HEAD:UNIONS/pure_eb | tar -x -C .
 # CRITICAL: strip CosmoCov integration temps — the archive drags in the whole
 # analyses/covariance/results tree: ~1.6 GB of cov_tmp_ssss_* blocks (~70 MB
 # each) PLUS small order_cov_tmp_i_* index files. None are report inputs; the

@@ -88,8 +88,7 @@ narrative:
     [paper Figure 5 stack](#../outputs.fig_pure_eb_versions);
     [pure_eb_pte_per_cut](#outputs.pure_eb_pte_per_cut)
     discharges the ξ_+^B / ξ_-^B / ξ_tot^B rows of the
-    [paper PTE table](#../outputs.pte_table_results) and
-    [appendix table](#../outputs.pte_table_appendix) once the
+    [paper PTE table](#../outputs.pte_table_appendix) once the
     [null_tests sub-analysis](#../analyses.null_tests) gathers
     them.
 

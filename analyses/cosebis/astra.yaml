@@ -94,8 +94,7 @@ narrative:
     [paper Figure 5 stack](#../outputs.fig_pure_eb_versions).
     [cosebis_pte_per_cut](#outputs.cosebis_pte_per_cut)
     discharges the COSEBI rows of the
-    [main-text PTE summary](#../outputs.pte_table_results) and
-    the [appendix PTE table](#../outputs.pte_table_appendix)
+    [paper PTE table](#../outputs.pte_table_appendix)
     after the [null_tests sub-analysis](#../analyses.null_tests)
     composes the multi-statistic PTE matrices. The
     [10,000-bin binning convergence

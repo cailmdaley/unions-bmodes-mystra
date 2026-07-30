@@ -7,12 +7,10 @@ narrative:
     from [pure_eb](#../analyses.pure_eb),
     [cosebis](#../analyses.cosebis), and
     [cl_bb](#../analyses.cl_bb) into the
-    [main-text PTE summary](#../outputs.pte_table_results)
-    (six PTE values for the size-cut catalog at
+    [paper PTE table](#../outputs.pte_table_appendix) (all
+    four catalog variants × six statistics, at
     [adopted](#../decisions.fiducial_scale_cuts) and
-    [full-range](#../decisions.fiducial_scale_cuts) cuts), the
-    [appendix PTE table](#../outputs.pte_table_appendix) (all
-    four catalog variants × six statistics × two cuts), and
+    [full-range](#../decisions.fiducial_scale_cuts) cuts), and
     two PTE-matrix composite figures (one for configuration
     space, one for harmonic space). Also runs the
     [BB-covariance blind-independence cross-check
@@ -112,9 +110,7 @@ narrative:
   outputs: |
     The [PTE summary JSON](#outputs.pte_summary_evidence) is
     the evidence backing the
-    [main-text PTE table](#../outputs.pte_table_results) and
-    the
-    [appendix PTE table](#../outputs.pte_table_appendix); the
+    [paper PTE table](#../outputs.pte_table_appendix); the
     `paper_macros` rule reads it to render the LaTeX `\num{}`
     macros in `paper/claims_macros.tex`.
     The [configuration-space PTE evidence
@@ -166,16 +162,18 @@ outputs:
       cuts](#../decisions.fiducial_scale_cuts) and at full
       range, for all four catalog variants. Materialised by
       `paper_macros` from the per-statistic scatter outputs;
-      consumed by both the main-text and appendix PTE-table
-      LaTeX renderers in `paper/claims_macros.tex`.
+      consumed by the PTE-table LaTeX renderer in
+      `paper/claims_macros.tex`.
     recipe:
       # generate_paper_macros.py CLI. Terminal gather: reads the two PTE-matrix
       # evidence.json files (config-space + harmonic-space) by ABSOLUTE lc results
-      # path and writes claims_macros.tex + pte_table_results.tex +
-      # pte_table_appendix.tex + evidence.json under {output}. --claims-dir points
-      # at the original tapestry tree for the extra (non-table) claims_macros
-      # entries (cosebis / pure_eb / harmonic_config); the two PTE tables need
-      # only the two --*-evidence paths (produced by this same sub-analysis).
+      # path and writes claims_macros.tex + pte_table_appendix.tex +
+      # evidence.json under {output}. (It also emits a pte_table_results.tex from
+      # an earlier two-table draft; the paper never \inputs it and no output
+      # declares it.) --claims-dir points at the original tapestry tree for the
+      # extra (non-table) claims_macros entries (cosebis / pure_eb /
+      # harmonic_config); the PTE table needs only the two --*-evidence paths
+      # (produced by this same sub-analysis).
       command: >
         apptainer exec
         --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data

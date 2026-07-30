@@ -98,52 +98,23 @@ inputs:
 # numerical evidence into LaTeX macros that the manuscript pulls.
 # -----------------------------------------------------------------------------
 outputs:
-  - id: pte_table_results
-    type: table
-    description: |
-      Table 1 of the paper: six PTE values (ξ_+^B, ξ_-^B,
-      ξ_tot^B combined, COSEBI B_n n≤6, COSEBI B_n n≤20,
-      Cℓ^BB) for the fiducial size-cut catalog at the adopted
-      scale cuts and at the full angular range. Generated from
-      LaTeX macros in `paper/claims_macros.tex` produced by the
-      `paper_macros` rule, which aggregates the
-      [null-tests summary-evidence
-      ](#null_tests.outputs.pte_summary_evidence) JSON
-      across catalog variants and scale cuts. Cross-sub-analysis
-      `recipe.inputs` wiring is not currently expressible against
-      the validator (see implementation-notes.md); the data flow
-      is declared at the null-tests sub-analysis's `inputs:` and
-      `outputs:` blocks rather than in this recipe.
-    recipe:
-      # generate_paper_macros.py CLI. Self-contained re-run of the terminal
-      # gather (same producer as null_tests.pte_summary_evidence): reads the two
-      # PTE-matrix evidence.json by absolute lc results path and emits
-      # pte_table_results.tex (+ pte_table_appendix.tex + claims_macros.tex +
-      # evidence.json) under {output}. This output is Table 1.
-      command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/generate_paper_macros.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --config-space-evidence /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/config_space_pte_evidence/evidence.json
-        --harmonic-space-evidence /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/harmonic_space_pte_evidence/evidence.json
-        --claims-dir /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/tapestry
-        --out {output}
-
   - id: pte_table_appendix
     type: table
     description: |
-      Appendix table reporting the same six PTE statistics
-      across all four catalog variants (initial, size-cut,
-      masked, relaxed-flags) at fiducial and full-range cuts;
+      The paper's only table (`tab:pte_results`, a full-width
+      main-text `table*`): the six PTE statistics across all
+      four catalog variants (initial, size-cut, masked,
+      relaxed-flags) at fiducial and full-range cuts;
       structurally an N×6 grid with version-by-version rows.
+      The `_appendix` in the id is historical — an earlier draft
+      split a fiducial-only main-text summary from a full
+      appendix grid, and the paper later consolidated to this
+      one table.
 
       Canonical artifact is `pte_table_appendix.csv` (MySTRA
-      renders it as the appendix table AND resolves every
-      per-version PTE `{astra:value}` against it — no LaTeX
-      tabular, no value-promotion bridge). Columns:
+      renders it as the table AND resolves every per-version PTE
+      `{astra:value}` against it — no LaTeX tabular, no
+      value-promotion bridge). Columns:
       `version` (slug: initial / size_cuts / masked /
       relaxed_flags), `cut` (fiducial / full_range), and the six
       statistic columns `cosebis_n6`, `cosebis_n20`, `xip_B`,
@@ -157,10 +128,15 @@ outputs:
       `pte_table_appendix.tex` is derived presentation for the
       LaTeX manuscript; the CSV is the source MySTRA reads.
     recipe:
-      # Same generate_paper_macros.py CLI as pte_table_results (one run emits both
-      # tables). This output's canonical artifact is pte_table_appendix.csv (the
-      # N×6 grid, queryable + renderable); pte_table_appendix.tex is emitted
-      # alongside as LaTeX presentation. Both written under {output}.
+      # generate_paper_macros.py CLI. Self-contained re-run of the terminal
+      # gather (same producer as null_tests.pte_summary_evidence): reads the two
+      # PTE-matrix evidence.json by absolute lc results path and emits
+      # claims_macros.tex + evidence.json + the table files under {output}.
+      # This output's canonical artifact is pte_table_appendix.csv (the N×6 grid,
+      # queryable + renderable); pte_table_appendix.tex is emitted alongside as
+      # LaTeX presentation. Cross-sub-analysis `recipe.inputs` wiring is not
+      # expressible against the validator (see implementation-notes.md); the data
+      # flow is declared at the null-tests sub-analysis's inputs:/outputs: blocks.
       command: >
         apptainer exec
         --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
