@@ -1,50 +1,6 @@
 version: "1.0"
 name: "Catalog preparation"
 
-narrative:
-  summary: |
-    Materialises one of the four
-    [ShapePipe v1.4 catalog variants](#../decisions.fiducial_catalog)
-    along with its photo-z distribution per blind, footprint
-    mask, and survey properties (area, n_eff, σ_e). All
-    downstream sub-analyses consume these products via the
-    [packaged shear catalog](#outputs.shear_catalog), the
-    [redshift distribution](#outputs.redshift_distribution),
-    and the [survey-property summary](#outputs.survey_properties);
-    no sub-analysis re-resolves catalog paths from `cat_config.yaml`.
-  inputs: |
-    The four variants enter via the parent's
-    [ShapePipe v1.4 catalogs](#inputs.shapepipe_v14_catalogs);
-    their photo-z files via the parent's
-    [redshift distributions](#inputs.redshift_distributions); the
-    standard / star-halo footprint masks via the parent's
-    [footprint masks](#inputs.footprint_masks).
-  methods: |
-    The variant is selected by the parent's
-    [fiducial_catalog](#../decisions.fiducial_catalog) decision
-    and combined with the
-    [PSF-leakage correction](#../decisions.leakage_correction) toggle
-    inherited from the parent. Path resolution goes through
-    `cat_config.yaml` in the source repo's
-    `code/sp_validation/notebooks/cosmo_val/` directory:
-    `cc[ver]['shear']['path']` is the FITS catalog,
-    `cc[ver]['shear']['redshift_path']` is the n(z), and
-    `cc[ver]['mask']` is the appropriate footprint mask.
-    Each base version has a single n(z) regardless of leakage
-    correction, so leak-corrected variants strip `_leak_corr`
-    before lookup. Loading is read-only — no shape recalibration
-    or reweighting happens here.
-  outputs: |
-    The packaged
-    [shear catalog](#outputs.shear_catalog),
-    [redshift distribution](#outputs.redshift_distribution), and
-    [footprint mask power spectrum](#outputs.mask_power_spectrum)
-    are passed to
-    [two_point](#../analyses.two_point) and
-    [covariance](#../analyses.covariance); the
-    [survey-property summary](#outputs.survey_properties)
-    feeds CosmoCov's `cov_th` block (n_eff, σ_e, area).
-
 inputs:
   - id: shapepipe_v14_catalogs
     type: data
