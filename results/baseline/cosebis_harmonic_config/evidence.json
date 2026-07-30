@@ -1,0 +1,18 @@
+{
+  "spec_id": "cosebis_harmonic_config",
+  "spec_path": "papers/bmodes/scripts/emit_cosebis_harmonic_config.py",
+  "generated": "2026-07-30T23:56:08.224328+00:00",
+  "evidence": {
+    "type": "value_promotion",
+    "description": "Flattens the harmonic-vs-config COSEBI B-mode PTE comparison (chi2/dof where available) out of the nested config_space_pte_evidence, cosebis_harmonic_modes, and cosebis_harmonic_modes_full evidence.json carriers into a queryable table. See work/transpile-map.md \u00a70/\u00a72d for the value-binding gap this closes.",
+    "source_evidence": {
+      "config_space": "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/config_space_pte_evidence/evidence.json",
+      "cosebis": "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_harmonic_modes/evidence.json",
+      "cosebis_full": "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_harmonic_modes_full/evidence.json"
+    },
+    "rows_written": 16
+  },
+  "output": {
+    "table": "cosebis_harmonic_config.csv"
+  }
+}
