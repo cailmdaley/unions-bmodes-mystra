@@ -1,0 +1,9 @@
+{
+  "value": 4.09,
+  "uncertainty": null,
+  "unit": "sigma",
+  "version": "SP_v1.4.6.3_leak_corr",
+  "full_range_significance": 4.08998422120677,
+  "fiducial_cut_significance": 0.7867264226493538,
+  "mode": 1
+}

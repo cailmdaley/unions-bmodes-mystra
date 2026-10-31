@@ -1,0 +1,22 @@
+{
+  "value": 0.0168,
+  "uncertainty": null,
+  "unit": null,
+  "statistic": "combined_xitot_B",
+  "cut": "fiducial",
+  "scale_cut_arcmin": [
+    11.997009531682911,
+    82.86135043349967
+  ],
+  "scale_cut_convention": "grid_bin_edges",
+  "bin_indices": [
+    9,
+    15
+  ],
+  "nu": 14,
+  "nu_penalized": 12,
+  "n_fitted_boundaries": 2,
+  "pte_unpenalized": 0.03867068073852945,
+  "chi2_obs": 24.60522610334214,
+  "pte_penalized": 0.016808437114168854
+}

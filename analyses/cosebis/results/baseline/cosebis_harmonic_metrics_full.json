@@ -1,0 +1,25 @@
+{
+  "harmonic_b_mode_ptes": {
+    "SP_v1.4.6.3_leak_corr": {
+      "chi2": 32.01599333563765,
+      "pte": 1.6202814375200554e-05,
+      "dof": 6
+    }
+  },
+  "config_b_mode_ptes": {
+    "SP_v1.4.6.3_leak_corr": {
+      "chi2": 32.401842011459706,
+      "pte": 1.3663695812716416e-05,
+      "dof": 6
+    }
+  },
+  "version": "SP_v1.4.6.3_leak_corr",
+  "nmodes": 20,
+  "reliable_modes": 6,
+  "angular_range": "full",
+  "scale_cut": [
+    1.0,
+    250.0
+  ],
+  "powspace_nbins": 96
+}
