@@ -30,7 +30,6 @@ decisions:
   mc_samples: n_2000
   hartlap_correction: none
   pte_definition: chi2_tail
-  healthy_pte_range: two_sigma
   fiducial_cosmology: planck18
 
 analyses:

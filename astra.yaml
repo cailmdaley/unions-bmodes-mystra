@@ -1316,8 +1316,8 @@ decisions:
       GLASS realizations so that a clean sample fails 5% of the time,
       as a single test at PTE = 0.05 would. Because the six are
       correlated but not perfectly so, the minimum is skewed low and
-      p_thr sits below 0.05: 0.007140 at the fiducial 12–83′ window on
-      350 mocks (68% interval 0.004–0.008, see
+      p_thr sits below 0.05: 0.0058 at the fiducial 12–83′ window on
+      350 mocks (68% interval 0.0044–0.0076, see
       [glass_mocks.mock_min_pte_calibration](#analyses.glass_mocks.outputs.mock_min_pte_calibration)).
       The calibrated value varies mildly across the scale-cut plane —
       ≤ 0.0093 over every window with θ_min ≥ 5.24′ and θ_max ≥ 36.20′,
@@ -1327,12 +1327,11 @@ decisions:
       degrees of freedom in the small-θ corner; the known large-scale
       contamination at large θ_max), not a look-elsewhere effect. A
       single representative value, 0.01, is adopted everywhere — a
-      clean sample fails it 8% of the time at the fiducial cuts — and is
-      also the value Paper III locks in. The alpha grid, the pass-region
-      box and the scale-cut dependence of the threshold are deliberately
-      kept out of the paper: the heatmaps keep their 0.05 per-statistic
-      diagnostic colouring, and only Table 1's minimum column and the
-      Sect. 3.6 prose carry p_thr.
+      clean sample fails it 7% of the time at the fiducial cuts — and is
+      also the value Paper III locks in. The PTE heatmaps colour cells
+      below p_thr, and Table 1 passes a row when its minimum PTE is at
+      least p_thr; the alpha grid and the scale-cut dependence of the
+      threshold stay in the mock campaign rather than the paper.
     default: calibrated_0p01
     options:
       nominal_0p05:
@@ -1343,26 +1342,6 @@ decisions:
         description: |
           Rounded conservative threshold from the global minimum-PTE
           calibration across the six B-mode statistics.
-
-  healthy_pte_range:
-    label: "Acceptance band for B-mode PTEs"
-    tags: [statistics, reporting]
-    rationale: |
-      The paper flags B-mode systematic contamination when a
-      PTE falls outside [0.05, 0.95] — the standard 2σ
-      symmetric band. Tighter (3σ → [0.0027, 0.9973]) and
-      more permissive (1σ) bands were considered; 2σ is the
-      community convention for cosmic-shear B-mode reporting
-      and is what Table 1 colour-codes against.
-    default: two_sigma
-    options:
-      two_sigma:
-        label: "[0.05, 0.95] (2σ; paper fiducial)"
-      three_sigma:
-        label: "[0.0027, 0.9973] (3σ)"
-      one_sigma:
-        label: "[0.16, 0.84] (1σ)"
-        description: "Excessively tight; flags statistical fluctuations as contamination."
 
   leakage_correction:
     label: "PSF-leakage correction on shear catalog"
