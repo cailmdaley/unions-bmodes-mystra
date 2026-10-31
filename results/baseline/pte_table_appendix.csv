@@ -1,0 +1,9 @@
+version,version_full,cut,cosebis_n6,cosebis_n20,xip_B,xim_B,xitot_B,cl_BB
+Initial,SP_v1.4.5_leak_corr,Fiducial,0.938,0.611,0.526,0.00119,0.00138,0.00311
+Initial,SP_v1.4.5_leak_corr,Full_range,7.37e-10,4.15e-07,8.71e-07,1.77e-06,2.45e-05,2.52e-04
+Size_cuts,SP_v1.4.6.3_leak_corr,Fiducial,0.777,0.943,0.823,0.0193,0.0387,0.299
+Size_cuts,SP_v1.4.6.3_leak_corr,Full_range,1.37e-05,1.08e-04,0.00257,0.00194,0.0101,0.136
+Masked,SP_v1.4.8_leak_corr,Fiducial,0.604,0.811,0.864,0.00359,0.0401,0.441
+Masked,SP_v1.4.8_leak_corr,Full_range,4.94e-06,2.50e-05,1.88e-04,7.51e-05,5.47e-04,0.131
+Relaxed_flags,SP_v1.4.11.3_leak_corr,Fiducial,0.824,0.831,0.418,7.48e-05,6.68e-05,5.85e-10
+Relaxed_flags,SP_v1.4.11.3_leak_corr,Full_range,1.70e-10,1.16e-08,5.74e-08,1.25e-08,1.25e-06,1.78e-12

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.pure_cov_mockmatched",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/mock_matched_pure_eb_cov.py --cov-integration /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt --xi-reporting results/baseline/two_point/xi_reporting.txt --xi-integration results/baseline/two_point/xi_integration.txt --version SP_v1.4.6.3_leak_corr --blind A --cat-config src/cosmo_val/cat_config.yaml --integration-method fixed_operator --integration-limits fine_grid_extent --rebinning-weights npairs --covariance-method exact_linear --n-samples 2000 --seed 42 --out results/baseline/glass_mocks/pure_cov_mockmatched.npz\n",
+  "definition_version": "sha256:18a07c2e887ff79b0e26ae3edbabd15592c51ee540c4f5179db188620d5dd8f7",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:f18a1bec9bbae3c24d00feab10fc965d8ab7eaf0a564440efbdd1ad0a93b0781",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "mc_samples": "n_2000",
+    "pure_eb_integration_method": "fixed_operator",
+    "pure_eb_rebinning_weights": "npairs",
+    "pure_eb_integration_limits": "fine_grid_extent",
+    "pure_eb_covariance_method": "exact_linear"
+  },
+  "input_versions": {
+    "cov_integration_mockmatched": "sha256:a65ee4c8beac7c53d45db38c2aac9226628ccd921151d27227e6a15078646780",
+    "xi_reporting": "sha256:6435442415f44ffe534c8f2ee23c75072fa712c6def2724942e9713ac17ac1d4",
+    "xi_integration": "sha256:eff7465d718f384cd89a676df4886f745a967b3d91bc7caf1d1ee709c4a77f38",
+    "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T18:14:59.300+00:00",
+  "finished_at": "2026-10-16T18:16:15.888+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

@@ -57,66 +57,26 @@ version, scale cuts) from the root via `from: ../<decision_id>`.
 
 ### Deployment mirror (the online viewer)
 
-The MyST report is viewed at
-`https://myst-viewer.vercel.app/cailmdaley/unions-bmodes-mystra/<commit-sha>`
-(sha-addressed; the tip of `main` is the "current" view). That viewer builds
-a **separate repo, `cailmdaley/unions-bmodes-mystra`** — NOT this repo
-(`LightconeResearch/Reproductions`). The mirror is a hand-maintained snapshot
-of *this* `UNIONS/pure_eb` subtree. **Fixes here do not deploy until the mirror
-is re-synced and pushed** — this decoupling silently stranded two days of fixes
-once (see fiber `astra-report-migration/plugin-dogfood-findings` #14).
+The viewer builds the separate `cailmdaley/unions-bmodes-mystra` repository at
+`https://myst-viewer.vercel.app/cailmdaley/unions-bmodes-mystra/<commit-sha>`.
+Changes here deploy only after the mirror is staged and pushed.
 
-Manual re-sync (no automation yet — a proper `git subtree`/CI mirror is still
-an open task):
-```bash
-# from a clone of the mirror repo, with this repo at the desired HEAD:
-cd <mirror-clone>
-# CRITICAL: wipe first. `git archive | tar -x` only ADDS and OVERWRITES — it never
-# deletes. Without this step, a file removed upstream survives in the mirror and
-# keeps deploying (this is how the replaced PDFs outlived the PNG fix). The sync
-# must be a true mirror, not an overlay.
-find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-git -C <Reproductions> archive HEAD:UNIONS/pure_eb | tar -x -C .
-# CRITICAL: strip CosmoCov integration temps — the archive drags in the whole
-# analyses/covariance/results tree: ~1.6 GB of cov_tmp_ssss_* blocks (~70 MB
-# each) PLUS small order_cov_tmp_i_* index files. None are report inputs; the
-# big ones time out every push. Match cov_tmp ANYWHERE in the name (the
-# order_cov_tmp_* files do NOT start with "cov_tmp", so a cov_tmp_* glob misses
-# them). .gitignore carries **/*cov_tmp* but archive-then-add can still stage.
-find . -name '*cov_tmp*' -delete
-git add -A
-git commit -m "Re-sync mirror from Reproductions@<sha>" && git push origin main
-```
-MySTRA v0.0.7 needs only the git-tracked files (figures/tables/`evidence.json`/
-`*.csv`); it does NOT read `.lightcone-manifest.json` (produced-detection is
-"a non-dotfile exists in the output dir"). Verify before pushing: a clean
-`myst build` should report all figures resolved, 0 pending, 0 unresolved values.
-The live tip is a clean-root history at `e4d741d` (28.5 MB); a re-sync that
-follows the strip step above stays lean. An automated mirror **must** replicate
-the `cov_tmp*` strip.
+From this project, run `tools/sync_mirror.sh <mirror-clone>` with the desired
+commit checked out.
+The script wipes the clone except `.git`, archives the committed project,
+strips `*cov_tmp*` files and annex pointers, and copies the report's available
+artifacts as real files from the private checkout's `results/`.
+Set `LC_RESULTS_ROOT` to use another materialized results tree.
+Missing artifacts are reported as pending; staging does not materialize them.
+Review the mirror and run `myst build` and `HOST=127.0.0.1 myst build --html`
+before committing and pushing the mirror separately.
 
-**Figure outputs ship PNG, never PDF.** Chrome does not render a PDF inside an
-`<img>` (Safari does), and the viewer's build sandbox has no imagemagick, so a
-PDF artifact reaches the browser unconverted and the figure is simply blank for
-most readers. Candide *does* have `convert`, so a local `myst build` silently
-converts and looks correct — **a clean local build does not prove the deployed
-page renders.** The invariant, per figure output directory:
-
-```
-<output_id>/
-  <output_id>.png     the single rendered image, 300 dpi
-  variants/           the .pdf original and any alternate renderings
-  evidence.json, *.csv, *.npz   untouched
-```
-
-MySTRA's `resolveArtifact` lists the directory, drops dotfiles and
-subdirectories, sorts, then takes the first file whose stem equals the output id
-— falling back to the alphabetically-first file when none matches. Naming the
-PNG `<output_id>.png` is therefore a deterministic selector that survives a
-recipe re-run dropping a fresh descriptive-named PDF into the directory. Convert
-with `convert -density 300 -background white -alpha remove -alpha off in.pdf
-out.png`. Note that `foo.pdf` sorts before `foo.png`, so a same-named PNG beside
-a PDF does *not* win.
+Report figures are declared and produced as 300-dpi PNGs: browsers cannot
+reliably display PDF images, and the hosted viewer does not provide an image
+converter.
+MySTRA v0.0.8 resolves the exact path and extension from the spec, including
+the sub-analysis's own `results/` namespace for path-backed analyses; it does
+not select a file by sorting a directory.
 
 ### Input bundle (Paper2ASTRA-style staging)
 

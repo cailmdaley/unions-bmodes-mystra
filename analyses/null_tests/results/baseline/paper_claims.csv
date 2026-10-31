@@ -1,0 +1,88 @@
+macro,display,value
+ebthetaXipMin,12,12.0
+ebthetaXipMax,83,83.0
+ebthetaXimMin,12,12.0
+ebthetaXimMax,83,83.0
+configPteFiveXip,0.53,0.53
+configPteFiveXim,0.001,0.001
+configPteFiveCombined,0.001,0.001
+configPteFiveCosebis,0.94,0.94
+configPteFiveCosebisTwenty,0.61,0.61
+configPteFiveXipFull,8.71 × 10⁻⁷,8.71e-07
+configPteFiveXimFull,1.77 × 10⁻⁶,1.77e-06
+configPteFiveCombinedFull,2.45 × 10⁻⁵,2.45e-05
+configPteFiveCosebisFull,7.37 × 10⁻¹⁰,7.37e-10
+configPteFiveCosebisTwentyFull,4.15 × 10⁻⁷,4.15e-07
+configPteSixThreeXip,0.82,0.82
+configPteSixThreeXim,0.019,0.019
+configPteSixThreeCombined,0.039,0.039
+configPteSixThreeCosebis,0.78,0.78
+configPteSixThreeCosebisTwenty,0.94,0.94
+configPteSixThreeXipFull,0.003,0.003
+configPteSixThreeXimFull,0.002,0.002
+configPteSixThreeCombinedFull,0.010,0.01
+configPteSixThreeCosebisFull,1.37 × 10⁻⁵,1.37e-05
+configPteSixThreeCosebisTwentyFull,1.08 × 10⁻⁴,0.000108
+configPteEightXip,0.86,0.86
+configPteEightXim,0.004,0.004
+configPteEightCombined,0.040,0.04
+configPteEightCosebis,0.60,0.6
+configPteEightCosebisTwenty,0.81,0.81
+configPteEightXipFull,1.88 × 10⁻⁴,0.000188
+configPteEightXimFull,7.51 × 10⁻⁵,7.51e-05
+configPteEightCombinedFull,5.47 × 10⁻⁴,0.000547
+configPteEightCosebisFull,4.94 × 10⁻⁶,4.94e-06
+configPteEightCosebisTwentyFull,2.50 × 10⁻⁵,2.5e-05
+configPteElevenThreeXip,0.42,0.42
+configPteElevenThreeXim,7.48 × 10⁻⁵,7.48e-05
+configPteElevenThreeCombined,6.68 × 10⁻⁵,6.68e-05
+configPteElevenThreeCosebis,0.82,0.82
+configPteElevenThreeCosebisTwenty,0.83,0.83
+configPteElevenThreeXipFull,5.74 × 10⁻⁸,5.74e-08
+configPteElevenThreeXimFull,1.25 × 10⁻⁸,1.25e-08
+configPteElevenThreeCombinedFull,1.25 × 10⁻⁶,1.25e-06
+configPteElevenThreeCosebisFull,1.70 × 10⁻¹⁰,1.7e-10
+configPteElevenThreeCosebisTwentyFull,1.16 × 10⁻⁸,1.16e-08
+clPteFiveFid,0.003,0.003
+clPteFiveFull,2.52 × 10⁻⁴,0.000252
+clPteSixThreeFid,0.30,0.3
+clPteSixThreeFull,0.14,0.14
+clPteEightFid,0.44,0.44
+clPteEightFull,0.13,0.13
+clPteElevenThreeFid,5.85 × 10⁻¹⁰,5.85e-10
+clPteElevenThreeFull,1.78 × 10⁻¹²,1.78e-12
+mockNRealizations,350,350.0
+mockPGlobal,11%,11.0
+mockPGlobalCount,38,38.0
+mockMinPteThreshold,0.01,0.01
+mockMinPteFloor,0.006,0.006
+fiducialMinPte,0.019,0.019
+fiducialMinPteStat,$\xi_-^{\mathrm{B}}$,
+mockPGlobalFull,0%,0.0
+mockMinPteFloorFull,0.002,0.002
+fullMinPte,1.37 × 10⁻⁵,1.37e-05
+fiducialMinPteNuPenalty,0.005,0.005
+leakCorrMaxPteShift,0.093,0.093
+mockSigmaRatioPureMin,0.92,0.92
+mockSigmaRatioPureMax,0.94,0.94
+mockSigmaRatioCosebis,0.95,0.95
+mockSigmaRatioCl,1.01,1.01
+mockChiTwoNuConfigMin,1.07,1.07
+mockChiTwoNuConfigMax,1.20,1.2
+mockAlphaFiducial,7%,7.0
+surveyArea,2894,2894.0
+surveyNeff,4.96,4.96
+surveySigmaE,0.27,0.27
+cosebisFirstModeSignificanceFull,4.1,4.1
+cosebisFirstModeSignificanceFid,0.79,0.79
+mockCosebisFirstModeTighter,16%,16.0
+mockCosebisFirstModeSignificance,3.4,3.4
+mockPureLargeThetaTighter,17%,17.0
+mockMeanBiasCosebis,0.10,0.1
+mockDensityExcess,17%,17.0
+ngFractionDiagonalAll,7%,7.0
+ngFractionDiagonalFiducial,9%,9.0
+harmCosebisPteSixThreeFull,1.62 × 10⁻⁵,1.62e-05
+cfgCosebisPteSixThreeFull,1.37 × 10⁻⁵,1.37e-05
+harmCosebisPteSixThreeFid,0.60,0.6
+cfgCosebisPteSixThreeFid,0.78,0.78

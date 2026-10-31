@@ -1,10 +1,10 @@
 version: 1
 project:
   title: "UNIONS-3500 Weak Lensing: II. B-mode validation for cosmic shear"
-  subtitle: An ASTRA-backed edition, with every value and figure resolved from the reproduced analysis spec
+  subtitle: Accepted by A&A in 2026 — an ASTRA-backed edition
   description: >-
-    ASTRA-backed edition of arXiv:2604.03227 — the paper's prose with every
-    measured value and figure resolved live from the reproduced analysis spec.
+    ASTRA-backed edition of the accepted A&A 2026 paper, with values and
+    figures resolved from the reproduced analysis spec.
   subject: Reproduction
   venue:
     title: Lightcone Research
@@ -13,7 +13,6 @@ project:
     content: CC-BY-4.0
     code: MIT
   github: https://github.com/cailmdaley/unions-bmodes-mystra
-  thumbnail: results/baseline/fig_pure_eb_decomposition/fig_pure_eb_decomposition.png
   bibliography:
     - references.bib
   # Author list and affiliations are the paper's, verbatim from the A&A source
@@ -61,6 +60,9 @@ project:
     - name: L. van Waerbeke
       orcid: 0000-0002-2637-8728
       affiliation: ubc
+    - name: S. Fabbro
+      orcid: 0000-0003-2239-7988
+      affiliation: nrc-herzberg
     - name: A. W. McConnachie
       orcid: 0000-0003-4666-6564
       affiliation: nrc-herzberg
@@ -169,7 +171,7 @@ project:
   plugins:
     # Pinned, not `releases/latest/...`: that URL is a 302 and sandboxed
     # builders (e.g. the MyST viewer) may not follow it.
-    - https://github.com/LightconeResearch/MySTRA/releases/download/v0.0.7/mystra.mjs
+    - https://github.com/LightconeResearch/MySTRA/releases/download/v0.0.8/mystra.mjs
   toc:
     - file: index.md
 site:

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "output_id": "covariance.cov_scan.cov_sweep_bundle",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout cov --config src/papers/bmodes/config/config.yaml --names cov_sp_v1p4p5 cov_sp_v1p4p5_leak_corr cov_sp_v1p4p6p3 cov_sp_v1p4p8 cov_sp_v1p4p8_leak_corr cov_sp_v1p4p11p3 cov_sp_v1p4p11p3_leak_corr --members results/baseline/covariance/cov_scan/cov_sp_v1p4p5.txt results/baseline/covariance/cov_scan/cov_sp_v1p4p5_leak_corr.txt results/baseline/covariance/cov_scan/cov_sp_v1p4p6p3.txt results/baseline/covariance/cov_scan/cov_sp_v1p4p8.txt results/baseline/covariance/cov_scan/cov_sp_v1p4p8_leak_corr.txt results/baseline/covariance/cov_scan/cov_sp_v1p4p11p3.txt results/baseline/covariance/cov_scan/cov_sp_v1p4p11p3_leak_corr.txt --out-file results/baseline/covariance/cov_scan/cov_sweep_bundle.tar.gz\n",
+  "definition_version": "sha256:9d675cb965ea68ee5ad25d0d0bfbf030dec03ce2ed1f044aa0fd18891c3eaf1e",
+  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
+  "data_version": "sha256:21ac449a96f0874a54a6c307e1eeda23e84a5912ae031783746c9d9924d9acd8",
+  "decisions": {},
+  "input_versions": {
+    "cov_sp_v1p4p5": "sha256:20349ab193f15818ce93660acad643a2626008b4cff52f9a218e6cee6596d6c4",
+    "cov_sp_v1p4p5_leak_corr": "sha256:20349ab193f15818ce93660acad643a2626008b4cff52f9a218e6cee6596d6c4",
+    "cov_sp_v1p4p6p3": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052",
+    "cov_sp_v1p4p8": "sha256:1df0f9d9764971e6e333d0787b1bf5a261d22be8c2489330607da8a1f0733e0f",
+    "cov_sp_v1p4p8_leak_corr": "sha256:1df0f9d9764971e6e333d0787b1bf5a261d22be8c2489330607da8a1f0733e0f",
+    "cov_sp_v1p4p11p3": "sha256:d90eaf784729efcb07b6472ec52391c94af73d8cc171e9ea95f224368fc7e1e9",
+    "cov_sp_v1p4p11p3_leak_corr": "sha256:d90eaf784729efcb07b6472ec52391c94af73d8cc171e9ea95f224368fc7e1e9"
+  },
+  "git_sha": "efc1697d9ae9494ae80507cfba09f73e473994da",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-08-31T22:56:19.726+00:00",
+  "finished_at": "2026-08-31T22:59:04.187+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-e841fa2c63d0c02c",
+    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
+    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "arch": "amd64"
+  }
+}

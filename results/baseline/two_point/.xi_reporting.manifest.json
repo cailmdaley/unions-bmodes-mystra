@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "output_id": "two_point.xi_reporting",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/run_2pcf.py --ver \"$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --get fiducial.version)\" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file results/baseline/two_point/xi_reporting.txt\n",
+  "definition_version": "sha256:e1b15eb4e5f88d7d420db149ec0608354b89c982ba927001ef8660421a4a33a2",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:6435442415f44ffe534c8f2ee23c75072fa712c6def2724942e9713ac17ac1d4",
+  "decisions": {
+    "fiducial_catalog": "size_cut"
+  },
+  "input_versions": {
+    "shear_catalog": "sha256:8c981053dfe2400a81136022456ff80b7325ad8ccf63d9cf4e4037964e036a15"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T16:14:54.302+00:00",
+  "finished_at": "2026-10-16T16:17:09.372+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

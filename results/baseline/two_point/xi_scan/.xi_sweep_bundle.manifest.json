@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "output_id": "two_point.xi_scan.xi_sweep_bundle",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout xi --config src/papers/bmodes/config/config.yaml --names xi_sp_v1p4p5_reporting xi_sp_v1p4p5_integration xi_sp_v1p4p5_leak_corr_reporting xi_sp_v1p4p5_leak_corr_integration xi_sp_v1p4p6p3_reporting xi_sp_v1p4p6p3_integration xi_sp_v1p4p8_reporting xi_sp_v1p4p8_integration xi_sp_v1p4p8_leak_corr_reporting xi_sp_v1p4p8_leak_corr_integration xi_sp_v1p4p11p3_reporting xi_sp_v1p4p11p3_integration xi_sp_v1p4p11p3_leak_corr_reporting xi_sp_v1p4p11p3_leak_corr_integration --members results/baseline/two_point/xi_scan/xi_sp_v1p4p5_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p5_integration.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p5_leak_corr_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p5_leak_corr_integration.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p6p3_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p6p3_integration.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p8_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p8_integration.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p8_leak_corr_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p8_leak_corr_integration.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p11p3_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p11p3_integration.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p11p3_leak_corr_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p11p3_leak_corr_integration.txt --out-file results/baseline/two_point/xi_scan/xi_sweep_bundle.tar.gz\n",
+  "definition_version": "sha256:8a8d00749e4bffc6f866e15f228476f3ebe7c8bf0d96a93b9c0d1a9447805abf",
+  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
+  "data_version": "sha256:389b59d7a75ad11e3792dac7b5890ffad965cff307165878177fe8ed44abf8b1",
+  "decisions": {},
+  "input_versions": {
+    "xi_sp_v1p4p5_reporting": "sha256:7bf76ede5e4902c9d0b7d0d318fcea8dd7ab26c589bbb73464f73a67fd891c48",
+    "xi_sp_v1p4p5_integration": "sha256:668125f33d01a077c1265e90aa1487704965eb1c829e8665c8a37049b2f3ead3",
+    "xi_sp_v1p4p5_leak_corr_reporting": "sha256:bc639f591c3e049b48d2b57f8baae88c456d38101a03f557680c18fc987c692c",
+    "xi_sp_v1p4p5_leak_corr_integration": "sha256:fd946a7aa95709100bab5cc86705b811e8aca738fc21ad310138c1bf881f4ad3",
+    "xi_sp_v1p4p6p3_reporting": "sha256:006e0a0693897919aa999527bb6366b6d777983e208f437a0e8ead13472caadb",
+    "xi_sp_v1p4p6p3_integration": "sha256:7526fb132ae3564f7e7b2913ad6bb5c6d0646b8ee8e0bb78d37137e2d3e70f77",
+    "xi_sp_v1p4p8_reporting": "sha256:5ec368413d79e49969d62247eeda2644c078073e6b61fd3d0a5766c80cccc5af",
+    "xi_sp_v1p4p8_integration": "sha256:baf6bcbbc0b7804d77a6536794b25214b614d352569d2b74c8d0d88e926aa4cc",
+    "xi_sp_v1p4p8_leak_corr_reporting": "sha256:555fde80f7988c5a2d1586240b95278b8d4b953a21b5dee4cbc341ce72dc9d61",
+    "xi_sp_v1p4p8_leak_corr_integration": "sha256:7d2a25897384e1fefef92c196793631bb8b1934faedcab737f2676201f0e155b",
+    "xi_sp_v1p4p11p3_reporting": "sha256:450405ce0ea17891635df19533b263cbf9f7e43883aecfdebec10812d02658fc",
+    "xi_sp_v1p4p11p3_integration": "sha256:102cba76f4510416201763b40ab6096037b3aef756d8bbe7e16242ea94e43d77",
+    "xi_sp_v1p4p11p3_leak_corr_reporting": "sha256:e8d6d80c1f979e45b30e0090e77f3496e8c0bf3b37f430db596e6908154ff3e0",
+    "xi_sp_v1p4p11p3_leak_corr_integration": "sha256:67c74ab0f40e21ae5aab2e31179a1ef27a6ae5e6aa6cf90dfa0e912f8da04135"
+  },
+  "git_sha": "4926d72d017952a702554771a9b5d0ab3d7a5dce",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-09-02T23:28:03.807+00:00",
+  "finished_at": "2026-09-02T23:28:12.511+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-e841fa2c63d0c02c",
+    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
+    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "arch": "amd64"
+  }
+}

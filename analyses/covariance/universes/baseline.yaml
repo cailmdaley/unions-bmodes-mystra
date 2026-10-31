@@ -1,0 +1,12 @@
+id: baseline
+description: |
+  UNIONS Paper II covariance fiducial: Gaussian-only CosmoCov
+  blocks for all three ξ± pairings, evaluated with the survey
+  mask applied, with GLASS mocks used to validate the analytical
+  covariance rather than as the production covariance source.
+decisions:
+  covariance_engine: cosmocov
+  covariance_class: gaussian_only
+  mask_application: masked
+  block_pairs: all_three
+  glass_validation_strategy: validation_only

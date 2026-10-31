@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "output_id": "null_tests.config_space_pte_data",
+  "universe_id": "baseline",
+  "recipe": "d_pe=$(mktemp -d) && tar xzf results/baseline/pure_eb/pure_eb_ptes.tar.gz -C $d_pe && d_cb=$(mktemp -d) && tar xzf results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_bundle.tar.gz -C $d_cb && python src/papers/bmodes/scripts/config_space_pte_matrices.py --config src/papers/bmodes/config/config.yaml --pte-intermediate-dir $d_pe --cosebis-pte-dir $d_cb --blind A --fiducial-version SP_v1.4.6.3_leak_corr --fiducial-pure-eb-pte-path results/baseline/pure_eb/pure_eb_pte_per_cut.npz --fiducial-cosebis-pte-path results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_matrix.npz --emit evidence --scale-cut-convention grid_bin_edges --out-file results/baseline/null_tests/config_space_pte_data.json\n",
+  "definition_version": "sha256:8351efa5f67c963c089de6ad01d115a5e5fd98c8afa8fb4f73a7ff689088c514",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:31f81553a7b2a543e319a3d7591f15fe89ca82fb3287736282a52d26bcf11490",
+  "decisions": {
+    "scale_cut_convention": "grid_bin_edges"
+  },
+  "input_versions": {
+    "pure_eb_ptes": "sha256:b8cc4e67c87272389796e56a6333d2ff308a8f70560bcd6e149edd79ada08c9c",
+    "cosebis_ptes": "sha256:c6974eb9de9ace973e2bb3baba0af1f7dd6fa8763eca5364a2da07c8befdbc1b",
+    "pure_eb_pte_per_cut": "sha256:cf141b39537283b69f40059afc1d0096368a1b8f6530160afa11c8aba247654d",
+    "cosebis_pte_per_cut": "sha256:ddd441675fa706030fd26863a3455e120abf87f8406e5f39e9475ecaa491bc79",
+    "config_space_pte_matrices_script": "sha256:79740093e14d74859b9d5522c54cf701081b0970e601a5080047e7c36ec94096",
+    "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T18:18:38.760+00:00",
+  "finished_at": "2026-10-16T18:18:49.545+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

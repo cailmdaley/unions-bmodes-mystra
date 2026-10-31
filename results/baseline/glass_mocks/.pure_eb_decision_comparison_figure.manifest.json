@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.pure_eb_decision_comparison_figure",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/pure_eb_decision_comparison_figure.py --stats results/baseline/glass_mocks/pure_eb_scan_statistics.json --out-file results/baseline/glass_mocks/pure_eb_decision_comparison_figure.png\n",
+  "definition_version": "sha256:23bc83726e62816540bf3d345f4f8dbb27a4a59d971eb8a3d7811ff0c3e9e1ef",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:7c1780fa9138924530c4377cd059cfc57ce280f2d61235e1067557bcab066059",
+  "decisions": {},
+  "input_versions": {
+    "pure_eb_scan_statistics": "sha256:81dca53775441bd549cffac5d0dd5ac9dd583df634bfb2ad72afa1fa02882427",
+    "pure_eb_decision_comparison_figure_script": "sha256:8c73b4a777f8997906f0c70a4e2b33d27f18fc64b86445428de5cde8a724d522",
+    "plotting_utils_script": "sha256:e53c7b42f75838d1d6b63327bd72e7c2a3f3d5b22b4e00e67df32a409552a0da",
+    "pure_eb_scan_variants_script": "sha256:b1d1adbeda741197a287af0f50a4e201f42ae30d028796135cd82b132e33d01e"
+  },
+  "git_sha": "8679bfda5977c8848b0eb670ebc79052becaf68d",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc5.dev20+g7edf83237",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-09-27T23:24:11.734+00:00",
+  "finished_at": "2026-09-27T23:24:36.501+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.mock_campaign_figure",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/mock_campaign_paper_figure.py --stats results/baseline/glass_mocks/mock_per_mock_statistics.npz --out-file results/baseline/glass_mocks/mock_campaign_figure.png\n",
+  "definition_version": "sha256:18bbeba284186967ea711189a8fb6bafcbfc406ea20bdb4d26ea5b0ccd2aaec5",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:b4d39cfa887d28260364deafede0efeb70a769b84c24444b24a8ea0b70bf116b",
+  "decisions": {
+    "reference_covariance": "mockmatched"
+  },
+  "input_versions": {
+    "mock_per_mock_statistics": "sha256:1ae306148fb12ff11998bbde4737f178355640a3d63802e1ea732f49c5d4f656",
+    "mock_campaign_paper_figure_script": "sha256:75e23e9b7d02a310fe6dac959c08cdd0c092e6f662eaf9a468a61bf8d49e0641",
+    "plotting_utils_script": "sha256:e53c7b42f75838d1d6b63327bd72e7c2a3f3d5b22b4e00e67df32a409552a0da"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T18:18:55.525+00:00",
+  "finished_at": "2026-10-16T18:19:39.364+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

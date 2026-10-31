@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "output_id": "cl_bb.cl_bandpowers_fine",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/generate_pseudo_cl.py --ver \"$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --get fiducial.version)\" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 96 --power 0.5 --blind blind_a --out-file results/baseline/cl_bb/cl_bandpowers_fine.fits\n",
+  "definition_version": "sha256:25d9136f45f4f35c7133bd9fb8aecbe20c6a077a15ba08cbff3d5f3e4c49cc62",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:b27f1d2281ff9f1e521b9f87a73e132945d6a693083e3817e3a6beb62542a00b",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a"
+  },
+  "input_versions": {
+    "shear_catalog": "sha256:8c981053dfe2400a81136022456ff80b7325ad8ccf63d9cf4e4037964e036a15",
+    "redshift_distribution": "sha256:0d712922bf6edc27600b4035cc236cccd3aa73fbd4f2bc426c3914b9a924cbe8",
+    "mask_power_spectrum": "sha256:043c512476658dea60273e095e88b00e3b73559cfea394d1bda35e9548c576cb"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T15:58:39.756+00:00",
+  "finished_at": "2026-10-16T15:59:17.552+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

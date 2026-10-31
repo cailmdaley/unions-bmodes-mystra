@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "output_id": "two_point.xi_scan.xi_sp_v1p4p6p3_integration",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.6.3 --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file results/baseline/two_point/xi_scan/xi_sp_v1p4p6p3_integration.txt\n",
+  "definition_version": "sha256:6116248f7ea8e19fce19d0a04072b06b170795f8e8a898b57df3ef3b26a704a1",
+  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
+  "data_version": "sha256:7526fb132ae3564f7e7b2913ad6bb5c6d0646b8ee8e0bb78d37137e2d3e70f77",
+  "decisions": {
+    "fiducial_catalog": "size_cut"
+  },
+  "input_versions": {
+    "shear_catalog": "sha256:8c981053dfe2400a81136022456ff80b7325ad8ccf63d9cf4e4037964e036a15",
+    "shapepipe_v14_catalogs": "spelling:sha256:476a59a7d51545a6de80b0d96e7f535550159cda928a0bf2b7efb76c5eef5f3d",
+    "shapepipe_v145_rerun": "sha256:a59810c516c30805937388d56eede60d0417ce9375168a8813823b9be6c5acd8"
+  },
+  "git_sha": "4926d72d017952a702554771a9b5d0ab3d7a5dce",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-09-02T20:05:16.021+00:00",
+  "finished_at": "2026-09-02T22:02:06.486+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-e841fa2c63d0c02c",
+    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
+    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "arch": "amd64"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "output_id": "two_point.xi_scan.xi_sp_v1p4p5_leak_corr_integration",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.5_leak_corr --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file results/baseline/two_point/xi_scan/xi_sp_v1p4p5_leak_corr_integration.txt\n",
+  "definition_version": "sha256:a4bfc4d8532dfa901c8d0741d936cf0cc2de91f12ed9ddf1535c3e692e9cffd9",
+  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
+  "data_version": "sha256:fd946a7aa95709100bab5cc86705b811e8aca738fc21ad310138c1bf881f4ad3",
+  "decisions": {
+    "fiducial_catalog": "size_cut"
+  },
+  "input_versions": {
+    "shear_catalog": "sha256:8c981053dfe2400a81136022456ff80b7325ad8ccf63d9cf4e4037964e036a15",
+    "shapepipe_v14_catalogs": "spelling:sha256:476a59a7d51545a6de80b0d96e7f535550159cda928a0bf2b7efb76c5eef5f3d",
+    "shapepipe_v145_rerun": "sha256:a59810c516c30805937388d56eede60d0417ce9375168a8813823b9be6c5acd8"
+  },
+  "git_sha": "4926d72d017952a702554771a9b5d0ab3d7a5dce",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-09-02T20:11:17.098+00:00",
+  "finished_at": "2026-09-02T23:25:58.523+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-e841fa2c63d0c02c",
+    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
+    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "arch": "amd64"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.mock_xi_reporting_cov_mockmatched",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/mock_xi_reporting_cov_mockmatched.py --covariance /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt --reporting-ensemble results/baseline/glass_mocks/mock_xi_reporting.npz --fine-min-sep 0.5 --fine-max-sep 300.0 --fine-nbins 1000 --out-file results/baseline/glass_mocks/mock_xi_reporting_cov_mockmatched.npz\n",
+  "definition_version": "sha256:29c8a87a3e6b5ac0325ac432ae6f27fd5215b9b287c8755aa86374e28d7c2e79",
+  "env_version": "sha256:5d20e139f6dd2a87d7b17a096d93e196eec959f36991c85e9c1da5975d7bda21",
+  "data_version": "sha256:a7094411e6a78518c2458bcda6e06cb9d1498b32ab3bf258f81f78f8f78d3c3f",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2",
+    "reference_covariance": "mockmatched"
+  },
+  "input_versions": {
+    "cov_integration_mockmatched": "sha256:a65ee4c8beac7c53d45db38c2aac9226628ccd921151d27227e6a15078646780",
+    "mock_xi_reporting": "sha256:347e06f70a8d3dc4c65027f41a1fe5f2dbc0fb2b148148d36208824350a4cf1f",
+    "mock_xi_reporting_cov_script": "sha256:702f4e0787c31139f62a423bb0df5f6b5ba095bff49bcd94c21be624321f29a0"
+  },
+  "git_sha": "a9e0fd97fb889a1ef24193360f14cc6103da04a5",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-09-13T15:15:03.802+00:00",
+  "finished_at": "2026-09-13T15:15:08.117+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c985ceaa3193cabe",
+    "id": "991fbeee21445463e45e8a839048b2873f00345779f4b2464f60869cdee7deec",
+    "archive": ".datalad/environments/lc-env-c985ceaa3193cabe/image",
+    "arch": "amd64"
+  }
+}

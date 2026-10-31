@@ -1,275 +1,324 @@
-version: "1.0"
+version: "0.0.14"
 name: "COSEBI B-mode amplitudes"
 
 inputs:
   - id: xi_integration
-    type: analysis
     from: ../two_point.xi_integration
 
   - id: xi_integration_convergence
-    type: analysis
     from: ../two_point.xi_integration_convergence
 
+  - id: xi_sweep
+    from: ../two_point.xi_sweep
+
   - id: cov_integration_g
-    type: analysis
     from: ../covariance.cov_integration_g
 
+  - id: cov_sweep
+    from: ../covariance.cov_sweep
+
   - id: cl_bandpowers_fine
-    type: analysis
     from: ../cl_bb.cl_bandpowers_fine
+
+  - id: cl_cov_fine
+    from: ../covariance.cl_cov_fine
+
+  # The pseudo-Cℓ sweep bundle: the harmonic COSEBI scan reads each
+  # non-fiducial leak-corrected version's 96-bin bandpowers + covariance out
+  # of it by canonical filename.
+  - id: cl_sweep
+    from: ../cl_bb.cl_sweep
+
+  - id: paper_mplstyle
+    from: ../paper_mplstyle
+
+  - id: print_width_script
+    from: ../print_width_script
+
+  - id: cosebis_version_comparison_script
+    from: ../cosebis_version_comparison_script
 
 outputs:
   - id: cosebis_modes_data
     type: data
+    format: npz
     description: |
-      Per-(version, blind) NPZ holding the E_n / B_n vectors
-      for n = 1 … 20, the mode covariance matrix obtained from
-      the linear transform `T^T C_ξ T`, and the diagonal σ_n
-      used for the B_n / σ_n normalisation in the paper figure.
-      The fiducial-version artifact is the source for the
+      NPZ for the [fiducial catalog](#../decisions.fiducial_catalog)
+      at blind A holding the E_n / B_n vectors for n = 1 … 20, the
+      mode covariance matrix obtained from the linear transform
+      `T^T C_ξ T`, and the diagonal σ_n used for the B_n / σ_n
+      normalisation in the paper figure. Rendered by
+      [fig_cosebis_data_vector](#outputs.fig_cosebis_data_vector),
+      which is the artifact behind the
       [paper data-vector figure](#../outputs.fig_cosebis_fiducial).
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention]
+    inputs: [xi_integration, cov_integration_g]
     recipe:
-      # cosebis_data_vector.py CLI computes the fiducial E_n/B_n data vector and
-      # the T^T C_xi T mode covariance at both scale cuts, writing
-      # cosebis_modes_<ver>.npz (+ paper figure) under {output}. Upstream xi/cov
-      # are read by absolute path from the canonical COSMO_VAL / COSMO_INFERENCE
-      # trees — bit-identical to the DAG (the lc pipeline reproduces only the
-      # fiducial version; the multi-version cosebis figures read the same trees).
+      # cosebis_data_vector.py computes the fiducial E_n/B_n data vector and the
+      # T^T C_xi T mode covariance at both scale cuts, writing the NPZ payload
+      # directly to {output}. Upstream xi/cov arrive as declared lc inputs.
+      # The paper figure is a separate declared output (fig_cosebis_data_vector).
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/cosebis_data_vector.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --xi-integration /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
-        --cov-integration /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
-        --out {output}
-      resources: { cpus: 8, memory: "16GB", time_limit: "1h" }
+        python src/papers/bmodes/scripts/cosebis_data_vector.py
+        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --xi-integration {inputs.xi_integration}
+        --cov-integration {inputs.cov_integration_g}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 8, memory: "16GB" }
+
+  - id: fig_cosebis_data_vector
+    type: figure
+    format: png
+    description: |
+      Paper Figure 3: the COSEBI B_n / σ_n data vector for the
+      [fiducial catalog](#../decisions.fiducial_catalog) at blind A,
+      n = 1 … 20, with the fiducial and full-range scale cuts shown.
+      Rendered from the already-computed
+      [cosebis_modes_data](#outputs.cosebis_modes_data) NPZ rather
+      than recomputing the modes; the root
+      [fig_cosebis_fiducial](#../outputs.fig_cosebis_fiducial)
+      is this artifact.
+    decisions: [fiducial_catalog, fiducial_blind, mode_subsets, scale_cut_convention]
+    inputs: [cosebis_modes_data, paper_mplstyle, print_width_script]
+    recipe:
+      # Plot-only pass of the same CLI: reads the E_n/B_n/covariance payload back
+      # from the modes NPZ and writes the single rendered PNG to {output}.
+      command: >
+        python src/papers/bmodes/scripts/cosebis_data_vector.py
+        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --plot-from-modes {inputs.cosebis_modes_data}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
 
   - id: cosebis_pte_per_cut
-    type: data
-    description: |
-      Per-(version, blind) NPZ holding the COSEBI B_n PTE
-      matrices over the full scale-cut pair grid — all stable
-      index pairs of `geomspace(1', 250', 21)` from
-      [scale_cut_pair_grid](#decisions.scale_cut_pair_grid) —
-      for both reported mode subsets (n ≤ 6, n ≤ 20). Generated
-      by gathering `compute_cosebis_pte` outputs per scale-cut
-      pair. The
-      [config-space PTE composite](#../outputs.fig_pte_heatmaps)
-      assembles this along with the pure-mode PTE matrices.
-    decisions: [fiducial_catalog, fiducial_blind]
-    recipe:
-      # Reconciliation: the DAG SCATTERED one JSON per (version, blind, i_min,
-      # i_max) via compute_cosebis_pte_single.py and gathered them downstream. The
-      # refactored CLI loops the same stable scale-cut pair grid internally (same
-      # theta grid, nmodes=20, NaN-on-convergence-failure handling) and writes ONE
-      # gathered NPZ cosebis_ptes_<ver>_<blind>.npz — no scatter, no per-pair deps.
-      command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/compute_cosebis_pte_single.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --xi-integration /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
-        --cov-integration /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
-        --out {output}
-      resources: { cpus: 8, memory: "16GB", time_limit: "6h" }
+    # NPZ for the fiducial catalog at blind A holding the COSEBI B_n PTE
+    # matrices over the full scale-cut pair grid — all stable index pairs of
+    # `geomspace(1', 250', 21)` from scale_cut_pair_grid — for both reported
+    # mode subsets (n <= 6, n <= 20); the config-space PTE composite
+    # (../outputs.fig_pte_heatmaps) assembles it with the pure-mode matrices.
+    #
+    # Re-export of the generated cosebis_pte_grid sweep's gather output — the
+    # only edge into that sweep. The 206-pair loop was one lc output and the
+    # wall-clock pole of the reproduction; it is now one member per i_min row
+    # plus a gather that reassembles the identical NPZ, so every consumer is
+    # unchanged. Regenerate with
+    #   scripts/sweep_expand.py -o analyses/cosebis/analyses/cosebis_pte_grid/astra.yaml \
+    #       analyses/cosebis/analyses/cosebis_pte_grid/cosebis_pte_grid.sweep.yaml
+    from: cosebis_pte_grid.cosebis_pte_matrix
 
   - id: cosebis_ptes
-    type: data
-    description: |
-      Design-B Tier-2 producer sweep: gathered COSEBI B_n PTE
-      matrices (n ≤ 6, n ≤ 20) over the full scale-cut pair grid
-      for every non-fiducial, non-ecut catalog version (7 variants
-      — 3 leak-corrected + 4 uncorrected), each written to the
-      canonical `cosebis_ptes_{ver}_{blind}.npz` — the same
-      gathered layout as the fiducial
-      [cosebis_pte_per_cut](#outputs.cosebis_pte_per_cut). The
-      appendix config-space PTE heatmap
-      ([config_space_pte_evidence](#../null_tests.outputs.config_space_pte_evidence),
-      [fig_pte_heatmaps](#../outputs.fig_pte_heatmaps)) reads these
-      via `--cosebis-pte-dir` and adapts the gathered NPZ back to
-      the per-pair PTE matrix, so fiducial and sweep versions share
-      provenance. Per version it runs the *identical*
-      `compute_cosebis_pte_single` per-pair compute (version-
-      independent theta grid + nmodes), reading that version's
-      1000-bin integration ξ_± from
-      [xi_sweep](#../two_point.outputs.xi_sweep) and its Gaussian
-      integration covariance from
-      [cov_sweep](#../covariance.outputs.cov_sweep) by absolute path
-      (lc does not wire cross-output deps — run xi_sweep and
-      cov_sweep first). The fiducial version stays in the single-
-      output recipe above and is passed to the heatmap via
-      `--fiducial-cosebis-pte-path`.
-    decisions: [fiducial_catalog, fiducial_blind]
-    recipe:
-      # run_cosebis_ptes_sweep.py loops the non-fiducial version list
-      # (sweep_versions.py) and calls compute_cosebis_pte_single.main once per
-      # version (--version/--blind override the fiducial default), reading each
-      # version's integration xi from the xi_sweep dir and cov from the cov_sweep
-      # dir by absolute path, emitting the gathered cosebis_ptes_{ver}_{blind}.npz
-      # into {output}. Serial over versions (~25 min/version, 206 pairs — the pole).
-      command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/run_cosebis_ptes_sweep.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --xi-sweep-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_sweep
-        --cov-sweep-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_sweep
-        --out {output}
-      resources: { cpus: 24, memory: "48GB", time_limit: "6h" }
+    # Re-export of the generated cosebis_pte_scan sweep's gather output — the
+    # only edge into that sweep. Was a single serial output looping the seven
+    # non-fiducial versions inside one recipe; each version is now its own lc
+    # output and the gather rebuilds the identical tar.gz. Regenerate with
+    #   scripts/sweep_expand.py \
+    #       -o analyses/cosebis/analyses/cosebis_pte_scan/astra.yaml \
+    #       analyses/cosebis/analyses/cosebis_pte_scan/cosebis_pte_scan.sweep.yaml
+    from: cosebis_pte_scan.cosebis_ptes_bundle
 
   - id: cosebis_binning_convergence
     type: figure
+    format: png
     description: |
       One-shot 1000-bin vs 10,000-bin comparison of B_n and
       n ≤ 6 / n ≤ 20 PTEs for the
       [fiducial catalog](#../decisions.fiducial_catalog) at
-      blind A. Demonstrates ≤ 2% B_n drift across modes 1–20
-      between the two grids, justifying the choice of 1000
+      blind A. The null-test verdicts are stable between the
+      grids (fiducial n ≤ 20 PTE 0.94 → 0.75; full range
+      1.1e-4 → 4.1e-4) while individual high-n B_n move by up
+      to ~1σ — a re-measurement effect (TreeCorr fine-bin pair
+      placement) plus the interval convention, not filter
+      quadrature, which is converged to ~1e-7σ at 1000 bins
+      (see convergence.tenk_grid_comparison). Justifies 1000
       bins as the production integrand grid. Materialised once;
       not re-run per iteration.
+    decisions: [fiducial_catalog, fiducial_blind, mode_subsets, scale_cut_convention]
+    inputs: [xi_integration, xi_integration_convergence, cov_integration_g]
     recipe:
-      # Diagnostic (not in the paper): cosebis_binning_comparison.py CLI computes
-      # B_n from the 1000-bin and 10000-bin integration grids and writes figure.png
-      # + evidence.json under {output}. All three inputs now read from lc outputs
-      # (never the canonical COSMO_VAL tree): the 1k xi from two_point.xi_integration,
-      # the 10k xi from two_point.xi_integration_convergence (run that MPI output
-      # first — lc wires no cross-output dep), the 1k Gaussian cov from
-      # covariance.cov_integration_g.
+      # Diagnostic (not in the paper): cosebis_binning_comparison.py computes B_n
+      # from the 1000-bin and 10000-bin integration grids and writes the single
+      # rendered PNG to {output}. All three inputs are declared lc inputs.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/cosebis_binning_comparison.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --xi-1k /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
-        --xi-10k /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration_convergence/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt
-        --cov-1k /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
-        --out {output}
-      resources: { cpus: 8, memory: "16GB", time_limit: "3h" }
+        python src/papers/bmodes/scripts/cosebis_binning_comparison.py
+        --config src/papers/bmodes/config/config.yaml
+        --xi-1k {inputs.xi_integration}
+        --xi-10k {inputs.xi_integration_convergence}
+        --cov-1k {inputs.cov_integration_g}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 8, memory: "16GB" }
 
   - id: cosebis_version_comparison
     type: figure
+    format: png
     description: |
       Per-mode B_n stack across the four leak-corrected catalog
       variants (size-cut, initial, masked, relaxed-flags),
       contributing the COSEBI row of the
       [paper Figure 5 version composite
-      ](#../outputs.fig_pure_eb_versions). Uncorrected variants
+      ](#../outputs.fig_versions_cosebis). Uncorrected variants
       are not stacked — the comparison plot is leak-corrected
       only.
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention]
+    inputs: [xi_sweep, cov_sweep, xi_integration, cov_integration_g, paper_mplstyle, print_width_script, cosebis_version_comparison_script]
     recipe:
-      # cosebis_version_comparison.py CLI overlays B_n across the 4 leak-corrected
+      # cosebis_version_comparison.py overlays B_n across the 4 leak-corrected
       # catalogs. The version sweep lives inside the plotter: it reconstructs each
-      # version's integration-grid xi (--results-dir) and Gaussian covariance
-      # (--cov-dir) by the canonical naming pattern and recomputes COSEBIs per
-      # version. Writes figure_stacked.png + cosebis_bmode_stacked.pdf under {output}.
+      # version's integration-grid xi and Gaussian covariance by the canonical
+      # naming pattern from the unpacked sweep bundles and recomputes COSEBIs per
+      # version. Writes the single stacked PNG to {output}.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/cosebis_version_comparison.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --results-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_sweep
-        --cov-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_sweep
+        x=$(mktemp -d) && c=$(mktemp -d) &&
+        tar xzf {inputs.xi_sweep} -C $x &&
+        tar xzf {inputs.cov_sweep} -C $c &&
+        python src/papers/bmodes/scripts/cosebis_version_comparison.py
+        --config src/papers/bmodes/config/config.yaml
+        --results-dir $x
+        --cov-dir $c
         --fiducial-version SP_v1.4.6.3_leak_corr
-        --fiducial-xi-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
-        --fiducial-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
-        --out {output}
-      resources: { cpus: 8, memory: "16GB", time_limit: "2h" }
+        --fiducial-xi-path {inputs.xi_integration}
+        --fiducial-cov-path {inputs.cov_integration_g}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 8, memory: "16GB" }
 
   - id: cosebis_harmonic_modes
     type: data
+    format: npz
     description: |
       Harmonic-path B_n via paper Eq. 19, summing FFT-log
       Fourier-dual W_n(ℓ) filters against the 96-bin √ℓ-linear
-      pseudo-Cℓ bandpowers (`cl.cosebis_nbins = 96`,
-      computed by the source `pseudo_cl` rule). Compared
-      mode-by-mode against the angular-space
+      pseudo-Cℓ bandpowers
+      ([harmonic_validation_binning](#decisions.harmonic_validation_binning)).
+      Compared mode-by-mode against the angular-space
       [cosebis_modes_data](#outputs.cosebis_modes_data) for
       the [paper cross-check figure
       ](#../outputs.fig_harmonic_config_cosebis); GLASS
-      validation underwrites the agreement at n ≤ 6. The
-      96-bin pseudo-Cℓ input is declared as
-      [cl_bandpowers_fine](#inputs.cl_bandpowers_fine); the
-      snakemake rule resolves the corresponding FITS file
-      through the harmonic-space DAG.
+      validation underwrites the agreement at n ≤ 6. The NPZ
+      carries E_n/B_n/covariance for both paths at both scale
+      cuts; the PTE/χ² summary is promoted to
+      [cosebis_harmonic_metrics](#outputs.cosebis_harmonic_metrics).
+      The 96-bin pseudo-Cℓ input is
+      [cl_bandpowers_fine](#inputs.cl_bandpowers_fine).
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
+    inputs: [cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration_g]
     recipe:
-      # harmonic_config_cosebis_comparison.py CLI (shared with the root
-      # fig_harmonic_config_cosebis figure output) computes the harmonic-path
-      # (96-bin pseudo-Cl -> cosebis_from_Cell, Eq. 19) and config-path COSEBIs
-      # for the fiducial catalog at both scale cuts, and writes
-      # cosebis_harmonic_modes_<ver>.npz — En/Bn/cov for both paths — under
-      # {output} (alongside the combined Figure 8 PDF). Per-version pseudo-Cl,
-      # 96-bin covariance and xi are read from the canonical trees.
+      # harmonic_config_cosebis_comparison.py computes the harmonic-path (96-bin
+      # pseudo-Cl -> cosebis_from_Cell, Eq. 19) and config-path COSEBIs for the
+      # fiducial catalog at both scale cuts, writing the En/Bn/cov NPZ for both
+      # paths to {output}. The combined Figure 8 render is the root
+      # fig_harmonic_config_cosebis output; the PTE dict is the metrics output.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
         --angular-range fiducial --blind A
-        --cosmo-val-dir /n17data/cdaley/unions/code/sp_validation/cosmo_val/output
-        --covariance-dir /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance
-        --fiducial-version SP_v1.4.6.3_leak_corr
-        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_fine/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
-        --fiducial-xi-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
-        --fiducial-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
-        --out {output}
-      resources: { cpus: 8, memory: "16GB", time_limit: "3h" }
+        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)"
+        --fiducial-pseudo-cl-path {inputs.cl_bandpowers_fine}
+        --fiducial-pseudo-cl-cov-path {inputs.cl_cov_fine}
+        --fiducial-xi-path {inputs.xi_integration}
+        --fiducial-cov-path {inputs.cov_integration_g}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 8, memory: "16GB" }
+
+  - id: cosebis_harmonic_metrics
+    type: metric
+    format: json
+    description: |
+      The `harmonic_b_mode_ptes` / `config_b_mode_ptes` PTE + χ²
+      dictionaries for the fiducial angular range, extracted from
+      the same run that produces
+      [cosebis_harmonic_modes](#outputs.cosebis_harmonic_modes).
+      Promoted from the July `evidence.json` because the report
+      discussion consumes these values directly (`{astra:value}`
+      references against
+      [cosebis_harmonic_config](#../outputs.cosebis_harmonic_config)).
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
+    inputs: [cosebis_harmonic_modes]
+    recipe:
+      # Metrics-only pass: reads the modes NPZ back and emits the PTE/chi2 JSON.
+      command: >
+        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --angular-range fiducial --blind A
+        --metrics-from-modes {inputs.cosebis_harmonic_modes}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
 
   - id: cosebis_harmonic_modes_full
     type: data
+    format: npz
     description: |
       Full-angular-range twin of
       [cosebis_harmonic_modes](#outputs.cosebis_harmonic_modes):
       the same harmonic-path Eq. 19 vs. config-path COSEBI
       cross-check, run with `--angular-range full` instead of
-      `fiducial`. The script computes both scale cuts internally
-      per invocation (the NPZ payload already carries
-      `full_*`/`fiducial_*` fields either way), but the
-      evidence.json `harmonic_b_mode_ptes` / `config_b_mode_ptes`
-      PTE+χ² dicts are keyed to whichever cut was passed via
-      `--angular-range`. This is the only carrier for the
-      harmonic-space full-range COSEBI PTE
+      `fiducial`. Feeds the [full-range cross-check
+      figure](#../outputs.fig_harmonic_config_cosebis_full)
+      (paper Figure 8, `fig:harmonic_config_cosebis_full`); its
+      PTE payload is
+      [cosebis_harmonic_metrics_full](#outputs.cosebis_harmonic_metrics_full).
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
+    inputs: [cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration_g]
+    recipe:
+      # Same CLI as cosebis_harmonic_modes, --angular-range full instead of
+      # fiducial. Identical inputs; only the flag differs.
+      command: >
+        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --angular-range full --blind A
+        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)"
+        --fiducial-pseudo-cl-path {inputs.cl_bandpowers_fine}
+        --fiducial-pseudo-cl-cov-path {inputs.cl_cov_fine}
+        --fiducial-xi-path {inputs.xi_integration}
+        --fiducial-cov-path {inputs.cov_integration_g}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 8, memory: "16GB" }
+
+  - id: cosebis_harmonic_metrics_full
+    type: metric
+    format: json
+    description: |
+      Full-range twin of
+      [cosebis_harmonic_metrics](#outputs.cosebis_harmonic_metrics).
+      The script computes both scale cuts internally per invocation
+      (the NPZ payload already carries `full_*`/`fiducial_*` fields
+      either way), but the `harmonic_b_mode_ptes` /
+      `config_b_mode_ptes` PTE + χ² dicts are keyed to whichever cut
+      was passed via `--angular-range`. This is the only carrier for
+      the harmonic-space full-range COSEBI PTE
       ([harmCosebisPteSixThreeFull](#../findings.cosebis_full_range_failure),
       quoted in the paper §5) and its χ², and (redundantly with
       [null_tests.config_space_pte_evidence](#../null_tests.outputs.config_space_pte_evidence))
       the config-space full-range COSEBI χ² — see
       `work/transpile-map.md` §2c/§2d for the gap this closes.
-      Feeds the [full-range cross-check
-      figure](#../outputs.fig_harmonic_config_cosebis_full)
-      (paper Figure 8, `fig:harmonic_config_cosebis_full`).
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
+    inputs: [cosebis_harmonic_modes_full]
     recipe:
-      # Same CLI as cosebis_harmonic_modes, --angular-range full instead of
-      # fiducial (shared with root fig_harmonic_config_cosebis_full). Identical
-      # inputs/container; only the flag differs.
+      # Metrics-only pass on the full-range modes NPZ.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
+        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
         --angular-range full --blind A
-        --cosmo-val-dir /n17data/cdaley/unions/code/sp_validation/cosmo_val/output
-        --covariance-dir /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance
-        --fiducial-version SP_v1.4.6.3_leak_corr
-        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_fine/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
-        --fiducial-xi-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
-        --fiducial-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
-        --out {output}
-      resources: { cpus: 8, memory: "16GB", time_limit: "3h" }
+        --metrics-from-modes {inputs.cosebis_harmonic_modes_full}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
 
+  - id: cosebis_harmonic_version_ptes
+    # Re-export of the generated cosebis_harmonic_scan sweep's gather output —
+    # the only edge into that sweep. Restores the non-fiducial leak-corrected
+    # versions' harmonic COSEBI B-mode PTEs, which the root
+    # `cosebis_harmonic_config` table needs and which the per-version compute
+    # split had reduced to the fiducial row alone. Regenerate with
+    #   scripts/sweep_expand.py \
+    #       -o analyses/cosebis/analyses/cosebis_harmonic_scan/astra.yaml \
+    #       analyses/cosebis/analyses/cosebis_harmonic_scan/cosebis_harmonic_scan.sweep.yaml
+    from: cosebis_harmonic_scan.cosebis_harmonic_version_ptes
 
 decisions:
 
@@ -278,6 +327,9 @@ decisions:
 
   fiducial_blind:
     from: ../fiducial_blind
+
+  scale_cut_convention:
+    from: ../scale_cut_convention
 
   mode_count:
     label: "Number of COSEBI modes computed"
@@ -409,3 +461,14 @@ decisions:
           ](#../decisions.fiducial_scale_cuts); hides scale-cut
           sensitivity — not used by the paper, but exposed
           as a multiverse minimal cut.
+
+analyses:
+
+  cosebis_harmonic_scan:
+    path: ./analyses/cosebis_harmonic_scan
+
+  cosebis_pte_scan:
+    path: ./analyses/cosebis_pte_scan
+
+  cosebis_pte_grid:
+    path: ./analyses/cosebis_pte_grid

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "output_id": "cosebis.cosebis_pte_scan.cosebis_ptes_bundle",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout cosebis_ptes --config src/papers/bmodes/config/config.yaml --names cosebis_ptes_sp_v1p4p5 cosebis_ptes_sp_v1p4p5_leak_corr cosebis_ptes_sp_v1p4p6p3 cosebis_ptes_sp_v1p4p8 cosebis_ptes_sp_v1p4p8_leak_corr cosebis_ptes_sp_v1p4p11p3 cosebis_ptes_sp_v1p4p11p3_leak_corr --members results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p5.npz results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p5_leak_corr.npz results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p6p3.npz results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8.npz results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8_leak_corr.npz results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p11p3.npz results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p11p3_leak_corr.npz --out-file results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_bundle.tar.gz\n",
+  "definition_version": "sha256:a9a894ad4f2917ecdaf10e8dc5a6a6d59b3d6e0c9928df40a3ee27b010f23963",
+  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
+  "data_version": "sha256:c6974eb9de9ace973e2bb3baba0af1f7dd6fa8763eca5364a2da07c8befdbc1b",
+  "decisions": {},
+  "input_versions": {
+    "cosebis_ptes_sp_v1p4p5": "sha256:94e21d8b4ca1067411890fc7f5d802fd68ee7b4110ca09efe2a0cd647a350e73",
+    "cosebis_ptes_sp_v1p4p5_leak_corr": "sha256:a7ab89a90b354f0e273e6e9242f7820b48244a666c2fbe81a54559dd9b7c6fef",
+    "cosebis_ptes_sp_v1p4p6p3": "sha256:22bb1f84228d2740510bdc9766fddbfdaa7c4c6ea3002f5164a1a560201dfa71",
+    "cosebis_ptes_sp_v1p4p8": "sha256:9648e611ffcdaa7a094619ecd3918c0b1951ab00121994ab29ff44df47cf5608",
+    "cosebis_ptes_sp_v1p4p8_leak_corr": "sha256:3b11e82f3265d24e3c957bd7f9355613dac9990e4154f5b99a914bc3c616bef9",
+    "cosebis_ptes_sp_v1p4p11p3": "sha256:b15f743431d695e4d9fc10712bd596973ad580cd31c6bc3ad5f1938daf0e77c4",
+    "cosebis_ptes_sp_v1p4p11p3_leak_corr": "sha256:9bfdc966a5c1bd9daa11e94b40af21b4720ddd855ee3b8ee4ea0f117e28d6abd"
+  },
+  "git_sha": "4926d72d017952a702554771a9b5d0ab3d7a5dce",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-09-02T23:40:53.287+00:00",
+  "finished_at": "2026-09-02T23:40:54.365+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-e841fa2c63d0c02c",
+    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
+    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "arch": "amd64"
+  }
+}

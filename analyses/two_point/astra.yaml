@@ -1,38 +1,43 @@
-version: "1.0"
+version: "0.0.14"
 name: "Two-point correlation measurement"
 
 inputs:
-  - id: shear_catalog
-    type: analysis
-    from: ../catalog.shear_catalog
+  # run_2pcf.py resolves catalogs through cat_config, including v1.4.5
+  # whose target lies outside the v1.4.x family.
+  - id: shapepipe_v14_catalogs
+    from: ../shapepipe_v14_catalogs
+
+  - id: shapepipe_v145_rerun
+    from: ../shapepipe_v145_rerun
+  - id: tenk_xi_staging
+    type: data
+    description: |
+      TreeCorr ξ± dump on the 10,000-bin convergence grid for the size-cut catalog.
+      The file is an external input to `xi_integration_convergence`.
+    source: "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/production_out/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt"
 
 outputs:
   - id: xi_reporting
     type: data
     description: |
       TreeCorr ξ_±(θ) on the reporting grid: 20 logarithmic
-      bins over [1', 250']. Stored as a TreeCorr text dump plus
-      ξ_+ and ξ_- FITS files. The same file is consumed at
+      bins over [1', 250'], as a single TreeCorr text dump.
+      The same file is consumed at
       reporting binning by the pure E/B and Cℓ data-vector
       figures (paper Figures 1, 4, 5).
+    format: txt
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
     decisions: [fiducial_catalog]
     recipe:
-      # Clean lc-native recipe: lc drives execution (runtime:none), the recipe
-      # calls the compute directly inside the sp_validation apptainer container
-      # via `apptainer exec` (no nested snakemake). PYTHONPATH shadows the
-      # container's editable install so the repro/paper-ii-astra worktree code
-      # is used. TODO(fan-out): resolve --ver from {decisions.fiducial_catalog}
-      # instead of hardcoding; baseline (size_cut) = SP_v1.4.6.3_leak_corr.
+      # lc owns the container and the environment; the recipe is a bare python
+      # call against the vendored src/ scripts. --ver is the cat_config version
+      # the fiducial catalog's config names (config/catalogs/<option>.yaml).
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/workflow/scripts/run_2pcf.py
-        --ver SP_v1.4.6.3_leak_corr --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1
-        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
-        --out {output}
-      resources: { cpus: 24, memory: "30GB", time_limit: "6h" }
+        python src/workflow/scripts/run_2pcf.py
+        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1
+        --cat-config src/cosmo_val/cat_config.yaml
+        --no-fits --out-file {output}
+      resources: { cpus: 24, memory: "30GB" }
 
   - id: xi_integration
     type: data
@@ -44,20 +49,18 @@ outputs:
       reporting θ_max so the filters' extended kernels are
       evaluated on real catalog measurements rather than zero
       padding. 2.5 h on 24 cores per catalog version.
+    format: txt
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
     decisions: [fiducial_catalog]
     recipe:
       # Same run_2pcf.py CLI as xi_reporting, integration grid: 1000 bins
       # over [0.5', 300']. See xi_reporting for the recipe-form rationale.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/workflow/scripts/run_2pcf.py
-        --ver SP_v1.4.6.3_leak_corr --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1
-        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
-        --out {output}
-      resources: { cpus: 24, memory: "30GB", time_limit: "6h" }
+        python src/workflow/scripts/run_2pcf.py
+        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)" --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1
+        --cat-config src/cosmo_val/cat_config.yaml
+        --no-fits --out-file {output}
+      resources: { cpus: 24, memory: "30GB" }
 
   - id: xi_integration_convergence
     type: data
@@ -67,7 +70,9 @@ outputs:
       stability against the 1000-bin fiducial. MPI-distributed
       across 30 tasks × 12 OpenMP threads on 6 nodes, ~22 h
       wall time. Materialised once; not re-run per iteration.
+    format: txt
     decisions: [fiducial_catalog]
+    inputs: [tenk_xi_staging]
     recipe:
       # Path (B) — produced BARE-HOST by a standalone OpenMPI sbatch, then adopted
       # here by copy. TreeCorr needs no container; the container is an MPI dead end
@@ -78,60 +83,25 @@ outputs:
       # nodes, ~3.8 h — and run_2pcf_highres.py is committed on the sp_validation
       # worktree (repro/paper-ii-astra). TO REGENERATE FROM SCRATCH:
       # `sbatch producers/run_10k_xi_barehost.sbatch`, wait for the grid to land in
-      # the staging dir below, then `lc run two_point.xi_integration_convergence`.
+      # the staging dir, then `lc run two_point.xi_integration_convergence`.
       # This recipe only COPIES staging -> {output}; `lc run` alone does NOT
       # recompute the grid (the bare-host MPI step is outside lc by necessity).
-      # It must copy, not verify-in-place: lc/snakemake removes {output} before
-      # running any recipe, so a `test -f {output}/…` would delete the grid first.
-      # Staging lives outside {output}, so lc never touches it.
+      # It must copy, not verify-in-place: lc removes {output} before running
+      # any recipe. Staging lives outside {output}, so lc never touches it.
+      # Only the text dump is adopted; the ξ± FITS siblings are unconsumed.
       command: |
-        stage=/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/_scratch/tenk_xi/production_out
-        mkdir -p {output}
-        cp -f "$stage"/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt {output}/
-        cp -f "$stage"/xi_plus_SP_v1.4.6.3_leak_corr_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.fits {output}/
-        cp -f "$stage"/xi_minus_SP_v1.4.6.3_leak_corr_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.fits {output}/
-        test -f {output}/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt
-      resources: { cpus: 1, memory: "2GB", time_limit: "15m" }
+        cp -f {inputs.tenk_xi_staging} {output}
+      resources: { cpus: 1, memory: "2GB" }
 
   - id: xi_sweep
-    type: data
-    description: |
-      Design-B producer sweep: TreeCorr ξ_±(θ) for every
-      non-fiducial, non-ecut catalog version (7 variants — 3
-      leak-corrected + 4 uncorrected) on both the 20-bin
-      reporting and 1000-bin integration grids, all written into
-      one directory under run_2pcf's native, already-canonical
-      `{ver}_xi_minsep=..._nbins=..._npatch=1.txt` name. The
-      integration-grid dumps feed
-      [cosebis_version_comparison](#../cosebis.outputs.cosebis_version_comparison)
-      (`--results-dir`) and the
-      [pure E/B sweep](#../pure_eb.outputs.pure_eb_sweep); the
-      reporting-grid dumps feed the pure E/B sweep's output
-      binning. This is the version-swept analogue of
-      [xi_reporting](#outputs.xi_reporting) +
-      [xi_integration](#outputs.xi_integration), recomputing the
-      version-comparison inputs through lc rather than reading
-      them from the canonical CosmoStat tree; the fiducial
-      version stays in the single-output recipes above and is
-      passed to the comparison plotters via their `--fiducial-*`
-      overrides.
-    decisions: [fiducial_catalog]
-    recipe:
-      # run_xi_sweep.py loops the non-fiducial version list (sweep_versions.py)
-      # and calls run_2pcf.run_2pcf once per (version, grid), writing every
-      # version's canonical ξ± dump into {output}. Serial over versions; TreeCorr
-      # uses the full core allocation per call. lc's dask parallelises across
-      # sibling sweep outputs.
-      command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/run_xi_sweep.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
-        --out {output}
-      resources: { cpus: 24, memory: "30GB", time_limit: "12h" }
+    # Re-export of the generated xi_scan sweep's gather output. The sweep is a
+    # black box: this is the only edge into it, its member ids are an
+    # implementation detail, and the bundle keeps the July-canonical filenames
+    # so every downstream `--results-dir` / `--xi-sweep-dir` consumer is
+    # unchanged. Regenerate with
+    #   scripts/sweep_expand.py -o analyses/two_point/analyses/xi_scan/astra.yaml \
+    #       analyses/two_point/analyses/xi_scan/xi_scan.sweep.yaml
+    from: xi_scan.xi_sweep_bundle
 
 decisions:
 
@@ -201,3 +171,8 @@ decisions:
           covariance source; CosmoCov is. The 120-patch run is
           retained in `config.yaml.npatches` for one-off
           checks but does not enter any reported PTE.
+
+analyses:
+
+  xi_scan:
+    path: ./analyses/xi_scan

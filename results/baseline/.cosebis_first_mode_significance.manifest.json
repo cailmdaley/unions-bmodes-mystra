@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "output_id": "cosebis_first_mode_significance",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/emit_cosebis_first_mode_significance.py --cosebis-modes-npz results/baseline/cosebis/cosebis_modes_data.npz --out-file results/baseline/cosebis_first_mode_significance.json\n",
+  "definition_version": "sha256:38c4e3db2834ab0f4a36bbd60ceb69b9f95328c83b03f75edc0eb21995a078ab",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:dd10bf90f0feb3c3a7e03850a09527150b546fb031772660a6776806adaa2340",
+  "decisions": {},
+  "input_versions": {
+    "cosebis_modes_data": "sha256:ac1c8b2af0cfe7709c0e1f124c9f4a0a1cbb46ce554e7cf903a40f0d1cb479f7"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T18:12:48.857+00:00",
+  "finished_at": "2026-10-16T18:12:50.389+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "output_id": "convergence.tenk_cosebi_figure",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/tenk_grid_convergence.py --plot-cosebis-from-json results/baseline/convergence/tenk_grid_comparison.json --scale-cut-convention grid_bin_edges --integration-method fixed_operator --rebinning-weights npairs --integration-limits fine_grid_extent --out-file results/baseline/convergence/tenk_cosebi_figure.png\n",
+  "definition_version": "sha256:4961c052d9a8418e2df426404a63ee5ed03674824c874d00f0f61e30f03a90c2",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:3cf02a1b688a342305d0bae4378261ed7707271b64417437452185f88612f420",
+  "decisions": {
+    "scale_cut_convention": "grid_bin_edges",
+    "mode_count": "n_max_20"
+  },
+  "input_versions": {
+    "tenk_grid_comparison": "sha256:fabad3aa8bdb64477ccfbd727f1fd4e8c5c6b0ec7539012f300e32483f935b34",
+    "tenk_grid_convergence_script": "sha256:de9e30e64f5c7ac10032963f9bfcbdfa496cf017ec4ea7be66ef48db5a18127a"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T18:20:14.550+00:00",
+  "finished_at": "2026-10-16T18:20:33.738+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

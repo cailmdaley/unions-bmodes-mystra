@@ -1,18 +1,46 @@
-version: "1.0"
+version: "0.0.14"
 name: "Harmonic-space pseudo-Cℓ^BB and Cℓ^EB"
 
 inputs:
-  - id: shear_catalog
-    type: analysis
-    from: ../catalog.shear_catalog
-
   - id: redshift_distribution
-    type: analysis
     from: ../catalog.redshift_distribution
 
   - id: mask_power_spectrum
-    type: analysis
     from: ../catalog.mask_power_spectrum
+
+  - id: cl_cov_reporting
+    from: ../covariance.cl_cov_reporting
+
+  - id: redshift_distributions
+    from: ../redshift_distributions
+    # The raw n(z) tree, as distinct from `redshift_distribution` above (the
+    # catalog unit's single fiducial copy). `generate_pseudo_cl_cov.py` reads
+    # whatever `redshift_path` cat_config gives for its `--ver`, so the
+    # [cl_scan sweep](#analyses.cl_scan)'s covariance members need the tree
+    # itself bound, not one file out of it. Same reason as the covariance
+    # unit's alias of the same name.
+
+  - id: redshift_distributions_legacy
+    from: ../redshift_distributions_legacy
+    # The n(z) cat_config gives the v1.4.8 / v1.4.11.3 entries, which the
+    # [cl_scan sweep](#analyses.cl_scan) covers. Promoted to a root input
+    # once the pure_eb sweeps turned out to read it too.
+
+  - id: shapepipe_v14_catalogs
+    from: ../shapepipe_v14_catalogs
+
+  - id: shapepipe_v145_rerun
+    from: ../shapepipe_v145_rerun
+    # cat_config sends both v1.4.5 variants outside the v1.4.x family.
+
+  - id: paper_mplstyle
+    from: ../paper_mplstyle
+
+  - id: print_width_script
+    from: ../print_width_script
+
+  - id: cl_version_comparison_script
+    from: ../cl_version_comparison_script
 
 outputs:
   - id: cl_bandpowers_reporting
@@ -28,23 +56,21 @@ outputs:
       source for the
       [paper Cℓ data-vector figure
       ](#../outputs.fig_cl_fiducial).
+    format: fits
     decisions: [fiducial_catalog, fiducial_blind]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distribution, mask_power_spectrum]
     recipe:
-      # Clean lc-native recipe (see two_point.xi_reporting for form rationale).
-      # generate_pseudo_cl.py CLI mode; fiducial version + blind A hardcoded
-      # (single-version output, faithful to the DAG). Native filename
-      # pseudo_cl_<ver>.fits written under {output}.
+      # lc owns the container; bare `python`, scripts read from the vendored
+      # src/ tree. Fiducial version + blind A hardcoded (single-version
+      # output, faithful to the DAG). Writes the single decoupled-bandpower FITS
+      # straight to {output}.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/workflow/scripts/generate_pseudo_cl.py
-        --ver SP_v1.4.6.3_leak_corr
-        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
-        --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A
-        --out {output}
-      resources: { cpus: 12, memory: "32GB", time_limit: "2h" }
+        python src/workflow/scripts/generate_pseudo_cl.py
+        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)"
+        --cat-config src/cosmo_val/cat_config.yaml
+        --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind}
+        --out-file {output}
+      resources: { cpus: 12, memory: "32GB" }
 
   - id: cl_bandpowers_fine
     type: data
@@ -56,58 +82,33 @@ outputs:
       choice](#../cosebis.decisions.harmonic_validation_binning)
       — the bin count is dense enough to resolve the W_n(ℓ)
       filter oscillations through n ≤ 6 modes (paper §3.2).
+    format: fits
     decisions: [fiducial_catalog, fiducial_blind]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distribution, mask_power_spectrum]
     recipe:
       # Same generate_pseudo_cl.py CLI as cl_bandpowers_reporting, 96-bandpower
-      # fine grid (--nbins 96). Distinct {output} dir avoids the native-filename
-      # skip-if-exists cache collision with the 32-bin reporting run.
+      # fine grid (--nbins 96). Distinct {output} file, so no cache collision
+      # with the 32-bin reporting run.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/workflow/scripts/generate_pseudo_cl.py
-        --ver SP_v1.4.6.3_leak_corr
-        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
-        --nside 1024 --npatch 1 --binning powspace --nbins 96 --power 0.5 --blind A
-        --out {output}
-      resources: { cpus: 12, memory: "32GB", time_limit: "2h" }
+        python src/workflow/scripts/generate_pseudo_cl.py
+        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)"
+        --cat-config src/cosmo_val/cat_config.yaml
+        --nside 1024 --npatch 1 --binning powspace --nbins 96 --power 0.5 --blind {decisions.fiducial_blind}
+        --out-file {output}
+      resources: { cpus: 12, memory: "32GB" }
 
   - id: cl_sweep
-    type: data
-    description: |
-      Design-B producer sweep: pseudo-Cℓ data vector (32-bin
-      √ℓ-linear, blind A) and its NaMaster iNKA Gaussian
-      bandpower covariance for every non-fiducial, non-ecut
-      catalog version (7 variants — 3 leak-corrected + 4
-      uncorrected), each renamed to the canonical
-      `pseudo_cl_{ver}_blind=A_powspace_nbins=32.fits` /
-      `pseudo_cl_cov_{ver}_blind=A_powspace_nbins=32.fits` that
-      [cl_version_comparison](#outputs.cl_version_comparison_figure)
-      (`--results-dir`) reads. This is the version-swept analogue
-      of [cl_bandpowers_reporting](#outputs.cl_bandpowers_reporting)
-      + the covariance sub-analysis's `cl_cov_reporting`, bundled
-      here since one estimator invocation yields both. Per-version
-      footprint masks resolve internally from cat_config. The
-      fiducial version stays in the single-output recipes and is
-      passed to the comparison plotter via `--fiducial-pseudo-cl-*`.
-    decisions: [fiducial_catalog, fiducial_blind]
-    recipe:
-      # run_cl_sweep.py loops the non-fiducial version list (sweep_versions.py) and
-      # calls generate_pseudo_cl + generate_pseudo_cl_cov once per version, renaming
-      # each native pseudo_cl_{ver}.fits / pseudo_cl_cov_{ver}.fits to the tagged
-      # canonical name the comparison plotter reconstructs. Serial over versions.
-      command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/run_cl_sweep.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
-        --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A
-        --out {output}
-      resources: { cpus: 12, memory: "32GB", time_limit: "24h" }
+    # Re-export of the generated cl_scan sweep's gather output — the only edge
+    # into the sweep. The bundle keeps the July-canonical
+    # `pseudo_cl{,_cov}_{ver}_blind=A_powspace_nbins=N.fits` names, so
+    # cl_data_vector / cl_version_comparison / harmonic_space_pte_matrices are
+    # unchanged. It now additionally carries the 96-bin fine grid for the three
+    # non-fiducial leak-corrected versions, which feeds
+    # [cosebis_harmonic_scan](#../cosebis.analyses.cosebis_harmonic_scan).
+    # Regenerate with
+    #   scripts/sweep_expand.py -o analyses/cl_bb/analyses/cl_scan/astra.yaml \
+    #       analyses/cl_bb/analyses/cl_scan/cl_scan.sweep.yaml
+    from: cl_scan.cl_sweep_bundle
 
   - id: cl_data_vector_figure
     type: figure
@@ -116,55 +117,49 @@ outputs:
       for the [fiducial catalog](#../decisions.fiducial_catalog)
       at blind A, with the
       [adopted ℓ-range](#../decisions.fiducial_scale_cuts) of
-      300 < ℓ < 1600 shaded. Generated by `cl_data_vector`;
-      one paper PDF + 4 leak-corrected and 4 uncorrected
-      per-version variants in the standard 9-figure pattern.
+      300 < ℓ < 1600 shaded. Generated by `cl_data_vector`
+      (the per-version QA variants of the source rule are not
+      declared artifacts).
+    format: png
+    decisions: [fiducial_catalog]
+    inputs: [cl_bandpowers_reporting, cl_cov_reporting, paper_mplstyle, print_width_script]
     recipe:
-      # cl_data_vector.py CLI produces paper Figure 4 (fiducial) plus the 9-figure
-      # per-version set (4 leak-corrected + 4 uncorrected). The version sweep lives
-      # inside the plotter: it reconstructs each version's pseudo_cl / pseudo_cl_cov
-      # (32-bin, blind A) from --results-dir by the canonical naming pattern. All
-      # figures + evidence.json land under {output}.
+      # cl_data_vector.py CLI renders paper Figure 4 (fiducial) from the
+      # fiducial data vector and its bandpower covariance, the two declared
+      # cross-output inputs; no other version is read.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/cl_data_vector.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --results-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_sweep
-        --fiducial-version SP_v1.4.6.3_leak_corr
-        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_reporting/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
-        --fiducial-pseudo-cl-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cl_cov_reporting/pseudo_cl_cov_SP_v1.4.6.3_leak_corr.fits
-        --out {output}
-      resources: { cpus: 2, memory: "8GB", time_limit: "30m" }
+        python src/papers/bmodes/scripts/cl_data_vector.py
+        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)"
+        --fiducial-pseudo-cl-path {inputs.cl_bandpowers_reporting}
+        --fiducial-pseudo-cl-cov-path {inputs.cl_cov_reporting}
+        --out-file {output}
+      resources: { cpus: 2, memory: "8GB" }
 
   - id: cl_version_comparison_figure
     type: figure
     description: |
       Per-bandpower Cℓ^BB overlay across the four leak-corrected
       catalog variants, contributing the harmonic-space row of
-      the [paper Figure 5 stack](#../outputs.fig_pure_eb_versions).
+      the [paper Figure 5 stack](#../outputs.fig_versions_cl).
       Uncorrected variants not stacked.
+    format: png
+    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, paper_mplstyle, print_width_script, cl_version_comparison_script]
     recipe:
       # cl_version_comparison.py CLI overlays Cℓ^BB / Cℓ^EB across the 4
-      # leak-corrected catalogs. The version sweep lives inside the plotter:
-      # per-version pseudo_cl / pseudo_cl_cov (32-bin, blind A) are reconstructed
-      # from --results-dir by the canonical naming pattern. Writes figure.png +
-      # cl_versions.pdf + evidence.json under {output}.
+      # leak-corrected catalogs, writing the single PNG to {output}. Per-version
+      # pseudo_cl / pseudo_cl_cov (32-bin, blind A) come from the untarred sweep
+      # bundle by the canonical naming pattern.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/cl_version_comparison.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --results-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_sweep
+        d=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d &&
+        python src/papers/bmodes/scripts/cl_version_comparison.py
+        --config src/papers/bmodes/config/config.yaml
+        --results-dir $d
         --fiducial-version SP_v1.4.6.3_leak_corr
-        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_reporting/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
-        --fiducial-pseudo-cl-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cl_cov_reporting/pseudo_cl_cov_SP_v1.4.6.3_leak_corr.fits
-        --out {output}
-      resources: { cpus: 2, memory: "8GB", time_limit: "30m" }
+        --fiducial-pseudo-cl-path {inputs.cl_bandpowers_reporting}
+        --fiducial-pseudo-cl-cov-path {inputs.cl_cov_reporting}
+        --out-file {output}
+      resources: { cpus: 2, memory: "8GB" }
 
   - id: cl_pte_per_cut
     type: data
@@ -180,27 +175,25 @@ outputs:
       ](#../outputs.fig_cl_pte_heatmap). Computed inside
       `harmonic_space_pte_matrices`, which materialises both
       the per-version data and the composite figure.
+    format: npz
+    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting]
     recipe:
-      # harmonic_space_pte_matrices.py CLI (one artifact serving 3 ids: this
-      # output, null_tests.harmonic_space_pte_evidence, root fig_cl_pte_heatmap).
-      # The per-version sweep lives inside the script; --results-dir is the
-      # COSMO_VAL tree it reads per-version pseudo_cl_* / pseudo_cl_cov_* (blind A)
-      # FITS from. The per-version Cℓ^BB PTE matrices land under {output} as
-      # cl_pte_matrices_A.npz (this data artifact) alongside the heatmap PDFs +
-      # evidence.json. lc does not wire cross-output inputs, so all upstream data
-      # is read by absolute path.
+      # harmonic_space_pte_matrices.py CLI, run in its PTE-matrix mode: the single
+      # .npz of per-version Cℓ^BB PTE grids is written to {output}. The heatmap
+      # figures the July run also emitted here belong to their own declared
+      # outputs (root fig_cl_pte_heatmap, null_tests.harmonic_space_pte_evidence),
+      # which re-invoke the script in their respective plot modes.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/harmonic_space_pte_matrices.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --results-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_sweep
+        d=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d &&
+        python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
+        --config src/papers/bmodes/config/config.yaml
+        --results-dir $d
         --fiducial-version SP_v1.4.6.3_leak_corr
-        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_reporting/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
-        --fiducial-pseudo-cl-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cl_cov_reporting/pseudo_cl_cov_SP_v1.4.6.3_leak_corr.fits
-        --out {output}
+        --fiducial-pseudo-cl-path {inputs.cl_bandpowers_reporting}
+        --fiducial-pseudo-cl-cov-path {inputs.cl_cov_reporting}
+        --emit matrices
+        --out-file {output}
+      resources: { cpus: 2, memory: "8GB" }
 
 decisions:
 
@@ -344,7 +337,7 @@ prior_insights:
       sources. This is the methodological basis for Paper II's
       harmonic-space Cℓ^EB / Cℓ^BB bandpowers and their
       analytic shot-noise correction.
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         doi: "10.1088/1475-7516/2025/01/028"
@@ -384,3 +377,8 @@ prior_insights:
       transforms at source positions through the `ducc` library
       (Reinecke & Seljebotn 2023), with NaMaster decoupling of
       the mode-coupling matrix.
+
+analyses:
+
+  cl_scan:
+    path: ./analyses/cl_scan

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.mock_min_pte_scale_cut_scan_figure",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/min_pte_window_scan.py --emit figure --from-scan results/baseline/glass_mocks/mock_min_pte_scale_cut_scan.json --highlight-theta-min 5.241 --highlight-theta-max 36.196 --contour-level 0.01 --out-file results/baseline/glass_mocks/mock_min_pte_scale_cut_scan_figure.pdf\n",
+  "definition_version": "sha256:6c65868dd061a5bec8c37e8fe782dca3d8a2ace319ed66594ff234e1661e6cfa",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:d430d7b22993ec5c2bc3f72def1c9379bca3b1c946a80a8be58314f34fd653bb",
+  "decisions": {
+    "reference_covariance": "mockmatched",
+    "mock_suite": "v1_4_6_3_v2"
+  },
+  "input_versions": {
+    "mock_min_pte_scale_cut_scan": "sha256:a4133c3418f03404a4a2f37fff0be2f8fb26dfcf1cc0bd94cbba82732f9037e9",
+    "min_pte_window_scan_script": "sha256:6f9a70ce7747dcb6a98143348bcbc957417509dcff2b45fa968865f638b6a995",
+    "plotting_utils_script": "sha256:e53c7b42f75838d1d6b63327bd72e7c2a3f3d5b22b4e00e67df32a409552a0da"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T18:42:09.724+00:00",
+  "finished_at": "2026-10-16T18:42:52.413+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

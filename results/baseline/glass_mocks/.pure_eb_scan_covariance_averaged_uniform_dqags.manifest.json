@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.pure_eb_scan_covariance_averaged_uniform_dqags",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/pure_eb_scan_covariances.py --xi-reporting results/baseline/two_point/xi_reporting.txt --xi-integration results/baseline/two_point/xi_integration.txt --cov-integration results/baseline/covariance/cov_integration_g.txt --cov-integration-mockmatched /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt --variant averaged_uniform_dqags --n-samples 500 --seed 42 --out-file results/baseline/glass_mocks/pure_eb_scan_covariance_averaged_uniform_dqags.tar.gz\n",
+  "definition_version": "sha256:2c998e4469197071fd79d03c8553ea7ff82ae94d17a995d1400f73f45c1dbcd0",
+  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
+  "data_version": "sha256:2ded70c0ffdedf9990b065e546612dcb8a09b811b554836091354cd9bcc44f13",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a"
+  },
+  "input_versions": {
+    "xi_reporting": "sha256:e266e21c86458b5f2ffb9e27dd664bc38fb68fb644abf5af1178dff60dd46eab",
+    "xi_integration": "sha256:40c7d75d949a043a2ead95f801baa092c97bf16d6ca8a78bd746a1256620cef5",
+    "cov_integration_g": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052",
+    "cov_integration_mockmatched": "sha256:a65ee4c8beac7c53d45db38c2aac9226628ccd921151d27227e6a15078646780",
+    "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da"
+  },
+  "git_sha": "5699c5facd8251cbff57dc758c9f4dd92ceb7f83",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-09-04T15:07:07.379+00:00",
+  "finished_at": "2026-09-04T17:15:44.454+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-e841fa2c63d0c02c",
+    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
+    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "arch": "amd64"
+  }
+}

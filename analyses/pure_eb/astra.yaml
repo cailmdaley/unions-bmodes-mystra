@@ -1,27 +1,58 @@
-version: "1.0"
+version: "0.0.14"
 name: "Pure E/B-mode decomposition"
 
 inputs:
   - id: xi_reporting
-    type: analysis
     from: ../two_point.xi_reporting
 
   - id: xi_integration
-    type: analysis
     from: ../two_point.xi_integration
 
+  - id: xi_sweep
+    from: ../two_point.xi_sweep
+
   - id: cov_integration_g
-    type: analysis
     from: ../covariance.cov_integration_g
+
+  - id: cov_reporting_ng
+    from: ../covariance.cov_reporting_ng
+
+  - id: cov_sweep
+    from: ../covariance.cov_sweep
+
+  # The n(z) trees. `precompute_pure_eb_chunk.py` — the MC-propagation worker
+  # behind the three `run_pure_eb_*.sh` drivers — builds a CosmologyValidation
+  # and calls `cv.get_redshift(version)`, which opens cat_config's
+  # `redshift_path` for that version. The fiducial output needs only the SOM
+  # tree; the two sweeps run every version in `config.yaml`, which includes the
+  # v1.4.8 and v1.4.11.3 entries that cat_config still points at the legacy
+  # file.
+  - id: redshift_distributions
+    from: ../redshift_distributions
+
+  - id: redshift_distributions_legacy
+    from: ../redshift_distributions_legacy
+
+  - id: paper_mplstyle
+    from: ../paper_mplstyle
+
+  - id: print_width_script
+    from: ../print_width_script
+
+  - id: pure_eb_version_comparison_script
+    from: ../pure_eb_version_comparison_script
 
 outputs:
   - id: pure_eb_semianalytic_data
     type: data
     description: |
-      Per-(version, blind) NPZ produced by `precompute_pure_eb`
-      gathering the 20 chunks: ξ_±^{E,B,amb} data vectors on
-      the 20-bin reporting grid, the 6-block 120×120
-      MC-propagated covariance, and per-block diagonal σ. The
+      Per-(version, blind) NPZ: ξ_±^{E,B,amb} data vectors on
+      the 20-bin reporting grid and the 6-block 120×120
+      pure-mode covariance, built as the
+      [covariance method](#decisions.pure_eb_covariance_method)
+      selects and recording that construction (with the draw
+      count, for the Monte Carlo) so χ² consumers apply the
+      matching Hartlap treatment. The
       consumed artifact for paper Figures 1 and 2 (fiducial
       catalog only) and for the version-comparison figure
       (all leak-corrected versions). The
@@ -33,27 +64,32 @@ outputs:
       `\ebcovCondE` (1.5×10⁵), `\ebcovCondB` (2.0×10⁵),
       `\ebcovCondAmb` (1.8×10¹⁰), and `\ebcovCondFull`
       (2.7×10¹⁰) — diagnostics for the conditioning of the
-      MC-propagated pure-mode covariance, with the
+      Monte Carlo pure-mode covariance, with the
       ambiguous-mode block being the worst-conditioned and the
       reason the paper reports PTEs on the B-block alone rather
       than on the full 6×6 stacked covariance.
-    decisions: [fiducial_catalog, fiducial_blind]
+    format: npz
+    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method]
+    inputs: [xi_reporting, xi_integration, cov_integration_g, redshift_distributions]
     recipe:
-      # Clean lc-native: run_pure_eb_semianalytic.sh runs the 20 MC chunks in
-      # parallel (each a fresh container process, deterministic seed 42+chunk_id)
-      # then gathers into <ver>_<blind>_pure_eb_semianalytic.npz. Bit-exact to
-      # the paper's scatter-gather (same per-chunk seeds/order); no nested dask.
-      # lc does not wire cross-output deps, so xi (two_point) and cov_integration_g
-      # (covariance) lc outputs are read by absolute path. Fiducial hardcoded.
+      # run_pure_eb_semianalytic.sh: under monte_carlo it runs the 20 MC chunks
+      # in parallel (each a fresh process, deterministic seed 42+chunk_id) then
+      # gathers them, bit-exact to the paper's scatter-gather; under
+      # exact_linear the gather step builds M C Mᵀ directly. One npz written
+      # straight to {output}. Fiducial hardcoded.
       command: >
-        bash /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/run_pure_eb_semianalytic.sh
-        --version SP_v1.4.6.3_leak_corr --blind A
-        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
-        --xi-reporting /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_reporting/SP_v1.4.6.3_leak_corr_xi_minsep=1.0_maxsep=250.0_nbins=20_npatch=1.txt
-        --xi-integration /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
-        --cov-integration /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
-        --out {output}
-      resources: { cpus: 16, memory: "60GB", time_limit: "2h" }
+        bash src/papers/bmodes/scripts/run_pure_eb_semianalytic.sh
+        --version "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)" --blind A
+        --cat-config src/cosmo_val/cat_config.yaml
+        --xi-reporting {inputs.xi_reporting}
+        --xi-integration {inputs.xi_integration}
+        --cov-integration {inputs.cov_integration_g}
+        --integration-method {decisions.pure_eb_integration_method}
+        --integration-limits {decisions.pure_eb_integration_limits}
+        --rebinning-weights {decisions.pure_eb_rebinning_weights}
+        --covariance-method {decisions.pure_eb_covariance_method}
+        --out-file {output}
+      resources: { cpus: 24, memory: "60GB" }
 
   - id: pure_eb_data_vector_figure
     type: figure
@@ -62,33 +98,27 @@ outputs:
       B / ambiguous components for the
       [fiducial catalog](#../decisions.fiducial_catalog) at
       blind A, with shaded fiducial 12'–83' bands. Generated
-      by `pure_eb_data_vector`; one paper PDF + 4 leak-corrected
-      and 4 uncorrected per-version variants in the standard
-      [9-figure pattern](#../decisions.fiducial_catalog).
-    inputs: [pure_eb_semianalytic_data]
+      by `pure_eb_data_vector` as a single PNG.
+    format: png
+    decisions: [fiducial_catalog, scale_cut_convention]
+    inputs: [pure_eb_semianalytic_data, cov_reporting_ng, paper_mplstyle]
     recipe:
-      # pure_eb_data_vector.py CLI (refactored from the snakemake rule): paper
-      # Figure 1, fiducial only. Reads the lc-produced semianalytic NPZ by
-      # absolute path; writes figure.png + pure_eb_data_vector.pdf + evidence.json.
+      # pure_eb_data_vector.py: paper Figure 1, fiducial only. Reads the
+      # semianalytic NPZ and the reporting-grid masked ng CosmoCov ξ±
+      # covariance (the total-curve error bars); renders one 300-dpi PNG.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/pure_eb_data_vector.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --pure-eb-data /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_semianalytic_data/SP_v1.4.6.3_leak_corr_A_pure_eb_semianalytic.npz
-        --reporting-cov /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_reporting_ng/covariance_processed.txt
-        --out {output}
-      # Cross-sub-analysis dep on covariance.cov_reporting_ng (the reporting-grid
-      # masked ng CosmoCov ξ± covariance) — the total-curve error bars. Wired by
-      # absolute path (cross-sub-analysis inputs: aren't validator-expressible yet).
+        python src/papers/bmodes/scripts/pure_eb_data_vector.py
+        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --pure-eb-data {inputs.pure_eb_semianalytic_data}
+        --reporting-cov {inputs.cov_reporting_ng}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
 
   - id: pure_eb_covariance_figure
     type: figure
     description: |
       Paper Figure 2 (`eb_covariance.pdf`): the 6-block
-      MC-propagated covariance correlation matrix for the
+      pure-mode covariance correlation matrix for the
       fiducial catalog at blind A — E+ / E- / B+ / B- / amb+ /
       amb- blocks of 20 bins each, log-scaled correlation
       structure. Generated by `pure_eb_covariance`. The
@@ -96,20 +126,18 @@ outputs:
       ](#../outputs.fig_pure_eb_decomposition) is co-located
       with Figure 1; the covariance plot itself anchors paper
       Figure 2.
-    inputs: [pure_eb_semianalytic_data]
+    format: png
+    decisions: [fiducial_catalog]
+    inputs: [pure_eb_semianalytic_data, paper_mplstyle]
     recipe:
-      # pure_eb_covariance.py CLI (refactored from the snakemake rule): paper
-      # Figure 2, fiducial only. Reads the lc-produced semianalytic NPZ by
-      # absolute path; writes figure.png + eb_covariance.pdf + evidence.json.
+      # pure_eb_covariance.py: paper Figure 2, fiducial only. Reads the
+      # semianalytic NPZ; renders one 300-dpi PNG of the 6-block correlation
+      # matrix.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/pure_eb_covariance.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --pure-eb-data /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_semianalytic_data/SP_v1.4.6.3_leak_corr_A_pure_eb_semianalytic.npz
-        --out {output}
+        python src/papers/bmodes/scripts/pure_eb_covariance.py
+        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --pure-eb-data {inputs.pure_eb_semianalytic_data}
+        --out-file {output}
 
   - id: pure_eb_version_comparison_figure
     type: figure
@@ -117,26 +145,25 @@ outputs:
       Pure-mode ξ_±^B overlay across the four leak-corrected
       catalog variants (size-cut, initial, masked,
       relaxed-flags), contributing the pure-mode row of the
-      [paper Figure 5 stack](#../outputs.fig_pure_eb_versions).
+      [paper Figure 5 stack](#../outputs.fig_versions_pure_eb).
       Uncorrected variants not stacked.
-    inputs: [pure_eb_semianalytic_data]
+    format: png
+    decisions: [scale_cut_convention]
+    inputs: [pure_eb_semianalytic_data, pure_eb_sweep, paper_mplstyle, print_width_script, pure_eb_version_comparison_script]
     recipe:
-      # pure_eb_version_comparison.py CLI (refactored from the snakemake rule):
-      # pure-mode row of paper Figure 5. The 4-leak-corrected-version sweep lives
-      # inside the plotter, reading each version's semianalytic NPZ from the old
-      # intermediate tree by pattern; the FIDUCIAL row is repointed to the lc
-      # output via --fiducial-* (provenance, like the other version-comparisons).
+      # pure_eb_version_comparison.py: pure-mode row of paper Figure 5. The
+      # non-fiducial versions come from the pure_eb_sweep tarball (unpacked to a
+      # temp dir and passed as --results-dir); the FIDUCIAL row is repointed to
+      # the single-version lc output via --fiducial-*.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/pure_eb_version_comparison.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --results-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_sweep
+        d=$(mktemp -d) && tar xzf {inputs.pure_eb_sweep} -C $d &&
+        python src/papers/bmodes/scripts/pure_eb_version_comparison.py
+        --config src/papers/bmodes/config/config.yaml
+        --results-dir $d
         --fiducial-version SP_v1.4.6.3_leak_corr
-        --fiducial-pure-eb-data /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_semianalytic_data/SP_v1.4.6.3_leak_corr_A_pure_eb_semianalytic.npz
-        --out {output}
+        --fiducial-pure-eb-data {inputs.pure_eb_semianalytic_data}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
 
   - id: pure_eb_pte_per_cut
     type: data
@@ -148,61 +175,72 @@ outputs:
       drive the COSEBI PTE matrix. Generated by
       `calculate_pure_eb_ptes` with the
       [Hartlap finite-sample
-      correction](#decisions.hartlap_application) on the inverse
-      MC covariance.
+      correction](#decisions.pure_eb_covariance_method) on the
+      inverse covariance when that covariance is a Monte Carlo
+      estimate, and none when it is exact.
+    format: npz
     decisions: [fiducial_catalog, fiducial_blind]
-    inputs: [pure_eb_semianalytic_data]
+    inputs: [pure_eb_semianalytic_data, cov_integration_g]
     recipe:
-      # Clean lc-native: calculate_pure_eb_ptes.py CLI reads the gathered
-      # semianalytic npz + integration cov, evaluates the ξ_+^B/ξ_-^B/ξ_tot^B χ²
-      # PTE matrices over the scale-cut grid (Hartlap-corrected MC inverse).
+      # calculate_pure_eb_ptes.py reads the gathered semianalytic npz +
+      # integration cov, evaluates the ξ_+^B/ξ_-^B/ξ_tot^B χ² PTE matrices over
+      # the scale-cut grid into a single npz. The Hartlap factor follows the
+      # covariance artifact; --n-samples covers artifacts that record none.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/calculate_pure_eb_ptes.py
-        --version SP_v1.4.6.3_leak_corr --blind A
-        --pure-eb-data /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_semianalytic_data/SP_v1.4.6.3_leak_corr_A_pure_eb_semianalytic.npz
-        --cov-integration /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
+        python src/papers/bmodes/scripts/calculate_pure_eb_ptes.py
+        --version "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)" --blind A
+        --pure-eb-data {inputs.pure_eb_semianalytic_data}
+        --cov-integration {inputs.cov_integration_g}
         --npatch 1 --n-samples 2000
-        --out {output}
+        --out-file {output}
 
   - id: pure_eb_sweep
     type: data
     description: |
       Design-B producer sweep: Schneider-2022 pure E/B
-      semi-analytic MC covariance for every non-fiducial,
+      data vector and covariance for every non-fiducial,
       non-ecut catalog version (7 variants — 3 leak-corrected +
       4 uncorrected), each gathered into the canonical
       `{ver}_A_pure_eb_semianalytic.npz` that
       [pure_eb_version_comparison](#outputs.pure_eb_version_comparison_figure)
       (`--results-dir`) reads. This is the version-swept analogue
       of [pure_eb_semianalytic_data](#outputs.pure_eb_semianalytic_data):
-      per version it runs the same 20-chunk 2000-MC
-      scatter-gather, reading that version's reporting+integration
+      per version it runs the same construction under the same
+      [covariance method](#decisions.pure_eb_covariance_method),
+      reading that version's reporting+integration
       ξ_± from [xi_sweep](#../two_point.outputs.xi_sweep) and its
       Gaussian integration covariance from
-      [cov_sweep](#../covariance.outputs.cov_sweep) by absolute
-      path (lc does not wire cross-output deps — run xi_sweep and
-      cov_sweep first). The fiducial version stays in the
+      [cov_sweep](#../covariance.outputs.cov_sweep) via the declared
+      `xi_sweep` / `cov_sweep` inputs (both untarred into temp dirs
+      by the recipe). The fiducial version stays in the
       single-output recipe above and is passed to the comparison
       plotter via `--fiducial-pure-eb-data`.
-    decisions: [fiducial_catalog, fiducial_blind]
+    format: tar.gz
+    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method]
+    inputs: [xi_sweep, cov_sweep, redshift_distributions, redshift_distributions_legacy]
     recipe:
       # run_pure_eb_sweep.sh loops the non-fiducial version list (sweep_versions.py)
       # and calls run_pure_eb_semianalytic.sh once per version, reading per-version
-      # xi from the xi_sweep dir and cov from the cov_sweep dir by absolute path,
-      # moving the gathered canonical npz into {output}. Serial over versions;
-      # each version's 20 MC chunks run in parallel inside the sub-driver.
+      # xi and cov from the unpacked upstream sweep bundles and writing the
+      # gathered canonical npz per version; the whole set is bundled into
+      # {output}. Serial over versions; each version's 20 MC chunks run in
+      # parallel inside the sub-driver.
       command: >
-        bash /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/run_pure_eb_sweep.sh
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
-        --xi-sweep-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_sweep
-        --cov-sweep-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_sweep
-        --out {output}
-      resources: { cpus: 16, memory: "60GB", time_limit: "24h" }
+        x=$(mktemp -d) && tar xzf {inputs.xi_sweep} -C $x &&
+        c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c &&
+        o=$(mktemp -d) &&
+        bash src/papers/bmodes/scripts/run_pure_eb_sweep.sh
+        --config src/papers/bmodes/config/config.yaml
+        --cat-config src/cosmo_val/cat_config.yaml
+        --xi-sweep-dir $x
+        --cov-sweep-dir $c
+        --integration-method {decisions.pure_eb_integration_method}
+        --integration-limits {decisions.pure_eb_integration_limits}
+        --rebinning-weights {decisions.pure_eb_rebinning_weights}
+        --covariance-method {decisions.pure_eb_covariance_method}
+        --out $o
+        && tar czf {output} -C $o .
+      resources: { cpus: 16, memory: "60GB" }
 
   - id: pure_eb_ptes
     type: data
@@ -219,32 +257,39 @@ outputs:
       `--pte-intermediate-dir`. This is the version-swept analogue
       of [pure_eb_pte_per_cut](#outputs.pure_eb_pte_per_cut): per
       version it runs the same
-      [Hartlap-corrected](#decisions.hartlap_application)
-      MC-inverse `calculate_pure_eb_ptes` compute, reading that
+      `calculate_pure_eb_ptes` compute, with the
+      [covariance-dependent Hartlap
+      treatment](#decisions.pure_eb_covariance_method), reading that
       version's gathered semi-analytic NPZ from
       [pure_eb_sweep](#outputs.pure_eb_sweep) and its Gaussian
       integration covariance from
-      [cov_sweep](#../covariance.outputs.cov_sweep) by absolute
-      path (lc does not wire cross-output deps — run pure_eb_sweep
-      and cov_sweep first). The fiducial version stays in the
+      [cov_sweep](#../covariance.outputs.cov_sweep) via the declared
+      `pure_eb_sweep` / `cov_sweep` inputs (both untarred into temp
+      dirs by the recipe). The fiducial version stays in the
       single-output recipe above and is passed to the heatmap via
       `--fiducial-pure-eb-pte-path`.
+    format: tar.gz
     decisions: [fiducial_catalog, fiducial_blind]
+    inputs: [pure_eb_sweep, cov_sweep, redshift_distributions, redshift_distributions_legacy]
     recipe:
       # run_pure_eb_ptes_sweep.sh loops the non-fiducial version list
       # (sweep_versions.py) and calls calculate_pure_eb_ptes.py once per version,
-      # reading each version's semi-analytic npz from the pure_eb_sweep dir and its
-      # integration cov from the cov_sweep dir by absolute path, emitting the
-      # canonical {ver}_A_pure_eb_ptes.npz into {output}. Serial; each version is
-      # fast (206-pair grid).
+      # reading each version's semi-analytic npz from the unpacked pure_eb_sweep
+      # bundle and its integration cov from the unpacked cov_sweep bundle,
+      # emitting the canonical {ver}_A_pure_eb_ptes.npz per version; the set is
+      # bundled into {output}. Serial; each version is fast (206-pair grid).
       command: >
-        bash /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/run_pure_eb_ptes_sweep.sh
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --cat-config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/cosmo_val/cat_config.yaml
-        --pure-eb-sweep-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_sweep
-        --cov-sweep-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_sweep
-        --out {output}
-      resources: { cpus: 4, memory: "16GB", time_limit: "15m" }
+        p=$(mktemp -d) && tar xzf {inputs.pure_eb_sweep} -C $p &&
+        c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c &&
+        o=$(mktemp -d) &&
+        bash src/papers/bmodes/scripts/run_pure_eb_ptes_sweep.sh
+        --config src/papers/bmodes/config/config.yaml
+        --cat-config src/cosmo_val/cat_config.yaml
+        --pure-eb-sweep-dir $p
+        --cov-sweep-dir $c
+        --out $o
+        && tar czf {output} -C $o .
+      resources: { cpus: 4, memory: "16GB" }
 
 decisions:
 
@@ -253,6 +298,21 @@ decisions:
 
   fiducial_blind:
     from: ../fiducial_blind
+
+  scale_cut_convention:
+    from: ../scale_cut_convention
+
+  pure_eb_integration_method:
+    from: ../pure_eb_integration_method
+
+  pure_eb_rebinning_weights:
+    from: ../pure_eb_rebinning_weights
+
+  pure_eb_integration_limits:
+    from: ../pure_eb_integration_limits
+
+  pure_eb_covariance_method:
+    from: ../pure_eb_covariance_method
 
   decomposition_method:
     label: "Pure-mode integral-transform construction"
@@ -302,69 +362,6 @@ decisions:
       cosmo_numba:
         label: "cosmo_numba (Guinot et al. 2026; paper fiducial)"
 
-  mc_propagation:
-    label: "Monte-Carlo propagation strategy"
-    tags: [pure_eb, covariance]
-    rationale: |
-      No closed-form linear transform exists from
-      ξ_±-covariance to ξ_±^{E,B,amb}-covariance on a finite
-      angular interval (the integral kernels have a non-square
-      integral structure with the boundary terms). The paper
-      computes the pure-mode covariance by drawing
-      [N_samples = 2000 Gaussian realisations
-      ](#../decisions.mc_samples) from the
-      [integration-grid CosmoCov covariance
-      ](#../analyses.covariance) and pushing each draw through
-      the same Schneider-22 transforms that produce the data
-      vectors. The empirical block covariance of the
-      reconstructed ξ_±^{E,B,amb} captures cross-statistic and
-      angular-bin correlations that the linear transform
-      cannot. Computation is parallelised as 20 chunks × 100
-      samples to stay within the 8 GB per-task memory budget.
-    default: scatter_gather_20_chunks
-    options:
-      scatter_gather_20_chunks:
-        label: "20 chunks × 100 samples (paper fiducial)"
-        description: |
-          `precompute_pure_eb_chunk` scatter, then
-          `precompute_pure_eb` gather. Total 2000 samples.
-      single_shot:
-        label: "Single 2000-sample run"
-        description: |
-          Simpler but exceeds the per-Slurm-task memory budget
-          for the 6-block 1000×1000 transformation; not used.
-        excluded: true
-        excluded_reason: |
-          Memory budget violation on cluster nodes; chunked
-          execution is the production pattern.
-
-  hartlap_application:
-    label: "Hartlap correction on the MC pure-mode inverse covariance"
-    tags: [pure_eb, statistics, primary]
-    rationale: |
-      The MC-propagated pure-mode covariance is a sample
-      estimator (2000 draws), so its inverse is biased per
-      Hartlap, Simon & Schneider (2007). The paper applies the
-      `(N_samples − N_obs − 2) / (N_samples − 1)` factor to
-      C_BB^{−1} at the χ² evaluation stage in
-      `calculate_pure_eb_ptes`, which is at most a 2%
-      correction for N_obs ≤ 40 in this paper (paper §3.4).
-      This is the operationally meaningful Hartlap correction
-      in this analysis; the
-      [root hartlap_correction decision](#../decisions.hartlap_correction)
-      governs the input CosmoCov matrix itself, which is
-      theory-derived and unbiased.
-    default: applied
-    options:
-      applied:
-        label: "Applied (paper fiducial)"
-        insights: [hartlap07_correction]
-      omitted:
-        label: "Omitted"
-        description: |
-          Would inflate the reported χ² by up to 2% at
-          N_obs = 40; not the paper choice.
-
   pte_blind_strategy:
     label: "Per-blind PTE evaluation strategy"
     tags: [pure_eb, blinding, validation]
@@ -400,7 +397,7 @@ prior_insights:
       estimator multiplies it by (N - p - 2) / (N - 1). For
       semi-analytical (theory) covariances the correction does
       not apply because no sample uncertainty enters.
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         doi: "10.1051/0004-6361:20066170"
@@ -429,7 +426,7 @@ prior_insights:
       decompose uniquely. This is the foundation of the
       configuration-space pure-mode B-mode null test the paper
       uses.
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         doi: "10.1051/0004-6361/202142450"

@@ -1,0 +1,11 @@
+id: baseline
+description: |
+  UNIONS Paper II harmonic-space fiducial: the Wolz et al. (2025)
+  catalog-based pseudo-Cℓ estimator on 32 √ℓ-linear bandpowers
+  over 8 ≤ ℓ ≤ 2048, with analytic shot-noise subtraction, and
+  paper PTEs evaluated at blind A.
+decisions:
+  estimator_choice: wolz25_catalog_based
+  bandpower_binning: bandpowers_32_powspace
+  noise_bias_correction: analytic_shot_noise
+  pte_blind_strategy: blind_a_for_paper

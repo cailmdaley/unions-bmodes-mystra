@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "output_id": "cl_bb.cl_scan.cl_sweep_bundle",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout cl --config src/papers/bmodes/config/config.yaml --names pseudo_cl_sp_v1p4p5_nbins32 pseudo_cl_cov_sp_v1p4p5_nbins32 pseudo_cl_sp_v1p4p5_leak_corr_nbins32 pseudo_cl_cov_sp_v1p4p5_leak_corr_nbins32 pseudo_cl_sp_v1p4p5_leak_corr_nbins96 pseudo_cl_cov_sp_v1p4p5_leak_corr_nbins96 pseudo_cl_sp_v1p4p6p3_nbins32 pseudo_cl_cov_sp_v1p4p6p3_nbins32 pseudo_cl_sp_v1p4p8_nbins32 pseudo_cl_cov_sp_v1p4p8_nbins32 pseudo_cl_sp_v1p4p8_leak_corr_nbins32 pseudo_cl_cov_sp_v1p4p8_leak_corr_nbins32 pseudo_cl_sp_v1p4p8_leak_corr_nbins96 pseudo_cl_cov_sp_v1p4p8_leak_corr_nbins96 pseudo_cl_sp_v1p4p11p3_nbins32 pseudo_cl_cov_sp_v1p4p11p3_nbins32 pseudo_cl_sp_v1p4p11p3_leak_corr_nbins32 pseudo_cl_cov_sp_v1p4p11p3_leak_corr_nbins32 pseudo_cl_sp_v1p4p11p3_leak_corr_nbins96 pseudo_cl_cov_sp_v1p4p11p3_leak_corr_nbins96 --members results/baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p5_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_cov_sp_v1p4p5_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p5_leak_corr_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_cov_sp_v1p4p5_leak_corr_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p5_leak_corr_nbins96.fits results/baseline/cl_bb/cl_scan/pseudo_cl_cov_sp_v1p4p5_leak_corr_nbins96.fits results/baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p6p3_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_cov_sp_v1p4p6p3_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p8_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_cov_sp_v1p4p8_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p8_leak_corr_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_cov_sp_v1p4p8_leak_corr_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p8_leak_corr_nbins96.fits results/baseline/cl_bb/cl_scan/pseudo_cl_cov_sp_v1p4p8_leak_corr_nbins96.fits results/baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p11p3_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_cov_sp_v1p4p11p3_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p11p3_leak_corr_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_cov_sp_v1p4p11p3_leak_corr_nbins32.fits results/baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p11p3_leak_corr_nbins96.fits results/baseline/cl_bb/cl_scan/pseudo_cl_cov_sp_v1p4p11p3_leak_corr_nbins96.fits --out-file results/baseline/cl_bb/cl_scan/cl_sweep_bundle.tar.gz\n",
+  "definition_version": "sha256:6ba7207fdb9d0d30c57b38632cbad8167073e180adcafe18fdd53f902ecf5dc2",
+  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
+  "data_version": "sha256:4b11fd4948b313f5f64c82c844f0b2394e0c9595c6d0a7bc9a1dcadd72a58b48",
+  "decisions": {},
+  "input_versions": {
+    "pseudo_cl_sp_v1p4p5_nbins32": "sha256:abb1f088d134edef8acf4485d927bc7dc8dec68f84afa2542934c5ed39f76bf3",
+    "pseudo_cl_cov_sp_v1p4p5_nbins32": "sha256:5fa4850c5bd84468353b82a03de681b9a03ddabcf3b193822c4238f49945ec50",
+    "pseudo_cl_sp_v1p4p5_leak_corr_nbins32": "sha256:c6c4de5e7507ade14b40860a80d9efe82597f5e05cfd8990d7fb87c68c7d7089",
+    "pseudo_cl_cov_sp_v1p4p5_leak_corr_nbins32": "sha256:4cfc5f8ca33bf84816a87e7feba8905975a74ba490c01df4158d1a11194a5b1f",
+    "pseudo_cl_sp_v1p4p5_leak_corr_nbins96": "sha256:d313820989a56152fd567ea2f429140b3647074493ee7156feb4d664ee9a478e",
+    "pseudo_cl_cov_sp_v1p4p5_leak_corr_nbins96": "sha256:03bcadf4441fdf02847bb60924b8194b29ecbbb09d754992924bd41e201db0f5",
+    "pseudo_cl_sp_v1p4p6p3_nbins32": "sha256:656e1f91bdfae9f52bd88b40dd1e41b3e93cbbf1a8b05257943f174e9af9038d",
+    "pseudo_cl_cov_sp_v1p4p6p3_nbins32": "sha256:eb20c1790dde38627954b2512daf13b795124c028d124699a9c87b121d5e4cfc",
+    "pseudo_cl_sp_v1p4p8_nbins32": "sha256:90bb38d7c077f0e6a86c9ebcaebbcbf80c246b150107e5b25aa50aa3b4345b43",
+    "pseudo_cl_cov_sp_v1p4p8_nbins32": "sha256:ca62b7376d7c4eb0a51341cc0da07a4f396fed6530573b27f00f4940d3fa1930",
+    "pseudo_cl_sp_v1p4p8_leak_corr_nbins32": "sha256:8a6c009ca0818381b62891d34cb1c886c71e1b92b9ec1c4e73ecf147d1fbc1ec",
+    "pseudo_cl_cov_sp_v1p4p8_leak_corr_nbins32": "sha256:1cb3785518d7658730b0e3f30d41f707718141046b1f84239f6f0961371a1791",
+    "pseudo_cl_sp_v1p4p8_leak_corr_nbins96": "sha256:9306fea903ad732e74629bd55d8c9bf7b6852e2018cdfdd196b4b48b536d621d",
+    "pseudo_cl_cov_sp_v1p4p8_leak_corr_nbins96": "sha256:9cd7bd73384ee8629e9f8d33b1eec562ccf273fcb7739439e602f6f0d4473a16",
+    "pseudo_cl_sp_v1p4p11p3_nbins32": "sha256:ca01c05c23540f3402429233d1fdb81428e651cf48309b8c098e7ae057457148",
+    "pseudo_cl_cov_sp_v1p4p11p3_nbins32": "sha256:eb4cd6646b7d622585f8a5df8b1cd456d7c64e0cffb3bd778c09279798970f3f",
+    "pseudo_cl_sp_v1p4p11p3_leak_corr_nbins32": "sha256:9f7fdfe5bcac80b9a012ca362e3aafb877ee9b530f143f2d5445ff82e4db9a20",
+    "pseudo_cl_cov_sp_v1p4p11p3_leak_corr_nbins32": "sha256:3710f14086e6c70904a3fc6f58a6b86574a89503a38dd5456fd1cb3ec7ebaf63",
+    "pseudo_cl_sp_v1p4p11p3_leak_corr_nbins96": "sha256:ed14b5c542e1fd5978ab417fa317fb6eb33b9e353b042d18603edcd7b8871132",
+    "pseudo_cl_cov_sp_v1p4p11p3_leak_corr_nbins96": "sha256:414142df2ffb92ffc7629c01a59c82536b92530c36522ae6cfccdd7dd2617212"
+  },
+  "git_sha": "8a89d7b841be17766bd5041d6d15188465a58df0",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-08-31T18:56:20.167+00:00",
+  "finished_at": "2026-08-31T18:56:21.007+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-e841fa2c63d0c02c",
+    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
+    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "arch": "amd64"
+  }
+}

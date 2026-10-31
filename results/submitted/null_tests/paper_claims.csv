@@ -1,0 +1,49 @@
+macro,display,value
+configPteFiveXip,0.51,0.51
+configPteFiveXim,0.005,0.005
+configPteFiveCombined,0.031,0.031
+configPteFiveCosebis,0.94,0.94
+configPteFiveCosebisTwenty,0.61,0.61
+configPteFiveXipFull,0.025,0.025
+configPteFiveXimFull,8.01 × 10⁻⁴,0.000801
+configPteFiveCombinedFull,0.004,0.004
+configPteFiveCosebisFull,7.37 × 10⁻¹⁰,7.37e-10
+configPteFiveCosebisTwentyFull,4.15 × 10⁻⁷,4.15e-07
+configPteSixThreeXip,0.31,0.31
+configPteSixThreeXim,0.26,0.26
+configPteSixThreeCombined,0.18,0.18
+configPteSixThreeCosebis,0.78,0.78
+configPteSixThreeCosebisTwenty,0.94,0.94
+configPteSixThreeXipFull,0.45,0.45
+configPteSixThreeXimFull,0.16,0.16
+configPteSixThreeCombinedFull,0.40,0.4
+configPteSixThreeCosebisFull,1.37 × 10⁻⁵,1.37e-05
+configPteSixThreeCosebisTwentyFull,1.08 × 10⁻⁴,0.000108
+configPteEightXip,0.020,0.02
+configPteEightXim,0.048,0.048
+configPteEightCombined,0.014,0.014
+configPteEightCosebis,0.60,0.6
+configPteEightCosebisTwenty,0.81,0.81
+configPteEightXipFull,0.038,0.038
+configPteEightXimFull,0.021,0.021
+configPteEightCombinedFull,0.017,0.017
+configPteEightCosebisFull,4.94 × 10⁻⁶,4.94e-06
+configPteEightCosebisTwentyFull,2.50 × 10⁻⁵,2.5e-05
+configPteElevenThreeXip,0.78,0.78
+configPteElevenThreeXim,0.001,0.001
+configPteElevenThreeCombined,0.015,0.015
+configPteElevenThreeCosebis,0.82,0.82
+configPteElevenThreeCosebisTwenty,0.83,0.83
+configPteElevenThreeXipFull,0.11,0.11
+configPteElevenThreeXimFull,2.66 × 10⁻⁶,2.66e-06
+configPteElevenThreeCombinedFull,9.13 × 10⁻⁴,0.000913
+configPteElevenThreeCosebisFull,1.70 × 10⁻¹⁰,1.7e-10
+configPteElevenThreeCosebisTwentyFull,1.16 × 10⁻⁸,1.16e-08
+clPteFiveFid,0.003,0.003
+clPteFiveFull,2.52 × 10⁻⁴,0.000252
+clPteSixThreeFid,0.30,0.3
+clPteSixThreeFull,0.14,0.14
+clPteEightFid,0.44,0.44
+clPteEightFull,0.13,0.13
+clPteElevenThreeFid,5.85 × 10⁻¹⁰,5.85e-10
+clPteElevenThreeFull,1.78 × 10⁻¹²,1.78e-12

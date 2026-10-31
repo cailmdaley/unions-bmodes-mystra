@@ -30,7 +30,7 @@
 #SBATCH --exclusive
 #SBATCH -t 5-00:00:00
 #SBATCH -x n09,n17,n36,n29,n31,n34
-#SBATCH -o /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/_scratch/tenk_xi/tenk_xi.%j.log
+#SBATCH -o /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/tenk_xi.%j.log
 
 set -euo pipefail
 
@@ -51,14 +51,14 @@ export OMP_NUM_THREADS=12
 NODES=${SLURM_JOB_NUM_NODES:-3}
 if [ "${SMOKE:-0}" = "1" ]; then
   NBINS=100; NPATCH=8; PPN=2
-  OUT=$PROJ/_scratch/tenk_xi/smoke_2node
+  OUT=/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/smoke_2node
 else
   NBINS=10000; NPATCH=50; PPN=5     # 3 nodes x 5 ranks x 12 threads = 180 cores
   # STAGING, not the lc output dir: `lc run xi_integration_convergence` clears
   # its {output} dir before running the (copy) recipe (snakemake removes declared
   # output first), which would delete a grid written straight there. The recipe
   # copies from this staging dir — which lc never touches — into {output}.
-  OUT=$PROJ/_scratch/tenk_xi/production_out
+  OUT=/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/production_out
 fi
 NTASKS=$(( NODES * PPN ))
 mkdir -p "$OUT"

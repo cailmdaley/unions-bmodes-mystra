@@ -1,0 +1,49 @@
+macro,submitted,accepted,changed
+clPteEightFid,0.44,0.44,false
+clPteEightFull,0.13,0.13,false
+clPteElevenThreeFid,5.85 × 10⁻¹⁰,5.85 × 10⁻¹⁰,false
+clPteElevenThreeFull,1.78 × 10⁻¹²,1.78 × 10⁻¹²,false
+clPteFiveFid,0.003,0.003,false
+clPteFiveFull,2.52 × 10⁻⁴,2.52 × 10⁻⁴,false
+clPteSixThreeFid,0.30,0.30,false
+clPteSixThreeFull,0.14,0.14,false
+configPteEightCombined,0.014,0.040,true
+configPteEightCombinedFull,0.017,5.47 × 10⁻⁴,true
+configPteEightCosebis,0.60,0.60,false
+configPteEightCosebisFull,4.94 × 10⁻⁶,4.94 × 10⁻⁶,false
+configPteEightCosebisTwenty,0.81,0.81,false
+configPteEightCosebisTwentyFull,2.50 × 10⁻⁵,2.50 × 10⁻⁵,false
+configPteEightXim,0.048,0.004,true
+configPteEightXimFull,0.021,7.51 × 10⁻⁵,true
+configPteEightXip,0.020,0.86,true
+configPteEightXipFull,0.038,1.88 × 10⁻⁴,true
+configPteElevenThreeCombined,0.015,6.68 × 10⁻⁵,true
+configPteElevenThreeCombinedFull,9.13 × 10⁻⁴,1.25 × 10⁻⁶,true
+configPteElevenThreeCosebis,0.82,0.82,false
+configPteElevenThreeCosebisFull,1.70 × 10⁻¹⁰,1.70 × 10⁻¹⁰,false
+configPteElevenThreeCosebisTwenty,0.83,0.83,false
+configPteElevenThreeCosebisTwentyFull,1.16 × 10⁻⁸,1.16 × 10⁻⁸,false
+configPteElevenThreeXim,0.001,7.48 × 10⁻⁵,true
+configPteElevenThreeXimFull,2.66 × 10⁻⁶,1.25 × 10⁻⁸,true
+configPteElevenThreeXip,0.78,0.42,true
+configPteElevenThreeXipFull,0.11,5.74 × 10⁻⁸,true
+configPteFiveCombined,0.031,0.001,true
+configPteFiveCombinedFull,0.004,2.45 × 10⁻⁵,true
+configPteFiveCosebis,0.94,0.94,false
+configPteFiveCosebisFull,7.37 × 10⁻¹⁰,7.37 × 10⁻¹⁰,false
+configPteFiveCosebisTwenty,0.61,0.61,false
+configPteFiveCosebisTwentyFull,4.15 × 10⁻⁷,4.15 × 10⁻⁷,false
+configPteFiveXim,0.005,0.001,true
+configPteFiveXimFull,8.01 × 10⁻⁴,1.77 × 10⁻⁶,true
+configPteFiveXip,0.51,0.53,true
+configPteFiveXipFull,0.025,8.71 × 10⁻⁷,true
+configPteSixThreeCombined,0.18,0.039,true
+configPteSixThreeCombinedFull,0.40,0.010,true
+configPteSixThreeCosebis,0.78,0.78,false
+configPteSixThreeCosebisFull,1.37 × 10⁻⁵,1.37 × 10⁻⁵,false
+configPteSixThreeCosebisTwenty,0.94,0.94,false
+configPteSixThreeCosebisTwentyFull,1.08 × 10⁻⁴,1.08 × 10⁻⁴,false
+configPteSixThreeXim,0.26,0.019,true
+configPteSixThreeXimFull,0.16,0.002,true
+configPteSixThreeXip,0.31,0.82,true
+configPteSixThreeXipFull,0.45,0.003,true

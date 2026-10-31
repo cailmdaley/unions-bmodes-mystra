@@ -122,8 +122,8 @@ narrative:
     Monte-Carlo samples](#decisions.mc_samples). Estimator
     recovery and the propagated scatter are cross-checked
     against
-    [350 GLASS lognormal mock realisations matched to v1.4.6
-    catalog properties](#inputs.glass_mock_realisations)
+    [350 GLASS lognormal mock realisations matched to the
+    catalog's footprint, n(z) and shape noise](#inputs.glass_mock_realisations)
     (Hervas-Peters et al. 2026, "Paper V").
 
     The decisive movement is in the choice of the

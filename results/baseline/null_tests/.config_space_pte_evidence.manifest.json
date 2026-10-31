@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "output_id": "null_tests.config_space_pte_evidence",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/config_space_pte_matrices.py --config src/papers/bmodes/config/config.yaml --from-evidence results/baseline/null_tests/config_space_pte_data.json --figure fiducial --scale-cut-convention grid_bin_edges --pte-threshold calibrated_0p01 --out-file results/baseline/null_tests/config_space_pte_evidence.png\n",
+  "definition_version": "sha256:a98ceb06f3ffbd23515eb39615a182fa2a0fef4fb75e75e7d506bfcadcbccd02",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:02139724a47946fd1db3ab79be7fc641dc4955772972b3c4a7e2d0bd4eba2835",
+  "decisions": {
+    "scale_cut_convention": "grid_bin_edges",
+    "pte_threshold": "calibrated_0p01"
+  },
+  "input_versions": {
+    "config_space_pte_data": "sha256:31f81553a7b2a543e319a3d7591f15fe89ca82fb3287736282a52d26bcf11490",
+    "config_space_pte_matrices_script": "sha256:79740093e14d74859b9d5522c54cf701081b0970e601a5080047e7c36ec94096",
+    "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T18:18:49.593+00:00",
+  "finished_at": "2026-10-16T18:19:07.790+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

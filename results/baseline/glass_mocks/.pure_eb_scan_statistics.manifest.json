@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.pure_eb_scan_statistics",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/pure_eb_scan_statistics.py --covariance-bundle results/baseline/glass_mocks/pure_eb_scan_covariance_pointwise_dqags.tar.gz results/baseline/glass_mocks/pure_eb_scan_covariance_pointwise_fixedop.tar.gz results/baseline/glass_mocks/pure_eb_scan_covariance_pointwise_fixedop_reporting.tar.gz results/baseline/glass_mocks/pure_eb_scan_covariance_averaged_uniform_dqags.tar.gz results/baseline/glass_mocks/pure_eb_scan_covariance_averaged_uniform_fixedop.tar.gz results/baseline/glass_mocks/pure_eb_scan_covariance_averaged_npairs_fixedop.tar.gz --mock-modes results/baseline/glass_mocks/mock_pure_eb_modes_scan.npz --xi-reporting results/baseline/two_point/xi_reporting.txt --xi-integration results/baseline/two_point/xi_integration.txt --cov-integration results/baseline/covariance/cov_integration_g.txt --reference-covariance mockmatched --scale-cut-convention grid_bin_edges --config src/papers/bmodes/config/config.yaml --npatch 1 --out-file results/baseline/glass_mocks/pure_eb_scan_statistics.json\n",
+  "definition_version": "sha256:bb37ffb3401be11b1894f3ad7d6db8cab82be5fe3cf59966d59101dcca944e04",
+  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
+  "data_version": "sha256:81dca53775441bd549cffac5d0dd5ac9dd583df634bfb2ad72afa1fa02882427",
+  "decisions": {
+    "reference_covariance": "mockmatched",
+    "scale_cut_convention": "grid_bin_edges",
+    "mock_suite": "v1_4_6_3_v2",
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a"
+  },
+  "input_versions": {
+    "pure_eb_scan_covariance_pointwise_dqags": "sha256:689ab648ea718d30088276f2743654a0aed4665f34892d2ae23d4b8e20755757",
+    "pure_eb_scan_covariance_pointwise_fixedop": "sha256:ed38c4bacf1991ee0fb52c539da7de9cf8f4f6b72a0284ad98bd640bf3de04a6",
+    "pure_eb_scan_covariance_pointwise_fixedop_reporting": "sha256:3f941031d2396c15be0005dc5eff4fa289cb14cb1637127661aaf55a6d9ce7b1",
+    "pure_eb_scan_covariance_averaged_uniform_dqags": "sha256:2ded70c0ffdedf9990b065e546612dcb8a09b811b554836091354cd9bcc44f13",
+    "pure_eb_scan_covariance_averaged_uniform_fixedop": "sha256:1b23a95a3cd5323216226f58f0f49fc8a3499bcc3b9228af2fc2d19952e4d41c",
+    "pure_eb_scan_covariance_averaged_npairs_fixedop": "sha256:c97703cf5bd45ec050d08d66ee35a8a330789caf84c477426890b2864726fbbf",
+    "mock_pure_eb_modes_scan": "sha256:a82ec96730635de5fdfe427d0688717a4882a379a36dd832fe40602457c4de60",
+    "cov_integration_g": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052",
+    "xi_reporting": "sha256:e266e21c86458b5f2ffb9e27dd664bc38fb68fb644abf5af1178dff60dd46eab",
+    "xi_integration": "sha256:40c7d75d949a043a2ead95f801baa092c97bf16d6ca8a78bd746a1256620cef5",
+    "pure_eb_scan_variants_script": "sha256:b1d1adbeda741197a287af0f50a4e201f42ae30d028796135cd82b132e33d01e",
+    "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2"
+  },
+  "git_sha": "35453bead6093c3b0e5cc77a151ee17ce1eb4906",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-09-07T14:43:57.640+00:00",
+  "finished_at": "2026-09-07T14:44:33.347+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-e841fa2c63d0c02c",
+    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
+    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "arch": "amd64"
+  }
+}

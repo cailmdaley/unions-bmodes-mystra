@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.mock_mean_vector_figure",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/mock_mean_vector_plot.py --stats results/baseline/glass_mocks/mock_per_mock_statistics.npz --label mockmatched --config src/papers/bmodes/config/config.yaml --scale-cut-convention grid_bin_edges --emit figure --out-file results/baseline/glass_mocks/mock_mean_vector_figure.pdf\n",
+  "definition_version": "sha256:8f1eac46952383b933c6300c3d9fd5aab83b1e465e699f2a7ee88e5c62998a6b",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:4e0e863710c7abbf481f6b982dd8df2d4306eae7075061b4cff8f69274a97913",
+  "decisions": {
+    "reference_covariance": "mockmatched",
+    "scale_cut_convention": "grid_bin_edges"
+  },
+  "input_versions": {
+    "mock_per_mock_statistics": "sha256:1ae306148fb12ff11998bbde4737f178355640a3d63802e1ea732f49c5d4f656",
+    "mock_mean_vector_plot_script": "sha256:d6b175991af3e7c748679a84aa4c7e7f4ef545176660241510d1e773ef915271",
+    "plotting_utils_script": "sha256:e53c7b42f75838d1d6b63327bd72e7c2a3f3d5b22b4e00e67df32a409552a0da",
+    "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T18:18:55.526+00:00",
+  "finished_at": "2026-10-16T18:19:14.625+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

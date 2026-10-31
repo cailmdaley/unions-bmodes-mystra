@@ -1,0 +1,16 @@
+figure.titlesize : 10
+figure.titleweight : bold
+figure.autolayout : True
+axes.titlesize : 10
+legend.fontsize : 8
+lines.linewidth : 1.5
+lines.markersize : 4
+axes.labelsize : 10
+xtick.labelsize : 9
+ytick.labelsize : 9
+# Every label is real TeX (the image carries TinyTeX, TeX Live 2025).
+text.usetex : True
+text.latex.preamble : \usepackage{amsmath}
+axes.formatter.use_mathtext : True
+font.family : serif
+font.size : 10

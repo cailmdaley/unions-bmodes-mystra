@@ -1,0 +1,155 @@
+# Row-wise decomposition of the fiducial COSEBI PTE matrix. Expand with:
+#   scripts/sweep_expand.py -o analyses/cosebis/analyses/cosebis_pte_grid/astra.yaml \
+#       analyses/cosebis/analyses/cosebis_pte_grid/cosebis_pte_grid.sweep.yaml
+id: cosebis_pte_grid
+version: "1.0"
+name: "COSEBI PTE matrix, one member per i_min row"
+description: |
+  The fiducial COSEBI B-mode PTE matrix, decomposed the way the
+  matrix itself is shaped: one member per i_min row of the
+  `geomspace(1', 250', 21)` scale-cut grid
+  ([scale_cut_pair_grid](#../../decisions.scale_cut_pair_grid)),
+  each computing every stable `(i_min, j)` pair in its row. The
+  same 206 pairs, the same theta grid, the same `nmodes = 20`,
+  the same four excluded polynomial-root-unstable pairs, the same
+  NaN-on-convergence-failure handling — only the loop bounds
+  differ, and the gather puts the rows back.
+
+  Previously the whole grid was one lc output running
+  `compute_cosebis_pte_single.py` over all 206 pairs serially.
+  That made it the wall-clock pole of the reproduction and, being
+  a single output, something lc could not spread: one task, one
+  node, one core's worth of forward progress. Twenty members let
+  lc schedule the grid across the allocation — twenty task slots
+  instead of one, which is where the win comes from. The
+  in-member process pool over that row's pairs is a second level
+  that multiplies against the first, so the recipe holds it at
+  one worker per member; see the recipe comment for why the
+  pool's own default is actively dangerous here.
+
+  Rows are unequal — i_min = 0 carries 20 pairs, i_min = 19
+  carries 1, mean 10.3 — so wall clock is set by row 0 at 20/206
+  ≈ 9.7% of the serial loop, and less than that once the inner
+  pool covers a row in ceil(20 / cpus) waves. Stride-balanced
+  chunks of ~11 pairs would even that out, but chunk membership
+  is a function of the whole exclusion set: adding or dropping
+  one unstable pair reshuffles every chunk and invalidates every
+  cached member, where the same change touches exactly one row.
+  Rows also survive in a member id — `cosebis_pte_row_07` names
+  the scientific object it computes — and a failed row is
+  legible as a missing band of the matrix rather than an
+  arbitrary scatter of cells.
+tags: [sweep, generated, cosebis]
+
+inputs:
+  - id: xi_integration
+    from: ../xi_integration
+  - id: cov_integration_g
+    from: ../cov_integration_g
+
+decisions:
+  fiducial_catalog:
+    from: ../fiducial_catalog
+  fiducial_blind:
+    from: ../fiducial_blind
+  scale_cut_pair_grid:
+    from: ../scale_cut_pair_grid
+  mode_subsets:
+    from: ../mode_subsets
+
+matrix:
+  # The i_min rows of the 21-point theta grid: pairs (i, j) exist for
+  # j in (i, 20], so row 20 is empty and the axis stops at 19. Quoted and
+  # zero-padded so member ids sort in row order (cosebis_pte_row_07, not
+  # cosebis_pte_row_7); `--row 07` parses as int 7.
+  i_min:
+    ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
+     "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"]
+
+template:
+  id: cosebis_pte_row_${i_min}
+  type: data
+  format: npz
+  description: |
+    Row `i_min = ${i_min}` of the fiducial COSEBI PTE matrix: the
+    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
+    (n ≤ 6, n ≤ 20) for every stable `(${i_min}, j)` scale-cut
+    pair. An NPZ of the same shape and key order as the full-grid
+    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
+    with `pairs` restricted to this row and every other cell left
+    at its NaN initialiser. Not independently interesting — the
+    science reads the assembled matrix.
+  inputs: [xi_integration, cov_integration_g]
+  decisions: [fiducial_catalog, fiducial_blind, scale_cut_pair_grid, mode_subsets]
+  recipe:
+    # Identical to the July full-grid invocation but for `--row` and `--jobs`:
+    # same config, same fiducial ξ_± and Gaussian integration covariance, so a
+    # row's values are the serial loop's values for that row.
+    #
+    # `--jobs` MUST be explicit. `lc` does not consume ASTRA's `resources:`
+    # block at all — `resources` appears in no consumer position in
+    # `lightcone/engine/*.py` — so the `cpus:` below is declared intent that
+    # nothing enforces. SLURM never sees it and no per-task affinity is set:
+    # lc's SLURM venue launches ONE dask worker per node with
+    # `--nthreads = SLURM_CPUS_ON_NODE` (engine/venue.py `_srun_argv`), so all
+    # tasks are subprocesses of one worker inside one cgroup and
+    # `len(os.sched_getaffinity(0))` — the pool's default — returns the WHOLE
+    # node in EVERY member at once. Left to default, 20 members in a 48-CPU
+    # wave fork 20 x 48 = 960 processes onto 48 cores. That is how wave 842079
+    # reached load average 338; do not re-learn it.
+    #
+    # One worker per member, per the convention landed in 60535fa ("one core
+    # per slot is the coherent default; more throughput comes from more nodes
+    # (-N), not a fatter -c"): a task slot is one of the node's cores, so a
+    # member owns one core. The parallelism is the 20 members occupying 20 of
+    # the wave's 48 slots concurrently, not a fatter pool inside one of them —
+    # dask fills the other 28 slots with whatever else is ready, so a member
+    # that took 2 cores would oversubscribe exactly when the wave is busiest.
+    # Row 0's 20 pairs at ~16 s each is ~5.3 min, and all 20 rows run at once,
+    # so the whole grid lands in about that. Raise this only for a member known
+    # to run alone in its allocation. If the runner ever starts setting
+    # OMP_NUM_THREADS (60535fa's knob, which nothing in lightcone sets today),
+    # reading it here is the upgrade path.
+    command: >
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py
+      --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+      --xi-integration {inputs.xi_integration}
+      --cov-integration {inputs.cov_integration_g}
+      --row ${i_min}
+      --out-file {output}
+    # Inert as far as lc is concerned (see above); kept as the declared intent.
+    # The full-grid output asked for 6h for 206 pairs; the widest row is 20 of
+    # them, ~10% of that. 3h is deliberately loose: per-pair cost rises with the
+    # width of the theta range (the precision-120 sympy root solve depends on
+    # theta_min/theta_max), row 0 holds the widest cuts, and the only pairs
+    # timed so far are the narrow rows 17-19 at ~16 s each. The envelope holds
+    # for a row run strictly serially, so it does not depend on the in-member
+    # pool being present.
+    resources: { cpus: 1, memory: "16GB" }
+
+gather:
+  id: cosebis_pte_matrix
+  type: data
+  format: npz
+  description: |
+    The ${n_members} rows reassembled into the single full-grid
+    NPZ that
+    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut)
+    re-exports — the exact artifact the serial loop wrote, keys
+    in the same order with the same dtypes, shapes and NaN
+    placement, so
+    [fig_pte_heatmaps](#../../../outputs.fig_pte_heatmaps) and
+    [config_space_pte_evidence](#../../../null_tests.outputs.config_space_pte_evidence)
+    read it unchanged (`theta_grid`, `pte_B_6`, `pte_B_20`, and
+    the full-range `[0, 20]` cell). `merge_cosebis_pte_rows.py`
+    recomputes nothing: it rebuilds the global pair list from the
+    same `_pte_scale_cut_pairs()` the members restrict and places
+    each value by its `(i_min, i_max)` key, refusing to write if
+    the members do not cover the grid exactly once or disagree on
+    the version, blind, mode count or theta grid.
+  recipe:
+    command: >
+      python src/papers/bmodes/scripts/merge_cosebis_pte_rows.py
+      --members ${member_refs}
+      --out-file {output}
+    resources: { cpus: 1, memory: "4GB" }

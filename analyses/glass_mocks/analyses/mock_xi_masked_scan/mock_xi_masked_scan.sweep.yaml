@@ -1,0 +1,117 @@
+# Per-realisation masked fine ξ± for the GLASS suite. Expand with:
+#   sweep_expand.py -o analyses/glass_mocks/analyses/mock_xi_masked_scan/astra.yaml \
+#       analyses/glass_mocks/analyses/mock_xi_masked_scan/mock_xi_masked_scan.sweep.yaml
+id: mock_xi_masked_scan
+version: "1.0"
+name: "GLASS mock masked fine-ξ scatter"
+description: |
+  [mock_xi_scan](#../mock_xi_scan) rerun after applying the
+  [v1.4.8 star mask](#../inputs.v148_pixel_mask) to each mock
+  catalogue, on exactly the data's integration grid — geomspace
+  0.5'–300', 1000 bins. The *same* realisations under a second
+  footprint — which is what makes the geometry test paired, and
+  therefore what cancels cosmic variance in the difference.
+
+  Restricted to the first 50 realisations (00001-00050) of the 350-member
+  suite: the masked 2PCF measurement is the campaign's most expensive stage,
+  and the geometry effect under test is a mean-level shift that 50 paired
+  realisations resolve. The fiducial ensembles stay at 350; the geometry
+  analysis pairs by mock ID, so the comparison runs on the 50-member
+  intersection.
+tags: [sweep, generated, glass, mocks]
+
+inputs:
+  - id: glass_mock_catalogs
+    from: ../glass_mock_catalogs
+  - id: v148_pixel_mask
+    from: ../v148_pixel_mask
+
+decisions:
+  mock_suite:
+    from: ../mock_suite
+
+matrix:
+  mock:
+    - 00001
+    - 00002
+    - 00003
+    - 00004
+    - 00005
+    - 00006
+    - 00007
+    - 00008
+    - 00009
+    - 00010
+    - 00011
+    - 00012
+    - 00013
+    - 00014
+    - 00015
+    - 00016
+    - 00017
+    - 00018
+    - 00019
+    - 00020
+    - 00021
+    - 00022
+    - 00023
+    - 00024
+    - 00025
+    - 00026
+    - 00027
+    - 00028
+    - 00029
+    - 00030
+    - 00031
+    - 00032
+    - 00033
+    - 00034
+    - 00035
+    - 00036
+    - 00037
+    - 00038
+    - 00039
+    - 00040
+    - 00041
+    - 00042
+    - 00043
+    - 00044
+    - 00045
+    - 00046
+    - 00047
+    - 00048
+    - 00049
+    - 00050
+
+template:
+  id: xi_fine_masked_${mock}
+  type: data
+  format: fits
+  description: |
+    Fine-binned ξ_±(θ) for GLASS realisation `${mock}` measured on
+    the v1.4.8-masked footprint.
+  inputs: [glass_mock_catalogs, v148_pixel_mask]
+  decisions: [mock_suite]
+  recipe:
+    command: >
+      python src/workflow/scripts/run_glass_mock_2pcf.py
+      --catalog-dir "$(dirname "$(printf '%s\n' "{inputs.glass_mock_catalogs}" | head -n1)")"
+      --mock-id ${mock} --out-file {output}
+      --min-sep 0.5 --max-sep 300.0 --nbins 1000
+      --mask-file {inputs.v148_pixel_mask}
+    resources: { cpus: 8, memory: "28GB" }
+
+gather:
+  id: mock_xi_fine_masked
+  type: data
+  format: npz
+  description: |
+    The ${n_members}-realisation masked fine ξ_± ensemble, in the same
+    layout as [mock_xi_fine](#../mock_xi_scan.mock_xi_fine).
+  recipe:
+    command: >
+      python src/workflow/scripts/mock_xi_ensemble.py
+      --members ${member_refs}
+      --min-sep 0.5 --max-sep 300.0 --nbins 1000
+      --out-file {output}
+    resources: { cpus: 1, memory: "8GB" }

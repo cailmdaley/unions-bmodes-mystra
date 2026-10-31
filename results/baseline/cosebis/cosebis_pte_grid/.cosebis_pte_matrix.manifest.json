@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "output_id": "cosebis.cosebis_pte_grid.cosebis_pte_matrix",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/merge_cosebis_pte_rows.py --members results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_00.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_01.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_02.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_03.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_04.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_05.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_06.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_07.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_08.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_09.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_10.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_11.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_12.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_13.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_14.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_15.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_16.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_17.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_18.npz results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_row_19.npz --out-file results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_matrix.npz\n",
+  "definition_version": "sha256:bfad631eeeb507a573a7dda8da57da3d3536110cf4f2ea171b43ebbf8f542fe0",
+  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
+  "data_version": "sha256:ddd441675fa706030fd26863a3455e120abf87f8406e5f39e9475ecaa491bc79",
+  "decisions": {},
+  "input_versions": {
+    "cosebis_pte_row_00": "sha256:51742c1c5278d82b91b270bc3a6f9df14e217294d6fd5480ff8a9b9d6c0ea8d3",
+    "cosebis_pte_row_01": "sha256:1f8e84b4b31caba5fffc14c6730de724d076e7cebd04cc0ee778bd510522be34",
+    "cosebis_pte_row_02": "sha256:40de73aea6261656bfa646e12ddde027026710be41d7cf6c4174a3f30f5303b8",
+    "cosebis_pte_row_03": "sha256:75a92e4df2bcdcc4bd75f653ed82047c2533aaaa009670bba7e779e50ad81b31",
+    "cosebis_pte_row_04": "sha256:c961f633bb268ad9eaa166c2c247732f7255f82a642219bade94e666be4f58c1",
+    "cosebis_pte_row_05": "sha256:b637b595525b0b1611598b9a3c43b374c6490a32ad3e2f7a142c906b42a9badc",
+    "cosebis_pte_row_06": "sha256:02dac81f76cc31134bc292d9b855660c60aab44833a06759a32e39b9aa555e93",
+    "cosebis_pte_row_07": "sha256:469f95d122ffff1842750558080d06f0ed23d0362e5ffa39d13dcd6f75f5e968",
+    "cosebis_pte_row_08": "sha256:bb43d13b1d63e83d8ed3ae31d65eb1565fb99c96c7d3d09ea79543bbbd39555d",
+    "cosebis_pte_row_09": "sha256:276fb51d2e754a70fa02ec3fef5f2574fc6eb7b0c288c38be5fab0e09eb294b2",
+    "cosebis_pte_row_10": "sha256:988d0eaaf5892a43fba76e3da9073cb6bf5a4f74328ef230b9450f3d4ea51dad",
+    "cosebis_pte_row_11": "sha256:92fca2b2cbbc5b360203535bfa2f91b7c9339099532076f9991b23d1286e2bd3",
+    "cosebis_pte_row_12": "sha256:4da963fd9a3122e9adc4a0caadf6801cc5a642799f39497b5e649790696a597d",
+    "cosebis_pte_row_13": "sha256:298c6960ae28360867edb6ca26fb22f8bd969252a8dd023230c1694b6af8ef20",
+    "cosebis_pte_row_14": "sha256:4daf10a4bc6d379b3c00931c27a3cd8cc373ca3f9efef1555ab15465948d61e7",
+    "cosebis_pte_row_15": "sha256:b502877c33528b7a2218f5032b110364f1a05b4f33a1add6e4652fb34926550d",
+    "cosebis_pte_row_16": "sha256:fa58aa08ba8423bef1562cabb6a8a6fda581063fee29ff389e1c19ac3732ee92",
+    "cosebis_pte_row_17": "sha256:0b8dc3e0f3aa4c48b56bbd85150522bd7e25506f7cb3885e17f07f4fc5c1ac7c",
+    "cosebis_pte_row_18": "sha256:1c83582f5b13d9421de41b22458652abd70c8f256b68ad33666710ca3ad37a7d",
+    "cosebis_pte_row_19": "sha256:a3741fee561d186659893d022c6b0f9e1e762449e7144c9839f6d16a7e147560"
+  },
+  "git_sha": "8a89d7b841be17766bd5041d6d15188465a58df0",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-08-31T18:53:44.876+00:00",
+  "finished_at": "2026-08-31T18:53:53.126+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-e841fa2c63d0c02c",
+    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
+    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "arch": "amd64"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.mock_xi_scan.xi_fine_00116",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/run_glass_mock_2pcf.py --catalog-dir \"$(dirname \"$(printf '%s\\n' \"/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/unions_glass_sim_*_4096.fits\" | head -n1)\")\" --mock-id 00116 --out-file results/baseline/glass_mocks/mock_xi_scan/xi_fine_00116.fits --min-sep 0.5 --max-sep 300.0 --nbins 1000\n",
+  "definition_version": "sha256:0e4765f1178066574244399a053de0ef448223ab1c0b5fba06faf5f4f17709f9",
+  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
+  "data_version": "sha256:bd3ff454c2b857799e2aef78f25bfe3a86281d3d564f6f1d6bc0d6003dc997ae",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2"
+  },
+  "input_versions": {
+    "glass_mock_catalogs": "spelling:sha256:aeace7d67ae9d1f09393c4e39adaba16ca60363f2e3cba93a0486caa7e1503ac"
+  },
+  "git_sha": "7d6d276bc02dcd196ad0a355e8acbf7c38d5fa82",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-09-03T07:12:56.943+00:00",
+  "finished_at": "2026-09-03T09:10:41.087+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-e841fa2c63d0c02c",
+    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
+    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "arch": "amd64"
+  }
+}

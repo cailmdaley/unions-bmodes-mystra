@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "output_id": "nu_penalty_verdicts",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/emit_nu_penalty_verdicts.py --config-space-evidence results/baseline/null_tests/config_space_pte_data.json --harmonic-space-evidence results/baseline/null_tests/harmonic_space_pte_data.json --config src/papers/bmodes/config/config.yaml --scale-cut-convention grid_bin_edges --out-file results/baseline/nu_penalty_verdicts.csv\n",
+  "definition_version": "sha256:f552cb6fe409708e549bb3ceab36334091fe6d018200fac2d1e05fabe51d3540",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:9fffd1041c73bccf73ba12e5f3b40b56fd80010f453d4e95f2bfc03558970075",
+  "decisions": {
+    "scale_cut_convention": "grid_bin_edges"
+  },
+  "input_versions": {
+    "config_space_pte_data": "sha256:31f81553a7b2a543e319a3d7591f15fe89ca82fb3287736282a52d26bcf11490",
+    "harmonic_space_pte_data": "sha256:87730df1bd1dbe0495927487fdfe5a72ee1ba76a0ce15eccddfe910eb0834612",
+    "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T18:18:50.638+00:00",
+  "finished_at": "2026-10-16T18:19:02.161+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

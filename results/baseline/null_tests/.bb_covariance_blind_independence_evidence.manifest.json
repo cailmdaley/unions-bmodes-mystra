@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "output_id": "null_tests.bb_covariance_blind_independence_evidence",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/bb_covariance_blind_independence.py --config src/papers/bmodes/config/config.yaml --pure-eb-dir /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/paper_plots/intermediate --cosmo-val-dir /n17data/cdaley/unions/code/sp_validation/cosmo_val/output --covariance-dir /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance --out-file results/baseline/null_tests/bb_covariance_blind_independence_evidence.png\n",
+  "definition_version": "sha256:11f2bcf4dcfb56e1936ba86402f4369de7db1b4b6c7e54f4509f68b1e9dc058f",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:562c88ee793e8a22f91fae577c01677bca2978836932c4d486f2106b503909ae",
+  "decisions": {
+    "bb_blind_check_version": "mock_version_v146"
+  },
+  "input_versions": {
+    "pure_eb_intermediate_archive": "sha256:be1eaf5243c36c9c82f3c49e11fd131c0a468b3a12cb59641e18d56f2b5c2dbc",
+    "cosmo_val_archive": "sha256:40573c18c53587594bba0018038bf0d2aee2b10fd8c64d484f3ebe326dbef90a",
+    "covariance_archive": "sha256:8e05c73e22783bc7e1183418dc4d7085edb247d743aaa0d4837b6fbbb5ba59cc"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T15:57:25.870+00:00",
+  "finished_at": "2026-10-16T16:00:10.749+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

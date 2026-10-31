@@ -1,0 +1,8 @@
+id: baseline
+description: |
+  UNIONS Paper II catalog fiducial. Every decision this
+  sub-analysis uses (fiducial catalog version, blind, leakage
+  correction) is aliased from the root, so it is selected in
+  the root `universes/baseline.yaml`; nothing is locally
+  declared here.
+decisions: {}

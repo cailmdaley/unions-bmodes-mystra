@@ -8,7 +8,7 @@
 # the fiducial catalogue (v1.4.6.3) — no spoofed artifacts. See
 # ./CLAUDE.md and the `full-astra-reproduction` fiber for the practice.
 
-version: "0.0.11"
+version: "0.0.14"
 name: "UNIONS-3500 B-mode Validation"
 tags:
   - cosmology
@@ -40,6 +40,14 @@ inputs:
       `cat_config.yaml`'s `shear.path` keys.
     source: "/n17data/UNIONS/WL/v1.4.x/v{version}/unions_shapepipe_cut_struc_2024_v{version}.fits"
 
+  - id: shapepipe_v145_rerun
+    type: data
+    description: |
+      The paper's initial (v1.4.5) ShapePipe catalog, used in the catalog-version scans.
+      The canonical v1.4.5 path is a symlink to this file outside the
+      [v1.4.x family](#inputs.shapepipe_v14_catalogs), so the sandbox needs this separate input.
+    source: "/n17data/sguerrini/unions_shapepipe_cut_struc_2024_v1.4.5_rerun.fits"
+
   - id: redshift_distributions
     type: data
     description: |
@@ -50,19 +58,62 @@ inputs:
       catalogs strip `_leak_corr` before lookup.
     source: "/n17data/sguerrini/UNIONS/WL/nz/v{base_version}/nz_{base_version}_{blind}.txt"
 
+  - id: redshift_distributions_legacy
+    type: data
+    description: |
+      The pre-SOM, blind-independent n(z) that `cat_config.yaml`
+      still points the v1.4.8 and v1.4.11.3 entries at, where the
+      per-version SOM calibration carried by
+      [redshift_distributions](#inputs.redshift_distributions)
+      does not exist. A single file rather than a family. It
+      reaches the analysis only through those catalog versions in
+      the version scans; every fiducial result uses the SOM n(z).
+    source: "/n17data/mkilbing/astro/data/CFIS/v1.0/nz/dndz_SP_A.txt"
+
+  - id: cosmocov_binary
+    type: data
+    description: |
+      The compiled CosmoCov executable (Krause & Eifler 2017
+      lineage) that `run_cosmocov_chain.sh` invokes once per
+      covariance block. Not built by this reproduction — it is a
+      pre-existing binary in a collaborator's tree, declared so
+      that the dependency is visible to lc and reaches the
+      sandbox rather than sitting as a hardcoded default inside
+      the shell script.
+    source: "/n23data1/n06data/lgoh/scratch/UNIONS/CosmoCov/covs/cov"
+
+  - id: cosmocov_libgsl
+    type: data
+    description: |
+      The host's GSL 2.x shared library, whose soname
+      `libgsl.so.23` is the one link-time dependency of
+      [the CosmoCov binary](#inputs.cosmocov_binary) that the
+      analysis container cannot satisfy — it ships `libgsl.so.27`,
+      while the binary's other two dependencies (`libgslcblas`,
+      `libfftw3`) are present and are used from the container.
+      `run_cosmocov_chain.sh` links this file into its scratch
+      directory under the expected soname and puts that directory
+      on `LD_LIBRARY_PATH` for the binary's invocations alone, so
+      the container's own numerical stack is untouched. A host
+      artifact rather than a scientific input, declared for the
+      same reason the binary is: so that lc can see it and grant
+      it.
+    source: "/lib64/libgsl.so.23.1.0"
+
   - id: footprint_masks
     type: data
     description: |
-      Two HEALPix nside=4096 footprint masks built from the
-      comprehensive catalog with spatial-only cuts (so they are
-      shared across catalog variants whose only differences are
-      in selection): the standard 2894 deg² footprint used by
-      v1.4.5 / v1.4.6.3 / v1.4.11.3, and a star-halo-masked
-      2517 deg² variant (13% area loss) used by v1.4.8.
-      Apodisation and normalisation are applied at the same
-      stage. Mask power spectra are pre-computed and ingested
+      Standard 2894 deg² HEALPix nside=4096 footprint mask power
+      spectrum, built from the comprehensive catalog with
+      spatial-only cuts (shared across catalog variants whose
+      only differences are in selection) and used by v1.4.5 /
+      v1.4.6.3 / v1.4.11.3. A star-halo-masked 2517 deg² variant
+      (13% area loss, `mask_cls_footprint_starhalo_nside_4096_norm.txt`
+      in the same directory) is used by v1.4.8 instead;
+      apodisation and normalisation are applied at the same stage
+      for both. Mask power spectra are pre-computed and ingested
       as text files for CosmoCov.
-    source: "/n17data/cdaley/unions/pure_eb/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint{_starhalo}_nside_4096_norm.txt"
+    source: "/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_nside_4096_norm.txt"
 
   - id: planck18_cosmology
     type: data
@@ -81,16 +132,151 @@ inputs:
   - id: glass_mock_realisations
     type: data
     description: |
-      350 lognormal cosmic-shear mock realisations generated with
-      the `GLASS` package (Tessore et al. 2023), matched to v1.4.6
-      catalog properties (survey footprint, galaxy positions,
-      weights, n_eff, σ_e, n(z)) under the Planck-18 fiducial
-      cosmology and containing no PSF-related systematics. Used
-      to validate the semi-analytical CosmoCov amplitude and the
-      MC-propagation pipeline; not a covariance source for paper
-      PTEs. Generated once at v1.4.6 (the geometry of v1.4.6.3
-      is identical at this level).
-    source: "/n09data/guerrini/glass_mock_v1.4.6/results/{xi,cl}_glass_mock_{seed:05d}_4096*.{fits,npy}"
+      Lognormal cosmic-shear mock realisations generated with the
+      `GLASS` package (Tessore et al. 2023) under the Planck-18
+      fiducial cosmology, containing no PSF-related systematics.
+      Two suites of 350 were delivered; the 2026-03 v1.4.6.3_v2
+      suite is the admissible one and the earlier v1.4.6 suite is
+      excluded as a stale-density delivery — see
+      [mock_suite](#glass_mocks.decisions.mock_suite). Both
+      reproduce the survey footprint, the redshift distribution
+      and the per-component σ_e, and carry unit weights; the
+      galaxy *count* matches the catalog in neither, which the
+      campaign measures and reports as
+      [mocks_are_over_constraining](#glass_mocks.findings.mocks_are_over_constraining).
+      Used to validate the semi-analytical CosmoCov amplitude and
+      the MC-propagation pipeline; not a covariance source for
+      paper PTEs.
+    source: "/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/{xi,cl}_glass_mock_{seed:05d}_4096*.{fits,npy}"
+
+  - id: blind_check_pure_eb
+    type: data
+    description: |
+      Per-version, per-blind pure E/B covariance blocks for the blind-independence check.
+    source: "/automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/paper_plots/intermediate/{version}_{blind}_pure_eb_semianalytic.npz"
+
+  - id: blind_check_harmonic_cov
+    type: data
+    description: |
+      Per-version, per-blind pseudo-Cℓ covariance FITS files for the blind-independence check.
+    source: "/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_cov_{version}_blind={blind}_powspace_nbins=32.fits"
+
+  - id: blind_check_cosmocov
+    type: data
+    description: |
+      Per-version, per-blind processed Gaussian CosmoCov integration-grid covariances for the blind-independence check.
+    source: "/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_{version}_{blind}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_{version}_{blind}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt"
+
+  - id: blind_check_xi
+    type: data
+    description: |
+      Per-version ξ± integration-grid measurements for the blind-independence check.
+    source: "/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/{version}_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt"
+
+  - id: blind_check_pseudo_cl
+    type: data
+    description: |
+      Per-version blind-A pseudo-Cℓ bandpowers for the blind-independence check.
+    source: "/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_{version}_blind=A_powspace_nbins=32.fits"
+
+  # An output's identity is its recipe string and its decisions, so an edit to
+  # a script whose path is spelled the same way changes nothing lc can see.
+  # Declaring the script as an input puts its bytes in `input_versions`, which
+  # is what makes the edit land the consuming outputs `stale`.
+
+  - id: scale_cuts_script
+    type: data
+    description: |
+      The single definition of the fiducial θ cut and of the reporting-bin
+      window it selects (bins 9–15, resolved from the grid *edges*). An
+      input to every output whose numbers depend on that window.
+    source: "./src/papers/bmodes/scripts/scale_cuts.py"
+
+  - id: pseudo_cl_cov_script
+    type: data
+    description: |
+      The pseudo-Cℓ covariance wrapper, which applies the selected blind
+      to the theory n(z) (sp_validation's covariance reads cat_config's
+      `redshift_path` and ignores the blind). An input to the fiducial
+      Cℓ covariances, so that an edit to it restales them.
+    source: "./src/workflow/scripts/generate_pseudo_cl_cov.py"
+
+  - id: paper_mplstyle
+    type: data
+    description: |
+      The paper matplotlib style (fonts, sizes, text.usetex). An
+      input to every paper figure, because a change here changes
+      all of them.
+    source: "./src/workflow/matplotlib_config/paper.mplstyle"
+
+  - id: config_space_pte_matrices_script
+    type: data
+    description: |
+      The configuration-space PTE matrix builder and its two composite
+      renderers. An input to the evidence payload and to both figures
+      rendered from it, so that a change to how the fiducial cell is
+      resolved restales all three.
+    source: "./src/papers/bmodes/scripts/config_space_pte_matrices.py"
+
+  - id: harmonic_space_pte_matrices_script
+    type: data
+    description: |
+      The harmonic-space Cℓ^BB PTE matrix builder and its two composite
+      renderers. An input to the evidence payload and to both figures
+      rendered from it, so changes to the PTE colour threshold or rendering
+      logic restale the affected outputs.
+    source: "./src/papers/bmodes/scripts/harmonic_space_pte_matrices.py"
+
+  - id: print_width_script
+    type: data
+    description: |
+      `savefig_at_width`: saves a figure with a tight bounding box exactly
+      as wide as the paper prints it, so the style's font sizes are the
+      printed ones. An input to every figure saved through it.
+    source: "./src/workflow/scripts/print_width.py"
+
+  - id: harmonic_config_cosebis_comparison_figure_script
+    type: data
+    description: |
+      The configuration- vs harmonic-space COSEBI comparison script, declared
+      on the two figures it renders from the stored modes (the COSEBI
+      computations that share the script do not declare it, so a
+      rendering change leaves them current).
+    source: "./src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py"
+
+  - id: pure_eb_version_comparison_script
+    type: data
+    description: |
+      The pure-mode catalog-version comparison figure's renderer (one of
+      the three stacked panels of the paper's version figure).
+    source: "./src/papers/bmodes/scripts/pure_eb_version_comparison.py"
+
+  - id: cl_version_comparison_script
+    type: data
+    description: |
+      The C_ℓ catalog-version comparison figure's renderer (one of
+      the three stacked panels of the paper's version figure).
+    source: "./src/papers/bmodes/scripts/cl_version_comparison.py"
+
+  - id: cosebis_version_comparison_script
+    type: data
+    description: |
+      The COSEBI catalog-version comparison figure's renderer (one of
+      the three stacked panels of the paper's version figure).
+    source: "./src/papers/bmodes/scripts/cosebis_version_comparison.py"
+
+  - id: generate_paper_macros_script
+    type: data
+    description: |
+      The paper PTE evidence, macro, and CSV-table generator. An input
+      to the paper-facing PTE table and the null-tests macro output.
+    source: "./src/papers/bmodes/scripts/generate_paper_macros.py"
+
+  - id: generate_pte_table_tex_script
+    type: data
+    description: |
+      The renderer for the mock-calibrated LaTeX PTE table twin.
+    source: "./src/papers/bmodes/scripts/generate_pte_table_tex.py"
 
 # -----------------------------------------------------------------------------
 # Top-level outputs: paper-facing artifacts. Each consumes sub-analysis
@@ -98,8 +284,50 @@ inputs:
 # numerical evidence into LaTeX macros that the manuscript pulls.
 # -----------------------------------------------------------------------------
 outputs:
+  # ---------------------------------------------------------------------------
+  # Re-exported sub-analysis artifacts. Under lc 0.5.0 a recipe reaches an
+  # upstream artifact only through a declared dependency, and Input.from only
+  # walks *up* the tree — so a root output that consumes a child artifact
+  # aliases it here (Output.from, the legal downward/re-export direction) and
+  # then names the alias in its own `inputs:`. Aliases carry no format/recipe:
+  # both are inherited from the source output. The band is also the root's
+  # re-export surface, so it keeps a few aliases (the per-version sweeps, the
+  # reporting bandpowers, the integration-grid ξ / covariance) that no root
+  # recipe consumes since the appendix figures moved to figure-consumes-data:
+  # they remain the root-level handles on those artifacts.
+  # ---------------------------------------------------------------------------
+  - {id: paper_claims, from: null_tests.paper_claims}
+  - {id: paper_claims_comparison, from: null_tests.paper_claims_comparison}
+  - {id: config_space_pte_data, from: null_tests.config_space_pte_data}
+  - {id: harmonic_space_pte_data, from: null_tests.harmonic_space_pte_data}
+  - {id: mock_min_pte_calibration, from: glass_mocks.mock_min_pte_calibration}
+  # The PTE/χ² JSON payloads of the harmonic-vs-config COSEBI comparison, which
+  # the cosebis unit promoted out of its npz outputs into their own metric
+  # outputs. `cosebis_harmonic_config` reads these; the npz aliases below carry
+  # the En/Bn vectors the two cross-check figures render from.
+  - {id: cosebis_harmonic_modes_evidence, from: cosebis.cosebis_harmonic_metrics}
+  - {id: cosebis_harmonic_modes_full_evidence, from: cosebis.cosebis_harmonic_metrics_full}
+  - {id: cosebis_harmonic_version_ptes, from: cosebis.cosebis_harmonic_version_ptes}
+  - {id: cosebis_harmonic_modes, from: cosebis.cosebis_harmonic_modes}
+  - {id: cosebis_harmonic_modes_full, from: cosebis.cosebis_harmonic_modes_full}
+  - {id: cosebis_modes_data, from: cosebis.cosebis_modes_data}
+  - {id: cosebis_pte_per_cut, from: cosebis.cosebis_pte_per_cut}
+  - {id: cosebis_ptes, from: cosebis.cosebis_ptes}
+  - {id: pure_eb_pte_per_cut, from: pure_eb.pure_eb_pte_per_cut}
+  - {id: pure_eb_ptes, from: pure_eb.pure_eb_ptes}
+  - {id: cl_sweep, from: cl_bb.cl_sweep}
+  - {id: cl_bandpowers_reporting, from: cl_bb.cl_bandpowers_reporting}
+  - {id: cl_bandpowers_fine, from: cl_bb.cl_bandpowers_fine}
+  - {id: cl_cov_reporting, from: covariance.cl_cov_reporting}
+  - {id: xi_integration, from: two_point.xi_integration}
+  - {id: cov_integration_g, from: covariance.cov_integration_g}
+
+  # ---------------------------------------------------------------------------
+  # Paper-facing tables and metrics.
+  # ---------------------------------------------------------------------------
   - id: pte_table_appendix
     type: table
+    format: csv
     description: |
       The paper's only table (`tab:pte_results`, a full-width
       main-text `table*`): the six PTE statistics across all
@@ -111,46 +339,58 @@ outputs:
       appendix grid, and the paper later consolidated to this
       one table.
 
-      Canonical artifact is `pte_table_appendix.csv` (MySTRA
-      renders it as the table AND resolves every per-version PTE
-      `{astra:value}` against it — no LaTeX tabular, no
-      value-promotion bridge). Columns:
-      `version` (slug: initial / size_cuts / masked /
-      relaxed_flags), `cut` (fiducial / full_range), and the six
-      statistic columns `cosebis_n6`, `cosebis_n20`, `xip_B`,
-      `xim_B`, `xitot_B`, `cl_BB` (plus `version_full` carrying
-      the raw `SP_v1.4.x_leak_corr` string). Every cell is the
-      verbatim evidence value: config-space stats from
-      `null_tests.config_space_pte_evidence`
+      MySTRA renders this CSV as the table AND resolves every
+      per-version PTE `{astra:value}` against it — no value-promotion
+      bridge. A LaTeX tabular twin with the calibrated minimum-PTE
+      column is emitted separately as [pte_table_tex](#outputs.pte_table_tex).
+      Columns: `version`
+      (slug: initial / size_cuts / masked / relaxed_flags),
+      `cut` (fiducial / full_range), and the six statistic
+      columns `cosebis_n6`, `cosebis_n20`, `xip_B`, `xim_B`,
+      `xitot_B`, `cl_BB` (plus `version_full` carrying the raw
+      `SP_v1.4.x_leak_corr` string). Every cell is the verbatim
+      evidence value: config-space stats from
+      [config_space_pte_data](#outputs.config_space_pte_data)
       (`versions.<V>.<stat>_stats.pte_at_<cut>`) and the `cl_BB`
-      column from `null_tests.harmonic_space_pte_evidence`
-      (`versions.<V>.pte_at_<cut>`). The sibling
-      `pte_table_appendix.tex` is derived presentation for the
-      LaTeX manuscript; the CSV is the source MySTRA reads.
+      column from
+      [harmonic_space_pte_data](#outputs.harmonic_space_pte_data)
+      (`versions.<V>.pte_at_<cut>`). The mock-calibrated LaTeX
+      presentation of the same grid is the sibling
+      [pte_table_tex](#outputs.pte_table_tex) output.
+    inputs: [config_space_pte_data, harmonic_space_pte_data, generate_paper_macros_script]
     recipe:
-      # generate_paper_macros.py CLI. Self-contained re-run of the terminal
-      # gather (same producer as null_tests.pte_summary_evidence): reads the two
-      # PTE-matrix evidence.json by absolute lc results path and emits
-      # claims_macros.tex + evidence.json + the table files under {output}.
-      # This output's canonical artifact is pte_table_appendix.csv (the N×6 grid,
-      # queryable + renderable); pte_table_appendix.tex is emitted alongside as
-      # LaTeX presentation. Cross-sub-analysis `recipe.inputs` wiring is not
-      # expressible against the validator (see implementation-notes.md); the data
-      # flow is declared at the null-tests sub-analysis's inputs:/outputs: blocks.
+      # Terminal gather, third member of generate_paper_macros.py's
+      # `--emit {evidence,macros,table}` family (the other two are
+      # null_tests.pte_summary_evidence / pte_summary_macros). No heavy
+      # compute: both PTE payloads are already materialised.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/generate_paper_macros.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --config-space-evidence /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/config_space_pte_evidence/evidence.json
-        --harmonic-space-evidence /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/harmonic_space_pte_evidence/evidence.json
-        --claims-dir /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/tapestry
-        --out {output}
+        python src/papers/bmodes/scripts/generate_paper_macros.py
+        --config src/papers/bmodes/config/config.yaml
+        --config-space-evidence {inputs.config_space_pte_data}
+        --harmonic-space-evidence {inputs.harmonic_space_pte_data}
+        --emit table
+        --out-file {output}
+
+  - id: pte_table_tex
+    type: data
+    format: tex
+    description: |
+      LaTeX tabular twin of [pte_table_appendix](#outputs.pte_table_appendix),
+      using its six PTE columns and the GLASS mock-calibrated minimum-PTE
+      thresholds. It preserves the paper's grouped header and version labels;
+      no entry carries bold or other marking, since the table notes state the
+      pass/fail threshold for the min-PTE column.
+    inputs: [pte_table_appendix, mock_min_pte_calibration, generate_pte_table_tex_script]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/generate_pte_table_tex.py
+        --pte-csv {inputs.pte_table_appendix}
+        --calibration {inputs.mock_min_pte_calibration}
+        --out-file {output}
 
   - id: cosebis_harmonic_config
     type: table
+    format: csv
     description: |
       COSEBI B-mode PTEs computed two ways — the config-space
       integral of ξ± and the harmonic-space synthesis from Cℓ —
@@ -165,278 +405,261 @@ outputs:
       `cut` (fiducial / full_range), `pte`, `chi2`, `dof` (chi2
       and dof are populated for the harmonic path, which is a
       χ²(ν=6) test; the config-space PTE is empirical, so its
-      chi2/dof are blank). Harmonic values from
-      `cosebis.cosebis_harmonic_modes` (fiducial) and
-      `cosebis.cosebis_harmonic_modes_full` (full range),
-      `harmonic_b_mode_ptes.<V>.{pte,chi2,dof}`; config values
-      from `null_tests.config_space_pte_evidence`,
+      chi2/dof are blank). Harmonic values from the cosebis
+      sub-analysis's harmonic-mode PTE evidence (fiducial and
+      full range), `harmonic_b_mode_ptes.<V>.{pte,chi2,dof}`;
+      config values from
+      [config_space_pte_data](#outputs.config_space_pte_data),
       `versions.<V>.cosebis_stats.pte_at_<cut>`. This output,
       together with the per-version `pte_table_appendix` grid,
       replaces the former `pte_promoted_values` bridge — every
       PTE in prose now resolves against a canonical table.
+    inputs:
+      - config_space_pte_data
+      - cosebis_harmonic_modes_evidence
+      - cosebis_harmonic_modes_full_evidence
+      - cosebis_harmonic_version_ptes
     recipe:
-      # OWN COMPUTE (thin) — emit_cosebis_harmonic_config.py reads the three
-      # already-materialized evidence.json files below by absolute lc results
-      # path and writes cosebis_harmonic_config.csv (+ evidence.json) under
-      # {output}. Explicit `cd` to the project root so the relative {output}
-      # resolves correctly regardless of which worker node runs the recipe
-      # (same provenance trap noted on the retired promote_pte_values recipe).
+      # The fiducial version's harmonic PTEs come from the two per-version
+      # metrics outputs; the other three leak-corrected versions come from the
+      # cosebis_harmonic_scan sweep gather, which is what makes this table's
+      # harmonic rows complete again.
       command: >
-        cd /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb &&
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/emit_cosebis_harmonic_config.py
-        --config-space-evidence /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/null_tests/results/baseline/config_space_pte_evidence/evidence.json
-        --cosebis-evidence /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_harmonic_modes/evidence.json
-        --cosebis-evidence-full /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_harmonic_modes_full/evidence.json
-        --out {output}
+        python src/papers/bmodes/scripts/emit_cosebis_harmonic_config.py
+        --config-space-evidence {inputs.config_space_pte_data}
+        --cosebis-evidence {inputs.cosebis_harmonic_modes_evidence}
+        --cosebis-evidence-full {inputs.cosebis_harmonic_modes_full_evidence}
+        --harmonic-version-ptes {inputs.cosebis_harmonic_version_ptes}
+        --out-file {output}
 
   - id: cosebis_first_mode_significance
     type: metric
+    format: json
     description: |
       First-mode COSEBI B-mode significance B_1/σ_1 for the
       fiducial catalog (config-space COSEBIs). The headline
       `value` is the full-range (1–250 arcmin) significance — the
       ">4σ" first-mode excess quoted in the fig_cosebis_fiducial
-      caption and Discussion; the sibling evidence.json also
-      carries the fiducial-cut significance (which drops below
-      1σ). Thin transform of the already-materialized
-      `cosebis.cosebis_modes_data` npz (B_1 / σ_1, no COSEBI
-      recomputation). Metric JSON: {value, uncertainty, unit}.
+      caption and Discussion; the JSON also carries the
+      fiducial-cut significance (which drops below 1σ). Thin
+      transform of the already-materialized
+      [cosebis_modes_data](#outputs.cosebis_modes_data) npz
+      (B_1 / σ_1, no COSEBI recomputation). Metric JSON:
+      {value, uncertainty, unit}.
+    inputs: [cosebis_modes_data]
     recipe:
-      # OWN COMPUTE (thin) — emit_cosebis_first_mode_significance.py reads the
-      # config-space COSEBI modes npz and writes the metric JSON (+ evidence.json)
-      # under {output}. Pure numpy (np.load + one division); runs in seconds.
+      # Pure numpy (np.load + one division); runs in seconds.
       command: >
-        cd /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb &&
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/emit_cosebis_first_mode_significance.py
-        --cosebis-modes-npz /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_modes_data/cosebis_modes_SP_v1.4.6.3_leak_corr.npz
-        --out {output}
+        python src/papers/bmodes/scripts/emit_cosebis_first_mode_significance.py
+        --cosebis-modes-npz {inputs.cosebis_modes_data}
+        --out-file {output}
 
   - id: pte_combined_dof_penalized
     type: metric
+    format: json
     description: |
       Degrees-of-freedom-penalized combined B-mode PTE for the
       fiducial catalog at fiducial scale cuts: the un-penalized
-      combined PTE (0.176, on the pte_table_appendix grid)
-      recomputed with ν−2, treating the two fitted scale-cut
+      combined PTE at the fiducial cut recomputed with ν−2, treating the two fitted scale-cut
       boundaries as fitted parameters. χ²_obs is recovered exactly
-      by inverting the stored un-penalized PTE at the known ν=16
-      (fiducial cut 12–83 arcmin → 8 θ-bins × 2 for ξ_+/ξ_-), then
-      PTE = χ²_sf(χ²_obs, ν−2=14). The faithful reproduction gives
-      **0.10** (the paper's footnote states an approximate 0.09);
-      the conclusion — still above the 0.05 threshold — is
-      unchanged. Metric JSON: {value, uncertainty, unit}.
+      by inverting the stored un-penalized PTE at the known ν=14
+      (fiducial cut 12–83 arcmin → 7 θ-bins × 2 for ξ_+/ξ_-), then
+      PTE = χ²_sf(χ²_obs, ν−2=12). The window is resolved by
+      `scale_cuts.resolve_fiducial_bin_window` rather than restated
+      here; before that resolver existed it was matched against bin
+      *means* and silently widened to bins 9.1'–83' (ν=16), so both
+      the submitted footnote and the earlier reproduction of it
+      quote a penalized PTE from the wider window. Metric JSON:
+      {value, uncertainty, unit}.
+    decisions: [scale_cut_convention]
+    inputs: [pure_eb_pte_per_cut, scale_cuts_script]
     recipe:
-      # OWN COMPUTE (thin) — emit_pte_combined_dof_penalized.py reads the pure_eb
-      # per-cut PTE grid npz and writes the metric JSON (+ evidence.json) under
-      # {output}. numpy + scipy.stats only; exact (no MC re-run); runs in seconds.
+      # numpy + scipy.stats only; exact (no MC re-run); runs in seconds.
       command: >
-        cd /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb &&
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/emit_pte_combined_dof_penalized.py
-        --pte-per-cut-npz /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_pte_per_cut/SP_v1.4.6.3_leak_corr_A_pure_eb_ptes.npz
-        --out {output}
+        python src/papers/bmodes/scripts/emit_pte_combined_dof_penalized.py
+        --pte-per-cut-npz {inputs.pure_eb_pte_per_cut}
+        --config src/papers/bmodes/config/config.yaml
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
 
-  - id: fig_pure_eb_decomposition
-    type: figure
+  - id: nu_penalty_verdicts
+    type: table
+    format: csv
     description: |
-      Pure E/B decomposition of measured ξ± for the fiducial
-      catalog (paper Figure 1). Two panels (ξ_+, ξ_-) showing
-      total, E-mode, B-mode, and ambiguous components with
-      shaded fiducial scale-cut bands; error bars from
-      semi-analytical covariance MC propagation.
-      Source PDF: `pure_eb_data_vector.pdf`.
-    recipe:
-      # POINTER — same artifact as the pure_eb sub-analysis figure (paper Fig 1),
-      # rendered by pure_eb_data_vector.py (owned by the pure_eb worker). Copies
-      # the rendered PDF from that sub-analysis's lc output by absolute path.
-      # Assumes analyses/pure_eb.pure_eb_data_vector_figure has run.
-      command: >
-        cp /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_data_vector_figure/*.pdf {output}/
+      Referee-comment-1 check: what the two fiducial scale-cut boundaries cost
+      if they are treated as *fitted* parameters (ν → ν−2) across the whole of
+      the paper's PTE table, rather than for the combined statistic alone as in
+      [pte_combined_dof_penalized](#outputs.pte_combined_dof_penalized).
 
-  - id: fig_cosebis_fiducial
-    type: figure
-    description: |
-      COSEBI B_n / σ_n for the first 20 modes, fiducial catalog
-      (paper Figure 3). Full angular range (1'–250') overlaid
-      on fiducial cuts (12'–83'); the >4σ first-mode amplitude
-      at full range and its near-zero amplitude at fiducial
-      cuts are the visible evidence behind
-      `cosebis_full_range_failure`.
-    recipe:
-      # POINTER — same artifact as the cosebis sub-analysis data-vector figure
-      # (paper Fig 3), rendered by cosebis_data_vector.py (owned by the cosebis
-      # worker) alongside cosebis_modes_data. Copies the rendered PDF by absolute
-      # path. Assumes analyses/cosebis.cosebis_modes_data has run.
-      command: >
-        cp /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_modes_data/*.pdf {output}/
+      One row per (catalog version × statistic × cut): the four leak-corrected
+      versions of [pte_table_appendix](#outputs.pte_table_appendix), the same six
+      statistics (`cosebis_n6`, `cosebis_n20`, `xip_B`, `xim_B`, `xitot_B`,
+      `cl_BB`), at `fiducial` and `full_range` cuts — 48 rows.
 
-  - id: fig_cl_fiducial
-    type: figure
-    description: |
-      Cℓ^BB and Cℓ^EB normalised by uncertainty for the fiducial
-      catalog (paper Figure 4). The fiducial 300 < ℓ < 1600 band
-      is shaded; outliers near ℓ ≈ 125, 250 and ℓ > 1600 are
-      visible at full range.
+      Every PTE in the table is an analytic χ² survival function, so ν is fixed
+      by the cut and χ²_obs is recovered exactly by inverting the stored PTE; the
+      penalized value is `chi2.sf(χ²_obs, ν−2)`. Nothing is recomputed and no MC
+      is re-run. ν is the number of θ bins in the window for ξ_+^B / ξ_-^B (twice
+      that for the joint ξ_tot^B), the number of COSEBI modes (6 or 20,
+      independent of the angular cut), and the number of bandpowers in the ℓ
+      window for C_ℓ^BB. The fiducial windows come from
+      `scale_cuts.resolve_fiducial_bin_window` (bins 9–15, ν=7) and
+      `plotting_utils.ell_bin_index` (17 bandpowers) — the same resolvers the PTE
+      evidence itself used, never bin means.
+
+      Columns: `version`, `version_full`, `cut`, `statistic`, `nu`,
+      `nu_penalized`, `chi2`, `pte`, `pte_penalized`, `pte_decrease`, `passes`,
+      `passes_penalized`, `verdict_change` (the last three against the nominal
+      0.05 level). The fiducial ξ_tot^B row for the fiducial catalog reproduces
+      [pte_combined_dof_penalized](#outputs.pte_combined_dof_penalized) exactly.
+    decisions: [scale_cut_convention]
+    inputs:
+      - config_space_pte_data
+      - harmonic_space_pte_data
+      - scale_cuts_script
     recipe:
-      # POINTER — same artifact as the cl_bb sub-analysis data-vector figure
-      # (paper Fig 4), rendered by cl_data_vector.py (owned by the cl_bb worker).
-      # Copies the rendered PDF by absolute path. Assumes
-      # analyses/cl_bb.cl_data_vector_figure has run.
+      # Terminal gather: both PTE payloads are already materialised; numpy +
+      # scipy.stats only, runs in seconds.
       command: >
-        cp /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_data_vector_figure/*.pdf {output}/
+        python src/papers/bmodes/scripts/emit_nu_penalty_verdicts.py
+        --config-space-evidence {inputs.config_space_pte_data}
+        --harmonic-space-evidence {inputs.harmonic_space_pte_data}
+        --config src/papers/bmodes/config/config.yaml
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+
+  # ---------------------------------------------------------------------------
+  # Paper figures. Six of them ARE a sub-analysis figure — under the one-file
+  # contract a `cp` pointer recipe would only duplicate the bytes, so they are
+  # declared as aliases of the producing output (format and recipe inherited).
+  # ---------------------------------------------------------------------------
+
+  # Paper Figure 1: pure E/B decomposition of ξ± for the fiducial catalog.
+  - {id: fig_pure_eb_decomposition, from: pure_eb.pure_eb_data_vector_figure}
+
+  # Paper Figure 3: COSEBI B_n / σ_n for the first 20 modes, fiducial catalog —
+  # full angular range (1'–250') overlaid on fiducial cuts (12'–83'). The >4σ
+  # first-mode amplitude at full range and its near-zero amplitude at fiducial
+  # cuts are the visible evidence behind `cosebis_full_range_failure`. The
+  # cosebis unit already renders it from its materialised modes npz, so this is
+  # an alias like the other five figure re-exports.
+  - {id: fig_cosebis_fiducial, from: cosebis.fig_cosebis_data_vector}
+
+  # Paper Figure 4: Cℓ^BB and Cℓ^EB normalised by uncertainty, fiducial catalog.
+  - {id: fig_cl_fiducial, from: cl_bb.cl_data_vector_figure}
 
   # Paper Figure 5 is a three-panel version-comparison stack: pure-mode ξ_±^B,
-  # harmonic Cℓ^BB, and COSEBI B_n across the four catalog variants. Each panel is
-  # its own already-rendered sub-analysis figure, so it is promoted as its own
-  # root figure output (one PDF each) and the three embed together in the report.
-  # A single output holding all three PDFs would leave MySTRA to pick one
-  # alphabetically (dogfood #13) — one figure output = one figure.
-  - id: fig_versions_pure_eb
-    type: figure
-    description: |
-      Pure-mode ξ_±^B data vectors across the four catalog
-      variants — the pure-E/B panel of the paper's Figure 5
-      version-comparison stack. Version-coded markers; rectangles
-      delineate each bin and span the spread across versions;
-      horizontal lines mark the fiducial value.
-    recipe:
-      # POINTER — copy the pure_eb sub-analysis version-comparison figure into
-      # {output}. One PDF only, so the astra embed resolves it unambiguously.
-      command: >
-        cp
-        /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_version_comparison_figure/pure_eb_versions.pdf
-        {output}/
+  # harmonic Cℓ^BB, and COSEBI B_n across the four catalog variants. Each panel
+  # is its own sub-analysis figure, so each is aliased separately and the three
+  # embed together in the report — one figure output = one figure.
+  - {id: fig_versions_pure_eb, from: pure_eb.pure_eb_version_comparison_figure}
+  - {id: fig_versions_cl, from: cl_bb.cl_version_comparison_figure}
+  - {id: fig_versions_cosebis, from: cosebis.cosebis_version_comparison}
 
-  - id: fig_versions_cl
-    type: figure
-    description: |
-      Harmonic-space C_ℓ^BB / C_ℓ^EB data vectors across the four
-      catalog variants — the harmonic panel of the paper's Figure 5
-      version-comparison stack.
-    recipe:
-      # POINTER — copy the cl_bb sub-analysis version-comparison figure into
-      # {output}. One PDF only.
-      command: >
-        cp
-        /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_version_comparison_figure/cl_versions.pdf
-        {output}/
+  # The GLASS mock campaign in one paper figure: mean B vector over σ_ana on
+  # top, σ_emp/σ_ana below, sharing the three statistic columns. The glass_mocks
+  # unit renders it from its materialised statistics npz, so this is an alias
+  # like the other figure re-exports.
+  - {id: fig_mock_campaign, from: glass_mocks.mock_campaign_figure}
 
-  - id: fig_versions_cosebis
-    type: figure
-    description: |
-      COSEBI B_n/σ_n amplitudes across the four catalog variants at
-      full range and fiducial cuts — the COSEBI panel of the paper's
-      Figure 5 version-comparison stack.
-    recipe:
-      # POINTER — copy the cosebis sub-analysis version-comparison figure into
-      # {output}. One PDF only.
-      command: >
-        cp
-        /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_version_comparison/cosebis_bmode_stacked.pdf
-        {output}/
+  # The pure-E/B decision scan: five (method, geometry, weights, limits)
+  # variants on mock rectification bias, covariance calibration and the data's
+  # own PTE. Aliased like the figure re-exports above; glass_mocks renders it.
+  - {id: fig_pure_eb_decision_scan, from: glass_mocks.pure_eb_decision_comparison_figure}
 
   - id: fig_pte_heatmaps
     type: figure
+    format: png
     description: |
       Configuration-space PTE composite over (θ_min, θ_max)
       cuts: four rows (catalog variants) × three columns
       (ξ_+^B, ξ_-^B, COSEBI B_n), with the adopted 12'–83' cut
-      marked as a black square. Blue = failing (PTE < 0.05),
-      white/red = consistent. Paper Figure 6 / appendix.
+      marked as a black square. Blue = failing (PTE below the selected
+      [global PTE threshold](#decisions.pte_threshold)), white/red =
+      consistent. Paper Figure 6 / appendix.
+    decisions: [scale_cut_convention, pte_threshold]
+    inputs:
+      - config_space_pte_data
+      - config_space_pte_matrices_script
+      - print_width_script
+      - scale_cuts_script
+      - paper_mplstyle
     recipe:
-      # OWN COMPUTE — same producer as null_tests.config_space_pte_evidence
-      # (config_space_pte_matrices.py). Self-contained re-run reading the
-      # per-version PTE intermediates from the lc Design-B sweep outputs by
-      # absolute path (pure_eb_ptes + cosebis_ptes gathered NPZ); the 4-row × 3-col
-      # composite lands under {output} as config_space_pte_composite_appendix.pdf
-      # (plus the fiducial 1×3 PDF).
+      # Pure render, the appendix twin of null_tests.config_space_pte_evidence:
+      # the per-version PTE grids are already in the evidence payload written by
+      # null_tests.config_space_pte_data, so this re-runs no sweep — it only
+      # selects the 4×3 appendix composite instead of that output's fiducial 1×3.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/config_space_pte_matrices.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --pte-intermediate-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_ptes
-        --cosebis-pte-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_ptes
-        --blind A
-        --fiducial-version SP_v1.4.6.3_leak_corr
-        --fiducial-pure-eb-pte-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/pure_eb/results/baseline/pure_eb_pte_per_cut/SP_v1.4.6.3_leak_corr_A_pure_eb_ptes.npz
-        --fiducial-cosebis-pte-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cosebis/results/baseline/cosebis_pte_per_cut/cosebis_ptes_SP_v1.4.6.3_leak_corr_A.npz
-        --out {output}
+        python src/papers/bmodes/scripts/config_space_pte_matrices.py
+        --config src/papers/bmodes/config/config.yaml
+        --from-evidence {inputs.config_space_pte_data}
+        --figure appendix
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --pte-threshold {decisions.pte_threshold}
+        --out-file {output}
 
   - id: fig_cl_pte_heatmap
     type: figure
+    format: png
     description: |
       Harmonic-space Cℓ^BB PTE composite over (ℓ_min, ℓ_max)
       cuts: four rows (catalog variants), one column. Adopted
-      300 < ℓ < 1600 cut marked.
+      300 < ℓ < 1600 cut marked. Blue = failing (PTE below the selected
+      [global PTE threshold](#decisions.pte_threshold)); white/red =
+      consistent.
+    decisions: [pte_threshold]
+    inputs:
+      - harmonic_space_pte_data
+      - harmonic_space_pte_matrices_script
+      - print_width_script
+      - paper_mplstyle
     recipe:
-      # OWN COMPUTE — same producer as null_tests.harmonic_space_pte_evidence
-      # (harmonic_space_pte_matrices.py). The version sweep lives inside the script;
-      # --results-dir is the lc cl_sweep output dir it reconstructs per-version
-      # pseudo_cl_* / pseudo_cl_cov_* (blind A) FITS from. The 4-row appendix
-      # composite lands under {output} as cl_pte_composite_appendix.pdf (plus the
-      # fiducial PDF).
+      # Pure render, the appendix twin of
+      # null_tests.harmonic_space_pte_evidence: the (ℓ_min, ℓ_max) PTE grids for
+      # every version already live in the evidence payload written by
+      # null_tests.harmonic_space_pte_data, so no sweep is re-run here.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/harmonic_space_pte_matrices.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --results-dir /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_sweep
-        --fiducial-version SP_v1.4.6.3_leak_corr
-        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_reporting/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
-        --fiducial-pseudo-cl-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cl_cov_reporting/pseudo_cl_cov_SP_v1.4.6.3_leak_corr.fits
-        --out {output}
+        python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
+        --config src/papers/bmodes/config/config.yaml
+        --from-evidence {inputs.harmonic_space_pte_data}
+        --figure appendix
+        --pte-threshold {decisions.pte_threshold}
+        --out-file {output}
 
   - id: fig_harmonic_config_cosebis
     type: figure
+    format: png
     description: |
       Cross-check between configuration-space and
       harmonic-space COSEBI computations (paper Figure 8):
       same E_n / B_n filters applied to ξ± (filled circles)
       versus Cℓ bandpowers (open squares), establishing that
       both paths yield identical mode amplitudes within
-      filter-function differences.
+      filter-function differences. Rendered from the already
+      materialized
+      [cosebis_harmonic_modes](#outputs.cosebis_harmonic_modes)
+      NPZ rather than recomputing the two COSEBI paths.
+    decisions: [fiducial_catalog, scale_cut_convention]
+    inputs:
+      - cosebis_harmonic_modes
+      - harmonic_config_cosebis_comparison_figure_script
     recipe:
-      # OWN COMPUTE — harmonic_config_cosebis_comparison.py CLI. The combined 2×2
-      # paper figure (full + fiducial columns, E/B rows) is produced by either
-      # angular-range run; --angular-range fiducial writes
-      # harmonic_config_cosebis_fiducial.pdf under {output}. The per-version sweep
-      # lives inside the script, reading pseudo_cl (96-bin) / pseudo_cl_cov / xi /
-      # covariance from COSMO_VAL + COSMO_INFERENCE by absolute path.
+      # Figure-consumes-data: cosebis.cosebis_harmonic_modes is this exact
+      # invocation and already holds the En/Bn/covariance payload for both
+      # paths, so this is the plot-only sibling of that unit's
+      # --metrics-from-modes pass — same flag family, --figure-from-modes.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --angular-range fiducial
-        --cosmo-val-dir /n17data/cdaley/unions/code/sp_validation/cosmo_val/output
-        --covariance-dir /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance
-        --fiducial-version SP_v1.4.6.3_leak_corr
-        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_fine/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
-        --fiducial-xi-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
-        --fiducial-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
-        --out {output}
-        && find {output} -maxdepth 1 -type f \( -name '*.npz' -o -name '*.png' -o -name 'evidence.json' \) -delete
+        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --angular-range fiducial --blind A
+        --figure-from-modes {inputs.cosebis_harmonic_modes}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
 
   - id: fig_harmonic_config_cosebis_full
     type: figure
+    format: png
     description: |
       Full-angular-range twin of
       [fig_harmonic_config_cosebis](#outputs.fig_harmonic_config_cosebis)
@@ -449,34 +672,21 @@ outputs:
       of the same script. Same producer/evidence as
       [cosebis.cosebis_harmonic_modes_full
       ](#cosebis.outputs.cosebis_harmonic_modes_full).
+    decisions: [fiducial_catalog, scale_cut_convention]
+    inputs:
+      - cosebis_harmonic_modes_full
+      - harmonic_config_cosebis_comparison_figure_script
     recipe:
-      # OWN COMPUTE — same CLI as fig_harmonic_config_cosebis, --angular-range
-      # full instead of fiducial; writes harmonic_config_cosebis_full.pdf under
-      # {output} (paper_figure_name = f"harmonic_config_cosebis_{angular_range}.pdf").
-      # A `type: figure` output IS its one paper figure: after the script runs we
-      # keep only the paper PDF (matching every other figure output) and delete
-      # the script's aux artifacts: per-version PNGs, the raw .npz En/Bn vectors
-      # (that belongs to the data twin cosebis_harmonic_modes_full — nothing reads
-      # this copy), and the redundant evidence.json. MySTRA reads the
-      # .lightcone-manifest to detect the output is produced, then embeds the
-      # alphabetically-first remaining file as the image; co-locating anything
-      # that sorts before the PDF (.npz, evidence.json) shows the wrong artifact.
+      # Same plot-only mode as fig_harmonic_config_cosebis, over the full-range
+      # modes NPZ. Under the one-file contract this output IS the paper PNG.
       command: >
-        apptainer exec
-        --bind /home,/scratch,/automnt,/n17data,/n23data1,/n09data
-        --env PYTHONPATH=/n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/src
-        /n17data/cdaley/containers/containers/
-        /usr/local/bin/python /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config /n17data/cdaley/unions/code/sp_validation.worktrees/repro-paper-ii-astra/papers/bmodes/config/config.yaml
-        --angular-range full
-        --cosmo-val-dir /n17data/cdaley/unions/code/sp_validation/cosmo_val/output
-        --covariance-dir /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance
-        --fiducial-version SP_v1.4.6.3_leak_corr
-        --fiducial-pseudo-cl-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/cl_bb/results/baseline/cl_bandpowers_fine/pseudo_cl_SP_v1.4.6.3_leak_corr.fits
-        --fiducial-xi-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/two_point/results/baseline/xi_integration/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt
-        --fiducial-cov-path /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/Reproductions/UNIONS/pure_eb/analyses/covariance/results/baseline/cov_integration_g/covariance_processed.txt
-        --out {output}
-        && find {output} -maxdepth 1 -type f \( -name '*.npz' -o -name '*.png' -o -name 'evidence.json' \) -delete
+        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --angular-range full --blind A
+        --figure-from-modes {inputs.cosebis_harmonic_modes_full}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
 
 # -----------------------------------------------------------------------------
 # Top-level decisions. All shared decisions (catalog choice, cosmology, scale
@@ -504,6 +714,14 @@ decisions:
       object-wise PSF-leakage correction applied (paper §2);
       uncorrected variants exist in the catalog tree but are
       not used for the paper PTEs.
+
+      Each option that a universe can select names its catalog
+      through `src/papers/bmodes/config/catalogs/<option>.yaml`,
+      which inherits the shared paper config and overrides the
+      fiducial version (the cat_config key every recipe resolves),
+      its footprint mask power spectrum, and the version set the
+      comparisons span. `size_cut` has one; the other v1.4 variants
+      enter through the version sweeps instead.
     default: size_cut
     options:
       size_cut:
@@ -611,7 +829,11 @@ decisions:
         label: "12'–83' (config), 300 < ℓ < 1600 (harmonic)"
         description: |
           Configuration-space: indices 9 and 16 of the 21-bin
-          geomspace(1, 250) grid. Harmonic: paper §4 fiducial.
+          geomspace(1, 250) grid — whether those indices are read
+          as exact bin edges or as the rounded 12'–83' of the
+          paper text is the separate
+          [scale_cut_convention](#decisions.scale_cut_convention)
+          choice. Harmonic: paper §4 fiducial.
       full_range:
         label: "Full range (1'–250' config, 8 ≤ ℓ ≤ 2048 harmonic)"
         description: |
@@ -626,6 +848,55 @@ decisions:
           contamination because the E/B ratio depends on the
           physical systematic. Scale cuts remove contaminated
           signal without assuming that relation.
+
+  scale_cut_convention:
+    label: "How the fiducial θ cut is defined relative to the reporting bins"
+    tags: [scale_cuts, primary]
+    rationale: |
+      The paper text and the paper pipeline disagree about the
+      [adopted configuration-space cut
+      ](#decisions.fiducial_scale_cuts) at the third significant
+      digit, and both readings are defensible, so the convention
+      is made explicit rather than resolved silently. The
+      paper's pipeline cut at *edges* of the 21-bin reporting
+      grid geomspace(1', 250', 21) — indices 9 and 16, i.e.
+      θ ∈ (11.997', 82.861') — while the manuscript (and
+      `src/papers/bmodes/config/config.yaml`) states the rounded
+      12'–83'. The paper's fiducial PTEs were computed with the
+      former; the reproduction was silently switched to the
+      latter, which moved the config-space COSEBI fiducial χ²/PTE
+      from 3.25/0.78 to 4.679/0.586. Applies to the θ cuts only:
+      the harmonic ℓ cut (300 < ℓ < 1600) sits on bandpower
+      edges with no rounding ambiguity, and the full 1'–250'
+      range is identical under both conventions.
+
+      Ruled (Cail, 2026-08-31): grid_bin_edges, for the revised
+      paper as well. The principle: a stated cut always lands on
+      the bin edge at the conservative end — a cut can only ever
+      remove more scales than the printed number, never fewer —
+      so the printed 12'–83' resolves to the enclosing reporting
+      edges (11.997', 82.861') and the paper text should state
+      the convention rather than the pipeline silently adopting
+      the rounded values.
+    default: grid_bin_edges
+    options:
+      grid_bin_edges:
+        label: "Bin edges of the reporting grid (indices 9, 16)"
+        description: |
+          θ_min, θ_max are taken as edges 9 and 16 of
+          geomspace(1', 250', 21), i.e. (11.997', 82.861').
+          This is what the paper's pipeline computed, and it
+          reproduces the paper's fiducial PTEs.
+      rounded_arcmin:
+        label: "Rounded 12'–83' as printed in the paper text"
+        description: |
+          The literal `fiducial_min_scale` / `fiducial_max_scale`
+          (and `fiducial_xip/xim_scale_cut`) values from
+          `config.yaml`, matching the manuscript prose. The
+          paper's numbers were never actually computed this
+          way: adopting it shifts the config-space COSEBI
+          fiducial χ²/PTE from 3.25/0.78 to 4.679/0.586 and the
+          harmonic one from 4.59/0.60 to 4.637/0.591.
 
   integration_grid:
     label: "ξ± integration grid for B-mode filters"
@@ -651,15 +922,323 @@ decisions:
           One-shot convergence computation for the size-cut
           catalog only; 22.6 h on 360 native cores.
 
+  pure_eb_integration_method:
+    label: "Quadrature used by the pure E/B integral transform"
+    tags: [pure_eb, integration, method, primary]
+    rationale: |
+      The Schneider (2022) transform that `cosmo_numba`
+      implements *intends* a linear map: the degree-5 local
+      interpolant it lays through the integrand samples is linear
+      in those samples, so ξ_±^{E,B,amb} ought to be a fixed
+      matrix acting on ξ_±. The submitted pipeline then hands
+      that interpolant to QUADPACK's adaptive `dqags`, which
+      chooses its subdivision *from the sampled values*. The
+      realised map is therefore weakly non-linear, and on noisy
+      input its sub-tolerance quadrature error is correlated with
+      the noise and rectifies into a spurious signal — the
+      ≈ −0.6 σ pure-B excess at θ < 3' that the paper currently
+      discloses as a limitation of the decomposition.
+
+      A fixed-quadrature operator settles it. Replacing the
+      adaptive step by cell-by-cell Gauss-Legendre integration of
+      the same interpolant makes the transform exactly linear,
+      `out = M · [ξ_+ ; ξ_-]`, with `M` a function of the grid
+      geometry and the kernels alone. Validated three ways:
+      against an independent brute-force Gauss-Legendre
+      integration of the same interpolant it agrees to
+      ≤ 3 × 10⁻¹⁵ of max|ξ|; on the rectification Monte Carlo
+      (identical draws, identical geometry) the small-θ ξ_+^B
+      bias collapses from −25.7 σ_MC under `dqags` to −0.9 σ_MC,
+      with the residual exactly ∝ the injected noise amplitude —
+      i.e. finite-draw MC error, which a rectification term
+      cannot be; and `dqags` is itself the inaccurate side, up to
+      15.6% wrong on V_- at 1000 integration bins, with the error
+      *growing* under grid refinement as spline-cell derivative
+      discontinuities and the ξ_- padding jump ring harder in
+      narrower panels.
+
+      A second, independent consequence: because the `dqags`
+      quadrature error is noise per realisation, uncorrelated
+      with the true fluctuation, every MC-propagated covariance
+      built through it is variance-inflated — ξ_-^B bin 0 by
+      ×3.3 and ξ_-^amb by ×17 at all scales, ξ_+^B bin 0 by
+      ×1.13. This decision therefore forks the data vectors, the
+      mock scatter and the MC covariance together, exactly as
+      [scale_cut_convention](#decisions.scale_cut_convention)
+      does.
+
+      The default is the adopted (2026-08-31) fixed-quadrature
+      operator; the submitted paper's `adaptive_dqags` selection is
+      the `submitted` universe.
+    default: fixed_operator
+    options:
+      adaptive_dqags:
+        label: "Adaptive QUADPACK dqags (submitted paper)"
+        description: |
+          `cosmo_numba.B_modes.schneider2022.get_pure_EB_modes`
+          with its default tolerances (epsabs = epsrel = 1e-10).
+          The subdivision depends on the data, so the transform
+          is not exactly linear: it rectifies noise into a
+          spurious small-θ B mode and inflates the variance of
+          any covariance propagated through it. This is what
+          produced the submitted data vectors, covariance and
+          PTEs.
+      fixed_operator:
+        label: "Fixed-quadrature linear operator M"
+        description: |
+          `cosmo_numba.B_modes.schneider2022_operator.get_pure_EB_operator`
+          — the same interpolant and kernels integrated with a
+          16-node Gauss-Legendre rule per grid cell, assembled
+          once per grid geometry and applied as a matvec. The
+          transform becomes exactly linear, so
+          mean-of-transforms = transform-of-mean identically and
+          noise cannot rectify.
+
+          Two consequences to carry when selecting it. First, the
+          operator flags rather than fakes its edges: rows whose
+          t-dependent support holds fewer than `interp_order + 1`
+          nodes are NaN with `valid = False`, where the reference
+          silently returned garbage. The fiducial 1000-bin chain
+          is untouched (minimum support 19 nodes) and the
+          consuming scripts assert that no invalid row appears,
+          but the nbins_int = 100/200 convergence configurations
+          will show NaN in reporting bin 19 (ξ_+) / bin 0 (ξ_-).
+          Second, this option is compound in *geometry*, though
+          not in weights. The shipped operator builds the
+          single-grid form of the transform (evaluation points
+          must be nodes of the integration grid), while the
+          submitted pointwise chains evaluate on the 20-bin
+          reporting `meanr`, which are up to 0.31% off the fine
+          nodes — snapping them would shift θ precisely where the
+          effect under study lives, and extending the operator to
+          off-grid evaluation would be new, unvalidated numerical
+          code. So `fixed_operator` chains instead evaluate the
+          transform on the fine-grid nodes and average the pure
+          modes into the reporting bins, and take their
+          integration limits [θ_min, θ_max] from the fine-grid
+          extent rather than from the reporting-grid extent
+          1.0'–250' — the exact geometry the operator validation
+          and the rectification Monte Carlo were run in, and
+          arguably the better-defined estimator, since the
+          reporting data vector is itself a bin average rather
+          than a point sample. How that fine-to-reporting average
+          is *weighted* is not part of this option; that is its
+          own fork, [pure_eb_rebinning_weights
+          ](#decisions.pure_eb_rebinning_weights), whose `none`
+          option is what the pointwise chain selects.
+          `adaptive_dqags` keeps the submitted pointwise
+          geometry, so the two options differ by quadrature *and*
+          geometry together; the validation shows the quadrature
+          term dominates.
+
+  pure_eb_rebinning_weights:
+    label: "Weights of the fine-to-reporting average of the pure modes"
+    tags: [pure_eb, binning, method, primary]
+    rationale: |
+      Evaluating the transform on the fine integration grid
+      leaves the pure modes on 1000 nodes while the reporting
+      data vector has 20 bins, so the
+      [transform-averaged geometry
+      ](#decisions.pure_eb_integration_method) needs a
+      fine-to-reporting rule. The rule is one linear functional
+      applied to the whole pure mode at each fine node — local
+      term and integral term together — and two candidates were
+      materialized; they differ by 2.7% on rebinned ξ_+.
+
+      The governing constraint, established by the seven-variant
+      decision scan on 350 GLASS mocks (`glass_mocks.
+      pure_eb_scan_statistics`): the pure-mode identity holds
+      pointwise in θ, so the local and integral terms must be
+      collapsed into a reporting bin by the *same* functional.
+      Every hybrid that collapses them differently (a reporting-
+      bin local term with a node or bin-averaged integral term)
+      is biased on mocks; every consistent estimator is unbiased.
+      That leaves only the choice of functional, and the two
+      candidates are statistically indistinguishable — mock
+      scatter 0.98×, data ξ_-^B PTE 0.023 (npairs) vs 0.026
+      (uniform) — because the integral term is smooth and near-
+      fully correlated across the ~50 fine nodes of a bin, so any
+      weighting collapses it to the same number.
+
+      The weighting therefore matters for exactly one term, the
+      local one, and there it is not a free choice: the local
+      term is the measured ξ_±, and the pair-count-weighted mean
+      over fine bins is by construction the reporting-bin
+      estimator ξ-hat_± itself (Asgari et al. 2019 Appendix A);
+      the unweighted mean is a different, mildly noisier
+      estimator of bin-averaged ξ that is neither the measured
+      correlation function nor the θ dθ bin average of theory.
+      Pair-count weighting is adopted (2026-09-07), reversing the
+      2026-08-30 ruling for uniform: that ruling rested on the
+      pair counts not being motivated for the integral term,
+      which is true but irrelevant (the integral term is
+      indifferent), and it overlooked that uniform is wrong for
+      the local term, which is not.
+
+      This axis did not exist before the referee comments — the
+      pre-referee pipeline did not bin the fine pure-mode
+      functions at all — which is why the pointwise chain selects
+      `none` rather than one side of the fork.
+    default: npairs
+    options:
+      npairs:
+        label: "Pair-count weighted mean (Asgari et al. 2019 Appendix A) (adopted)"
+        description: |
+          Each fine node's pure mode — local and integral term
+          together — is weighted by the pair count TreeCorr
+          measured at that separation. The collapsed local term
+          is then identically the reporting-bin ξ-hat_±, and the
+          integral term, indifferent to the weighting, rides the
+          same functional so the two remain consistent. Adopted.
+      uniform:
+        label: "Unweighted mean over the fine bins"
+        description: |
+          Every fine node falling in a reporting bin enters that
+          bin's average with equal weight. Ruled out 2026-09-07:
+          unbiased and equal in power on mocks, but its local
+          term is not the measured correlation function.
+      none:
+        label: "No fine-to-reporting averaging (pointwise chain)"
+        description: |
+          The pointwise geometry evaluates the transform directly
+          at the 20 reporting abscissae, so no fine-to-reporting
+          rule is applied and the axis does not exist. This is
+          the only selection consistent with
+          [pure_eb_integration_method: adaptive_dqags
+          ](#decisions.pure_eb_integration_method).
+
+  pure_eb_integration_limits:
+    label: "[θ_min, θ_max] of the pure-mode integral transform"
+    tags: [pure_eb, integration, method, primary]
+    rationale: |
+      The Schneider (2022) decomposition is defined on a finite
+      [θ_min, θ_max], and the choice trades two concerns against
+      each other: scales carrying real small-θ contamination enter
+      the decomposition of every reporting bin (ξ_-^B at θ mixes
+      in ξ measured below θ), while shrinking the interval
+      discards information and moves the estimator. The
+      [transform-averaged geometry
+      ](#decisions.pure_eb_integration_method) takes its limits
+      from the fine integration grid, while the submitted
+      pointwise chain takes its limits from the reporting grid.
+
+      The axis was measured directly by the buffer scan
+      (2026-08-28): shrinking the integration limits inward bin by
+      bin finds **no plateau** — the data vector keeps moving,
+      non-monotonically, with all sensitivity driven by ξ_-^B
+      (ξ_+^B stays null at 0.72–0.91 throughout) while the
+      covariance is stable (σ shifts ≤ 5.6% ξ_+, ≤ 1.3% ξ_-).
+      Across all buffers the combined pure-mode p-value spans
+      0.018–0.064. Since no interior choice is distinguished, the
+      scan quantifies the operator systematic (~±0.02 absolute on
+      a combined p ~0.03–0.06) rather than claiming a plateau;
+      its numbers come from an off-pipeline Monte-Carlo provenance
+      that differs from the pipeline's own by 0.01–0.02 in p.
+
+      Ruled (Cail, 2026-08-31): the averaged geometry keeps the
+      support-providing fine-grid extent, with the data and mock
+      grids both capped at 300'. A narrower window that starts at
+      the reporting floor — the appealing common [1', 300'] — is
+      structurally unavailable to this geometry: evaluation nodes
+      abutting θ_min are left with fewer than interp_order + 1
+      quadrature nodes of support, the spline degenerates, and the
+      operator's validity guard raises (verified: a 1' floor
+      produces five under-determined ξ_- edge rows immediately).
+      Only the pointwise chain can put its limits at the reporting
+      edges, because it evaluates at the 20 interior bin centers —
+      that is `reporting_extent`, frozen with `adaptive_dqags` in
+      `submitted`.
+    default: fine_grid_extent
+    options:
+      fine_grid_extent:
+        label: "[grid floor, 300'] — 0.5' data / 0.5' mocks, capped at 300'"
+        description: |
+          For the averaged geometry, keep fine-grid nodes from
+          the grid's own lower edge through 300'. The data and mock
+          grids both have a 0.5' floor; the mock grid's native 500'
+          upper extent is capped at 300'. This is the default because
+          support below the 1' reporting floor is required at the
+          edge of the averaged operator.
+      reporting_extent:
+        label: "Reporting-grid extent 1.0'–250'"
+        description: |
+          Pointwise-only: use the reporting transform limits
+          [1', 250'] inside the pointwise transform and do not
+          subset the fine integration arrays. This is the submitted
+          paper's `adaptive_dqags` chain (`submitted` universe).
+
+  pure_eb_covariance_method:
+    label: "Construction of the pure-mode covariance"
+    tags: [pure_eb, covariance, statistics, method, primary]
+    rationale: |
+      The [averaged fixed-quadrature estimator
+      ](#decisions.pure_eb_integration_method) is exactly linear in
+      the fine ξ_± vector: ξ^{E/B/amb} = M · [ξ_+; ξ_−], with M the
+      pipeline's own transform applied to unit vectors (npairs
+      rebinning weights, fine-grid-extent window, all 1000 fine
+      nodes). Its covariance is therefore M C_ξ Mᵀ, and the two
+      options are two ways of evaluating that one matrix.
+
+      The submitted method is the Monte Carlo: 2000 Gaussian draws
+      of ξ_± from the CosmoCov C_ξ pushed through the transform,
+      Hartlap-corrected at χ² time. It is exactly M Ĉ_ξ Mᵀ, with Ĉ_ξ
+      the sample covariance of the draws — the stored matrix is
+      reproduced to 1e-15 that way — so it differs from the exact
+      matrix only by Wishart noise. The measured differences sit at
+      that noise level: σ ratios, correlation differences and the
+      data PTE shifts are all ≤ 1.5σ of the simulated MC scatter
+      (fiducial ξ_−^B PTE 0.025 MC vs 0.019 exact, MC scatter
+      0.004). The case for keeping it is continuity with the
+      submitted analysis and with the COSEBI/pointwise machinery
+      it shares.
+
+      The exact matrix is noise-free, so no finite-sample (Hartlap)
+      factor enters any χ² built on it, it is computed in seconds
+      rather than 2000 transform evaluations, and it removes an
+      irreducible noise term from every pure-mode PTE and from the
+      mock-calibrated min-PTE threshold, which is built from mock
+      PTEs under the same covariance. It exposes one thing the MC
+      blurred: under M C Mᵀ the mock-matched/data B variance ratio
+      is a constant 1.353 across all ξ^B bins, since the B-mode
+      covariance is shape noise, and the MC's per-bin 1.23–1.43
+      spread was noise. Adopted (Cail, 2026-09-28). The exact
+      construction needs a linear operator, so it is available
+      only with `fixed_operator`; the adaptive-quadrature pointwise
+      chain in `submitted` stays Monte Carlo.
+
+      Each covariance artifact records its construction, and every
+      χ² consumer reads the Hartlap factor from it (the draw count,
+      or none).
+    default: exact_linear
+    options:
+      exact_linear:
+        label: "Exact linear propagation M C_ξ Mᵀ, no Hartlap (adopted)"
+        description: |
+          M built by pushing the 2000 fine-grid unit vectors through
+          the averaged transform; the covariance is M C_ξ Mᵀ with C_ξ
+          the CosmoCov integration covariance (data) or its
+          mock-matched twin. χ² carries no Hartlap factor.
+      monte_carlo:
+        label: "Monte Carlo, 2000 draws, Hartlap-corrected (submitted)"
+        description: |
+          [2000 draws](#decisions.mc_samples) from C_ξ in 20 seeded
+          chunks (seeds 42–61) through the same transform; the
+          empirical covariance, with the Hartlap (N − p − 2)/(N − 1)
+          factor on its inverse at χ² time. The submitted method,
+          and the only one available to `adaptive_dqags`.
+        insights: [hartlap07_correction]
+
   mc_samples:
     label: "Monte-Carlo samples for covariance propagation"
     tags: [covariance, method]
     rationale: |
-      The pure-mode and COSEBI covariances are obtained by
+      The Monte Carlo pure-mode covariance
+      ([pure_eb_covariance_method: monte_carlo
+      ](#decisions.pure_eb_covariance_method)) is obtained by
       pushing 2000 Gaussian draws of ξ± from the
       semi-analytical CosmoCov 1000-bin Gaussian covariance
-      through the same filters that produce the data vectors.
-      2000 samples converge each covariance element to ~0.1%;
+      through the same filters that produce the data vectors;
+      the exact construction makes no draws. 2000 samples converge each covariance element to ~0.1%;
       1000 samples gave ~0.2% and were judged too noisy at
       modes 6+. 5000 samples (2.5× cost) yielded < 0.05%
       improvement, diminishing returns.
@@ -684,12 +1263,11 @@ decisions:
       a semi-analytical (theory-only) covariance, not a
       sample-based estimate, so no correction enters at the
       input-covariance stage; the χ² PTEs of COSEBIs and
-      Cℓ^BB read this matrix directly. The MC-propagated pure
-      E/B covariance is a separate construction (2000 draws
-      pushed through the pure-mode filters) and is sample-based;
-      its Hartlap factor is governed by the
-      [pure_eb sub-analysis](#analyses.pure_eb)'s own
-      `hartlap_application` decision, not this one. The
+      Cℓ^BB read this matrix directly. The pure E/B covariance
+      is a separate construction, propagated from this matrix;
+      whether a pure-mode χ² carries a Hartlap factor is governed
+      by [pure_eb_covariance_method
+      ](#decisions.pure_eb_covariance_method), not this one. The
       mock-based option here would only apply if the 350
       GLASS-mock sample covariance replaced CosmoCov as the
       production matrix, which is not the paper choice.
@@ -726,6 +1304,44 @@ decisions:
       kolmogorov_smirnov:
         label: "Kolmogorov-Smirnov"
         description: "Not used."
+
+  pte_threshold:
+    label: "Global PTE pass/fail threshold for colour-coded heatmaps"
+    tags: [statistics, reporting, primary]
+    rationale: |
+      The submitted rule tested each of the six B-mode statistics
+      against 0.05. The revised test statistic is the minimum PTE over
+      the six, and its threshold p_thr is set on the systematics-free
+      GLASS realizations so that a clean sample fails 5% of the time,
+      as a single test at PTE = 0.05 would. Because the six are
+      correlated but not perfectly so, the minimum is skewed low and
+      p_thr sits below 0.05: 0.007140 at the fiducial 12–83′ window on
+      350 mocks (68% interval 0.004–0.008, see
+      [glass_mocks.mock_min_pte_calibration](#analyses.glass_mocks.outputs.mock_min_pte_calibration)).
+      The calibrated value varies mildly across the scale-cut plane —
+      ≤ 0.0093 over every window with θ_min ≥ 5.24′ and θ_max ≥ 36.20′,
+      a region containing the fiducial window with margin
+      ([glass_mocks.mock_min_pte_scale_cut_scan](#analyses.glass_mocks.outputs.mock_min_pte_scale_cut_scan));
+      both extremes of the plane are artifacts (few, highly correlated
+      degrees of freedom in the small-θ corner; the known large-scale
+      contamination at large θ_max), not a look-elsewhere effect. A
+      single representative value, 0.01, is adopted everywhere — a
+      clean sample fails it 8% of the time at the fiducial cuts — and is
+      also the value Paper III locks in. The alpha grid, the pass-region
+      box and the scale-cut dependence of the threshold are deliberately
+      kept out of the paper: the heatmaps keep their 0.05 per-statistic
+      diagnostic colouring, and only Table 1's minimum column and the
+      Sect. 3.6 prose carry p_thr.
+    default: calibrated_0p01
+    options:
+      nominal_0p05:
+        label: "0.05 (submitted per-statistic rule)"
+        description: "Value: 0.05. The threshold used by the submitted paper."
+      calibrated_0p01:
+        label: "0.01 (adopted representative value; 350-mock calibration)"
+        description: |
+          Rounded conservative threshold from the global minimum-PTE
+          calibration across the six B-mode statistics.
 
   healthy_pte_range:
     label: "Acceptance band for B-mode PTEs"
@@ -780,6 +1396,42 @@ decisions:
 # -----------------------------------------------------------------------------
 findings:
 
+  scale_cut_dof_penalty_harmless:
+    id: scale_cut_dof_penalty_harmless
+    label: "Charging two dof for the scale-cut boundaries changes no verdict"
+    claim: |
+      Treating the two fiducial scale-cut boundaries as fitted
+      parameters (ν → ν−2 in the χ² survival function) changes no
+      pass/fail verdict at the nominal 0.05 level for any entry of
+      the paper's PTE table — all four leak-corrected catalog
+      versions, all six statistics, at both the fiducial and the
+      full-range cuts (48 cells, zero verdict changes). Among
+      fiducial-cut entries the largest PTE decrease is 0.266
+      (COSEBI n≤6, masked catalog, 0.604 → 0.338) and the smallest
+      surviving passing PTE is 0.190 (Cℓ^BB, size-cut catalog,
+      0.299 → 0.190), still nearly four times the threshold.
+    notes: |
+      Answers referee comment 1. Generalizes the paper's existing
+      footnote, which applied the penalty only to the combined
+      ξ_tot^B statistic for the fiducial catalog (0.0405 → 0.0177,
+      `pte_combined_dof_penalized`); that cell is reproduced
+      exactly by the wider table. Entries already failing at 0.05
+      (ξ_-^B and ξ_tot^B for every version; Cℓ^BB for the initial
+      and relaxed-flags catalogs) only fail more strongly — nothing
+      crosses the threshold in either direction. Exact: ν is fixed
+      by the cut for every statistic, so χ²_obs is recovered by
+      inverting the stored PTE; no statistic is recomputed.
+    created_at: "2026-09-12T00:00:00Z"
+    evidence:
+      - id: ev1
+        artifact: nu_penalty_verdicts
+        quote:
+          exact: |
+            48 rows of (version, statistic, cut) with nu,
+            nu_penalized, chi2, pte, pte_penalized and
+            verdict_change; verdict_change is 0 in every row.
+    scope: "Adopted (fixed-operator, bin-averaged) pure-mode estimator; four ShapePipe v1.4 leak-corrected variants; fiducial (12'–83', 300 < ℓ < 1600) and full-range cuts."
+
   size_cut_unique_pass:
     id: size_cut_unique_pass
     label: "Size-cut catalog uniquely passes all three statistics"
@@ -799,7 +1451,7 @@ findings:
       (0.005) and Cℓ^BB (0.003); the masked catalog fails all
       three pure-mode tests; the relaxed-flags catalog fails
       ξ_-^B (9.4×10⁻⁴).
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         artifact: pte_table_appendix
@@ -827,7 +1479,7 @@ findings:
       and ambiguous-mode boundary content differently, and a
       contaminant with non-uniform spectral support shows up
       with different significance per estimator.
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         artifact: pte_table_appendix
@@ -865,7 +1517,7 @@ findings:
       paper Figure 8 and the §5 paragraph beginning "We show
       directly that Cℓ^BB and COSEBIs have different sensitivity
       to systematic features."
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         artifact: fig_harmonic_config_cosebis
@@ -894,7 +1546,7 @@ findings:
       `paper/claims_macros.tex`. The pattern persists across
       all four catalog variants at full range and is the
       reason the lower θ-cut sits above the CCD footprint.
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         artifact: fig_cosebis_fiducial
@@ -915,6 +1567,17 @@ findings:
 # cosmology. The paper's 1000-bin integration-grid choice is supported by
 # its own 10,000-bin convergence check (§3.3) and does not carry a prior
 # insight.
+#
+# A second group covers the accuracy of the analytic pseudo-Cℓ Gaussian
+# covariance that the harmonic-space B-mode null test relies on: Efstathiou
+# 2004 for the narrow-kernel assumption itself, García-García 2019 for the
+# NKA's failure on B-mode spectra and at ℓ ≲ 50, Nicola 2021 for the improved
+# NKA (the estimator actually used) and its residual low-ℓ and E/B-mixing
+# errors, Alonso 2019 for why an unpurified Cℓ^BB variance is dominated by
+# leaked E modes, and Alonso 2026 for the catalogue-based iNKA's ℓ ≳ 10
+# B-mode validity floor. Together these motivate the GLASS-mock covariance
+# calibration; none of them predicts the size of the effect for a footprint
+# as small and fragmented as UNIONS.
 # -----------------------------------------------------------------------------
 prior_insights:
 
@@ -927,7 +1590,7 @@ prior_insights:
       estimator multiplies it by (N - p - 2) / (N - 1). For
       semi-analytical (theory) covariances the correction does
       not apply because no sample uncertainty enters.
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         doi: "10.1051/0004-6361:20066170"
@@ -956,7 +1619,7 @@ prior_insights:
       decompose uniquely. This is the foundation of the
       configuration-space pure-mode B-mode null test the paper
       uses.
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         doi: "10.1051/0004-6361/202142450"
@@ -984,7 +1647,7 @@ prior_insights:
       signature in COSEBIs that distinguishes it from PSF
       leakage and random PSF residuals, where the E and B mode
       response are very different.
-    created_at: "2026-04-25T00:00:00"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         doi: "10.1051/0004-6361/201834379"
@@ -1011,7 +1674,7 @@ prior_insights:
       asymptotic information limit in fewer modes — for ξ_± on
       [1', 400'] the full (Ω_m, σ_8) information is recovered
       in ≈5 logarithmic modes versus ≈25 linear modes.
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         doi: "10.1051/0004-6361/200913577"
@@ -1058,7 +1721,7 @@ prior_insights:
       as pure-mode CFs and COSEBIs — all are linear functionals
       of ξ_± with explicit ambiguous-mode projection — but
       optimises filter compactness in ℓ rather than in θ.
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         doi: "10.1093/mnras/stv3018"
@@ -1100,7 +1763,7 @@ prior_insights:
       tightens these at the 0.5 % level relative to TT,TE,EE
       alone but yields no qualitatively different constraints
       for the matter power spectrum used by CosmoCov.
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         doi: "10.1051/0004-6361/201833910"
@@ -1138,7 +1801,7 @@ prior_insights:
       sources. This is the methodological basis for Paper II's
       harmonic-space Cℓ^EB / Cℓ^BB bandpowers and their
       analytic shot-noise correction.
-    created_at: "2026-04-25"
+    created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         doi: "10.1088/1475-7516/2025/01/028"
@@ -1179,6 +1842,291 @@ prior_insights:
       (Reinecke & Seljebotn 2023), with NaMaster decoupling of
       the mode-coupling matrix.
 
+  efstathiou04_nka_narrow_window_condition:
+    id: efstathiou04_nka_narrow_window_condition
+    claim: |
+      The analytic pseudo-Cℓ covariance expressions on which the
+      narrow-kernel approximation rests are derived under the
+      explicit assumption that the harmonic-space mask windows
+      are narrow compared with the scale on which C_ℓ varies.
+      Where that assumption fails — a mask with structure on
+      scales comparable to the modes measured, or a spectrum
+      that varies steeply across the window's width — the
+      resulting covariance carries no accuracy guarantee. This
+      is the condition that a small, fragmented footprint
+      violates at low ℓ.
+    created_at: "2026-09-13T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.48550/arXiv.astro-ph/0307515"
+        quote:
+          exact: "derived under the assumption that the window functions are narrow compared to variations in"
+        location:
+          page: 18
+    scope: |
+      Efstathiou 2004, MNRAS 349, 603 — §"PCL estimator
+      including noise". Source: arxiv astro-ph/0307515
+      mn_paper.tex line 1577. Stated for the deconvolved
+      pseudo-Cℓ covariance with noise; it is the origin of the
+      approximation NaMaster's `gaussian_covariance` implements.
+
+  alonso19_unpurified_bb_variance_dominated_by_leaked_e:
+    id: alonso19_unpurified_bb_variance_dominated_by_leaked_e
+    claim: |
+      Without map-level E/B purification, the pseudo-Cℓ B-mode
+      estimator is sub-optimal: removing the mask-induced E→B
+      leakage only at the power-spectrum level leaves the
+      variance of Cℓ^BB dominated by the variance of the leaked
+      E modes. Purification removes that contribution at the map
+      level and, in the NaMaster CMB validation suite, reduces
+      the BB uncertainties by up to a factor of ~10 on large
+      scales — with essentially no gain for EE. The E→B leakage
+      term is therefore the dominant and the most fragile part
+      of an unpurified Cℓ^BB error budget at low ℓ.
+    created_at: "2026-09-13T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1093/mnras/stz093"
+        quote:
+          exact: "produces a sub-optimal estimator in which the variance in the"
+          prefix: "removing the leakage at the power spectrum level"
+          suffix: "power spectrum is dominated by the variance of the leaked"
+        location:
+          page: 6
+      - id: ev2
+        doi: "10.1093/mnras/stz093"
+        quote:
+          exact: "very significant gains can be obtained for the"
+          prefix: "the improvement is only mild for the"
+          suffix: "power spectrum, reducing uncertainties by up to a factor of"
+        location:
+          page: 17
+    scope: |
+      Alonso, Sanchez & Slosar 2019, MNRAS 484, 4127 — §2.4
+      (E/B purification) and §4.4.2 (CMB validation suite,
+      Figure 15). Source: arxiv 1809.09603 main.tex lines 264
+      and 661. The factor-~10 figure is for a CMB-like mask and
+      spectrum, not a cosmic-shear footprint; it establishes the
+      mechanism and its scale dependence, not a number
+      transferable to UNIONS. Paper II's Cℓ^BB is measured
+      without purification.
+
+  gg19_nka_bb_covariance_unreliable:
+    id: gg19_nka_bb_covariance_unreliable
+    claim: |
+      The narrow-kernel approximation does not accurately
+      describe the pseudo-Cℓ covariance of any spectrum
+      involving B modes. The mechanism is the mask's E/B mixing:
+      leaked E modes contribute to the B-mode variance, and
+      because C_ℓ^EE greatly exceeds C_ℓ^BB — especially at
+      ℓ ≲ 200 — mis-modelling that leakage term mis-estimates
+      sigma(C_ℓ^BB) directly. In García-García et al.'s Gaussian
+      simulations the standard NKA (uncoupled input spectra)
+      errs by 30–50 % on BB covariance elements, in the
+      direction of *under*predicting the uncertainties, and the
+      authors conclude the approach cannot be used to estimate
+      B-mode power-spectrum uncertainties reliably.
+    created_at: "2026-09-13T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1088/1475-7516/2019/11/043"
+        quote:
+          exact: "on the covariance matrix elements, with the analyticial prediction underestimating the error bars overall"
+          prefix: "In this case we find significant differences, at the level of"
+          suffix: "This is expected and can be understood as follows: the presence of a sky mask mixes"
+        location:
+          page: 17
+      - id: ev2
+        doi: "10.1088/1475-7516/2019/11/043"
+        quote:
+          exact: "the leaked modes contribute to the variance. This is particularly significant for power spectra involving"
+          prefix: "Although this mixing can be accounted for at the level of the power spectrum through the pseudo-"
+          suffix: "modes, since the"
+        location:
+          page: 17
+      - id: ev3
+        doi: "10.1088/1475-7516/2019/11/043"
+        quote:
+          exact: "modes differs significantly from the true sample covariance, and, therefore, this approach cannot be used to reliably estimate the uncertainties of"
+          prefix: "Due to the imperfect treatment of the"
+          suffix: "-mode power spectra."
+        location:
+          page: 25
+    scope: |
+      García-García, Alonso & Bellini 2019, JCAP 11, 043 —
+      §4.2 (qualitative comparison, Figures 4 and 5) and §5
+      (discussion). Source: arxiv 1906.11765 paper.tex lines
+      605, 609 and 740. Measured on 20,000 Gaussian
+      simulations of an LSST-like two-bin LSS footprint with
+      the *standard* NKA, i.e. uncoupled input spectra and no
+      purification. The sign quoted (underprediction) is
+      specific to that configuration; the paper establishes that
+      the E→B mixing term is the failing term and that its
+      mis-modelling propagates straight into sigma(C_ℓ^BB), not
+      that the error has a universal sign. Nicola et al. 2021's
+      improved NKA (coupled input spectra), which the UNIONS
+      Cℓ^BB covariance uses, changes the sign of the dominant
+      residual — see
+      [nicola21_inka_lowest_bandpower_overestimate](#prior_insights.nicola21_inka_lowest_bandpower_overestimate).
+
+  gg19_nka_inaccurate_at_largest_scales:
+    id: gg19_nka_inaccurate_at_largest_scales
+    claim: |
+      Independently of the B-mode problem, the NKA pseudo-Cℓ
+      covariance is inaccurate on the largest angular scales,
+      ℓ ≲ 50. The recommended remedy where those scales matter
+      is not a better analytic approximation but fast
+      low-resolution Gaussian simulations (or the exact
+      O(ℓ_max^6) calculation). This is the same remedy the
+      UNIONS mock campaign implements.
+    created_at: "2026-09-13T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1088/1475-7516/2019/11/043"
+        quote:
+          exact: "we find that the NKA estimator yields inaccurate estimates of the power spectrum uncertainties on the largest scales"
+          prefix: "-mode power spectra. Likewise,"
+          suffix: "Although these modes carry a substantially smaller statistical weight"
+        location:
+          page: 25
+      - id: ev2
+        doi: "10.1088/1475-7516/2019/11/043"
+        quote:
+          exact: "they can be easily computed making use of fast low-resolution simulations or exactly following Refs."
+          prefix: "if more accurate covariances are needed on these large scales,"
+        location:
+          page: 23
+      - id: ev3
+        doi: "10.1088/1475-7516/2019/11/043"
+        quote:
+          exact: "a more sophisticated approach would be needed in order to obtain a precise estimate of the uncertainties for components involving"
+          prefix: "with high accuracy,"
+          suffix: "-modes. This is not a major concern, since"
+        location:
+          page: 18
+    scope: |
+      García-García, Alonso & Bellini 2019, JCAP 11, 043 — §5
+      (discussion) and §4.2. Source: arxiv 1906.11765 paper.tex
+      lines 740 and 609. The ℓ ≲ 50 threshold is for their
+      LSST-like mask; the paper gives no scaling of that
+      threshold with f_sky or mask complexity, so it cannot be
+      transported to the UNIONS footprint as a number — only as
+      the statement that a low-ℓ failure of the approximation is
+      expected and known.
+
+  nicola21_inka_lowest_bandpower_overestimate:
+    id: nicola21_inka_lowest_bandpower_overestimate
+    claim: |
+      The improved NKA (iNKA) of Nicola et al. 2021 replaces the
+      input C_ℓ in the NKA covariance by its mode-coupled
+      counterpart; this is the estimator NaMaster's
+      `gaussian_covariance` implements with coupled fiducial
+      spectra. The improvement is large — the standard NKA
+      over-estimates the *signal* part of the covariance by more
+      than a factor of 2 in noiseless HSC-like simulations,
+      while iNKA recovers it to ~10 %. Two residual failures
+      survive and both apply to Paper II's regime: the analytic
+      uncertainties are still *over*estimated at the lowest
+      bandpower, and the largest analytic-versus-simulated
+      discrepancies of all are in the spectra built from E/B
+      mixing, because the NKA for spin-2 fields neglects the
+      spatial derivatives of the weight map. The authors note
+      the NKA is expected to break down for sufficiently
+      complicated weight maps, and recommend fast low-resolution
+      Gaussian simulations for the covariance at large angular
+      scales.
+    created_at: "2026-09-13T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.48550/arXiv.2010.09717"
+        quote:
+          exact: "we find that the analytical uncertainties are always overestimated for the lowest bandpower"
+          prefix: "improves the agreement with the simulated covariance on large, signal-dominated scales. Nevertheless,"
+        location:
+          page: 21
+      - id: ev2
+        doi: "10.48550/arXiv.2010.09717"
+        quote:
+          exact: "This is due to the specific form of the NKA for spin-2 fields, which neglects the spatial derivatives of the weight map"
+          prefix: "we find the largest differences between analytic and simulated covariance for the case of the"
+        location:
+          page: 21
+      - id: ev3
+        doi: "10.48550/arXiv.2010.09717"
+        quote:
+          exact: "the standard NKA over-estimates the signal contribution to the covariance by more than a factor of 2"
+          suffix: "The improved NKA on the other hand recovers the power spectrum uncertainties obtained from the simulations to within"
+        location:
+          page: 23
+      - id: ev4
+        doi: "10.48550/arXiv.2010.09717"
+        quote:
+          exact: "The NKA is likely to break down for sufficiently complicated weight maps where the coupling coefficients"
+        location:
+          page: 12
+      - id: ev5
+        doi: "10.48550/arXiv.2010.09717"
+        quote:
+          exact: "these problems could potentially be overcome by using fast, low-resolution Gaussian simulations to estimate covariances at large angular scales, while using analytic estimates in the small-scale regime"
+          prefix: "As the inaccuracies shown in Figures"
+        location:
+          page: 22
+    scope: |
+      Nicola et al. 2021, JCAP 03, 067 — §2.3.3 (improving the
+      NKA), §4.2.2 (covariance validation, Figures 4, 5 and 7).
+      Source: arxiv 2010.09717 main_text_incl_figs.tex lines
+      316 and 458–462. Validated on 10,000 Gaussian simulations
+      of the HSC `WIDE12H` field and DES Y1 at nside 1024, with
+      shape noise, and on 1,000 noiseless HSC simulations. The
+      lowest-bandpower overestimate is reported for DES; the
+      authors state they see no such overestimate for HSC.
+      Crucially, the paper quantifies the E/B problem through
+      the *EB* spectrum, not BB, and reports its residuals as
+      "sufficiently accurate to use EB correlations as a null
+      test" — it never quantifies sigma(C_ℓ^BB) accuracy for a
+      small or fragmented footprint, and it offers no
+      prediction of the size of a low-ℓ BB overestimate.
+
+  namaster26_catalog_inka_bb_low_ell_limit:
+    id: namaster26_catalog_inka_bb_low_ell_limit
+    claim: |
+      In NaMaster's own validation of the catalogue-based iNKA
+      Gaussian covariance — the estimator family Paper II's
+      Cℓ measurement belongs to — the analytic covariance
+      matches the sample covariance of 1000 simulations on all
+      scales for E modes, but only for ℓ ≳ 10 for B modes, on a
+      DES-Y3-like 4000 deg² footprint. The asymmetry between
+      the E-mode and B-mode verdicts, and the restriction of the
+      B-mode failure to low ℓ, are exactly the pattern the
+      UNIONS mocks exhibit; the authors also flag that the NKA
+      may hold less well for sparse masks.
+    created_at: "2026-09-13T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.48550/arXiv.2607.14843"
+        quote:
+          exact: "We find that the analytical covariance accurately describes the sample covariance on all scales for"
+          suffix: "-modes and on scales"
+        location:
+          page: 13
+      - id: ev2
+        doi: "10.48550/arXiv.2607.14843"
+        quote:
+          exact: "The Narrow Kernel Approximation, which may hold less well for very sparse masks"
+        location:
+          page: 10
+    scope: |
+      Alonso et al. 2026, "Analytical covariances for
+      catalogue-based pseudo-Cℓs" — §4.2 (dense catalogues:
+      cosmic shear) and §4.1. Source: arxiv 2607.14843 main.tex
+      lines 468 and 442. DES Y3 bin 3, ~2.5e7 sources over
+      ~4000 deg² (f_sky ≈ 0.1), Gaussian shear realisations
+      with and without shape noise, bandpowers to ℓ_max =
+      10,000. The paper states the ℓ ≳ 10 B-mode validity floor
+      but does not characterise how it moves with f_sky or mask
+      fragmentation, and does not report the sign or size of
+      the BB covariance error below that floor.
+
 # -----------------------------------------------------------------------------
 # Sub-analyses. Each lives in analyses/<id>/astra.yaml. Inheritance flows
 # through `from: ../<root_id>` for shared inputs/decisions; cross-sub-analysis
@@ -1208,3 +2156,9 @@ analyses:
 
   null_tests:
     path: ./analyses/null_tests
+
+  glass_mocks:
+    path: ./analyses/glass_mocks
+
+  convergence:
+    path: ./analyses/convergence

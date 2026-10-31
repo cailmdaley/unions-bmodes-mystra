@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "output_id": "cosebis.fig_cosebis_data_vector",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/cosebis_data_vector.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --plot-from-modes results/baseline/cosebis/cosebis_modes_data.npz --scale-cut-convention grid_bin_edges --out-file results/baseline/cosebis/fig_cosebis_data_vector.pdf\n",
+  "definition_version": "sha256:3e0db538f5a7e91aef8839569828d3d0c0ef5c83639aca57863e0d1790f67a16",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:6d66fafd274b1a23e06c24856b6ccc4e228a74a06643bc479b457d71cde7f385",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "mode_subsets": "n_le_6_and_n_le_20",
+    "scale_cut_convention": "grid_bin_edges"
+  },
+  "input_versions": {
+    "cosebis_modes_data": "sha256:ac1c8b2af0cfe7709c0e1f124c9f4a0a1cbb46ce554e7cf903a40f0d1cb479f7",
+    "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112",
+    "print_width_script": "sha256:d1692083bf9a5226a33b7e9cc7b602f66825e21bbbad7e841d0bc8457489306a"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T18:12:48.866+00:00",
+  "finished_at": "2026-10-16T18:13:10.052+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}

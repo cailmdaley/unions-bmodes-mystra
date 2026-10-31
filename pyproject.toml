@@ -1,0 +1,20 @@
+[project]
+name = "pure_eb"
+version = "0.0.1"
+requires-python = ">=3.12"
+dependencies = [
+    "cosmo-numba",
+    "sp-validation",
+]
+
+[tool.uv]
+required-version = ">=0.12"
+
+[tool.uv.sources]
+sp-validation = { git = "https://github.com/CosmoStat/sp_validation.git", rev = "1804f63ee273df3dfb9396bba8c92561c228ecd2" }
+cosmo-numba = { git = "https://github.com/cailmdaley/cosmo-numba", rev = "d78a189d9af75a9c113fef7647102a1bad0fd452" }
+
+[tool.lightcone.image]
+# sp_validation CI image, branch develop at fefaf005 (#341, TinyTeX / TeX Live 2025; system layer:
+# OS libs, LaTeX, etc.). Python packages come from this project's lock.
+base = "ghcr.io/cosmostat/sp_validation@sha256:d136a922242ab48bd15a1cf281058852cfb96288adfd4253f471831c006a4ff0"

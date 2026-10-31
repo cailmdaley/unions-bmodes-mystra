@@ -1,4 +1,5 @@
 {
+  "enabledPlugins": {},
   "extraKnownMarketplaces": {
     "lightcone-research": {
       "source": {
@@ -7,8 +8,5 @@
         "ref": "astra-plugin-rework"
       }
     }
-  },
-  "enabledPlugins": {
-    "lightcone@lightcone-research": true
   }
 }

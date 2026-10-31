@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "covariance.cov_reporting_ng",
+  "universe_id": "baseline",
+  "recipe": "bash src/workflow/scripts/run_cosmocov_chain.sh --version \"$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --get fiducial.version)\" --blind blind_a --min-sep 1.0 --max-sep 250.0 --nbins 20 --gaussian ng --planck18-json results/baseline/covariance/cosmology_snapshot.json --cat-config src/cosmo_val/cat_config.yaml --cosmocov /n23data1/n06data/lgoh/scratch/UNIONS/CosmoCov/covs/cov --libgsl /lib64/libgsl.so.23.1.0 --mask-cls results/baseline/catalog/mask_power_spectrum.txt --nz results/baseline/catalog/redshift_distribution.txt --emit processed --out-file results/baseline/covariance/cov_reporting_ng.txt\n",
+  "definition_version": "sha256:dbd4751a63c840ba5a738846e549552213a956d1102fb82c121a8464b86996eb",
+  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "data_version": "sha256:59e36f7c04d8a249ab3cbf610eccf16fae272e4c69b92dae09f78f6ecabd4aec",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a"
+  },
+  "input_versions": {
+    "cosmology_snapshot": "sha256:c2a2387f4c8a208fbb1cb4e7c6fb11dbf0945b44f4d576380626c21c228c2024",
+    "mask_power_spectrum": "sha256:043c512476658dea60273e095e88b00e3b73559cfea394d1bda35e9548c576cb",
+    "redshift_distribution": "sha256:0d712922bf6edc27600b4035cc236cccd3aa73fbd4f2bc426c3914b9a924cbe8",
+    "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da",
+    "cosmocov_binary": "sha256:5843e0a19bd81ee085fdca2165e1597c0e6c849574f3b3e1493b15162fa86312",
+    "cosmocov_libgsl": "sha256:ea002b666e740f8a24caf69ef23c56b18c3b0f32a306302dee67dc6215eab7a5"
+  },
+  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-16T15:57:28.672+00:00",
+  "finished_at": "2026-10-16T16:13:50.294+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-c370ac20ef830b99",
+    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
+    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "arch": "amd64"
+  }
+}
