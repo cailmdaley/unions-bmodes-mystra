@@ -1,0 +1,42 @@
+{
+  "generated": "2026-10-16T20:19:38.663961",
+  "n_mocks": 350,
+  "cosebi_roots": "interpolate_ratio",
+  "fiducial": {
+    "window_edges": [
+      9,
+      16
+    ],
+    "theta_min": 11.997009531682911,
+    "theta_max": 82.86135043349967,
+    "reference": "mock_per_mock_statistics['pte']",
+    "max_abs_difference": {
+      "B_n<=6": 2.069677762506217e-12,
+      "B_n<=20": 7.057909812147045e-12,
+      "xi+^B": 9.992007221626409e-16,
+      "xi-^B": 7.771561172376096e-16,
+      "xi_tot^B": 0.0,
+      "C_ell^BB": 0.0
+    },
+    "status": []
+  },
+  "full_range": {
+    "window_edges": [
+      0,
+      20
+    ],
+    "theta_min": 1.0,
+    "theta_max": 250.0,
+    "reference": "mock_per_mock_statistics['pte_full']",
+    "max_abs_difference": {
+      "B_n<=6": 1.1485146167444782e-10,
+      "B_n<=20": 2.810384147622358e-10,
+      "xi+^B": 1.3322676295501878e-15,
+      "xi-^B": 1.2212453270876722e-15,
+      "xi_tot^B": 0.0,
+      "C_ell^BB": 0.5723297396649293
+    },
+    "note": "C_ell^BB is expected to disagree here by construction: this scan holds the harmonic statistic at its fixed 300<ell<1600 cut, while pte_full uses all 32 bands.",
+    "status": []
+  }
+}

@@ -230,6 +230,7 @@ decisions:
 findings:
 
   pure_modes_converged_at_1000_bins:
+    label: "Pure modes are converged on the 1,000-bin integration grid"
     claim: |
       The adopted pure-mode chain is converged on the 1,000-bin
       integration grid. Refining to 10,000 bins moves ξ_±^B by at
@@ -251,6 +252,7 @@ findings:
         artifact: tenk_grid_comparison
 
   cosebis_not_converged_at_1000_bins:
+    label: "COSEBI modes are not converged on the 1,000-bin grid"
     claim: |
       The COSEBI mode integrals are NOT converged on the 1,000-bin
       grid. Refining to 10,000 bins moves individual B_n by up to

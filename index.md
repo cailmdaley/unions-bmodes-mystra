@@ -13,6 +13,19 @@ At Stage-III sensitivities, cosmic shear $B$ modes unambiguously indicate system
 The ASTRA spec (`astra.yaml`) describes the analysis inputs, outputs and decisions.
 The `baseline` universe is the accepted A&A version; `submitted` is arXiv v2.
 
+The referee round added a mock-calibrated pass threshold, a GLASS mock campaign that validates the covariance, and an integration-grid convergence check. Their conclusions are findings of those sub-analyses:
+
+- {astra}`analyses.glass_mocks.findings.mock_xi_matches_input_theory_above_band_limit`
+- {astra}`analyses.glass_mocks.findings.mock_xi_scatter_falls_below_analytic_at_large_theta`
+- {astra}`analyses.glass_mocks.findings.mock_ptes_skew_low_by_ng_term`
+- {astra}`analyses.glass_mocks.findings.mocks_are_over_constraining`
+- {astra}`analyses.glass_mocks.findings.covariance_amplitude_validated`
+- {astra}`analyses.glass_mocks.findings.chi2_machinery_conservative`
+- {astra}`analyses.glass_mocks.findings.tests_are_not_redundant`
+- {astra}`analyses.convergence.findings.pure_modes_converged_at_1000_bins`
+- {astra}`analyses.convergence.findings.cosebis_not_converged_at_1000_bins`
+
+
 # Introduction
 
 Weak gravitational lensing distorts the observed shapes of distant galaxies, encoding information about the intervening matter distribution along the line of sight {cite:p}`blandford.etal91,miraldaescude91,kaiser92`. First detections came in 2000 {cite:p}`bacon.etal00,kaiser.etal00,vanwaerbeke.etal00,wittman.etal00`. The scalar gravitational potential produces a shear field that is curl-free to leading order and can be decomposed into gradient-like $E$ modes and curl-like $B$ modes; under the Born approximation, scalar density perturbations source only $E$-mode power {cite:p}`stebbins96,kamionkowski.etal97`. Higher-order effects (lens-lens coupling, source clustering, and intrinsic alignments) can produce $B$ modes {cite:p}`hilbert.etal09,schneider.etal02b,crittenden.etal02`, but these are orders of magnitude below current sensitivity {cite:p}`cooray.hu02`. They are likely only accessible to future ultra-high-precision measurements, potentially through cross-correlation techniques involving CMB lensing rotation reconstructions and large-scale-structure tracers {cite:p}`robertson.etal25`. For galaxy shear measurements at current sensitivity, detected $B$-mode power indicates residual observational systematic effects rather than cosmological signal, though the absence of $B$ modes does not rule out systematic contamination.

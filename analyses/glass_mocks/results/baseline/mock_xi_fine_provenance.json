@@ -1,0 +1,38 @@
+{
+  "mock_id": "00001",
+  "nbins": 1000,
+  "num_threads": 24,
+  "ingested_ensemble": "results/baseline/glass_mocks/mock_xi_fine_legacy_ingested.npz",
+  "meanr": {
+    "max_abs_diff": 6.872369340271689e-11,
+    "max_abs_diff_over_max_stored": 1.3780086948672308e-13,
+    "max_fractional_diff": 4.1847740398668866e-13,
+    "identical": false
+  },
+  "xip": {
+    "max_abs_diff": 2.4801124695605914e-18,
+    "max_abs_diff_over_max_stored": 1.190907142741742e-14,
+    "max_fractional_diff": 2.207208819287379e-11,
+    "identical": false
+  },
+  "xim": {
+    "max_abs_diff": 3.9835959509369745e-18,
+    "max_abs_diff_over_max_stored": 2.332473761154115e-14,
+    "max_fractional_diff": 2.2069214351555427e-11,
+    "identical": false
+  },
+  "npairs": {
+    "max_abs_diff": 0.0,
+    "max_abs_diff_over_max_stored": 0.0,
+    "max_fractional_diff": 0.0,
+    "identical": true
+  },
+  "weight": {
+    "max_abs_diff": 0.0,
+    "max_abs_diff_over_max_stored": 0.0,
+    "max_fractional_diff": 0.0,
+    "identical": true
+  },
+  "bin_edges_match": true,
+  "verdict": "ingest reproduces this spec's measurement"
+}

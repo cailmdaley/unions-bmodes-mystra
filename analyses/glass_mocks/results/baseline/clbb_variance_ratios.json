@@ -1,0 +1,138 @@
+{
+  "ell_cut": [
+    300.0,
+    1600.0
+  ],
+  "n_bands": 17,
+  "n_realisations": 350,
+  "machinery_variance_ratio_mean": 0.7249533827835264,
+  "machinery_variance_ratio_median": 0.7242967474601081,
+  "empirical_variance_ratio_mean": 0.7157060122347197,
+  "empirical_variance_ratio_median": 0.7157917135800966,
+  "per_band": [
+    {
+      "ell_eff": 327.5,
+      "ell_low": 304,
+      "ell_high": 351,
+      "machinery_variance_ratio": 0.7301957016117404,
+      "empirical_variance_ratio": 0.6355891841936616
+    },
+    {
+      "ell_eff": 377.0,
+      "ell_low": 352,
+      "ell_high": 402,
+      "machinery_variance_ratio": 0.7288993890966593,
+      "empirical_variance_ratio": 0.7182186457575722
+    },
+    {
+      "ell_eff": 429.99999999999994,
+      "ell_low": 403,
+      "ell_high": 457,
+      "machinery_variance_ratio": 0.7276977891007048,
+      "empirical_variance_ratio": 0.6949547741201196
+    },
+    {
+      "ell_eff": 487.0,
+      "ell_low": 458,
+      "ell_high": 516,
+      "machinery_variance_ratio": 0.7267344760865836,
+      "empirical_variance_ratio": 0.7387996844535569
+    },
+    {
+      "ell_eff": 547.5,
+      "ell_low": 517,
+      "ell_high": 578,
+      "machinery_variance_ratio": 0.7259569425846767,
+      "empirical_variance_ratio": 0.8561627144873538
+    },
+    {
+      "ell_eff": 610.9999999999998,
+      "ell_low": 579,
+      "ell_high": 643,
+      "machinery_variance_ratio": 0.7255725404097233,
+      "empirical_variance_ratio": 0.7615994879103946
+    },
+    {
+      "ell_eff": 678.0000000000003,
+      "ell_low": 644,
+      "ell_high": 712,
+      "machinery_variance_ratio": 0.7250783976046283,
+      "empirical_variance_ratio": 0.6899029285973506
+    },
+    {
+      "ell_eff": 749.0000000000001,
+      "ell_low": 713,
+      "ell_high": 785,
+      "machinery_variance_ratio": 0.7246262982010109,
+      "empirical_variance_ratio": 0.6956932434063334
+    },
+    {
+      "ell_eff": 823.5,
+      "ell_low": 786,
+      "ell_high": 861,
+      "machinery_variance_ratio": 0.7242967474601081,
+      "empirical_variance_ratio": 0.7684608646516959
+    },
+    {
+      "ell_eff": 901.0000000000002,
+      "ell_low": 862,
+      "ell_high": 940,
+      "machinery_variance_ratio": 0.7240486049804986,
+      "empirical_variance_ratio": 0.651214361486388
+    },
+    {
+      "ell_eff": 981.9999999999999,
+      "ell_low": 941,
+      "ell_high": 1023,
+      "machinery_variance_ratio": 0.7237641709141754,
+      "empirical_variance_ratio": 0.7157917135800966
+    },
+    {
+      "ell_eff": 1067.0,
+      "ell_low": 1024,
+      "ell_high": 1110,
+      "machinery_variance_ratio": 0.7234551923071084,
+      "empirical_variance_ratio": 0.7838445498675374
+    },
+    {
+      "ell_eff": 1155.4999999999998,
+      "ell_low": 1111,
+      "ell_high": 1200,
+      "machinery_variance_ratio": 0.7231631376784426,
+      "empirical_variance_ratio": 0.6199012991098609
+    },
+    {
+      "ell_eff": 1247.4999999999998,
+      "ell_low": 1201,
+      "ell_high": 1294,
+      "machinery_variance_ratio": 0.722950938131404,
+      "empirical_variance_ratio": 0.7487571877096806
+    },
+    {
+      "ell_eff": 1343.0000000000007,
+      "ell_low": 1295,
+      "ell_high": 1391,
+      "machinery_variance_ratio": 0.7227799570103083,
+      "empirical_variance_ratio": 0.6742995622882854
+    },
+    {
+      "ell_eff": 1441.5000000000005,
+      "ell_low": 1392,
+      "ell_high": 1491,
+      "machinery_variance_ratio": 0.7226230271310219,
+      "empirical_variance_ratio": 0.7497345130915637
+    },
+    {
+      "ell_eff": 1544.0000000000005,
+      "ell_low": 1492,
+      "ell_high": 1596,
+      "machinery_variance_ratio": 0.722364197011154,
+      "empirical_variance_ratio": 0.6640774932787844
+    }
+  ],
+  "sources": {
+    "cl_cov_mockmatched": "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/glass_mock_v1.4.6.3_v2/pseudo_cl_cov_glass_mock_v2_00001_powspace_nbins=32.fits",
+    "cl_cov_data": "results/baseline/covariance/cl_cov_reporting.fits",
+    "cl_files": "350 files matching /n09data/guerrini/glass_mock_v1.4.6.3_v2/results/cl_glass_mock_*_4096.npy"
+  }
+}
