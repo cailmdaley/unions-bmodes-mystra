@@ -1374,165 +1374,198 @@ findings:
 
   scale_cut_dof_penalty_harmless:
     id: scale_cut_dof_penalty_harmless
-    label: "Charging two dof for the scale-cut boundaries flips only the fiducial ξ_-^B verdict"
+    label: "The most pessimistic ν treatment puts the minimum PTE just below the calibrated threshold"
     claim: |
-      Treating the two scale-cut boundaries as fitted parameters
-      (ν → ν−2 in the χ² survival function) for every entry of the
-      PTE table — four leak-corrected catalog versions, six
-      statistics, fiducial and full-range cuts, 48 cells — changes
-      exactly one verdict at the fiducial cuts against the adopted
-      threshold p_thr = 0.01: the size-cut catalog's ξ_-^B, the
-      statistic that sets its minimum PTE, falls from 0.019 to
-      0.005, just below the 0.006 threshold calibrated at these
-      cuts. Every other fiducial-cut statistic for the size-cut
-      catalog still passes (smallest: ξ_tot^B, 0.039 → 0.017), and
-      no failing entry of any catalog crosses into passing. This is
-      the most pessimistic treatment, reported as a bound rather
-      than adopted.
+      The most pessimistic alternative treats the two scale-cut
+      boundaries as fitted parameters and reduces ν by two for every
+      statistic. The minimum PTE at the fiducial cuts, from ξ_-^B,
+      then falls from 0.019 to 0.005, just below the threshold of
+      0.006 calibrated at these cuts.
     notes: |
-      Answers referee comment 1; the accepted analysis quotes
-      the same pair (fiducialMinPte = 0.019,
-      fiducialMinPteNuPenalty = 0.005, mockMinPteFloor = 0.006). At
-      the full-range cuts the size-cut ξ_tot^B also moves from
-      0.0101 to 0.0056, against a calibrated full-range floor of
-      0.002. At a nominal 0.05 threshold no cell changes verdict,
-      because every entry that moves is already below 0.05. Exact:
-      ν is fixed by the cut for every statistic, so χ²_obs is
-      recovered by inverting the stored PTE; no statistic is
-      recomputed.
+      Answers referee comment 1. Applied to all 48 entries of the
+      PTE table (four leak-corrected catalog versions, six
+      statistics, fiducial and full-range cuts), the ν → ν−2 penalty
+      moves exactly one fiducial-cut entry across p_thr = 0.01: the
+      size-cut ξ_-^B, 0.0193 → 0.0051. Every other fiducial-cut
+      statistic for the size-cut catalog still passes (smallest:
+      ξ_tot^B, 0.0387 → 0.0168). At the full-range cuts the size-cut
+      ξ_tot^B also moves from 0.0101 to 0.0056, against a calibrated
+      full-range floor of 0.002; that row already fails on COSEBIs.
+      At a nominal 0.05 threshold no cell changes verdict, because
+      every entry that moves is already below 0.05. Exact: ν is fixed
+      by the cut for every statistic, so χ²_obs is recovered by
+      inverting the stored PTE; no statistic is recomputed.
     created_at: "2026-09-12T00:00:00Z"
     evidence:
       - id: ev1
         artifact: nu_penalty_verdicts
         quote:
-          exact: |
-            Size_cuts, SP_v1.4.6.3_leak_corr, fiducial, xim_B:
-            nu 7 → 5, pte 0.0193098 → pte_penalized 0.00506742.
+          exact: "Size_cuts,SP_v1.4.6.3_leak_corr,fiducial,xim_B,7,5,16.7177,0.0193098,0.00506742,0.0142423,0,0,0"
     scope: "Adopted (fixed-operator, bin-averaged) pure-mode estimator; four ShapePipe v1.4 leak-corrected variants; fiducial (12'–83', 300 < ℓ < 1600) and full-range cuts."
 
   size_cut_unique_pass:
     id: size_cut_unique_pass
-    label: "Size-cut catalog uniquely passes all three statistics"
+    label: "Only the fiducial catalog passes all statistics at the adopted cuts"
     claim: |
-      Of the four ShapePipe v1.4 catalog variants, only the
-      size-cut (SP_v1.4.6.3_leak_corr) variant passes all three
-      E/B-separable null tests at the adopted scale cuts against
-      the mock-calibrated threshold p_thr = 0.01. Its minimum PTE
-      across pure-mode ξ_±^B, COSEBI B_n, and Cℓ^BB is 0.019
-      (ξ_-^B at 12'–83'); 11% of the systematics-free GLASS
-      realisations have a lower minimum PTE. Each other variant
-      fails ξ_-^B at fiducial cuts.
+      At the adopted scale cuts, the fiducial catalog passes with a
+      minimum PTE of 0.019; 11% of the systematics-free realizations
+      have a lower PTE_min.
+
+      At the fiducial cuts, ξ_+^B and COSEBIs pass for all four
+      versions, whereas ξ_-^B shows a broad positive excess from
+      roughly 7 arcmin to the largest scales in every version,
+      driving failures in all but the fiducial catalog. The fiducial
+      catalog passes, but at the edge of its ξ_-^B acceptance region.
+      In harmonic space, the initial and relaxed-flags catalogs fail
+      across most multipole combinations, whereas the fiducial and
+      masked catalogs show broad acceptance regions. Only the
+      fiducial catalog passes all statistics at the adopted cuts.
     notes: |
-      Size-cut catalog at fiducial cuts: ξ_+^B 0.82, ξ_-^B 0.019,
-      ξ_tot^B 0.039, COSEBI n≤6 0.78, n≤20 0.94, Cℓ^BB 0.30
-      (`pte_table_appendix`; macros fiducialMinPte, mockPGlobal,
-      mockMinPteThreshold). The initial catalog fails ξ_-^B
-      (0.001), ξ_tot^B (0.001) and Cℓ^BB (0.003); the masked
-      catalog fails ξ_-^B (0.004); the relaxed-flags catalog
-      fails ξ_-^B (7.5×10⁻⁵), ξ_tot^B (6.7×10⁻⁵) and Cℓ^BB
-      (5.8×10⁻¹⁰).
+      The fiducial catalog is the size-cut catalog,
+      SP_v1.4.6.3_leak_corr. Its fiducial-cut PTEs: ξ_+^B 0.82,
+      ξ_-^B 0.019, ξ_tot^B 0.039, COSEBI n≤6 0.78, n≤20 0.94,
+      Cℓ^BB 0.30. 38 of 350 GLASS realisations (10.9%) have a minimum
+      PTE at or below 0.0193. The initial catalog fails ξ_-^B
+      (0.0012), ξ_tot^B (0.0014) and Cℓ^BB (0.0031); the masked
+      catalog fails ξ_-^B (0.0036); the relaxed-flags catalog fails
+      ξ_-^B (7.5×10⁻⁵), ξ_tot^B (6.7×10⁻⁵) and Cℓ^BB (5.85×10⁻¹⁰).
     created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         artifact: pte_table_appendix
         quote:
-          exact: |
-            All-version PTE grid: only
-            the size-cut row has all six statistics ≥ 0.01 at
-            fiducial cuts.
+          exact: "Size_cuts,SP_v1.4.6.3_leak_corr,Fiducial,0.777,0.943,0.823,0.0193,0.0387,0.299"
+      - id: ev2
+        artifact: mock_min_pte_calibration
+        quote:
+          exact: '"p_global_one_sided_count": 38'
     scope: "Adopted scale cuts (12'–83' config, 300 < ℓ < 1600 harmonic), four ShapePipe v1.4 variants."
 
   multi_statistic_consensus:
     id: multi_statistic_consensus
-    label: "Multi-statistic concurrence as the systematics test"
+    label: "Equivocal results argue against relying on any single null test"
     claim: |
-      No single E/B-separable estimator suffices to rule out
-      catalog systematics: the masked variant passes ξ_+^B,
-      ξ_tot^B, harmonic Cℓ^BB and COSEBI n≤6 but fails ξ_-^B;
-      the relaxed-flags variant passes ξ_+^B and COSEBIs but
-      fails ξ_-^B and Cℓ^BB. The
-      operational test of catalog quality is consistent passage
-      across all three statistics simultaneously.
+      Although the masked catalog passes in ξ_+^B, ξ_tot^B, harmonic
+      space, and COSEBIs (n ≤ 6), this ostensibly more conservative
+      choice fails in ξ_-^B. … The initial and relaxed-flags catalogs
+      fail in ξ_-^B and harmonic space, consistent with poorly
+      resolved or deblended objects contributing to the
+      contamination.
+
+      These equivocal results lead us to argue against relying on any
+      single null test; taken together, we choose the size-cut catalog
+      and our adopted scale cuts as the combination least affected by
+      systematic contamination for cosmological inference in Papers
+      III and IV. … These differences arise because the same
+      contamination projects differently into angular, modal, and
+      multipole representations; demanding that all three frameworks
+      pass simultaneously places tighter constraints than any single
+      null test.
     notes: |
-      Filter-function differences explain the
-      pattern of disagreement: each estimator weights θ-scales
-      and ambiguous-mode boundary content differently, and a
-      contaminant with non-uniform spectral support shows up
-      with different significance per estimator.
+      Fiducial-cut PTEs (`pte_table_appendix`). Masked: ξ_+^B 0.86,
+      ξ_tot^B 0.040, Cℓ^BB 0.44, COSEBI n≤6 0.60, all passing;
+      ξ_-^B 0.0036, failing. Relaxed flags: ξ_+^B 0.42 and COSEBI
+      n≤6 0.82 passing; ξ_-^B 7.48×10⁻⁵, ξ_tot^B 6.68×10⁻⁵ and
+      Cℓ^BB 5.85×10⁻¹⁰ failing. Initial: ξ_-^B 0.0012 and Cℓ^BB
+      0.0031 failing.
     created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         artifact: pte_table_appendix
         quote:
-          exact: |
-            Masked row: ξ_+^B=0.86, ξ_tot^B=0.040, Cℓ^BB=0.44,
-            COSEBI n≤6=0.60 (passes) but ξ_-^B=0.004 (failure).
-            Relaxed-flags row: ξ_+^B=0.42 and COSEBI n≤6=0.82
-            (passes), ξ_-^B=7.48×10⁻⁵ and Cℓ^BB=5.85×10⁻¹⁰
-            (failures at fiducial cuts).
+          exact: "Masked,SP_v1.4.8_leak_corr,Fiducial,0.604,0.811,0.864,0.00359,0.0401,0.441"
+      - id: ev2
+        artifact: pte_table_appendix
+        quote:
+          exact: "Relaxed_flags,SP_v1.4.11.3_leak_corr,Fiducial,0.824,0.831,0.418,7.48e-05,6.68e-05,5.85e-10"
     scope: "All four ShapePipe v1.4 variants, fiducial and full-range cuts."
 
   filter_sets_sensitivity:
     id: filter_sets_sensitivity
-    label: "Filter functions, not basis, set B-mode null-test sensitivity"
+    label: "Sensitivity is set by the filter functions, not by the basis"
     claim: |
-      COSEBI E_n and B_n computed from configuration-space ξ_±
-      and from harmonic-space pseudo-Cℓ bandpowers agree
-      mode-by-mode across all twenty modes. At fiducial scale
-      cuts both paths return B-modes consistent with zero
-      (PTE = 0.78 configuration, 0.60 harmonic for n ≤ 6); at
-      full angular range both detect the same oscillatory
-      structure (PTE = 1.37×10⁻⁵ configuration, 1.62×10⁻⁵
-      harmonic). The same Cℓ^BB power spectrum that passes its
-      own pseudo-Cℓ null test fails when re-projected through
-      the COSEBI filters W_n(ℓ), demonstrating empirically that
-      the differing sensitivity to the contamination is a
-      property of the filter functions rather than of the
-      angular-versus-harmonic basis.
+      We show directly that C_ℓ^BB and COSEBIs have different
+      sensitivity to systematic features, even when computed from the
+      same data, by transforming the harmonic-space bandpowers into
+      COSEBIs. The C_ℓ^BB power spectrum passes the null test at our
+      fiducial multipole range, yet COSEBIs computed from the same
+      harmonic-space data fail at full angular range—because the
+      COSEBI filter functions W_n(ℓ) weight the power spectrum
+      differently, concentrating sensitivity on the scales where the
+      contamination resides.
+
+      Both E_n and B_n agree across the two computation paths for all
+      twenty modes, with the tightest correspondence in the first six
+      modes validated on GLASS simulations. At fiducial scale cuts,
+      both paths yield B-modes consistent with zero (PTE = 0.60
+      harmonic, 0.78 configuration; n ≤ 6). At full range, both
+      detect the same structure (PTE = 1.62×10⁻⁵ and 1.37×10⁻⁵).
+      This confirms that the sensitivity to systematic contamination
+      is set by the filter functions, not by the basis in which the
+      two-point function is measured.
     notes: |
-      cfgCosebisPteSixThreeFid=0.78, harmCosebisPteSixThreeFid=0.60,
-      cfgCosebisPteSixThreeFull=1.37e-05,
-      harmCosebisPteSixThreeFull=1.62e-05 in
-      `paper/claims_macros.tex`. The empirical demonstration is
-      [fig_harmonic_config_cosebis_full](#outputs.fig_harmonic_config_cosebis_full):
-      Cℓ^BB and COSEBIs have different sensitivity to systematic
-      features.
+      Fiducial (size-cut) catalog, n ≤ 6:
+      configuration 0.777 (fiducial) and 1.37×10⁻⁵ (full range),
+      harmonic 0.598 and 1.62×10⁻⁵ (χ² 4.58 and 32.0 on 6 dof), from
+      [cosebis_harmonic_config](#outputs.cosebis_harmonic_config).
+      The mode-by-mode comparison is
+      [fig_harmonic_config_cosebis_full](#outputs.fig_harmonic_config_cosebis_full).
     created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         artifact: fig_harmonic_config_cosebis
+      - id: ev2
+        artifact: cosebis_harmonic_config
         quote:
           exact: |
-            E_n and B_n agree across the two computation paths
-            for all twenty modes; at fiducial cuts both yield
-            B-modes consistent with zero, and at full range both
-            detect the same oscillatory structure.
+            size_cuts,harmonic,fiducial,0.598,4.58,6
+            size_cuts,harmonic,full_range,1.62e-05,32.0,6
+            size_cuts,config,fiducial,0.777,,
+            size_cuts,config,full_range,1.37e-05,,
     scope: "Size-cut catalog, n ≤ 20 COSEBI modes, fiducial and full-range scale cuts."
 
   cosebis_full_range_failure:
     id: cosebis_full_range_failure
-    label: "Full-range COSEBIs fail at PTE = 1.37×10⁻⁵"
+    label: "Full-range oscillatory COSEBI B-mode pattern, suppressed by the lower cut"
     claim: |
-      For the size-cut catalog over the full angular range
-      (1'–250'), COSEBI B_n in n ≤ 6 modes shows a strong
-      oscillatory pattern with PTE = 1.37×10⁻⁵; the n ≤ 20
-      extension gives PTE = 1.08×10⁻⁴. The pattern is
-      consistent with a repeating additive shear bias on
-      MegaCam CCD scales (6–14 arcmin), and is suppressed by
-      the adopted 12'–83' lower cut.
+      The COSEBI data vector compresses the same structure into a
+      smaller number of modes: on the full angular range, the first
+      mode reaches 4σ and the higher modes show coherent
+      oscillations; after applying the fiducial angular cuts, the
+      first-mode excess drops below 1σ and the oscillatory pattern
+      largely disappears. … At full range, all versions show
+      low-order oscillatory structure consistent with the repeating
+      additive pattern, driving COSEBI (n ≤ 6) PTEs to 1.37×10⁻⁵ or
+      below.
+
+      On the full angular range, all catalog versions show an
+      oscillatory COSEBI B-mode pattern plausibly caused by a
+      repeating additive shear bias at CCD angular scales (Asgari et
+      al. 2019). … MegaCam's 40 CCDs span 6–14 arcmin individually,
+      and our adopted lower cut of 12 arcmin excludes most pair
+      separations at these scales; at the adopted scale cuts, the
+      COSEBI features are suppressed and the COSEBI tests pass for
+      all four catalogs.
     notes: |
-      cfgCosebisPteSixThreeFull=1.37e-05 in
-      `paper/claims_macros.tex`. The pattern persists across
-      all four catalog variants at full range and is the
-      reason the lower θ-cut sits above the CCD footprint.
+      Fiducial (size-cut) catalog: first-mode significance
+      B_1/σ_1 = 4.09 over the full range and 0.79 at the fiducial
+      cuts
+      ([cosebis_first_mode_significance](#outputs.cosebis_first_mode_significance)).
+      Full-range PTEs n ≤ 6 1.37×10⁻⁵ and n ≤ 20 1.08×10⁻⁴; the
+      other three versions reach 7.37×10⁻¹⁰ (initial), 4.94×10⁻⁶
+      (masked) and 1.70×10⁻¹⁰ (relaxed flags) for n ≤ 6.
     created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
         artifact: fig_cosebis_fiducial
+      - id: ev2
+        artifact: cosebis_first_mode_significance
         quote:
-          exact: |
-            Full-range curve shows >4σ first-mode amplitude;
-            fiducial-cuts curve shows <1σ across all 20 modes.
+          exact: '"full_range_significance": 4.08998422120677'
+      - id: ev3
+        artifact: pte_table_appendix
+        quote:
+          exact: "Size_cuts,SP_v1.4.6.3_leak_corr,Full_range,1.37e-05,1.08e-04,0.00257,0.00194,0.0101,0.136"
     scope: "Size-cut catalog at full angular range; pattern visible across all four variants."
 
 # -----------------------------------------------------------------------------
