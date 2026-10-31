@@ -2629,13 +2629,13 @@ findings:
 
   mock_xi_scatter_falls_below_analytic_at_large_theta:
     id: mock_xi_scatter_falls_below_analytic_at_large_theta
-    label: "Raw ξ_+ scatter falls 15–18% below the mock-matched analytic σ above 100′"
+    label: "Raw ξ_+ scatter falls 15–18% below the mock-matched analytic Gaussian σ above 100′"
     claim: |
       Against the campaign's own
       [mock-matched reference covariance](#outputs.mock_xi_reporting_cov_mockmatched),
       the suite's raw ξ_± scatter sits on unity inside the
       12′–83′ window: σ_emp/σ_ana = 0.94–1.03 for ξ_+ and
-      0.99–1.12 for ξ_-. The analytic covariance machinery
+      0.99–1.12 for ξ_-. The analytic Gaussian covariance machinery
       reproduces the mocks' ξ_± scatter where the null tests use it.
       (Against the *data* covariance the same ratios read
       0.87–0.98 and 0.87–0.97 — the suite's 17% galaxy excess,
@@ -2651,7 +2651,7 @@ findings:
       only 5.7% of the ξ_+ variance there, so that deficit moves
       σ by 0.4% — under 1% at every separation. What remains is
       that the realisations carry less large-scale sample variance
-      at those separations than the Gaussian analytic covariance
+      at those separations than the analytic Gaussian covariance
       predicts. This is a reading of the residual, not a mechanism
       established here; ξ_+ at >100′ draws on the lowest
       multipoles, where a lognormal shell construction on a single
@@ -2680,7 +2680,7 @@ findings:
       distribution assumed for the PTE. The C_ℓ^BB PTEs are uniform,
       while the configuration-space PTEs skew mildly low, with
       ⟨χ²⟩/ν = 1.07–1.20. This excess matches the covariance
-      comparison above. In configuration space the analytic σ is
+      comparison above. In configuration space the analytic Gaussian σ is
       slightly smaller than the mock scatter, which raises χ² by the
       inverse square of their ratio; in harmonic space the two agree.
       Calibrating p_thr on the same realizations partially absorbs
@@ -2703,7 +2703,7 @@ findings:
       2.4×10⁻⁹, ξ_-^B 1.4×10⁻⁴, ξ_tot^B 2.8×10⁻¹⁰, C_ℓ^BB 0.79.
 
       The configuration-space excess has the size of the non-Gaussian
-      covariance term the Gaussian-only analytic covariance omits. On
+      covariance term the analytic Gaussian covariance omits. On
       the 20-bin reporting grid the (G+NG)/G diagonal ratio inside the
       12′–83′ window averages 1.102 (ξ_+) and 1.105 (ξ_-)
       (`results/baseline/covariance/cov_reporting_{g,ng}.txt`), a
@@ -2743,7 +2743,7 @@ findings:
       the catalog generation, their galaxy number density is 17%
       higher than that of the data, which we account for when
       comparing covariances. … For these comparisons we recompute the
-      analytic covariances at the galaxy density of the realizations.
+      analytic Gaussian covariances at the galaxy density of the realizations.
     notes: |
       **What the excess does.** The GLASS realisations carry more
       galaxies than the catalogue they stand in for, and are
@@ -2902,11 +2902,11 @@ findings:
     label: "Analytic σ matches the mock scatter at the fiducial cuts"
     claim: |
       We also use the simulations to test the covariances, comparing
-      the analytic σ of each statistic with the scatter across
+      the analytic Gaussian σ of each statistic with the scatter across
       realizations. At the fiducial cuts, the median ratio of analytic
       to mock σ over bins is 0.92–0.95 in configuration space and
       1.01 in harmonic space. The agreement degrades on the large
-      scales outside the fiducial cuts. There the analytic σ is about
+      scales outside the fiducial cuts. There the analytic Gaussian σ is about
       17% too small for the first COSEBI mode and for ξ_±^B above
       100′, while for C_ℓ^BB below ℓ ≈ 100 it is too large because
       E-to-B leakage is treated only approximately (Nicola et al.
@@ -2988,40 +2988,34 @@ findings:
 
   tests_are_not_redundant:
     id: tests_are_not_redundant
-    label: "The six null tests are only weakly correlated"
+    label: "The six null-test statistics are not perfectly correlated"
     claim: |
-      Empirically the six B-mode test statistics are far less
-      redundant than the qualitative "the tests are
-      highly correlated" suggests. Across the 350 v1.4.6.3_v2
-      realisations the χ² Pearson correlations between statistics
-      from different estimator families sit between 0.23 and 0.46
-      — 0.40 between B_{n≤6} and ξ_+^B, 0.37 between B_{n≤6} and
-      C_ℓ^BB, 0.33 between ξ_+^B and C_ℓ^BB, 0.46 between ξ_-^B
-      and C_ℓ^BB. Only pairs sharing a data vector correlate more
-      strongly, and even they stay well under unity: 0.68 for
-      ξ_-^B with ξ_tot^B and 0.67 for ξ_+^B with ξ_tot^B, both
-      nested by construction, and 0.57 for B_{n≤6} with B_{n≤20}.
+      The six B-mode test statistics are not perfectly correlated.
+      Across the 350 v1.4.6.3_v2 realisations the χ² Pearson
+      correlations between statistics from different estimator
+      families lie between 0.25 and 0.53: 0.41 between B_{n≤6} and
+      ξ_+^B, 0.37 between B_{n≤6} and C_ℓ^BB, 0.35 between ξ_+^B
+      and C_ℓ^BB, 0.46 between ξ_-^B and C_ℓ^BB, 0.53 between
+      ξ_tot^B and C_ℓ^BB. Pairs sharing a data vector correlate
+      more strongly and still stay below unity: 0.72 for ξ_+^B with
+      ξ_tot^B and 0.68 for ξ_-^B with ξ_tot^B, both nested by
+      construction, and 0.53 for B_{n≤6} with B_{n≤20}.
     notes: |
-      `correlations.chi2.pearson_matrix` in
-      `campaign_350_avg_wide/evidence.json`; the Spearman matrix
-      tells the same story (0.37 for B_{n≤6} with C_ℓ^BB). The
-      v1.4.6 suite gives systematically lower cross-family
-      numbers (0.34, 0.26, 0.22 for the three C_ℓ^BB pairs), so
-      the conclusion is not suite-dependent in direction. This
-      strengthens rather than weakens the multi-statistic
-      argument — near-independent tests make simultaneous passage
-      a stronger statement, and it also means the look-elsewhere
-      penalty for running six of them is real rather than
-      absorbed by redundancy.
+      `correlations.chi2.pearson` in `mock_campaign_evidence`
+      (row-major over B_n<=6, B_n<=20, xi+^B, xi-^B, xi_tot^B,
+      C_ell^BB); the PTE Pearson matrix in the same file tells the
+      same story (0.37 for B_{n≤6} with C_ℓ^BB). Imperfect
+      correlation is why the minimum PTE over the six skews low and
+      its threshold is calibrated on the mocks
+      ([pte_threshold](#../decisions.pte_threshold)), and why
+      simultaneous passage is a stronger statement than any single
+      test.
     created_at: "2026-08-29T00:00:00Z"
     evidence:
       - id: ev1
         artifact: mock_campaign_evidence
         quote:
-          exact: |
-            chi2 Pearson: B_n<=6 with C_ell^BB 0.373, xi+^B with
-            C_ell^BB 0.330, xi-^B with C_ell^BB 0.462; xi-^B with
-            xi_tot^B 0.681.
+          exact: "0.723441470177607"
     scope: "350 GLASS v1.4.6.3_v2 realisations, fiducial scale cuts, six-statistic χ² and PTE stacks."
 
 analyses:

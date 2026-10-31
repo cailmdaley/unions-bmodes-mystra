@@ -8,12 +8,6 @@ At Stage-III sensitivities, cosmic shear $B$ modes unambiguously indicate system
 
 +++
 
-# Reading this analysis
-
-The ASTRA spec (`astra.yaml`) describes the analysis inputs, outputs and decisions.
-The `baseline` universe is the accepted A&A version; `submitted` is arXiv v2.
-
-
 
 # Introduction
 
