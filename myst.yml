@@ -1,13 +1,12 @@
 version: 1
 project:
   title: "UNIONS-3500 Weak Lensing: II. B-mode validation for cosmic shear"
-  subtitle: Accepted by A&A in 2026 — an ASTRA-backed edition
   description: >-
-    ASTRA-backed edition of the accepted A&A 2026 paper, with values and
-    figures resolved from the reproduced analysis spec.
-  subject: Reproduction
+    B-mode null tests of the UNIONS-3500 cosmic shear catalog with pure-mode
+    correlation functions, COSEBIs and harmonic-space power spectra, which
+    fix the fiducial sample and scale cuts.
   venue:
-    title: Lightcone Research
+    title: Astronomy & Astrophysics
   open_access: true
   license:
     content: CC-BY-4.0
@@ -16,7 +15,7 @@ project:
   bibliography:
     - references.bib
   # Author list and affiliations are the paper's, verbatim from the A&A source
-  # (`paper/unions_bmodes.tex`): this document is that paper's prose. Names use
+  # (`paper/unions_bmodes.tex`). Names use
   # the paper's initials form; ORCIDs disambiguate. No CRediT `roles:` are
   # declared — the TeX carries none, and inventing them would be fabrication.
   authors:

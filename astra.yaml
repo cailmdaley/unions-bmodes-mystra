@@ -17,7 +17,6 @@ tags:
   - b-modes
   - null-tests
   - unions
-  - paper-reproduction
 
 # -----------------------------------------------------------------------------
 # Top-level inputs (shared across sub-analyses).
@@ -565,7 +564,7 @@ outputs:
       Configuration-space PTE maps for all four catalog versions.
       Columns show ξ_+^B, ξ_-^B, and COSEBI B_n (n ≤ 6) PTEs as a
       function of angular scale cuts; rows show different catalog
-      versions. Solid blue cells indicate PTE < 0.01 ([global PTE
+      versions. Solid blue cells indicate PTE < p_thr ([global PTE
       threshold](#decisions.pte_threshold)); whites and reds indicate
       consistency with zero. Black squares mark the adopted cuts (12–83
       arcmin). The size cut (fiducial versus initial) expands the
