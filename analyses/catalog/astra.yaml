@@ -63,12 +63,10 @@ outputs:
     description: |
       Per-version survey-property summary used to seed CosmoCov:
       area in deg², effective galaxy density n_eff in arcmin⁻²,
-      and the combined two-component shape noise σ_e (paper text
-      quotes per-component). Sourced from the `cov_th` block of
+      and the combined two-component shape noise σ_e. Sourced from the `cov_th` block of
       `cat_config.yaml` for the selected version. For the
       fiducial size-cut catalog: 2894 deg², n_eff = 4.957
-      arcmin⁻², σ_e = 0.378 (combined; ≈ 0.27 per-component as
-      quoted in the paper Abstract).
+      arcmin⁻², σ_e = 0.378 (combined; ≈ 0.27 per component).
     format: json
     inputs: []
     decisions: [fiducial_catalog]

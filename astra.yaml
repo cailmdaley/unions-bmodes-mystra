@@ -4,7 +4,7 @@
 # Reproduction of the UNIONS Paper II B-mode validation
 # (Daley et al. 2026). A REAL, executed reproduction: every recipe
 # runs the actual compute inside the sp_validation apptainer via
-# `lc run`, materialising the paper's figures/tables/findings from
+# `lc run`, materialising every figure, table and finding from
 # the fiducial catalogue (v1.4.6.3) — no spoofed artifacts. See
 # ./CLAUDE.md and the `full-astra-reproduction` fiber for the practice.
 
@@ -27,8 +27,8 @@ inputs:
     type: data
     description: |
       ShapePipe v1.4 cosmic-shear catalogs (Paper I,
-      Hervas-Peters et al. 2026; Table H.1 of that paper is the
-      canonical version map). Four variants enter this paper:
+      Hervas-Peters et al. 2026; its Table H.1 is the canonical
+      version map). Four variants enter this analysis:
       initial (loose size cut r_h,gal/r_h,psf > 0.5), size-cut
       (tightened to > 0.707; fiducial), masked (size-cut +
       bright/faint stellar halos, 13% area loss), relaxed-flags
@@ -43,7 +43,7 @@ inputs:
   - id: shapepipe_v145_rerun
     type: data
     description: |
-      The paper's initial (v1.4.5) ShapePipe catalog, used in the catalog-version scans.
+      The initial (v1.4.5) ShapePipe catalog, used in the catalog-version scans.
       The canonical v1.4.5 path is a symlink to this file outside the
       [v1.4.x family](#inputs.shapepipe_v14_catalogs), so the sandbox needs this separate input.
     source: "/n17data/sguerrini/unions_shapepipe_cut_struc_2024_v1.4.5_rerun.fits"
@@ -146,7 +146,7 @@ inputs:
       [mocks_are_over_constraining](#glass_mocks.findings.mocks_are_over_constraining).
       Used to validate the semi-analytical CosmoCov amplitude and
       the MC-propagation pipeline; not a covariance source for
-      paper PTEs.
+      the reported PTEs.
     source: "/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/{xi,cl}_glass_mock_{seed:05d}_4096*.{fits,npy}"
 
   - id: blind_check_pure_eb
@@ -204,9 +204,9 @@ inputs:
   - id: paper_mplstyle
     type: data
     description: |
-      The paper matplotlib style (fonts, sizes, text.usetex). An
-      input to every paper figure, because a change here changes
-      all of them.
+      The publication matplotlib style (fonts, sizes, text.usetex).
+      An input to every figure, because a change here changes all
+      of them.
     source: "./src/workflow/matplotlib_config/paper.mplstyle"
 
   - id: config_space_pte_matrices_script
@@ -231,7 +231,7 @@ inputs:
     type: data
     description: |
       `savefig_at_width`: saves a figure with a tight bounding box exactly
-      as wide as the paper prints it, so the style's font sizes are the
+      as wide as it prints on the page, so the style's font sizes are the
       printed ones. An input to every figure saved through it.
     source: "./src/workflow/scripts/print_width.py"
 
@@ -248,28 +248,28 @@ inputs:
     type: data
     description: |
       The pure-mode catalog-version comparison figure's renderer (one of
-      the three stacked panels of the paper's version figure).
+      the three stacked panels of the catalog-version figure).
     source: "./src/papers/bmodes/scripts/pure_eb_version_comparison.py"
 
   - id: cl_version_comparison_script
     type: data
     description: |
       The C_ℓ catalog-version comparison figure's renderer (one of
-      the three stacked panels of the paper's version figure).
+      the three stacked panels of the catalog-version figure).
     source: "./src/papers/bmodes/scripts/cl_version_comparison.py"
 
   - id: cosebis_version_comparison_script
     type: data
     description: |
       The COSEBI catalog-version comparison figure's renderer (one of
-      the three stacked panels of the paper's version figure).
+      the three stacked panels of the catalog-version figure).
     source: "./src/papers/bmodes/scripts/cosebis_version_comparison.py"
 
   - id: generate_paper_macros_script
     type: data
     description: |
-      The paper PTE evidence, macro, and CSV-table generator. An input
-      to the paper-facing PTE table and the null-tests macro output.
+      The PTE evidence, macro, and CSV-table generator. An input
+      to the PTE table and the null-tests macro output.
     source: "./src/papers/bmodes/scripts/generate_paper_macros.py"
 
   - id: generate_pte_table_tex_script
@@ -279,9 +279,9 @@ inputs:
     source: "./src/papers/bmodes/scripts/generate_pte_table_tex.py"
 
 # -----------------------------------------------------------------------------
-# Top-level outputs: paper-facing artifacts. Each consumes sub-analysis
-# outputs via dot-references; the snakemake `paper_macros` rule aggregates
-# numerical evidence into LaTeX macros that the manuscript pulls.
+# Top-level outputs: the reported figures, tables and metrics. Each consumes
+# sub-analysis outputs via dot-references; the snakemake `paper_macros` rule
+# aggregates numerical evidence into the LaTeX numeric macros.
 # -----------------------------------------------------------------------------
 outputs:
   # ---------------------------------------------------------------------------
@@ -323,40 +323,25 @@ outputs:
   - {id: cov_integration_g, from: covariance.cov_integration_g}
 
   # ---------------------------------------------------------------------------
-  # Paper-facing tables and metrics.
+  # Tables and metrics.
   # ---------------------------------------------------------------------------
   - id: pte_table_appendix
     type: table
     format: csv
+    # CSV schema (MySTRA renders it as the table and resolves every per-version
+    # PTE {astra:value} against it): `version` (initial / size_cuts / masked /
+    # relaxed_flags), `version_full` (raw SP_v1.4.x_leak_corr string), `cut`
+    # (fiducial / full_range), and the six statistics `cosebis_n6`, `cosebis_n20`,
+    # `xip_B`, `xim_B`, `xitot_B`, `cl_BB`. Config-space cells come verbatim from
+    # config_space_pte_data (versions.<V>.<stat>_stats.pte_at_<cut>), the cl_BB
+    # column from harmonic_space_pte_data (versions.<V>.pte_at_<cut>).
     description: |
-      The paper's only table (`tab:pte_results`, a full-width
-      main-text `table*`): the six PTE statistics across all
-      four catalog variants (initial, size-cut, masked,
-      relaxed-flags) at fiducial and full-range cuts;
-      structurally an N×6 grid with version-by-version rows.
-      The `_appendix` in the id is historical — an earlier draft
-      split a fiducial-only main-text summary from a full
-      appendix grid, and the paper later consolidated to this
-      one table.
-
-      MySTRA renders this CSV as the table AND resolves every
-      per-version PTE `{astra:value}` against it — no value-promotion
-      bridge. A LaTeX tabular twin with the calibrated minimum-PTE
-      column is emitted separately as [pte_table_tex](#outputs.pte_table_tex).
-      Columns: `version`
-      (slug: initial / size_cuts / masked / relaxed_flags),
-      `cut` (fiducial / full_range), and the six statistic
-      columns `cosebis_n6`, `cosebis_n20`, `xip_B`, `xim_B`,
-      `xitot_B`, `cl_BB` (plus `version_full` carrying the raw
-      `SP_v1.4.x_leak_corr` string). Every cell is the verbatim
-      evidence value: config-space stats from
-      [config_space_pte_data](#outputs.config_space_pte_data)
-      (`versions.<V>.<stat>_stats.pte_at_<cut>`) and the `cl_BB`
-      column from
-      [harmonic_space_pte_data](#outputs.harmonic_space_pte_data)
-      (`versions.<V>.pte_at_<cut>`). The mock-calibrated LaTeX
-      presentation of the same grid is the sibling
-      [pte_table_tex](#outputs.pte_table_tex) output.
+      B-mode PTE values across catalog versions at fiducial and
+      full-range scale cuts. Fiducial scale cuts are 12–83 arcmin in
+      configuration space and 300 < ℓ < 1600 in harmonic space; the full
+      range is 1–250 arcmin / 8 ≤ ℓ ≤ 2048. A row passes the null test
+      when its minimum PTE is at least p_thr = 0.01; only the fiducial
+      catalog at the adopted cuts passes.
     inputs: [config_space_pte_data, harmonic_space_pte_data, generate_paper_macros_script]
     recipe:
       # Terminal gather, third member of generate_paper_macros.py's
@@ -375,11 +360,17 @@ outputs:
     type: data
     format: tex
     description: |
-      LaTeX tabular twin of [pte_table_appendix](#outputs.pte_table_appendix),
-      using its six PTE columns and the GLASS mock-calibrated minimum-PTE
-      thresholds. It preserves the paper's grouped header and version labels;
-      no entry carries bold or other marking, since the table notes state the
-      pass/fail threshold for the min-PTE column.
+      B-mode PTE values across catalog versions at fiducial and
+      full-range scale cuts. Fiducial scale cuts are 12–83 arcmin in
+      configuration space and 300 < ℓ < 1600 in harmonic space; the full
+      range is 1–250 arcmin / 8 ≤ ℓ ≤ 2048. A row passes the null test
+      when its minimum PTE is at least p_thr = 0.01; only the fiducial
+      catalog at the adopted cuts passes.
+
+      LaTeX tabular of
+      [pte_table_appendix](#outputs.pte_table_appendix), with the
+      minimum-PTE column judged against the GLASS-calibrated threshold
+      ([mock_min_pte_calibration](#outputs.mock_min_pte_calibration)).
     inputs: [pte_table_appendix, mock_min_pte_calibration, generate_pte_table_tex_script]
     recipe:
       command: >
@@ -396,9 +387,8 @@ outputs:
       integral of ξ± and the harmonic-space synthesis from Cℓ —
       for all four catalog versions at both fiducial and
       full-range cuts. Supports the harmonic-vs-config COSEBI
-      consistency argument in the Discussion, and is the
-      queryable source for the harmonic-COSEBI PTEs quoted in
-      prose (which the N×6 `pte_table_appendix` grid does not
+      consistency argument, and is the queryable source for
+      the harmonic-COSEBI PTEs (which the N×6 `pte_table_appendix` grid does not
       carry — that grid's COSEBI columns are the config-space
       path only). Columns: `version` (slug: initial / size_cuts
       / masked / relaxed_flags), `path` (harmonic / config),
@@ -412,8 +402,8 @@ outputs:
       [config_space_pte_data](#outputs.config_space_pte_data),
       `versions.<V>.cosebis_stats.pte_at_<cut>`. This output,
       together with the per-version `pte_table_appendix` grid,
-      replaces the former `pte_promoted_values` bridge — every
-      PTE in prose now resolves against a canonical table.
+      is the canonical table every quoted PTE resolves
+      against.
     inputs:
       - config_space_pte_data
       - cosebis_harmonic_modes_evidence
@@ -439,8 +429,9 @@ outputs:
       First-mode COSEBI B-mode significance B_1/σ_1 for the
       fiducial catalog (config-space COSEBIs). The headline
       `value` is the full-range (1–250 arcmin) significance — the
-      ">4σ" first-mode excess quoted in the fig_cosebis_fiducial
-      caption and Discussion; the JSON also carries the
+      ">4σ" first-mode excess visible in
+      [fig_cosebis_fiducial](#outputs.fig_cosebis_fiducial); the
+      JSON also carries the
       fiducial-cut significance (which drops below 1σ). Thin
       transform of the already-materialized
       [cosebis_modes_data](#outputs.cosebis_modes_data) npz
@@ -486,9 +477,9 @@ outputs:
     type: table
     format: csv
     description: |
-      Referee-comment-1 check: what the two fiducial scale-cut boundaries cost
-      if they are treated as *fitted* parameters (ν → ν−2) across the whole of
-      the paper's PTE table, rather than for the combined statistic alone as in
+      What the two fiducial scale-cut boundaries cost if they are treated as
+      *fitted* parameters (ν → ν−2) across the whole PTE table, rather than for
+      the combined statistic alone as in
       [pte_combined_dof_penalized](#outputs.pte_combined_dof_penalized).
 
       One row per (catalog version × statistic × cut): the four leak-corrected
@@ -529,15 +520,15 @@ outputs:
         --out-file {output}
 
   # ---------------------------------------------------------------------------
-  # Paper figures. Six of them ARE a sub-analysis figure — under the one-file
+  # Figures. Most of them ARE a sub-analysis figure — under the one-file
   # contract a `cp` pointer recipe would only duplicate the bytes, so they are
   # declared as aliases of the producing output (format and recipe inherited).
   # ---------------------------------------------------------------------------
 
-  # Paper Figure 1: pure E/B decomposition of ξ± for the fiducial catalog.
+  # Pure E/B decomposition of ξ± for the fiducial catalog.
   - {id: fig_pure_eb_decomposition, from: pure_eb.pure_eb_data_vector_figure}
 
-  # Paper Figure 3: COSEBI B_n / σ_n for the first 20 modes, fiducial catalog —
+  # COSEBI B_n / σ_n for the first 20 modes, fiducial catalog —
   # full angular range (1'–250') overlaid on fiducial cuts (12'–83'). The >4σ
   # first-mode amplitude at full range and its near-zero amplitude at fiducial
   # cuts are the visible evidence behind `cosebis_full_range_failure`. The
@@ -545,10 +536,10 @@ outputs:
   # an alias like the other five figure re-exports.
   - {id: fig_cosebis_fiducial, from: cosebis.fig_cosebis_data_vector}
 
-  # Paper Figure 4: Cℓ^BB and Cℓ^EB normalised by uncertainty, fiducial catalog.
+  # Cℓ^BB and Cℓ^EB normalised by uncertainty, fiducial catalog.
   - {id: fig_cl_fiducial, from: cl_bb.cl_data_vector_figure}
 
-  # Paper Figure 5 is a three-panel version-comparison stack: pure-mode ξ_±^B,
+  # The version comparison is a three-panel stack: pure-mode ξ_±^B,
   # harmonic Cℓ^BB, and COSEBI B_n across the four catalog variants. Each panel
   # is its own sub-analysis figure, so each is aliased separately and the three
   # embed together in the report — one figure output = one figure.
@@ -556,7 +547,7 @@ outputs:
   - {id: fig_versions_cl, from: cl_bb.cl_version_comparison_figure}
   - {id: fig_versions_cosebis, from: cosebis.cosebis_version_comparison}
 
-  # The GLASS mock campaign in one paper figure: mean B vector over σ_ana on
+  # The GLASS mock campaign in one figure: mean B vector over σ_ana on
   # top, σ_emp/σ_ana below, sharing the three statistic columns. The glass_mocks
   # unit renders it from its materialised statistics npz, so this is an alias
   # like the other figure re-exports.
@@ -571,12 +562,14 @@ outputs:
     type: figure
     format: png
     description: |
-      Configuration-space PTE composite over (θ_min, θ_max)
-      cuts: four rows (catalog variants) × three columns
-      (ξ_+^B, ξ_-^B, COSEBI B_n), with the adopted 12'–83' cut
-      marked as a black square. Blue = failing (PTE below the selected
-      [global PTE threshold](#decisions.pte_threshold)), white/red =
-      consistent. Paper Figure 6 / appendix.
+      Configuration-space PTE maps for all four catalog versions.
+      Columns show ξ_+^B, ξ_-^B, and COSEBI B_n (n ≤ 6) PTEs as a
+      function of angular scale cuts; rows show different catalog
+      versions. Solid blue cells indicate PTE < 0.01 ([global PTE
+      threshold](#decisions.pte_threshold)); whites and reds indicate
+      consistency with zero. Black squares mark the adopted cuts (12–83
+      arcmin). The size cut (fiducial versus initial) expands the
+      acceptance region, while stellar masking contracts it.
     decisions: [scale_cut_convention, pte_threshold]
     inputs:
       - config_space_pte_data
@@ -602,11 +595,12 @@ outputs:
     type: figure
     format: png
     description: |
-      Harmonic-space Cℓ^BB PTE composite over (ℓ_min, ℓ_max)
-      cuts: four rows (catalog variants), one column. Adopted
-      300 < ℓ < 1600 cut marked. Blue = failing (PTE below the selected
-      [global PTE threshold](#decisions.pte_threshold)); white/red =
-      consistent.
+      Harmonic-space C_ℓ^BB PTE maps for all four catalog versions.
+      Solid blue cells indicate failing PTEs ([global PTE
+      threshold](#decisions.pte_threshold)); whites and reds indicate
+      consistency with zero. The initial and relaxed-flags catalogs show
+      widespread failures across multipole ranges; the fiducial and
+      masked catalogs pass across nearly all multipole combinations.
     decisions: [pte_threshold]
     inputs:
       - harmonic_space_pte_data
@@ -631,7 +625,9 @@ outputs:
     format: png
     description: |
       Cross-check between configuration-space and
-      harmonic-space COSEBI computations (paper Figure 8):
+      harmonic-space COSEBI computations at the adopted 12′–83′
+      cut (the full-range counterpart is
+      [fig_harmonic_config_cosebis_full](#outputs.fig_harmonic_config_cosebis_full)):
       same E_n / B_n filters applied to ξ± (filled circles)
       versus Cℓ bandpowers (open squares), establishing that
       both paths yield identical mode amplitudes within
@@ -661,24 +657,19 @@ outputs:
     type: figure
     format: png
     description: |
-      Full-angular-range twin of
-      [fig_harmonic_config_cosebis](#outputs.fig_harmonic_config_cosebis)
-      (paper Figure 8, `fig:harmonic_config_cosebis_full`,
-      L540): the same configuration-space-vs-harmonic-space
-      COSEBI cross-check, rendered at the full 1′–250′ range
-      rather than the adopted 12′–83′ cut. This is the figure
-      the manuscript actually includes at that float; the
-      `fiducial` variant above is a different (non-paper) panel
-      of the same script. Same producer/evidence as
-      [cosebis.cosebis_harmonic_modes_full
-      ](#cosebis.outputs.cosebis_harmonic_modes_full).
+      COSEBI E_n (top row) and B_n/σ_n (bottom row) for the [fiducial
+      catalog](#decisions.fiducial_catalog), computed from
+      configuration-space ξ_± (filled circles) and harmonic-space
+      bandpowers (open squares). Modes n > 6 are shaded; for n ≤ 6,
+      where the cosmological information is concentrated, we confirm
+      consistency between the two paths on GLASS simulations.
     decisions: [fiducial_catalog, scale_cut_convention]
     inputs:
       - cosebis_harmonic_modes_full
       - harmonic_config_cosebis_comparison_figure_script
     recipe:
       # Same plot-only mode as fig_harmonic_config_cosebis, over the full-range
-      # modes NPZ. Under the one-file contract this output IS the paper PNG.
+      # modes NPZ. Under the one-file contract this output IS the published PNG.
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
         --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
@@ -708,16 +699,16 @@ decisions:
       showed PTE failures in ξ_-^B (0.005) and Cℓ^BB (0.003);
       tightening the size cut from > 0.5 to > 0.707 eliminated
       both. The masked and relaxed-flags variants are kept in
-      the multiverse so the appendix PTE table can demonstrate
+      the multiverse so the [PTE table](#outputs.pte_table_appendix) can demonstrate
       that no other variant passes all three statistics at
       fiducial cuts. All four are reported with the
-      object-wise PSF-leakage correction applied (paper §2);
+      object-wise PSF-leakage correction applied;
       uncorrected variants exist in the catalog tree but are
-      not used for the paper PTEs.
+      not used for the reported PTEs.
 
       Each option that a universe can select names its catalog
       through `src/papers/bmodes/config/catalogs/<option>.yaml`,
-      which inherits the shared paper config and overrides the
+      which inherits the shared config and overrides the
       fiducial version (the cat_config key every recipe resolves),
       its footprint mask power spectrum, and the version set the
       comparisons span. `size_cut` has one; the other v1.4 variants
@@ -725,7 +716,7 @@ decisions:
     default: size_cut
     options:
       size_cut:
-        label: "Size-cut (SP_v1.4.6.3_leak_corr, paper fiducial)"
+        label: "Size-cut (SP_v1.4.6.3_leak_corr, fiducial)"
         description: |
           ShapePipe v1.4.6.3 with the tightened size cut
           (r_h,gal/r_h,psf > 0.707), object-wise PSF-leakage
@@ -758,10 +749,10 @@ decisions:
       The semi-analytical CosmoCov covariance requires a fixed
       cosmology to evaluate the projected matter power spectrum
       and shape-noise terms. Planck-2018 + BAO ΛCDM is the
-      community reference at this paper's adoption date and is
+      community reference at the adoption date and is
       shared with Papers III and IV's covariance, so the same
       matrix is consumed by all three analyses. No alternative
-      is exposed: this paper validates B-modes against zero
+      is exposed: this analysis validates B-modes against zero
       under one cosmology rather than scanning cosmologies.
     default: planck18
     options:
@@ -774,24 +765,24 @@ decisions:
         insights: [planck18_fiducial_cosmology]
 
   fiducial_blind:
-    label: "Fiducial blind for paper data vectors"
+    label: "Fiducial blind for reported data vectors"
     tags: [blinding, scope]
     rationale: |
       The source workflow exposes three photometric blinds (A,
       B, C) generated by perturbing the SOM photo-z and sets
-      `fiducial.blind: A` for the paper-facing data vectors and
+      `fiducial.blind: A` for the reported data vectors and
       PTE tables. The all-blind covariance comparison is a
-      workflow validation side check rather than a paper-text
+      workflow validation side check rather than a reported
       claim: it confirms that B-mode covariances are closer to
       blind-independent than E-mode covariances, while the
       MC-sampled pure-mode path retains finite-sample scatter.
       Blind B is the physical (unblinded) selection, identified
-      post-ceremony 2026-03-16; the paper is written from the
+      post-ceremony 2026-03-16; the analysis is reported with the
       now-known fact that this is the live blind.
     default: blind_a
     options:
       blind_a:
-        label: "Blind A (paper fiducial for reported data vectors)"
+        label: "Blind A (fiducial for reported data vectors)"
       blind_b:
         label: "Blind B (physical / unblinded)"
       blind_c:
@@ -801,7 +792,7 @@ decisions:
     label: "Adopted scale cuts for B-mode null tests"
     tags: [scale_cuts, primary]
     rationale: |
-      The paper adopts 12 < θ < 83 arcmin in configuration space
+      The adopted cuts are 12 < θ < 83 arcmin in configuration space
       (pure-mode and COSEBI) and 300 < ℓ < 1600 in harmonic
       space. Both are chosen for stable PTE regions across
       catalog variants, not by minimising any single PTE; the
@@ -815,36 +806,37 @@ decisions:
       inference-stability checks in Papers III and IV; they are
       more conservative than the PTEs alone would require, and
       Papers III and IV apply the same cuts for blinded
-      cosmological inference. As a look-elsewhere check
-      (paper §4.1 footnote), penalising the χ² degrees of
+      cosmological inference. As a look-elsewhere check,
+      penalising the χ² degrees of
       freedom for the two scale-cut boundaries selected on the
       PTE grid lowers the minimum (ξ_-^B) from 0.019 to 0.005,
       just below the 0.006 threshold calibrated at these cuts
-      ([finding](#findings.scale_cut_dof_penalty_harmless)). The
-      paper treats B-modes as a diagnostic rather than a bias to
+      ([finding](#findings.scale_cut_dof_penalty_harmless)).
+      B-modes are treated as a diagnostic rather than a bias to
       subtract, because the relation between E- and B-mode
       contamination depends on the physical mechanism.
     default: adopted
     options:
       adopted:
         label: "12'–83' (config), 300 < ℓ < 1600 (harmonic)"
+        insights: [asgari19a_bmode_subtraction_insufficient]
         description: |
           Configuration-space: indices 9 and 16 of the 21-bin
           geomspace(1, 250) grid — whether those indices are read
-          as exact bin edges or as the rounded 12'–83' of the
-          paper text is the separate
+          as exact bin edges or as the rounded, stated 12'–83'
+          is the separate
           [scale_cut_convention](#decisions.scale_cut_convention)
-          choice. Harmonic: paper §4 fiducial.
+          choice. Harmonic: 300 < ℓ < 1600.
       full_range:
         label: "Full range (1'–250' config, 8 ≤ ℓ ≤ 2048 harmonic)"
         description: |
-          Reported alongside fiducial in Table 1 to expose
+          Reported alongside fiducial in the [PTE table](#outputs.pte_table_appendix) to expose
           residual contamination at small/large scales.
       bmode_bias_subtraction:
         label: "Model and subtract a B-mode contamination template"
         excluded: true
         excluded_reason: |
-          The paper rejects this mitigation route: the B-mode
+          This mitigation route is rejected: the B-mode
           amplitude alone does not determine the E-mode
           contamination because the E/B ratio depends on the
           physical systematic. Scale cuts remove contaminated
@@ -854,16 +846,16 @@ decisions:
     label: "How the fiducial θ cut is defined relative to the reporting bins"
     tags: [scale_cuts, primary]
     rationale: |
-      The paper text and the paper pipeline disagree about the
+      The stated cut and the computed cut differ for the
       [adopted configuration-space cut
       ](#decisions.fiducial_scale_cuts) at the third significant
       digit, and both readings are defensible, so the convention
       is made explicit rather than resolved silently. The
-      paper's pipeline cut at *edges* of the 21-bin reporting
+      pipeline cuts at *edges* of the 21-bin reporting
       grid geomspace(1', 250', 21) — indices 9 and 16, i.e.
-      θ ∈ (11.997', 82.861') — while the manuscript (and
-      `src/papers/bmodes/config/config.yaml`) states the rounded
-      12'–83'. The paper's fiducial PTEs were computed with the
+      θ ∈ (11.997', 82.861') — while the stated cut (and
+      `src/papers/bmodes/config/config.yaml`) is the rounded
+      12'–83'. The fiducial PTEs were computed with the
       former; the reproduction was silently switched to the
       latter, which moved the config-space COSEBI fiducial χ²/PTE
       from 3.25/0.78 to 4.679/0.586. Applies to the θ cuts only:
@@ -872,11 +864,11 @@ decisions:
       range is identical under both conventions.
 
       Ruled (Cail, 2026-08-31): grid_bin_edges, for the revised
-      paper as well. The principle: a stated cut always lands on
+      analysis as well. The principle: a stated cut always lands on
       the bin edge at the conservative end — a cut can only ever
       remove more scales than the printed number, never fewer —
       so the printed 12'–83' resolves to the enclosing reporting
-      edges (11.997', 82.861') and the paper text should state
+      edges (11.997', 82.861') and the stated cut should name
       the convention rather than the pipeline silently adopting
       the rounded values.
     default: grid_bin_edges
@@ -886,15 +878,15 @@ decisions:
         description: |
           θ_min, θ_max are taken as edges 9 and 16 of
           geomspace(1', 250', 21), i.e. (11.997', 82.861').
-          This is what the paper's pipeline computed, and it
-          reproduces the paper's fiducial PTEs.
+          This is what the pipeline computed, and it
+          reproduces the reported fiducial PTEs.
       rounded_arcmin:
-        label: "Rounded 12'–83' as printed in the paper text"
+        label: "Rounded 12'–83' as stated"
         description: |
           The literal `fiducial_min_scale` / `fiducial_max_scale`
           (and `fiducial_xip/xim_scale_cut`) values from
-          `config.yaml`, matching the manuscript prose. The
-          paper's numbers were never actually computed this
+          `config.yaml`, matching the stated cut. The
+          reported numbers were never actually computed this
           way: adopting it shifts the config-space COSEBI
           fiducial χ²/PTE from 3.25/0.78 to 4.679/0.586 and the
           harmonic one from 4.59/0.60 to 4.637/0.591.
@@ -905,8 +897,8 @@ decisions:
     rationale: |
       Pure-mode and COSEBI filters are integrated against ξ±
       on a finer grid than the 20-bin reporting scale. The
-      paper adopts a 1000-bin logarithmic grid spanning
-      θ = 0.5'–300' (§3.3) for both the pure-mode integral
+      adopted grid is 1000 logarithmic bins spanning
+      θ = 0.5'–300' for both the pure-mode integral
       transforms and the COSEBI mode integrals, and verifies
       the choice with a one-shot 10,000-bin convergence run on
       the fiducial catalog, finding B_n amplitudes and
@@ -914,7 +906,7 @@ decisions:
     default: bins_1000
     options:
       bins_1000:
-        label: "1000 bins over [0.5', 300'] (paper fiducial)"
+        label: "1000 bins over [0.5', 300'] (fiducial)"
         description: |
           Single TreeCorr run per catalog variant.
       bins_10000:
@@ -937,8 +929,8 @@ decisions:
       realised map is therefore weakly non-linear, and on noisy
       input its sub-tolerance quadrature error is correlated with
       the noise and rectifies into a spurious signal — the
-      ≈ −0.6 σ pure-B excess at θ < 3' that the paper currently
-      discloses as a limitation of the decomposition.
+      ≈ −0.6 σ pure-B excess at θ < 3' that the submitted analysis
+      disclosed as a limitation of the decomposition.
 
       A fixed-quadrature operator settles it. Replacing the
       adaptive step by cell-by-cell Gauss-Legendre integration of
@@ -1076,8 +1068,8 @@ decisions:
       indifferent), and it overlooked that uniform is wrong for
       the local term, which is not.
 
-      This axis did not exist before the referee comments — the
-      pre-referee pipeline did not bin the fine pure-mode
+      This axis did not exist in the submitted analysis — the
+      submitted pipeline did not bin the fine pure-mode
       functions at all — which is why the pointwise chain selects
       `none` rather than one side of the fork.
     default: npairs
@@ -1246,7 +1238,7 @@ decisions:
     default: n_2000
     options:
       n_2000:
-        label: "2000 (paper fiducial)"
+        label: "2000 (fiducial)"
       n_1000:
         label: "1000 (excluded as noisy)"
         excluded: true
@@ -1271,11 +1263,11 @@ decisions:
       ](#decisions.pure_eb_covariance_method), not this one. The
       mock-based option here would only apply if the 350
       GLASS-mock sample covariance replaced CosmoCov as the
-      production matrix, which is not the paper choice.
+      production matrix, which is not the adopted choice.
     default: none
     options:
       none:
-        label: "None (CosmoCov is theory-derived; paper fiducial)"
+        label: "None (CosmoCov is theory-derived; fiducial)"
         insights: [hartlap07_correction]
       mock_based:
         label: "Hartlap factor (N - p - 2) / (N - 1)"
@@ -1288,7 +1280,7 @@ decisions:
     label: "PTE statistical convention"
     tags: [statistics, reporting]
     rationale: |
-      All paper PTEs are tail probabilities of the χ²
+      All reported PTEs are tail probabilities of the χ²
       distribution evaluated at the measured χ² with the
       number of binned degrees of freedom of the statistic.
       Asymptotically valid given the linear-Gaussian
@@ -1298,7 +1290,8 @@ decisions:
     default: chi2_tail
     options:
       chi2_tail:
-        label: "χ² tail probability (paper fiducial)"
+        label: "χ² tail probability (fiducial)"
+        insights: [stebbins96_scalar_perturbations_give_no_bmodes, higher_order_lensing_bmodes_negligible]
       anderson_darling:
         label: "Anderson-Darling"
         description: "Not used; harder to interpret as a calibrated tail."
@@ -1329,9 +1322,10 @@ decisions:
       single representative value, 0.01, is adopted everywhere — a
       clean sample fails it 7% of the time at the fiducial cuts — and is
       also the value Paper III locks in. The PTE heatmaps colour cells
-      below p_thr, and Table 1 passes a row when its minimum PTE is at
-      least p_thr; the alpha grid and the scale-cut dependence of the
-      threshold stay in the mock campaign rather than the paper.
+      below p_thr, and the [PTE table](#outputs.pte_table_appendix)
+      passes a row when its minimum PTE is at least p_thr; the alpha
+      grid and the scale-cut dependence of the threshold stay in the
+      mock campaign.
     default: calibrated_0p01
     options:
       nominal_0p05:
@@ -1339,6 +1333,7 @@ decisions:
         description: "Value: 0.05. The threshold used by the submitted paper."
       calibrated_0p01:
         label: "0.01 (adopted representative value; 350-mock calibration)"
+        insights: [asgari19a_bmode_verdict_depends_on_statistic, jefferson25_estimators_disagree_on_same_data]
         description: |
           Rounded conservative threshold from the global minimum-PTE
           calibration across the six B-mode statistics.
@@ -1350,28 +1345,29 @@ decisions:
       Each catalog variant exists in two forms: with and
       without the object-wise PSF-leakage correction described
       in Paper I (binned regression in S/N and galaxy-PSF size
-      ratio). The paper reports leakage-corrected results, in
+      ratio). Results are reported leakage-corrected, in
       line with Papers III and IV's cosmological inference, and
       finds that the correction shifts individual PTEs by
       ≤ 0.05 across all catalog versions and statistics, with
-      no pass/fail conclusion changing (paper §4.1). The
+      no pass/fail conclusion changing. The
       uncorrected variants are kept in the catalog tree because
       they enter the v1.4.6 → v1.4.6.3 PSF size-fix diagnostic
-      and the appendix consistency checks, but are not used for
+      and the consistency checks, but are not used for
       the headline PTEs.
     default: applied
     options:
       applied:
-        label: "Applied (paper fiducial)"
+        label: "Applied (fiducial)"
+        insights: [guerrini25_psf_errors_contaminate_xi]
       uncorrected:
         label: "Uncorrected"
         description: |
           Uses raw ShapePipe ellipticities. Reported for
-          consistency cross-checks but not as a paper PTE row.
+          consistency cross-checks but not as a reported PTE row.
 
 # -----------------------------------------------------------------------------
-# Findings — claims derived from this paper's own measurements. Each is cited
-# in the narrative tree above. Evidence anchors paper-facing artifacts; the
+# Findings — claims derived from this analysis's own measurements. Each is
+# cited in the narrative tree. Evidence anchors the reported artifacts; the
 # rendered numerical values trace to `paper/claims_macros.tex`.
 # -----------------------------------------------------------------------------
 findings:
@@ -1382,20 +1378,20 @@ findings:
     claim: |
       Treating the two scale-cut boundaries as fitted parameters
       (ν → ν−2 in the χ² survival function) for every entry of the
-      paper's PTE table — four leak-corrected catalog versions, six
+      PTE table — four leak-corrected catalog versions, six
       statistics, fiducial and full-range cuts, 48 cells — changes
-      exactly one verdict at the fiducial cuts against the paper's
+      exactly one verdict at the fiducial cuts against the adopted
       threshold p_thr = 0.01: the size-cut catalog's ξ_-^B, the
       statistic that sets its minimum PTE, falls from 0.019 to
       0.005, just below the 0.006 threshold calibrated at these
       cuts. Every other fiducial-cut statistic for the size-cut
       catalog still passes (smallest: ξ_tot^B, 0.039 → 0.017), and
       no failing entry of any catalog crosses into passing. This is
-      the paper's most pessimistic treatment, which it reports in a
-      footnote rather than adopting.
+      the most pessimistic treatment, reported as a bound rather
+      than adopted.
     notes: |
-      Answers referee comment 1; the accepted paper's footnote
-      quotes the same pair (fiducialMinPte = 0.019,
+      Answers referee comment 1; the accepted analysis quotes
+      the same pair (fiducialMinPte = 0.019,
       fiducialMinPteNuPenalty = 0.005, mockMinPteFloor = 0.006). At
       the full-range cuts the size-cut ξ_tot^B also moves from
       0.0101 to 0.0056, against a calibrated full-range floor of
@@ -1441,7 +1437,7 @@ findings:
         artifact: pte_table_appendix
         quote:
           exact: |
-            All-version PTE grid (paper appendix table): only
+            All-version PTE grid: only
             the size-cut row has all six statistics ≥ 0.01 at
             fiducial cuts.
     scope: "Adopted scale cuts (12'–83' config, 300 < ℓ < 1600 harmonic), four ShapePipe v1.4 variants."
@@ -1498,9 +1494,9 @@ findings:
       cfgCosebisPteSixThreeFull=1.37e-05,
       harmCosebisPteSixThreeFull=1.62e-05 in
       `paper/claims_macros.tex`. The empirical demonstration is
-      paper Figure 8 and the §5 paragraph beginning "We show
-      directly that Cℓ^BB and COSEBIs have different sensitivity
-      to systematic features."
+      [fig_harmonic_config_cosebis_full](#outputs.fig_harmonic_config_cosebis_full):
+      Cℓ^BB and COSEBIs have different sensitivity to systematic
+      features.
     created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
@@ -1510,8 +1506,7 @@ findings:
             E_n and B_n agree across the two computation paths
             for all twenty modes; at fiducial cuts both yield
             B-modes consistent with zero, and at full range both
-            detect the same oscillatory structure (paper §5,
-            Figure 8).
+            detect the same oscillatory structure.
     scope: "Size-cut catalog, n ≤ 20 COSEBI modes, fiducial and full-range scale cuts."
 
   cosebis_full_range_failure:
@@ -1537,8 +1532,7 @@ findings:
         quote:
           exact: |
             Full-range curve shows >4σ first-mode amplitude;
-            fiducial-cuts curve shows <1σ across all 20 modes
-            (paper Figure 3).
+            fiducial-cuts curve shows <1σ across all 20 modes.
     scope: "Size-cut catalog at full angular range; pattern visible across all four variants."
 
 # -----------------------------------------------------------------------------
@@ -1548,8 +1542,8 @@ findings:
 # 2025 for catalog-based pseudo-Cℓ plus Becker/Rozo 2016 as family-mate),
 # Hartlap 2007 for the sample-covariance bias correction, Asgari 2019a for
 # the repeating-additive B-mode signature, and Planck 2020 for the fiducial
-# cosmology. The paper's 1000-bin integration-grid choice is supported by
-# its own 10,000-bin convergence check (§3.3) and does not carry a prior
+# cosmology. The 1000-bin integration-grid choice is supported by
+# its own 10,000-bin convergence check and does not carry a prior
 # insight.
 #
 # A second group covers the accuracy of the analytic pseudo-Cℓ Gaussian
@@ -1601,8 +1595,8 @@ prior_insights:
       angular interval [θ_min, θ_max] such that ξ_+ = ξ_+^E +
       ξ_+^B + ξ_+^amb and ξ_- = ξ_-^E − ξ_-^B + ξ_-^amb
       decompose uniquely. This is the foundation of the
-      configuration-space pure-mode B-mode null test the paper
-      uses.
+      configuration-space pure-mode B-mode null test used
+      here.
     created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
@@ -1742,8 +1736,8 @@ prior_insights:
       cosmology — Ω_m = 0.315 ± 0.007, σ_8 = 0.811 ± 0.006,
       H_0 = 67.4 ± 0.5 km s⁻¹ Mpc⁻¹, Ω_b h² = 0.0224 ± 0.0001,
       n_s = 0.965 ± 0.004 — is the community reference for late-
-      Universe cosmological parameters at the time of this
-      paper's covariance evaluation. The Planck18+BAO variant
+      Universe cosmological parameters at the time of the
+      covariance evaluation. The Planck18+BAO variant
       tightens these at the 0.5 % level relative to TT,TE,EE
       alone but yields no qualitatively different constraints
       for the matter power spectrum used by CosmoCov.
@@ -1782,7 +1776,7 @@ prior_insights:
       contribution makes the resulting estimator immune to
       small-scale pixelization and aliasing effects, and
       unbiased against measurement noise uncorrelated between
-      sources. This is the methodological basis for Paper II's
+      sources. This is the methodological basis for the
       harmonic-space Cℓ^EB / Cℓ^BB bandpowers and their
       analytic shot-noise correction.
     created_at: "2026-04-25T00:00:00Z"
@@ -1820,8 +1814,8 @@ prior_insights:
       methodological foundation for the [cl_bb sub-analysis
       ](#analyses.cl_bb)'s catalog-level pseudo-Cℓ estimator
       and the analytic shot-noise / noise-bias correction the
-      paper inherits from Paper IV's implementation. Paper II's
-      implementation evaluates spin-2 spherical-harmonic
+      analysis inherits from Paper IV's implementation. The
+      implementation here evaluates spin-2 spherical-harmonic
       transforms at source positions through the `ducc` library
       (Reinecke & Seljebotn 2023), with NaMaster decoupling of
       the mode-coupling matrix.
@@ -1892,7 +1886,7 @@ prior_insights:
       and 661. The factor-~10 figure is for a CMB-like mask and
       spectrum, not a cosmic-shear footprint; it establishes the
       mechanism and its scale dependence, not a number
-      transferable to UNIONS. Paper II's Cℓ^BB is measured
+      transferable to UNIONS. The Cℓ^BB here is measured
       without purification.
 
   gg19_nka_bb_covariance_unreliable:
@@ -2009,7 +2003,7 @@ prior_insights:
       over-estimates the *signal* part of the covariance by more
       than a factor of 2 in noiseless HSC-like simulations,
       while iNKA recovers it to ~10 %. Two residual failures
-      survive and both apply to Paper II's regime: the analytic
+      survive and both apply to the UNIONS regime: the analytic
       uncertainties are still *over*estimated at the lowest
       bandpower, and the largest analytic-versus-simulated
       discrepancies of all are in the spectra built from E/B
@@ -2075,7 +2069,7 @@ prior_insights:
     id: namaster26_catalog_inka_bb_low_ell_limit
     claim: |
       In NaMaster's own validation of the catalogue-based iNKA
-      Gaussian covariance — the estimator family Paper II's
+      Gaussian covariance — the estimator family the UNIONS
       Cℓ measurement belongs to — the analytic covariance
       matches the sample covariance of 1000 simulations on all
       scales for E modes, but only for ℓ ≳ 10 for B modes, on a
@@ -2110,6 +2104,199 @@ prior_insights:
       but does not characterise how it moves with f_sky or mask
       fragmentation, and does not report the sign or size of
       the BB covariance error below that floor.
+
+
+  stebbins96_scalar_perturbations_give_no_bmodes:
+    id: stebbins96_scalar_perturbations_give_no_bmodes
+    claim: |
+      In the weak-lensing limit, scalar (density) perturbations
+      produce only scalar (E-mode) shear; vector and tensor
+      perturbations could source pseudo-scalar (B-mode) shear but
+      are expected to be very small, so no significant B-mode shear
+      is expected from lensing. This is the premise of testing the
+      measured B modes against zero.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.48550/arXiv.astro-ph/9609149"
+        quote:
+          exact: "Nevertheless it is true that 3-d scalar perturbations will only produce 2-d scalar shear, at least in the weak lensing limit."
+        location:
+          page: 3
+      - id: ev2
+        doi: "10.48550/arXiv.astro-ph/9609149"
+        quote:
+          exact: "Thus we really do not expect there to be any significant pseudo-scalar shear."
+        location:
+          page: 3
+    scope: |
+      Stebbins 1996, astro-ph/9609149, §2 (scalar and pseudo-scalar
+      shear). Source: decompArchive.tex lines 2162–2172. Paper II
+      cites it with Kamionkowski et al. 1997 (paper TeX line 154).
+
+  higher_order_lensing_bmodes_negligible:
+    id: higher_order_lensing_bmodes_negligible
+    claim: |
+      Lensing itself does generate B modes beyond first order —
+      through Born corrections and lens–lens coupling, and through
+      source-redshift clustering — but these are at least two orders
+      of magnitude below the E-mode power, and the clustering term
+      is very small above a few arcminutes. At current sensitivity,
+      and at the ≥ 12′ / ℓ < 1600 scales Paper II tests, a
+      detected B mode therefore points to systematics rather than
+      cosmological signal, and the null model C^BB = 0 needs no
+      theory B-mode template.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.48550/arXiv.astro-ph/0202411"
+        quote:
+          exact: "We show all these corrections are at least two orders of magnitude below the convergence or E-mode power and hence relevant only to future ultra high precision measurements."
+        location:
+          page: 1
+      - id: ev2
+        doi: "10.48550/arXiv.astro-ph/0202411"
+        quote:
+          exact: "validate the use of current large scale structure weak lensing predictions for cosmological studies and future use of B-modes as a monitor of systematic effects."
+        location:
+          page: 1
+      - id: ev3
+        doi: "10.48550/arXiv.astro-ph/0112441"
+        quote:
+          exact: "the resulting B-mode is very small on angular scales larger than a few arcminutes, but its relative contribution rises quickly towards smaller angular scales"
+        location:
+          page: 1
+    scope: |
+      Cooray & Hu 2002, ApJ 574, 19 — abstract (Born + lens–lens
+      coupling); Schneider, van Waerbeke & Mellier 2002, A&A 389,
+      729 — abstract (source-redshift clustering). Sources: arxiv
+      astro-ph/0202411 paper.tex lines 109–118; astro-ph/0112441
+      EBaa.tex lines 187–192. Cited in paper TeX line 155. Intrinsic
+      alignments (Crittenden et al. 2002, also cited there) are a
+      further B-mode source not bounded by these papers.
+
+  asgari19a_bmode_subtraction_insufficient:
+    id: asgari19a_bmode_subtraction_insufficient
+    claim: |
+      Different systematics contaminate E and B modes by different
+      amounts: most produce a significant E-mode contamination on the
+      same scales as their B modes, but a repeating additive pattern
+      does not. Correcting the data by subtracting the B modes from
+      the E modes is therefore not sufficient; the B-mode amplitude
+      alone does not determine the E-mode contamination.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "For this reason we have shown that it is not sufficient to correct data by simply subtracting the B-modes from the E-modes."
+          prefix: "In contrast the COSEBIs B-modes detect systematics that can affect E and B-modes differently."
+        location:
+          page: 22
+      - id: ev2
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "Comparing the right and left panels we see that all systematics affect both E and B-modes, but not equally."
+        location:
+          page: 16
+      - id: ev3
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "The repeating additive pattern forms a clear exception to this rule though."
+          prefix: "In general a significant B-mode signal translates to a significant contamination to the E-modes on the same scales."
+        location:
+          page: 16
+    scope: |
+      Asgari et al. 2019a, A&A 624, A134 — §5.2 (mock systematics on
+      COSEBIs) and Conclusions. Source: arxiv 1810.02353
+      Results2.tex line 58 and Conclusions.tex line 15. Cited for
+      exactly this argument in paper TeX line 647.
+
+  asgari19a_bmode_verdict_depends_on_statistic:
+    id: asgari19a_bmode_verdict_depends_on_statistic
+    claim: |
+      A shear catalogue can formally pass one B-mode statistic and
+      fail another computed from the same data, because each weights
+      the B modes differently (KiDS-450 passes COSEBIs but shows a
+      2.7σ B mode in compressed COSEBIs). The recommendation is to
+      require every statistic to be consistent with zero, which is
+      the logic behind taking the minimum PTE over all six B-mode
+      statistics as the test statistic.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "Here the COSEBIs B-modes that are insignificant overall are weighted in such a way that the resulting CCOSEBIs signal becomes significant."
+        location:
+          page: 22
+      - id: ev2
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "We therefore recommend measuring both CCOSEBIs and COSEBIs B-modes in future analyses, ensuring that both are consistent with zero."
+        location:
+          page: 22
+    scope: |
+      Asgari et al. 2019a, Conclusions. Source: arxiv 1810.02353
+      Conclusions.tex line 15. Stated for COSEBIs vs. CCOSEBIs;
+      Paper II generalises it to pure-mode ξ_±, COSEBIs and Cℓ^BB
+      (paper TeX lines 182–184, 611).
+
+  jefferson25_estimators_disagree_on_same_data:
+    id: jefferson25_estimators_disagree_on_same_data
+    claim: |
+      In a uniform reanalysis of KiDS-1000, DES-Y3 and HSC-Y3, the
+      same tomographic bins can pass a pseudo-Cℓ B-mode test and fail
+      the HybridEB one: the B-mode verdict depends on the estimator,
+      so passing a single null test does not validate a catalogue.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.33232/001c.144668"
+        quote:
+          exact: "also reveals that it is possible for one of the estimators to pass while the other fails."
+        location:
+          page: 18
+      - id: ev2
+        doi: "10.33232/001c.144668"
+        quote:
+          exact: "the signal may be significantly different when estimated with the"
+        location:
+          page: 21
+    scope: |
+      Jefferson et al. 2025, OJAp — §5 (B modes) and Conclusions.
+      Source: arxiv 2505.03964 main.tex lines 732 and 838. Cited in
+      paper TeX lines 182 and 611.
+
+  guerrini25_psf_errors_contaminate_xi:
+    id: guerrini25_psf_errors_contaminate_xi
+    claim: |
+      Errors in the PSF model and its correction are a source of
+      additive systematics in the shear two-point correlation
+      function; galaxy–PSF (τ) and PSF–PSF (ρ) correlations, with a
+      semi-analytic covariance, quantify that leakage on UNIONS data.
+      This is the diagnostic framework used to assess the object-wise
+      PSF-leakage correction Paper II's catalogues carry.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/202453512"
+        quote:
+          exact: "The latter can be a source of systematics that affect the shear two-point correlation function."
+          prefix: "precise measurements of galaxy shapes and therefore an accurate knowledge of the PSF model."
+        location:
+          page: 1
+      - id: ev2
+        doi: "10.1051/0004-6361/202453512"
+        quote:
+          exact: "They provide fast and accurate diagnostics on PSF systematics that are crucial to understand in the context of cosmic shear studies."
+        location:
+          page: 1
+    scope: |
+      Guerrini et al. 2025, A&A — abstract. Source: arxiv 2412.14666
+      aanda.tex lines 130–146. The correction itself is Paper I's;
+      Guerrini et al. supply the diagnostic, not the correction
+      (paper TeX line 222).
 
 # -----------------------------------------------------------------------------
 # Sub-analyses. Each lives in analyses/<id>/astra.yaml. Inheritance flows

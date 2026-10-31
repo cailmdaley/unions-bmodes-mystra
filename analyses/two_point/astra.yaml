@@ -24,7 +24,7 @@ outputs:
       bins over [1', 250'], as a single TreeCorr text dump.
       The same file is consumed at
       reporting binning by the pure E/B and Cℓ data-vector
-      figures (paper Figures 1, 4, 5).
+      figures and the version-comparison stack.
     format: txt
     inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
     decisions: [fiducial_catalog]
@@ -128,14 +128,14 @@ decisions:
     default: bins_20
     options:
       bins_20:
-        label: "20 log bins over [1', 250'] (paper fiducial)"
+        label: "20 log bins over [1', 250'] (fiducial)"
         description: |
           `min_sep=1.0`, `max_sep=250.0`, `nbins=20` in
           `workflow/config/config.yaml.fiducial`.
       bins_40:
         label: "40 log bins over [1', 250']"
         description: |
-          Finer reporting grid; not used in the paper, exposed
+          Finer reporting grid; not used in the fiducial analysis, exposed
           for sensitivity studies only.
 
   patch_count:
@@ -150,13 +150,13 @@ decisions:
       patches are too small. The
       [covariance sub-analysis](#../analyses.covariance) uses
       semi-analytical CosmoCov, so empirical jackknife is not
-      needed for the paper PTEs. The 120-patch alternative was
+      needed for the reported PTEs. The 120-patch alternative was
       built for cross-check sensitivity studies and is
       explicitly excluded from the production fiducial.
     default: npatch_1
     options:
       npatch_1:
-        label: "1 patch (paper fiducial)"
+        label: "1 patch (fiducial)"
         description: |
           Single-patch TreeCorr; spatial-jackknife covariance
           unavailable.
@@ -164,10 +164,10 @@ decisions:
         label: "120 patches"
         description: |
           120-patch decomposition for spatial-jackknife
-          sensitivity tests; not used by paper PTEs.
+          sensitivity tests; not used by the reported PTEs.
         excluded: true
         excluded_reason: |
-          Empirical jackknife covariance is not the paper's
+          Empirical jackknife covariance is not the adopted
           covariance source; CosmoCov is. The 120-patch run is
           retained in `config.yaml.npatches` for one-off
           checks but does not enter any reported PTE.

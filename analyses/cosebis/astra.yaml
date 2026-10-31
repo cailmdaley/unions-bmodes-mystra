@@ -47,17 +47,17 @@ outputs:
       at blind A holding the E_n / B_n vectors for n = 1 … 20, the
       mode covariance matrix obtained from the linear transform
       `T^T C_ξ T`, and the diagonal σ_n used for the B_n / σ_n
-      normalisation in the paper figure. Rendered by
+      normalisation in the data-vector figure. Rendered by
       [fig_cosebis_data_vector](#outputs.fig_cosebis_data_vector),
       which is the artifact behind the
-      [paper data-vector figure](#../outputs.fig_cosebis_fiducial).
+      [COSEBI data-vector figure](#../outputs.fig_cosebis_fiducial).
     decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention]
     inputs: [xi_integration, cov_integration_g]
     recipe:
       # cosebis_data_vector.py computes the fiducial E_n/B_n data vector and the
       # T^T C_xi T mode covariance at both scale cuts, writing the NPZ payload
       # directly to {output}. Upstream xi/cov arrive as declared lc inputs.
-      # The paper figure is a separate declared output (fig_cosebis_data_vector).
+      # The figure is a separate declared output (fig_cosebis_data_vector).
       command: >
         python src/papers/bmodes/scripts/cosebis_data_vector.py
         --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
@@ -71,14 +71,12 @@ outputs:
     type: figure
     format: png
     description: |
-      Paper Figure 3: the COSEBI B_n / σ_n data vector for the
-      [fiducial catalog](#../decisions.fiducial_catalog) at blind A,
-      n = 1 … 20, with the fiducial and full-range scale cuts shown.
-      Rendered from the already-computed
-      [cosebis_modes_data](#outputs.cosebis_modes_data) NPZ rather
-      than recomputing the modes; the root
-      [fig_cosebis_fiducial](#../outputs.fig_cosebis_fiducial)
-      is this artifact.
+      COSEBI B-mode amplitudes for the [fiducial
+      catalog](#../decisions.fiducial_catalog), normalized by
+      uncertainty (B_n/σ_n), at the fiducial scale cuts of 12–83 arcmin
+      (filled circles) and over the full angular range of 1–250 arcmin
+      (open diamonds). Modes n > 6 are shaded; the n ≤ 6 subset captures
+      nearly all cosmological information.
     decisions: [fiducial_catalog, fiducial_blind, mode_subsets, scale_cut_convention]
     inputs: [cosebis_modes_data, paper_mplstyle, print_width_script]
     recipe:
@@ -137,7 +135,7 @@ outputs:
     decisions: [fiducial_catalog, fiducial_blind, mode_subsets, scale_cut_convention]
     inputs: [xi_integration, xi_integration_convergence, cov_integration_g]
     recipe:
-      # Diagnostic (not in the paper): cosebis_binning_comparison.py computes B_n
+      # Diagnostic: cosebis_binning_comparison.py computes B_n
       # from the 1000-bin and 10000-bin integration grids and writes the single
       # rendered PNG to {output}. All three inputs are declared lc inputs.
       command: >
@@ -154,13 +152,15 @@ outputs:
     type: figure
     format: png
     description: |
-      Per-mode B_n stack across the four leak-corrected catalog
-      variants (size-cut, initial, masked, relaxed-flags),
-      contributing the COSEBI row of the
-      [paper Figure 5 version composite
-      ](#../outputs.fig_versions_cosebis). Uncorrected variants
-      are not stacked — the comparison plot is leak-corrected
-      only.
+      B-mode data vectors across catalog versions: initial (red
+      circles), size-cut/fiducial (gold squares), masked (teal
+      diamonds), and relaxed-flags (purple triangles). Rectangles
+      delineate each bin in the horizontal direction and span the range
+      of values across versions in the vertical direction; horizontal
+      lines mark the fiducial value. COSEBI B-mode amplitudes B_n/σ_n at
+      full range (upper) and fiducial cuts (lower). Only the size-cut
+      catalog passes all statistics at the fiducial scale cuts ([PTE
+      table](#../outputs.pte_table_appendix)).
     decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention]
     inputs: [xi_sweep, cov_sweep, xi_integration, cov_integration_g, paper_mplstyle, print_width_script, cosebis_version_comparison_script]
     recipe:
@@ -188,13 +188,13 @@ outputs:
     type: data
     format: npz
     description: |
-      Harmonic-path B_n via paper Eq. 19, summing FFT-log
+      Harmonic-path B_n, summing FFT-log
       Fourier-dual W_n(ℓ) filters against the 96-bin √ℓ-linear
       pseudo-Cℓ bandpowers
       ([harmonic_validation_binning](#decisions.harmonic_validation_binning)).
       Compared mode-by-mode against the angular-space
       [cosebis_modes_data](#outputs.cosebis_modes_data) for
-      the [paper cross-check figure
+      the [harmonic/configuration cross-check figure
       ](#../outputs.fig_harmonic_config_cosebis); GLASS
       validation underwrites the agreement at n ≤ 6. The NPZ
       carries E_n/B_n/covariance for both paths at both scale
@@ -206,9 +206,9 @@ outputs:
     inputs: [cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration_g]
     recipe:
       # harmonic_config_cosebis_comparison.py computes the harmonic-path (96-bin
-      # pseudo-Cl -> cosebis_from_Cell, Eq. 19) and config-path COSEBIs for the
+      # pseudo-Cl -> cosebis_from_Cell) and config-path COSEBIs for the
       # fiducial catalog at both scale cuts, writing the En/Bn/cov NPZ for both
-      # paths to {output}. The combined Figure 8 render is the root
+      # paths to {output}. The combined cross-check render is the root
       # fig_harmonic_config_cosebis output; the PTE dict is the metrics output.
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
@@ -254,11 +254,10 @@ outputs:
     description: |
       Full-angular-range twin of
       [cosebis_harmonic_modes](#outputs.cosebis_harmonic_modes):
-      the same harmonic-path Eq. 19 vs. config-path COSEBI
+      the same harmonic-path vs. config-path COSEBI
       cross-check, run with `--angular-range full` instead of
       `fiducial`. Feeds the [full-range cross-check
-      figure](#../outputs.fig_harmonic_config_cosebis_full)
-      (paper Figure 8, `fig:harmonic_config_cosebis_full`); its
+      figure](#../outputs.fig_harmonic_config_cosebis_full); its
       PTE payload is
       [cosebis_harmonic_metrics_full](#outputs.cosebis_harmonic_metrics_full).
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
@@ -291,8 +290,8 @@ outputs:
       `config_b_mode_ptes` PTE + χ² dicts are keyed to whichever cut
       was passed via `--angular-range`. This is the only carrier for
       the harmonic-space full-range COSEBI PTE
-      ([harmCosebisPteSixThreeFull](#../findings.cosebis_full_range_failure),
-      quoted in the paper §5) and its χ², and (redundantly with
+      ([harmCosebisPteSixThreeFull](#../findings.cosebis_full_range_failure))
+      and its χ², and (redundantly with
       [null_tests.config_space_pte_evidence](#../null_tests.outputs.config_space_pte_evidence))
       the config-space full-range COSEBI χ² — see
       `work/transpile-map.md` §2c/§2d for the gap this closes.
@@ -339,19 +338,21 @@ decisions:
       basis fully covers the ξ_±(θ) information on
       [θ_min, θ_max] in the limit n → ∞, but the cosmological
       E-mode amplitude saturates by n ≈ 5–6 at this survey's
-      depth (paper §3.2). 20 modes is therefore conservative
-      relative to information saturation while staying inside
-      the numerically stable regime — beyond ~25 modes,
-      polynomial-root accuracy in the T_{±n} construction
-      degrades on standard double precision. Lower mode counts
+      depth. 20 modes is therefore conservative relative to
+      information saturation, and matches the mode count used
+      to test COSEBI B modes for systematics. The filter
+      functions are computed at 80-digit precision
+      (cosmo-numba), so numerical accuracy does not set the
+      limit. Lower mode counts
       exclude information needed for the full-range
-      oscillatory diagnostic the paper reports as
+      oscillatory diagnostic reported as
       [the COSEBI failure signature
       ](#../findings.cosebis_full_range_failure).
     default: n_max_20
     options:
       n_max_20:
-        label: "20 modes (paper fiducial)"
+        label: "20 modes (fiducial)"
+        insights: [asgari19a_cosebis_nmax20_for_systematics]
       n_max_15:
         label: "15 modes"
         description: |
@@ -361,22 +362,23 @@ decisions:
       n_max_30:
         label: "30 modes"
         description: |
-          Polynomial-root construction degrades; not used.
+          Not computed.
         excluded: true
         excluded_reason: |
-          Numerical instability at n > 25 in the T_{±n}
-          double-precision construction.
+          Beyond the n ≤ 20 used for B-mode systematics tests;
+          the E-mode information saturates by n ≈ 5–6, so higher
+          modes add noise-dominated degrees of freedom.
 
   mode_subsets:
     label: "PTE-reported mode subsets"
     tags: [cosebis, statistics, primary]
     rationale: |
-      The paper reports COSEBI PTEs for two mode subsets: n ≤ 6
+      COSEBI PTEs are reported for two mode subsets: n ≤ 6
       and n ≤ 20. n ≤ 6 is the cosmologically informative range
       where the E-mode amplitude has saturated; PTEs in this
       subset weight the modes most likely to carry residual
       systematic content visible at the survey-deep angular
-      scales the paper probes. n ≤ 20 reports the full
+      scales probed here. n ≤ 20 reports the full
       orthogonal basis for transparency, especially for the
       full-range oscillatory pattern that motivates the lower
       angular cut. Subsets larger than 20 are not exposed
@@ -385,12 +387,13 @@ decisions:
     default: n_le_6_and_n_le_20
     options:
       n_le_6_and_n_le_20:
-        label: "Both subsets (paper fiducial)"
+        label: "Both subsets (fiducial)"
+        insights: [asgari12_few_cosebis_modes_saturate_information, asgari19a_cosebis_nmax20_for_systematics]
       n_le_6_only:
         label: "n ≤ 6 only"
         description: |
-          Hides the n ≤ 20 transparency check; not used by the
-          paper but exposed for sensitivity analyses.
+          Hides the n ≤ 20 transparency check; not used in the
+          fiducial analysis but exposed for sensitivity analyses.
       n_le_20_only:
         label: "n ≤ 20 only"
         description: |
@@ -401,22 +404,22 @@ decisions:
     label: "Pseudo-Cℓ bandpower count for the harmonic COSEBI path"
     tags: [cosebis, harmonic, validation]
     rationale: |
-      The harmonic-path COSEBI evaluation (paper Eq. 19) sums
+      The harmonic-path COSEBI evaluation sums
       the W_n(ℓ) filters against pseudo-Cℓ bandpowers. The bin
       count balances two competing requirements: too few bins
       cannot resolve the W_n(ℓ) oscillations at high n, while
       too many bins lead to an unstable mode-coupling matrix
       deconvolution at the NaMaster step. 96 √ℓ-linear bins
       were chosen and validated on GLASS simulations to
-      recover the n ≤ 6 angular-space modes within 2%
-      (paper §3.2). 32 bins (the harmonic-space PTE binning,
+      recover the n ≤ 6 angular-space modes within 2%.
+      32 bins (the harmonic-space PTE binning,
       [cl_bb](#../analyses.cl_bb)) cannot resolve the
       oscillations beyond n ≈ 4 and is reserved for the
       Cℓ^BB null test itself.
     default: bins_96
     options:
       bins_96:
-        label: "96 √ℓ-linear bandpowers (paper fiducial)"
+        label: "96 √ℓ-linear bandpowers (fiducial)"
       bins_128:
         label: "128 √ℓ-linear bandpowers"
         description: |
@@ -428,7 +431,7 @@ decisions:
         excluded: true
         excluded_reason: |
           Insufficient resolution for W_n(ℓ) at n > 4; would
-          break the harmonic cross-check the paper reports.
+          break the reported harmonic cross-check.
 
   scale_cut_pair_grid:
     label: "Scale-cut pair grid for COSEBI PTE matrices"
@@ -442,13 +445,13 @@ decisions:
       14) pairs in the production list `PTE_SCALE_CUT_PAIRS`).
       The grid is dense enough to render the
       [PTE composite figure](#../outputs.fig_pte_heatmaps) at
-      the resolution the paper shows; it is not exhaustive
+      the resolution shown; it is not exhaustive
       because the unstable pairs would inject NaNs into the
       composite without informational gain.
     default: production_grid
     options:
       production_grid:
-        label: "Stable index pairs of geomspace(1', 250', 21) (paper fiducial)"
+        label: "Stable index pairs of geomspace(1', 250', 21) (fiducial)"
         description: |
           ~110 stable pairs; excludes (9,10), (10,11), (11,12),
           (13,14) for polynomial-root instability. Defined in
@@ -459,7 +462,7 @@ decisions:
           Reports only the
           [adopted 12'–83' fiducial cut
           ](#../decisions.fiducial_scale_cuts); hides scale-cut
-          sensitivity — not used by the paper, but exposed
+          sensitivity — not used in the fiducial analysis, but exposed
           as a multiverse minimal cut.
 
 analyses:
@@ -472,3 +475,62 @@ analyses:
 
   cosebis_pte_grid:
     path: ./analyses/cosebis_pte_grid
+
+prior_insights:
+
+  asgari12_few_cosebis_modes_saturate_information:
+    id: asgari12_few_cosebis_modes_saturate_information
+    claim: |
+      A relatively small number of COSEBI modes always saturates the
+      available cosmological information, fewer for logarithmic than
+      for linear COSEBIs. Restricting the cosmologically informative
+      PTE subset to the first few modes loses no E-mode information.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201218828"
+        quote:
+          exact: "We find that a relatively small number of COSEBIs modes is always enough to saturate to the maximum information level."
+        location:
+          page: 1
+    scope: |
+      Asgari, Schneider & Simon 2012, A&A 542, A122 — abstract
+      (Fisher forecasts, tomographic and non-tomographic). Source:
+      arxiv 1201.2669 COSEBIs2.tex lines 121–126. The saturation
+      point depends on survey and parameter set; Paper II's n ≈ 5–6
+      comes from its own E-mode data vector (paper TeX lines 166,
+      358).
+
+  asgari19a_cosebis_nmax20_for_systematics:
+    id: asgari19a_cosebis_nmax20_for_systematics
+    claim: |
+      COSEBI E-mode predictions vanish beyond the first ~7 modes, so
+      high modes carry no cosmological information, but systematic
+      signals need not follow that behaviour and can be significant
+      at large n. Truncating at n = 20 covers both the cosmological
+      and the systematic-diagnostic range.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "Therefore, we do not expect to gain any cosmological information from these modes."
+        location:
+          page: 7
+      - id: ev2
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "On the other hand the signal from systematic effects does not necessarily follow the same behaviour."
+        location:
+          page: 7
+      - id: ev3
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "which encompasses modes that are important for both cosmological and systematic analyses."
+        location:
+          page: 7
+    scope: |
+      Asgari et al. 2019a, A&A 624, A134 — §4 (COSEBIs measurement).
+      Source: arxiv 1810.02353 Results1.tex line 6. Same n_max = 20
+      and the same two-subset logic as Paper II (paper TeX lines
+      176, 358).

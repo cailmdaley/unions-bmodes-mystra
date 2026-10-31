@@ -1,15 +1,14 @@
 version: "0.0.14"
 name: "GLASS mock covariance campaign"
 description: |
-  Paper II asserts (Sect. 3.7) that the scatter of the 350 GLASS
-  lognormal realisations is "comparable to the fiducial error
-  bars" for all three B-mode statistics, and reports PTEs from a
-  χ² machinery whose calibration is never demonstrated. The A&A
-  referee asked for the numbers behind both claims (comments 7
-  and 13), for the empirical correlation between the six test
-  statistics that comments 1, 6 and 9 lean on qualitatively, and
-  (comment 4) whether the masked catalog's pure-mode failures
-  could be mask geometry rather than contamination.
+  Two claims rest on the 350 GLASS lognormal realisations: that
+  their scatter is "comparable to the fiducial error bars" for all
+  three B-mode statistics, and that the PTEs from the χ²
+  machinery are calibrated. Neither holds without numbers behind
+  it. Two further questions lean on the same suite: the empirical
+  correlation between the six test statistics, otherwise argued
+  only qualitatively, and whether the masked catalog's pure-mode
+  failures could be mask geometry rather than contamination.
 
   This sub-analysis is the one extended reduction that answers
   all four. The realisations are systematics-free and carry no
@@ -23,18 +22,18 @@ description: |
   The reduction is a scatter/gather: each realisation is measured
   independently — one TreeCorr run per mock, whose stacked result is
   the [ξ_± ensemble](#outputs.mock_xi_fine) — and the suite is then carried as
-  stacked arrays through the paper's own ξ_± → COSEBI and ξ_± →
-  pure-E/B transforms, until one compute pass compares all six
+  stacked arrays through the same ξ_± → COSEBI and ξ_± →
+  pure-E/B transforms the data use, until one compute pass compares all six
   statistics against analytic covariances and everything reported is
   derived from its table. Which covariance is the
   [decision](#decisions.reference_covariance) that turns out to
   be the whole ballgame. The realisations do not carry the
   fiducial catalog's galaxy count on the fiducial catalog's sky —
   they carry 17% more — so holding their scatter against the
-  paper's own covariance would measure that count mismatch rather
-  than anything about the covariance. What the campaign tests
+  fiducial analytic covariance would measure that count mismatch
+  rather than anything about the covariance. What the campaign tests
   instead is the covariance *machinery*: the mocks' scatter,
-  known by construction, against a covariance the paper's own
+  known by construction, against a covariance the same
   CosmoCov / MC / NaMaster chain builds for the mocks' own noise.
 
   The count mismatch itself is reported as a
@@ -75,7 +74,7 @@ inputs:
     type: data
     description: |
       Sacha's precomputed 20-bin TreeCorr ξ_± per realisation on
-      the paper reporting grid. The pure-E/B transform needs both
+      the reporting grid. The pure-E/B transform needs both
       grids: this one defines the reporting bins the six output
       blocks land on, and the locally recomputed fine ξ_±
       supplies the integration grid the Schneider (2022)
@@ -182,7 +181,7 @@ inputs:
       first of the three per-statistic channels tabulated in the
       [reference_covariance](#decisions.reference_covariance)
       rationale. It is the *same* CosmoCov machinery that
-      produces the paper's own covariance, driven from a
+      produces the fiducial analytic covariance, driven from a
       `cat_config` survey entry (`SP_v1.4.6.3_mockv2`) carrying
       the mocks' noise instead of the data's: `source_n_gal =
       5.79308 arcmin⁻²` and `sigma_e = 0.37926` at the fiducial
@@ -211,7 +210,7 @@ inputs:
     description: |
       The mock-matched C_ℓ^BB covariance for the
       [v2 suite](#decisions.mock_suite), computed by pointing the
-      paper's own NaMaster iNKA primitive
+      same NaMaster iNKA primitive
       (`generate_pseudo_cl_cov.py`, the producer of
       [cl_cov_reporting](#inputs.cl_cov_reporting)) at GLASS v2
       realisation 00001. That primitive is entirely
@@ -239,7 +238,7 @@ inputs:
       declared to the covariance chain — `area = 2894.0303815288
       deg²`, `source_n_gal = 4.957279 arcmin⁻²`, `sigma_e =
       0.3783980` (total, i.e. 0.267568 per component) — which makes
-      it the authoritative statement of what noise the paper's
+      it the authoritative statement of what noise the fiducial
       covariance was built at, rather than a number quoted about it.
       Read by [mock_vs_data_noise_table](#outputs.mock_vs_data_noise_table).
     source: "/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked.ini"
@@ -274,7 +273,7 @@ inputs:
   - id: plotting_utils_script
     type: data
     description: |
-      The shared paper plotting module: the matplotlib style path,
+      The shared plotting module: the matplotlib style path,
       the A&A column widths, the validated categorical colours and
       the scatter-with-error-bar mark spec every figure below
       draws from. An input to all of them, because a change here
@@ -388,7 +387,7 @@ inputs:
   - id: mock_campaign_paper_figure_script
     type: data
     description: |
-      The paper-format composer behind
+      The publication-format composer behind
       [mock_campaign_figure](#outputs.mock_campaign_figure).
     source: "./src/workflow/scripts/mock_campaign_paper_figure.py"
 
@@ -508,7 +507,7 @@ outputs:
       COSEBI E_n / B_n for n = 1 … 20 and all 350 realisations, stacked
       as a 350 × 20 pair. Computed from
       [mock_xi_fine](#outputs.mock_xi_fine) through exactly the
-      `cosmo_numba` `COSEBIS.cosebis_from_xipm` call the paper's own
+      `cosmo_numba` `COSEBIS.cosebis_from_xipm` call the
       COSEBI data vector uses, cut at the
       [fiducial θ range](#decisions.scale_cut_convention). The paired
       [mock_cosebis_modes_full](#outputs.mock_cosebis_modes_full) output
@@ -520,7 +519,7 @@ outputs:
       # The θ cut reaches the script as the convention, not as two literals:
       # mock_cosebis_scatter resolves grid_bin_edges to edges 9 and 16 of
       # geomspace(1', 250', 21) — what the pipeline actually cut at — and
-      # rounded_arcmin to the [12, 83] the paper text prints.
+      # rounded_arcmin to the quoted [12, 83].
       command: >
         python src/workflow/scripts/mock_cosebis_scatter.py
         --xi-ensemble {inputs.mock_xi_fine} --out-file {output}
@@ -558,7 +557,7 @@ outputs:
       [mock_xi_reporting](#outputs.mock_xi_reporting) and the
       integration grid from [mock_xi_fine](#outputs.mock_xi_fine),
       truncated at 300' to match the CosmoCov integration input the
-      paper covariance was built on. Only the six data-vector blocks
+      fiducial covariance was built on. Only the six data-vector blocks
       are written; the analytic covariance is the campaign's business.
     inputs: [mock_xi_fine, mock_xi_reporting]
     decisions: [mock_suite, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits]
@@ -573,7 +572,7 @@ outputs:
         --out-file {output}
       resources: { cpus: 16, memory: "16GB" }
 
-  # ── Scatter: the v1.4.8-masked footprint (comment 4) ─────────────────────
+  # ── Scatter: the v1.4.8-masked footprint ─────────────────────────────────
   # NOT YET MATERIALISED. The masked chain below is declared against the
   # canonical v2 suite, which has no masked counterpart on disk; running it is
   # a fresh scatter plus its transform. It is scoped to the first 50
@@ -584,7 +583,7 @@ outputs:
   # 50-member intersection. A prior masked run exists at
   # results/glass_mock_masked/ on the superseded v1.4.6 suite and saw
   # geometry-only nulls, but it was never vetted and is not evidence for any
-  # finding here — the comment-4 answer is pending this chain's first run.
+  # finding here — the mask-geometry verdict is pending this chain's first run.
 
   - id: mock_xi_fine_masked
     from: mock_xi_masked_scan.mock_xi_fine_masked
@@ -624,7 +623,7 @@ outputs:
     type: data
     format: npz
     description: |
-      The paper's pure-E/B covariance rebuilt from the
+      The fiducial pure-E/B covariance rebuilt from the
       [mock-matched ξ_± covariance](#inputs.cov_integration_mockmatched)
       under the same
       [covariance method](#decisions.pure_eb_covariance_method) —
@@ -711,7 +710,7 @@ outputs:
       covariance at both the fiducial and full angular windows. The
       original fiducial keys remain unchanged; `chi2_full`, `pte_full`,
       and `dof_full` add the 1–250 arcmin / 8≤ℓ≤2048 calibration
-      alongside them. Everything the referee answers quote is a
+      alongside them. Every campaign number quoted is a
       function of this file.
     inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, mock_xi_fine, glass_mock_cl, xi_integration, cov_integration_g, pure_eb_semianalytic_data, cl_cov_reporting, cov_integration_mockmatched, pure_cov_mockmatched, cl_cov_mockmatched]
     decisions: [reference_covariance, mock_suite, scale_cut_convention, fiducial_catalog, fiducial_blind]
@@ -778,37 +777,18 @@ outputs:
     type: figure
     format: png
     description: |
-      The picture behind
-      [mock_min_pte_calibration](#outputs.mock_min_pte_calibration):
-      across clean mock realisations, the cumulative distribution of
-      the *minimum* PTE over the six test statistics — the one-sided
-      minimum, min_s PTE_s, which is the statistic the calibration's
-      `p_global_one_sided` is a tail fraction of, not the two-sided
-      min(PTE, 1−PTE) companion it also reports. The curve is the
-      unbinned empirical CDF in percent: each rise is one
-      realisation, and its height at x is the suite's false-alarm
-      rate on clean data for a threshold x. Both axes are
-      logarithmic (x from 10⁻³ to 0.3, y up to 100%), so the trend
-      shows over several decades.
-
-      Column width, drawn at print size, in the paper's figure
-      semantics: a neutral dark step curve; a thin light-grey dotted
-      curve, 1 − (1 − x)⁶, the expectation for six independent
-      tests; a grey dashed drop line from `global_alpha` (5%) across
-      to the curve and down to the calibrated threshold
-      `threshold_one_sided`; a thin solid dark-grey line from the
-      adopted [global PTE threshold](#../decisions.pte_threshold)
-      up to the curve and across to its clean-sample failure rate,
-      tagged p_thr; and a crimson
-      drop line — the colour that means a B mode everywhere else —
-      from the data's own minimum up to the curve and across to the
-      empirical global p-value, tagged "data", the fraction of mocks at or below
-      the data's minimum, which is what a "does the suite reject the
-      null" statement is allowed to quote, the per-statistic nominal
-      PTEs being non-uniform on clean mocks. The curve and both
-      readings come from the calibration payload this same
-      invocation computes, so the figure cannot disagree with the
-      JSON beside it.
+      Cumulative distribution of the minimum PTE over the six statistics
+      at the fiducial cuts, across the 350 GLASS realizations. Gray
+      dashed lines mark the 5% quantile, which calibrates the adopted
+      threshold p_thr = 0.01 (solid gray lines; [global PTE
+      threshold](#../decisions.pte_threshold)), chosen to be
+      conservative across nearly all scale cuts. Red lines mark the
+      minimum PTE of the data, which 11% of realizations fall at or
+      below. The dotted curve shows the expectation for six independent
+      tests. The mocks generally follow this expectation because of two
+      effects that largely cancel: correlations between the statistics
+      raise the minimum PTE, while the slightly underestimated
+      configuration-space covariance lowers it.
     inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, mock_min_pte_calibration_script, plotting_utils_script, scale_cuts_script, paper_mplstyle]
     decisions: [reference_covariance, mock_suite, scale_cut_convention, pte_threshold]
     recipe:
@@ -981,8 +961,8 @@ outputs:
       third. Read alone, the first panel would invite both artifacts
       to be taken as sensitivity.
 
-      The 0.01 level — the threshold the referee response quotes a
-      region for — is drawn on the first panel as a labelled contour,
+      The 0.01 level — the threshold a region is quoted
+      for — is drawn on the first panel as a labelled contour,
       so the claim is checkable by eye rather than by interpolating a
       logarithmic colourbar; it closes around the short-θ_min corner
       and stays clear of the outlined region.
@@ -1024,7 +1004,7 @@ outputs:
       factor; the pure-mode blocks are sliced out of the stored
       120×120 matrix and carry Hartlap N = 2000, the
       [MC sample count](#decisions.mc_samples) they were
-      propagated with; C_ℓ^BB selects bandpowers with the paper's
+      propagated with; C_ℓ^BB selects bandpowers with the fiducial
       powspace edge logic and takes no Hartlap factor, its
       mock-matched reference being the directly computed
       [cl_cov_mockmatched](#inputs.cl_cov_mockmatched). Both the
@@ -1044,11 +1024,11 @@ outputs:
     type: figure
     format: pdf
     description: |
-      The comment-7 figure: empirical σ over analytic σ, per
+      Empirical σ over analytic σ, per
       COSEBI mode, per θ bin for ξ_±^B, and per ℓ band for
       C_ℓ^BB, with the fiducial cut shaded. Under
       `reference_covariance: mockmatched` this is the panel that
-      says the paper's covariance amplitude is right; under
+      says the analytic covariance amplitude is right; under
       `fiducial` it is the panel that shows what the galaxy-count
       mismatch costs — and which way it points, since the two
       suites sit on opposite sides of the data.
@@ -1065,7 +1045,7 @@ outputs:
     type: figure
     format: pdf
     description: |
-      The comment-13 figure: the across-realisation PTE
+      The across-realisation PTE
       distribution for each of the six statistics against the
       uniform expectation, with a QQ inset and the data's own PTE
       marked in red. Backed by the KS statistics in
@@ -1087,10 +1067,10 @@ outputs:
     type: figure
     format: pdf
     description: |
-      The comments 1/6/9 figure: the 6×6 empirical correlation
+      The 6×6 empirical correlation
       matrix of the test statistics across realisations, in both
       χ² and PTE space. This is the quantitative replacement for
-      the paper's qualitative "the tests are highly correlated" —
+      the qualitative "the tests are highly correlated" —
       and it does not say what that phrase implies; see
       [tests_are_not_redundant](#findings.tests_are_not_redundant).
     inputs: [mock_per_mock_statistics]
@@ -1133,7 +1113,7 @@ outputs:
     type: figure
     format: png
     description: |
-      The paper's mock-validation figure: two rows over the three
+      The mock-validation figure: two rows over the three
       B statistics on every reporting bin — COSEBI modes 1–20 on
       the full 1–250′ range, ξ±^B on all reporting bins, C_ℓ^BB on
       all 32 bands — with the scales outside the fiducial cuts
@@ -1199,9 +1179,9 @@ outputs:
       reporting bins inside the config-space cut, C_ℓ^BB on the
       seventeen bands fully inside the harmonic cut. Nothing is
       shaded because nothing lies outside the cuts. Kept as a
-      companion to [mock_validation_figure](#outputs.mock_validation_figure)
-      for the response letter: it is the zoom on the scales the
-      paper's PTEs actually use.
+      companion to [mock_validation_figure](#outputs.mock_validation_figure):
+      it is the zoom on the scales the
+      null-test PTEs actually use.
     inputs: [mock_per_mock_statistics, mock_campaign_evidence, mock_validation_figure_script, plotting_utils_script, paper_mplstyle]
     decisions: [reference_covariance, mock_suite]
     recipe:
@@ -1382,29 +1362,13 @@ outputs:
     type: figure
     format: png
     description: |
-      The campaign as one paper figure: two rows over the same
-      three columns — COSEBI modes, pure ξ_±^B on the reporting
-      grid, C_ℓ^BB. The top row is the across-realisation mean B
-      vector in units of the analytic (data) σ, with
-      σ_emp/(σ_ana√N) error bars; the bottom row is the
-      empirical-over-analytic σ ratio, with the
-      1/√(2(N−1)) sampling error of an N-realisation standard
-      deviation. Together they are the two things the mocks say
-      about the paper's covariance: that it is unbiased, and that
-      its amplitude is right. Adopted scale cuts are shaded. Both
-      rows are scatter with error bars rather than connected
-      lines — these are independent per-bin estimates, not a
-      series in a continuous variable — and the two pure-mode
-      series are dodged ±2.5% in θ so their markers do not
-      overlap.
-
-      Composed from the same stack as
-      [mock_mean_vector_figure](#outputs.mock_mean_vector_figure)
-      and
-      [mock_sigma_ratio_figure](#outputs.mock_sigma_ratio_figure),
-      which stay the working versions; this is their paper-format
-      twin — A&A double-column width, the paper matplotlib style,
-      no suptitle.
+      Validation of the B-mode estimators and covariances on 350 GLASS
+      mock realizations. Top: mean B-mode data vector across
+      realizations, in units of the analytic σ. Bottom: ratio of the
+      analytic σ used in the PTE calculations to the scatter across
+      realizations. Left: COSEBIs at the fiducial cuts (filled) and over
+      all scales (open); center: ξ_+^B (filled) and ξ_-^B (open); right:
+      C_ℓ^BB. Shaded regions mark scales outside the fiducial cuts.
     inputs: [mock_per_mock_statistics, mock_campaign_paper_figure_script, plotting_utils_script]
     decisions: [reference_covariance]
     recipe:
@@ -1433,7 +1397,7 @@ outputs:
       at ≈−0.1σ in the first three bins against a ≈0.055σ error —
       which the cut excludes, so ξ_+^B reads PTE 0.004 on the full
       range and 0.13 inside the cut. The full range is the
-      pipeline diagnostic; the window is what the paper's null
+      pipeline diagnostic; the window is what the null
       test rests on.
     inputs: [mock_per_mock_statistics, scale_cuts_script]
     decisions: [reference_covariance, scale_cut_convention]
@@ -1447,7 +1411,7 @@ outputs:
         --emit stats --out-file {output}
       resources: { cpus: 1, memory: "2GB" }
 
-  # ── The mask-geometry test (comment 4): the same split ───────────────────
+  # ── The mask-geometry test: the same split ───────────────────────────────
 
   - id: mask_geometry_statistics
     type: data
@@ -1476,7 +1440,7 @@ outputs:
     type: metric
     format: json
     description: |
-      The comment-4 answer, derived from
+      The mask-geometry verdict, derived from
       [mask_geometry_statistics](#outputs.mask_geometry_statistics).
       The same 50 realisations (the masked chain's subset of the
       suite) transformed
@@ -1487,7 +1451,7 @@ outputs:
       test between the two samples; the **paired** masked−fiducial
       difference, where cosmic variance cancels and which is the
       sharpest geometry test; and per-realisation χ² against the
-      paper's MC-propagated analytic covariance, on the full 20
+      fiducial MC-propagated analytic covariance, on the full 20
       bins and on the fiducial cut.
 
       The ambiguous-mode blocks act as the control: they *should*
@@ -1569,8 +1533,8 @@ outputs:
       edges fall entirely inside it), in two independent readings.
 
       The **machinery** ratio is the diagonal of
-      [cl_cov_mockmatched](#inputs.cl_cov_mockmatched) — the paper's
-      own NaMaster iNKA primitive pointed at a mock catalogue — over
+      [cl_cov_mockmatched](#inputs.cl_cov_mockmatched) — the fiducial
+      NaMaster iNKA primitive pointed at a mock catalogue — over
       the diagonal of the data's
       [cl_cov_reporting](#inputs.cl_cov_reporting). It is what the
       covariance chain predicts at the mocks' noise, with nothing
@@ -1651,7 +1615,7 @@ outputs:
       point is the bands below it.
 
       Diagnostic only: nothing upstream is changed on the strength
-      of it, and no covariance the paper uses is regenerated.
+      of it, and no fiducial covariance is regenerated.
     inputs: [glass_mock_catalogs, redshift_distribution, glass_mock_cl, cl_cov_mockmatched, clbb_cov_mixing_term_script]
     decisions: [mock_suite, fiducial_catalog, fiducial_blind]
     recipe:
@@ -1695,7 +1659,7 @@ outputs:
   # fixed_operator -> averaged).  That mapping is a table of DEFAULTS, not a
   # constraint, and taking it for one is what makes the submitted-vs-adopted
   # comparison confounded: under the defaults, "not pointwise" always also
-  # means "not dqags", so the paper's small-θ pure-B excess cannot be
+  # means "not dqags", so the submitted small-θ pure-B excess cannot be
   # attributed to the quadrature rather than to the geometry.  The two cross
   # terms below break that confounding.  AveragedPureEBTransform is
   # method-agnostic by construction — it picks the evaluation nodes, the
@@ -1793,7 +1757,7 @@ outputs:
   #
   # The scan's covariances are built from 500 draws, not the fiducial 2000.
   # mc_samples is therefore NOT a decision on these outputs: that decision
-  # names the paper covariance's sample count, which this stage does not
+  # names the fiducial covariance's sample count, which this stage does not
   # touch.  The Hartlap correction downstream reads the draw count out of each
   # bundle's provenance, so it can never drift from what was actually run.
   #
@@ -1834,7 +1798,7 @@ outputs:
       against each other rather than reporting an absolute error bar,
       and 500 draws give ≈0.4% per-element noise against the 10–30%
       differences being resolved. At 2000 this variant alone would run
-      four times as long. The paper's fiducial 2000-draw covariance is a
+      four times as long. The fiducial 2000-draw covariance is a
       separate artifact and is untouched. The Hartlap correction
       downstream is read from this bundle's provenance, so it tracks the
       draw count rather than the pipeline's 2000.
@@ -1981,7 +1945,7 @@ outputs:
       against each other rather than reporting an absolute error bar,
       and 500 draws give ≈0.4% per-element noise against the 10–30%
       differences being resolved. At 2000 this variant alone would run
-      four times as long. The paper's fiducial 2000-draw covariance is a
+      four times as long. The fiducial 2000-draw covariance is a
       separate artifact and is untouched. The Hartlap correction
       downstream is read from this bundle's provenance, so it tracks the
       draw count rather than the pipeline's 2000.
@@ -2038,7 +2002,7 @@ outputs:
       against each other rather than reporting an absolute error bar,
       and 500 draws give ≈0.4% per-element noise against the 10–30%
       differences being resolved. At 2000 this variant alone would run
-      four times as long. The paper's fiducial 2000-draw covariance is a
+      four times as long. The fiducial 2000-draw covariance is a
       separate artifact and is untouched. The Hartlap correction
       downstream is read from this bundle's provenance, so it tracks the
       draw count rather than the pipeline's 2000.
@@ -2095,7 +2059,7 @@ outputs:
       against each other rather than reporting an absolute error bar,
       and 500 draws give ≈0.4% per-element noise against the 10–30%
       differences being resolved. At 2000 this variant alone would run
-      four times as long. The paper's fiducial 2000-draw covariance is a
+      four times as long. The fiducial 2000-draw covariance is a
       separate artifact and is untouched. The Hartlap correction
       downstream is read from this bundle's provenance, so it tracks the
       draw count rather than the pipeline's 2000.
@@ -2152,7 +2116,7 @@ outputs:
       against each other rather than reporting an absolute error bar,
       and 500 draws give ≈0.4% per-element noise against the 10–30%
       differences being resolved. At 2000 this variant alone would run
-      four times as long. The paper's fiducial 2000-draw covariance is a
+      four times as long. The fiducial 2000-draw covariance is a
       separate artifact and is untouched. The Hartlap correction
       downstream is read from this bundle's provenance, so it tracks the
       draw count rather than the pipeline's 2000.
@@ -2230,7 +2194,7 @@ outputs:
       - **The data** — the real catalogue's PTE for the same three
         statistics at the adopted 12'–83' window, computed through that
         variant's own covariance by the same `calculate_pure_eb_ptes`
-        call the paper's single-variant output makes.
+        call the single-variant fiducial output makes.
 
       Reuses
       [mock_campaign_analysis](#outputs.mock_per_mock_statistics)'s
@@ -2265,20 +2229,20 @@ outputs:
     type: figure
     format: png
     description: |
-      The scan as one paper figure: two rows over one column per
+      The scan as one figure: two rows over one column per
       variant. The top row is the across-realisation mean ξ_±^B in units
       of the analytic (data) σ with σ_emp/(σ_ana√N) error bars — the
       variant's rectification bias, on mocks that contain no B mode; the
       bottom row is σ_emp/σ_ana with the 1/√(2(N−1)) sampling error —
       whether its propagated covariance has the right amplitude. Each
       column is annotated with the DATA's PTE under that variant, so the
-      mock verdict and the number the paper would report sit on the same
+      mock verdict and the number that variant would report sit on the same
       axes. Adopted scale cuts shaded, adopted and submitted columns
       marked.
 
-      The paper-format twin of
+      The companion of
       [mock_campaign_figure](#outputs.mock_campaign_figure), sharing its
-      style and row structure: A&A double-column width, the paper
+      style and row structure: A&A double-column width, the publication
       matplotlib style, no suptitle. A function of
       [pure_eb_scan_statistics](#outputs.pure_eb_scan_statistics) alone,
       so re-cutting it never re-runs a transform.
@@ -2309,7 +2273,7 @@ outputs:
       categorical order with a dash pattern apiece — adopted heavy and
       solid, submitted dashed — over the adopted variant's analytic θσ in
       thin grey, so every variant's spread is read against the one error
-      bar the paper quotes. The [12, 83]′ window is shaded. Units are
+      bar the null test uses. The [12, 83]′ window is shaded. Units are
       arcmin, quoted in 1e-6. A function of the mock ensemble and one
       covariance bundle alone.
     inputs: [mock_pure_eb_modes_scan, pure_eb_scan_covariance_averaged_uniform_fixedop, pure_eb_scan_scatter_figure_script, pure_eb_scan_variants_script, mock_campaign_analysis_script, plotting_utils_script]
@@ -2355,13 +2319,13 @@ decisions:
     tags: [glass, covariance]
     rationale: |
       This is the decision the whole campaign turns on, and it is
-      easy to get wrong in a way that inverts the answer to
-      referee comment 7.
+      easy to get wrong in a way that inverts the verdict on
+      the covariance amplitude.
 
       What the campaign tests is the *machinery*: the mock
       realisations' empirical scatter is held against an analytic
       covariance computed for the mocks' own noise by the same
-      code that produces the paper's covariance. Agreement means
+      code that produces the fiducial covariance. Agreement means
       that machinery gets the amplitude right on a catalogue
       whose true scatter is known by construction. It is not a
       comparison of the mock covariance against the data
@@ -2370,8 +2334,8 @@ decisions:
       differ by design.
 
       "Mock-matched" resolves to just **two** independent
-      rebuilds, not one per statistic, and each is the paper's
-      own primitive pointed at the mocks:
+      rebuilds, not one per statistic, and each is the fiducial
+      primitive pointed at the mocks:
 
       | statistic | mock-matched reference | traces to |
       |---|---|---|
@@ -2444,7 +2408,7 @@ decisions:
       the footprint mask, or 5.20 on the occupied-pixel mask.
 
       `mockmatched` is therefore the default and the selection
-      the response letter should quote. `fiducial` is retained
+      to quote. `fiducial` is retained
       as the diagnostic that *demonstrates* the count mismatch is
       the whole effect rather than a covariance error — it is the
       only place mock scatter meets the data covariance, and the
@@ -2453,7 +2417,7 @@ decisions:
     default: mockmatched
     options:
       mockmatched:
-        label: "The paper's covariance machinery rerun at the mocks' own noise"
+        label: "The fiducial covariance machinery rerun at the mocks' own noise"
         description: |
           The two rebuilds of the table above:
           `--cosebis-cov-mockmatched` takes the
@@ -2466,7 +2430,7 @@ decisions:
           with its C_ℓ column in
           `campaign_350_avg_wide_clbbcov/`.
       fiducial:
-        label: "The paper's own covariance, unmodified"
+        label: "The fiducial covariance, unmodified"
         description: |
           `--cosebis-cov` and `--pure-cov` take the fiducial
           v1.4.6.3 leak-corrected covariances at blind A, C_ℓ^BB
@@ -2483,9 +2447,8 @@ decisions:
       delivered, and only the later one is admissible.
 
       The 2026-03 **v1.4.6.3_v2** suite is generated against the
-      paper's fiducial catalog and is the suite everything here
-      is computed on. It backs every product the response letter
-      quotes: the direct mock-matched C_ℓ^BB covariance and the
+      fiducial catalog and is the suite everything here
+      is computed on. It backs every quoted product: the direct mock-matched C_ℓ^BB covariance and the
       C_ℓ channel rebuilt on it, the suite-level min-PTE
       calibration, and the corrected transform-averaged
       wide-operator campaign.
@@ -2503,6 +2466,7 @@ decisions:
     options:
       v1_4_6_3_v2:
         label: "v1.4.6.3_v2 suite (2026-03, fiducial catalog)"
+        insights: [tessore23_glass_lognormal_mocks]
         description: |
           `/n09data/guerrini/glass_mock_v1.4.6.3_v2/results`, 350
           realisations of 60 423 575 unit-weight galaxies on the
@@ -2516,7 +2480,7 @@ decisions:
           declared against it, scoped to 50 realisations, and not
           yet run.
       v1_4_6:
-        label: "v1.4.6 suite (paper Sect. 3.7, stale density)"
+        label: "v1.4.6 suite (submitted, stale density)"
         excluded: true
         excluded_reason: |
           Stale-density suite. `/n09data/guerrini/glass_mock_v1.4.6/results`
@@ -2527,8 +2491,8 @@ decisions:
           applied to that smaller sky. The "n_eff = 3.3697
           arcmin⁻²" figure in older notes is that count divided
           by the 2894 deg² convention, and describes neither the
-          suite's own density nor the data's. This is the suite Paper II Sect. 3.7
-          describes and the one the original 2026-08 campaign and
+          suite's own density nor the data's. This is the suite the submitted
+          mock description rests on and the one the original 2026-08 campaign and
           the unvetted masked-footprint run were computed on;
           both are superseded by the v2 suite, which sits far
           closer to the catalog's own count. Retained as a named
@@ -2579,6 +2543,36 @@ prior_insights:
         location: { page: 14 }
 
 
+  tessore23_glass_lognormal_mocks:
+    id: tessore23_glass_lognormal_mocks
+    claim: |
+      GLASS builds a light cone of matter and weak-lensing fields as
+      nested shells, transforming Gaussian random fields (including
+      lognormal) to essentially arbitrary precision, and reproduces
+      the two-point statistics of clustering and weak lensing at the
+      per-cent level. Its realisations are therefore an adequate
+      systematics-free reference for B-mode estimator and covariance
+      validation, but carry only lognormal non-Gaussianity.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.48550/arXiv.2302.01942"
+        quote:
+          exact: "also introduces a new technique to generate transformations of Gaussian random fields (including lognormal) to essentially arbitrary precision"
+        location:
+          page: 1
+      - id: ev2
+        doi: "10.48550/arXiv.2302.01942"
+        quote:
+          exact: "readily produces simulated data sets with per cent-level accurate two-point statistics of galaxy clustering and weak lensing"
+        location:
+          page: 1
+    scope: |
+      Tessore et al. 2023, OJAp 6, 11 — abstract. Source: arxiv
+      2302.01942 main.tex lines 72–78. Paper TeX line 225. The
+      UNIONS suite itself is Paper III's.
+
+
 findings:
 
   mock_xi_matches_input_theory_above_band_limit:
@@ -2614,7 +2608,7 @@ findings:
       the mocks.
 
       The affected scales lie wholly outside the fiducial cut, so
-      nothing the paper claims rests on them — but any future use
+      no null-test claim rests on them — but any future use
       of this suite below ≈6′, in ξ_- especially, is measuring the
       simulation's band limit.
 
@@ -2642,7 +2636,7 @@ findings:
       the suite's raw ξ_± scatter sits on unity inside the
       12′–83′ window: σ_emp/σ_ana = 0.94–1.03 for ξ_+ and
       0.99–1.12 for ξ_-. The analytic covariance machinery
-      reproduces the mocks' ξ_± scatter where the paper uses it.
+      reproduces the mocks' ξ_± scatter where the null tests use it.
       (Against the *data* covariance the same ratios read
       0.87–0.98 and 0.87–0.97 — the suite's 17% galaxy excess,
       [mocks_are_over_constraining](#findings.mocks_are_over_constraining),
@@ -2749,7 +2743,7 @@ findings:
       the campaign: mock scatter may be compared only against a
       covariance built at the mocks' own noise, which is what
       [reference_covariance](#decisions.reference_covariance) =
-      `mockmatched` does. Held against the paper's own covariance the
+      `mockmatched` does. Held against the fiducial data covariance the
       same realisations would appear to validate an error bar roughly
       15% too large, and the campaign would be measuring the count
       mismatch rather than the covariance.
@@ -2887,13 +2881,13 @@ findings:
     claim: |
       Against the mock-matched reference covariance, the
       empirical scatter of the 350 GLASS v1.4.6.3_v2 realisations
-      agrees with the analytic σ used in the paper's PTEs to
+      agrees with the analytic σ used in the null-test PTEs to
       within roughly 10% for every statistic: median σ_emp/σ_ana
       is 1.05 across the 20 COSEBI modes (range 0.99–1.16), 1.08
       for both ξ_+^B and ξ_-^B over the seven fiducial-cut θ bins
       (ranges 0.96–1.14 and 0.94–1.14), and 0.99 across the 17
       fiducial-cut C_ℓ^BB bands (range 0.93–1.09). This is the
-      quantitative replacement for Sect. 3.7's unsupported
+      quantitative replacement for the unsupported
       "comparable to the fiducial error bars".
     notes: |
       From
@@ -2907,7 +2901,7 @@ findings:
 
       What this validates is the covariance *machinery*: the
       mocks' scatter is known by construction, and the same
-      CosmoCov / MC / NaMaster chain that builds the paper's
+      CosmoCov / MC / NaMaster chain that builds the fiducial
       covariance, pointed at the mocks' noise, reproduces it to
       ~10%. It is not a statement that the mock and data
       covariances agree — they should not, since the two
@@ -2927,7 +2921,7 @@ findings:
     id: chi2_machinery_conservative
     label: "χ² PTEs are calibrated, and err conservatively"
     claim: |
-      Held against a covariance built by the paper's own
+      Held against a covariance built by the fiducial
       machinery at the mocks' noise, the per-realisation χ²
       sampling distribution tracks the assumed χ²_ν closely and,
       where it departs, departs in the safe direction. Across the
@@ -2972,7 +2966,7 @@ findings:
     label: "The six null tests are only weakly correlated"
     claim: |
       Empirically the six B-mode test statistics are far less
-      redundant than the paper's qualitative "the tests are
+      redundant than the qualitative "the tests are
       highly correlated" suggests. Across the 350 v1.4.6.3_v2
       realisations the χ² Pearson correlations between statistics
       from different estimator families sit between 0.23 and 0.46
@@ -2989,7 +2983,7 @@ findings:
       v1.4.6 suite gives systematically lower cross-family
       numbers (0.34, 0.26, 0.22 for the three C_ℓ^BB pairs), so
       the conclusion is not suite-dependent in direction. This
-      strengthens rather than weakens the paper's multi-statistic
+      strengthens rather than weakens the multi-statistic
       argument — near-independent tests make simultaneous passage
       a stronger statement, and it also means the look-elsewhere
       penalty for running six of them is real rather than

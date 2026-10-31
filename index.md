@@ -13,7 +13,7 @@ At Stage-III sensitivities, cosmic shear $B$ modes unambiguously indicate system
 The ASTRA spec (`astra.yaml`) describes the analysis inputs, outputs and decisions.
 The `baseline` universe is the accepted A&A version; `submitted` is arXiv v2.
 
-The referee round added a mock-calibrated pass threshold, a GLASS mock campaign that validates the covariance, and an integration-grid convergence check. Their conclusions are findings of those sub-analyses:
+Over the submitted version, the accepted analysis adds a mock-calibrated pass threshold, a GLASS mock campaign that validates the covariance, and an integration-grid convergence check. Their conclusions are findings of those sub-analyses:
 
 - {astra}`analyses.glass_mocks.findings.mock_xi_matches_input_theory_above_band_limit`
 - {astra}`analyses.glass_mocks.findings.mock_xi_scatter_falls_below_analytic_at_large_theta`

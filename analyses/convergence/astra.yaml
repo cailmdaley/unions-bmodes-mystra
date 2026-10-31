@@ -127,7 +127,7 @@ outputs:
     type: figure
     format: png
     description: |
-      Diagnostic (not in the paper): the 10,000-bin minus 1,000-bin
+      Diagnostic: the 10,000-bin minus 1,000-bin
       difference in units of σ, per reporting bin for ξ_+^B, ξ_-^B,
       ξ_+^amb and ξ_-^amb, and per mode for the fiducial-cut B_n,
       with the fiducial 12'–83' window shaded and a ±0.1 σ band for
@@ -151,7 +151,7 @@ outputs:
     type: figure
     format: png
     description: |
-      Diagnostic (not in the paper): the COSEBI B_n / σ_n data
+      Diagnostic: the COSEBI B_n / σ_n data
       vector itself — not the difference — for all four corners of
       integration grid × COSEBI interval, at the fiducial 12'–83'
       cut and over the full range.
@@ -215,7 +215,7 @@ decisions:
     label: "Number of COSEBI modes compared across grids"
     tags: [cosebis, convergence]
     rationale: |
-      The convergence test reports every mode the paper reports, so
+      The convergence test reports every mode the COSEBI analysis reports, so
       it takes the same `n_max` as the
       [COSEBI sub-analysis](#../analyses.cosebis) — declared here
       rather than inherited because sibling sub-analyses cannot
@@ -225,7 +225,7 @@ decisions:
     default: n_max_20
     options:
       n_max_20:
-        label: "n = 1 … 20 (paper fiducial)"
+        label: "n = 1 … 20 (fiducial)"
 
 findings:
 

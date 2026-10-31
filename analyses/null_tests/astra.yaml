@@ -4,12 +4,12 @@ name: "B-mode null tests, PTE matrices, and blind-independence checks"
 inputs:
   - id: submitted_paper_claims
     type: data
-    description: Paper claims from the submitted universe, materialized as a cross-universe reference.
+    description: Claims-macro table from the submitted universe, materialized as a cross-universe reference.
     source: "./results/submitted/null_tests/paper_claims.csv"
 
   - id: paper_claims_script
     type: data
-    description: Script converting paper macros to a table and comparing universes.
+    description: Script converting the claims macros to a table and comparing universes.
     source: "./src/papers/bmodes/scripts/paper_claims.py"
 
   - id: pure_eb_pte_per_cut
@@ -109,7 +109,7 @@ outputs:
     type: table
     format: csv
     description: |
-      One row per paper macro, with its name, display text and numeric value
+      One row per claims macro, with its name, display text and numeric value
       where applicable, derived from [pte_summary_macros](#outputs.pte_summary_macros).
     inputs: [pte_summary_macros, paper_claims_script]
     recipe:
@@ -121,7 +121,7 @@ outputs:
     type: table
     format: csv
     description: |
-      Paper macro values in this universe and the submitted universe, with
+      Claims-macro values in this universe and the submitted universe, with
       changes marked by comparing their display text.
     inputs: [paper_claims, submitted_paper_claims, paper_claims_script]
     recipe:
@@ -139,7 +139,7 @@ outputs:
       for all catalog variants, together with the values at the
       [adopted 12'–83' cut](#../decisions.fiducial_scale_cuts).
       This is the queryable payload behind the config-space
-      panels of the appendix PTE table and behind
+      panels of the per-version PTE table and behind
       [the config-space heatmap figure](#outputs.config_space_pte_evidence).
     decisions: [scale_cut_convention]
     inputs:
@@ -174,7 +174,7 @@ outputs:
     type: figure
     format: png
     description: |
-      Configuration-space PTE composite figure (paper Figure 6):
+      Configuration-space PTE composite figure:
       the fiducial-version tile of ξ_+^B / ξ_-^B / COSEBI B_n
       PTE matrices over (θ_min, θ_max) bandpower pairs of
       `geomspace(1', 250', 21)`, with the
@@ -184,7 +184,7 @@ outputs:
       [global PTE threshold](#../decisions.pte_threshold)); white/red =
       consistent. Rendered from
       [config_space_pte_data](#outputs.config_space_pte_data);
-      the per-version appendix composite is the separate
+      the per-version composite is the separate
       root-level `fig_pte_heatmaps` output.
     decisions: [scale_cut_convention, pte_threshold]
     inputs:
@@ -213,7 +213,7 @@ outputs:
       value at the
       [adopted 300 < ℓ < 1600 cut](#../decisions.fiducial_scale_cuts).
       Queryable payload behind the harmonic column of the
-      appendix PTE table and behind
+      per-version PTE table and behind
       [the Cℓ^BB heatmap figure](#outputs.harmonic_space_pte_evidence).
     inputs:
       - cl_sweep
@@ -247,7 +247,7 @@ outputs:
       [global PTE threshold](#../decisions.pte_threshold)); white/red =
       consistent. Rendered from
       [harmonic_space_pte_data](#outputs.harmonic_space_pte_data);
-      the per-version appendix composite is the separate
+      the per-version composite is the separate
       root-level `fig_cl_pte_heatmap` output.
     decisions: [pte_threshold]
     inputs:
@@ -266,7 +266,7 @@ outputs:
     type: metric
     format: json
     description: |
-      Aggregated JSON evidence holding the six paper PTE values
+      Aggregated JSON evidence holding the six headline PTE values
       (ξ_+^B, ξ_-^B, ξ_tot^B, COSEBI B_n n ≤ 6, COSEBI B_n
       n ≤ 20, Cℓ^BB) at the
       [adopted 12'–83' / 300 < ℓ < 1600
@@ -291,10 +291,10 @@ outputs:
     type: data
     format: tex
     description: |
-      LaTeX macro file (`claims_macros.tex` in the paper build)
+      LaTeX macro file (`claims_macros.tex`)
       carrying the quantitative claims — the six headline PTEs
       and the version-comparison numbers — as `\newcommand`
-      definitions the manuscript `\input`s. The pure-mode scale-cut macros
+      definitions. The pure-mode scale-cut macros
       are resolved from the [scale-cut convention](#../decisions.scale_cut_convention)
       and rounded to integer arcmin. The four harmonic/configuration COSEBI
       cross-check macros (`\harmCosebisPteSixThreeFid`,
@@ -386,9 +386,9 @@ outputs:
       The [catalog version](#decisions.bb_blind_check_version)
       selects the files used for the check; blind independence is a geometric
       property independent of catalog selection. Underwrites the
-      paper's [blind-A fiducial
+      [blind-A fiducial
       choice](#../decisions.fiducial_blind) without entering
-      the main-text figures.
+      the headline figures.
     decisions: [bb_blind_check_version]
     inputs:
       - blind_check_pure_eb
@@ -465,8 +465,8 @@ decisions:
       pure-mode grid (the pure-mode grid has no
       polynomial-root instability), so missing COSEBI cells
       appear as NaN tiles in the composite; this is the
-      intended behaviour and the paper figure caption notes
-      the exclusions. The
+      intended behaviour, and the exclusions are noted
+      with the figure. The
       harmonic-space composite uses an independent
       (ℓ_min, ℓ_max) bandpower-pair grid over 8 ≤ ℓ ≤ 2048;
       no cross-grid alignment is enforced because the
@@ -475,7 +475,7 @@ decisions:
     default: aligned_with_cosebis_subset
     options:
       aligned_with_cosebis_subset:
-        label: "Aligned θ-grids with COSEBI subset (paper fiducial)"
+        label: "Aligned θ-grids with COSEBI subset (fiducial)"
       independent_grids:
         label: "Independent grids per statistic"
         description: |
