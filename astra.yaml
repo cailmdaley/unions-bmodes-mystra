@@ -818,8 +818,9 @@ decisions:
       cosmological inference. As a look-elsewhere check
       (paper §4.1 footnote), penalising the χ² degrees of
       freedom for the two scale-cut boundaries selected on the
-      PTE grid lowers the minimum across all three statistics
-      from 0.18 to 0.09, still above the 0.05 threshold. The
+      PTE grid lowers the minimum (ξ_-^B) from 0.019 to 0.005,
+      just below the 0.006 threshold calibrated at these cuts
+      ([finding](#findings.scale_cut_dof_penalty_harmless)). The
       paper treats B-modes as a diagnostic rather than a bias to
       subtract, because the relation between E- and B-mode
       contamination depends on the physical mechanism.
@@ -1398,38 +1399,40 @@ findings:
 
   scale_cut_dof_penalty_harmless:
     id: scale_cut_dof_penalty_harmless
-    label: "Charging two dof for the scale-cut boundaries changes no verdict"
+    label: "Charging two dof for the scale-cut boundaries flips only the fiducial ξ_-^B verdict"
     claim: |
-      Treating the two fiducial scale-cut boundaries as fitted
-      parameters (ν → ν−2 in the χ² survival function) changes no
-      pass/fail verdict at the nominal 0.05 level for any entry of
-      the paper's PTE table — all four leak-corrected catalog
-      versions, all six statistics, at both the fiducial and the
-      full-range cuts (48 cells, zero verdict changes). Among
-      fiducial-cut entries the largest PTE decrease is 0.266
-      (COSEBI n≤6, masked catalog, 0.604 → 0.338) and the smallest
-      surviving passing PTE is 0.190 (Cℓ^BB, size-cut catalog,
-      0.299 → 0.190), still nearly four times the threshold.
+      Treating the two scale-cut boundaries as fitted parameters
+      (ν → ν−2 in the χ² survival function) for every entry of the
+      paper's PTE table — four leak-corrected catalog versions, six
+      statistics, fiducial and full-range cuts, 48 cells — changes
+      exactly one verdict at the fiducial cuts against the paper's
+      threshold p_thr = 0.01: the size-cut catalog's ξ_-^B, the
+      statistic that sets its minimum PTE, falls from 0.019 to
+      0.005, just below the 0.006 threshold calibrated at these
+      cuts. Every other fiducial-cut statistic for the size-cut
+      catalog still passes (smallest: ξ_tot^B, 0.039 → 0.017), and
+      no failing entry of any catalog crosses into passing. This is
+      the paper's most pessimistic treatment, which it reports in a
+      footnote rather than adopting.
     notes: |
-      Answers referee comment 1. Generalizes the paper's existing
-      footnote, which applied the penalty only to the combined
-      ξ_tot^B statistic for the fiducial catalog (0.0405 → 0.0177,
-      `pte_combined_dof_penalized`); that cell is reproduced
-      exactly by the wider table. Entries already failing at 0.05
-      (ξ_-^B and ξ_tot^B for every version; Cℓ^BB for the initial
-      and relaxed-flags catalogs) only fail more strongly — nothing
-      crosses the threshold in either direction. Exact: ν is fixed
-      by the cut for every statistic, so χ²_obs is recovered by
-      inverting the stored PTE; no statistic is recomputed.
+      Answers referee comment 1; the accepted paper's footnote
+      quotes the same pair (fiducialMinPte = 0.019,
+      fiducialMinPteNuPenalty = 0.005, mockMinPteFloor = 0.006). At
+      the full-range cuts the size-cut ξ_tot^B also moves from
+      0.0101 to 0.0056, against a calibrated full-range floor of
+      0.002. At a nominal 0.05 threshold no cell changes verdict,
+      because every entry that moves is already below 0.05. Exact:
+      ν is fixed by the cut for every statistic, so χ²_obs is
+      recovered by inverting the stored PTE; no statistic is
+      recomputed.
     created_at: "2026-09-12T00:00:00Z"
     evidence:
       - id: ev1
         artifact: nu_penalty_verdicts
         quote:
           exact: |
-            48 rows of (version, statistic, cut) with nu,
-            nu_penalized, chi2, pte, pte_penalized and
-            verdict_change; verdict_change is 0 in every row.
+            Size_cuts, SP_v1.4.6.3_leak_corr, fiducial, xim_B:
+            nu 7 → 5, pte 0.0193098 → pte_penalized 0.00506742.
     scope: "Adopted (fixed-operator, bin-averaged) pure-mode estimator; four ShapePipe v1.4 leak-corrected variants; fiducial (12'–83', 300 < ℓ < 1600) and full-range cuts."
 
   size_cut_unique_pass:
@@ -1438,19 +1441,21 @@ findings:
     claim: |
       Of the four ShapePipe v1.4 catalog variants, only the
       size-cut (SP_v1.4.6.3_leak_corr) variant passes all three
-      E/B-separable null tests at the adopted scale cuts; the
-      minimum PTE across pure-mode ξ_±^B, COSEBI B_n n≤6, and
-      Cℓ^BB is 0.18 (combined ξ_tot^B at 12'–83', size-cut
-      catalog). Each other variant fails at least one statistic
-      at fiducial cuts.
+      E/B-separable null tests at the adopted scale cuts against
+      the mock-calibrated threshold p_thr = 0.01. Its minimum PTE
+      across pure-mode ξ_±^B, COSEBI B_n, and Cℓ^BB is 0.019
+      (ξ_-^B at 12'–83'); 11% of the systematics-free GLASS
+      realisations have a lower minimum PTE. Each other variant
+      fails ξ_-^B at fiducial cuts.
     notes: |
-      Per `paper/claims_macros.tex`: configPteSixThreeXip=0.31,
-      configPteSixThreeXim=0.26, configPteSixThreeCombined=0.18,
-      cfgCosebisPteSixThreeFid=0.78, clPteSixThreeFid=0.30 for
-      the size-cut catalog. The initial catalog fails ξ_-^B
-      (0.005) and Cℓ^BB (0.003); the masked catalog fails all
-      three pure-mode tests; the relaxed-flags catalog fails
-      ξ_-^B (9.4×10⁻⁴).
+      Size-cut catalog at fiducial cuts: ξ_+^B 0.82, ξ_-^B 0.019,
+      ξ_tot^B 0.039, COSEBI n≤6 0.78, n≤20 0.94, Cℓ^BB 0.30
+      (`pte_table_appendix`; macros fiducialMinPte, mockPGlobal,
+      mockMinPteThreshold). The initial catalog fails ξ_-^B
+      (0.001), ξ_tot^B (0.001) and Cℓ^BB (0.003); the masked
+      catalog fails ξ_-^B (0.004); the relaxed-flags catalog
+      fails ξ_-^B (7.5×10⁻⁵), ξ_tot^B (6.7×10⁻⁵) and Cℓ^BB
+      (5.8×10⁻¹⁰).
     created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
@@ -1458,7 +1463,7 @@ findings:
         quote:
           exact: |
             All-version PTE grid (paper appendix table): only
-            the size-cut row has all six statistics ≥ 0.05 at
+            the size-cut row has all six statistics ≥ 0.01 at
             fiducial cuts.
     scope: "Adopted scale cuts (12'–83' config, 300 < ℓ < 1600 harmonic), four ShapePipe v1.4 variants."
 
@@ -1467,10 +1472,10 @@ findings:
     label: "Multi-statistic concurrence as the systematics test"
     claim: |
       No single E/B-separable estimator suffices to rule out
-      catalog systematics: the masked variant passes harmonic
-      Cℓ^BB and COSEBI n≤6 but fails all three pure-mode
-      pure-E/B tests; the relaxed-flags variant passes
-      pure-mode ξ_+^B but fails ξ_-^B and Cℓ^BB. The
+      catalog systematics: the masked variant passes ξ_+^B,
+      ξ_tot^B, harmonic Cℓ^BB and COSEBI n≤6 but fails ξ_-^B;
+      the relaxed-flags variant passes ξ_+^B and COSEBIs but
+      fails ξ_-^B and Cℓ^BB. The
       operational test of catalog quality is consistent passage
       across all three statistics simultaneously.
     notes: |
@@ -1485,10 +1490,10 @@ findings:
         artifact: pte_table_appendix
         quote:
           exact: |
-            Masked row: ξ_+^B=0.020, ξ_-^B=0.047, ξ_tot^B=0.014
-            (pure-mode failures), but Cℓ^BB=0.43 and COSEBI
-            n≤6=0.60 (passes). Relaxed-flags row: ξ_+^B=0.78
-            (pass), ξ_-^B=9.40×10⁻⁴ and Cℓ^BB=5.74×10⁻¹⁰
+            Masked row: ξ_+^B=0.86, ξ_tot^B=0.040, Cℓ^BB=0.44,
+            COSEBI n≤6=0.60 (passes) but ξ_-^B=0.004 (failure).
+            Relaxed-flags row: ξ_+^B=0.42 and COSEBI n≤6=0.82
+            (passes), ξ_-^B=7.48×10⁻⁵ and Cℓ^BB=5.85×10⁻¹⁰
             (failures at fiducial cuts).
     scope: "All four ShapePipe v1.4 variants, fiducial and full-range cuts."
 
@@ -1502,7 +1507,7 @@ findings:
       cuts both paths return B-modes consistent with zero
       (PTE = 0.78 configuration, 0.60 harmonic for n ≤ 6); at
       full angular range both detect the same oscillatory
-      structure (PTE = 1.37×10⁻⁵ configuration, 1.61×10⁻⁵
+      structure (PTE = 1.37×10⁻⁵ configuration, 1.62×10⁻⁵
       harmonic). The same Cℓ^BB power spectrum that passes its
       own pseudo-Cℓ null test fails when re-projected through
       the COSEBI filters W_n(ℓ), demonstrating empirically that
@@ -1512,7 +1517,7 @@ findings:
     notes: |
       cfgCosebisPteSixThreeFid=0.78, harmCosebisPteSixThreeFid=0.60,
       cfgCosebisPteSixThreeFull=1.37e-05,
-      harmCosebisPteSixThreeFull=1.61e-05 in
+      harmCosebisPteSixThreeFull=1.62e-05 in
       `paper/claims_macros.tex`. The empirical demonstration is
       paper Figure 8 and the §5 paragraph beginning "We show
       directly that Cℓ^BB and COSEBIs have different sensitivity
