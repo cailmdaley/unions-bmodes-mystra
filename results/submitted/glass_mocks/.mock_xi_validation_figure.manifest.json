@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.mock_xi_validation_figure",
+  "universe_id": "submitted",
+  "recipe": "python src/workflow/scripts/mock_xi_validation.py --reporting-ensemble results/submitted/glass_mocks/mock_xi_reporting.npz --theory results/submitted/glass_mocks/mock_xi_input_theory.npz --covariance results/submitted/glass_mocks/mock_xi_reporting_cov_mockmatched.npz --emit figure --out-file results/submitted/glass_mocks/mock_xi_validation_figure.png\n",
+  "definition_version": "sha256:73b58a6a1e090df4dc4a16c13f11f4e0c58ed690ecb007c957e64ada6e513168",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:3455e92e03ad762c48ec009218d75f8df6ff57c10b6b030ea61ca5a5eda54313",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2",
+    "reference_covariance": "mockmatched"
+  },
+  "input_versions": {
+    "mock_xi_reporting": "sha256:347e06f70a8d3dc4c65027f41a1fe5f2dbc0fb2b148148d36208824350a4cf1f",
+    "mock_xi_input_theory": "sha256:85609b50c9e0e210f3f5debf1b545d6c3788cd4a0be4e632e7ec46a8fbc87401",
+    "mock_xi_reporting_cov_mockmatched": "sha256:c0e16cbd8040127e0fb814dc43cc8b163426eae6c512961cba3357f096b9ac00",
+    "mock_xi_validation_script": "sha256:1d0902b3bb4a3e8297a112399db9a7481e7c2f204adeb0d3d7d750cfa58c9bb7",
+    "plotting_utils_script": "sha256:e53c7b42f75838d1d6b63327bd72e7c2a3f3d5b22b4e00e67df32a409552a0da"
+  },
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T05:46:20.298+00:00",
+  "finished_at": "2026-11-01T05:46:29.749+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

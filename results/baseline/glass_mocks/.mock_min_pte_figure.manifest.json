@@ -2,10 +2,10 @@
   "schema_version": 1,
   "output_id": "glass_mocks.mock_min_pte_figure",
   "universe_id": "baseline",
-  "recipe": "python src/workflow/scripts/mock_min_pte_calibration.py --per-mock-statistics results/baseline/glass_mocks/mock_per_mock_statistics.npz --pure-eb-pte results/baseline/pure_eb/pure_eb_pte_per_cut.npz --cosebis-pte results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_matrix.npz --cl-pte results/baseline/cl_bb/cl_pte_per_cut.npz --config src/papers/bmodes/config/config.yaml --scale-cut-convention grid_bin_edges --pte-threshold calibrated_0p01 --emit figure --out-file results/baseline/glass_mocks/mock_min_pte_figure.pdf\n",
-  "definition_version": "sha256:f5d62f7dc40f3fcffe94bd2f16fd05988d46511a252b4aec2c7c36d02e3f40ba",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
-  "data_version": "sha256:47967cb80d2b2db8b9e6139a76a4fabf0cdf8cf4fd7987cbc5d16d35fb14f13b",
+  "recipe": "python src/workflow/scripts/mock_min_pte_calibration.py --per-mock-statistics results/baseline/glass_mocks/mock_per_mock_statistics.npz --pure-eb-pte results/baseline/pure_eb/pure_eb_pte_per_cut.npz --cosebis-pte results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_matrix.npz --cl-pte results/baseline/cl_bb/cl_pte_per_cut.npz --config src/papers/bmodes/config/config.yaml --scale-cut-convention grid_bin_edges --pte-threshold calibrated_0p01 --emit figure --out-file results/baseline/glass_mocks/mock_min_pte_figure.png\n",
+  "definition_version": "sha256:427783d721d091335f7b4d3e1368e249f40ecc71375a9bcaa2e65bd000744d01",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:ea3fc47fbf5c82567cd8cc8242c4790cf05e42301e2ffbace9d7f043a9d930c0",
   "decisions": {
     "reference_covariance": "mockmatched",
     "mock_suite": "v1_4_6_3_v2",
@@ -13,18 +13,18 @@
     "pte_threshold": "calibrated_0p01"
   },
   "input_versions": {
-    "mock_per_mock_statistics": "sha256:1ae306148fb12ff11998bbde4737f178355640a3d63802e1ea732f49c5d4f656",
-    "pure_eb_pte_per_cut": "sha256:cf141b39537283b69f40059afc1d0096368a1b8f6530160afa11c8aba247654d",
+    "mock_per_mock_statistics": "sha256:7268c80db3498a58fbaf93282ee4db20341ae80bd9e2947d164034f5c58babb4",
+    "pure_eb_pte_per_cut": "sha256:3799ab57187bcce2250d56f8f370d00701e04798cfa1bb05f204c4a8fa0b5834",
     "cosebis_pte_per_cut": "sha256:ddd441675fa706030fd26863a3455e120abf87f8406e5f39e9475ecaa491bc79",
-    "cl_pte_per_cut": "sha256:a425762fc498cff6bb1f4a8c5d01dd0eb7a368f3f754b519703a2e24557fa292",
-    "mock_min_pte_calibration_script": "sha256:39f3cc6837e27912a1bf65a1b7eba50f14d341a99cf4ab034ec0dd8b2157c38d",
+    "cl_pte_per_cut": "sha256:6edfbd63f137c660b664f38fdb5e18daf6f08a8b220981d61146f0344626cf90",
+    "mock_min_pte_calibration_script": "sha256:54bd098d8415793567724042779884a5bf898558f6eabd6e320474b83cdb15b4",
     "plotting_utils_script": "sha256:e53c7b42f75838d1d6b63327bd72e7c2a3f3d5b22b4e00e67df32a409552a0da",
     "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2",
     "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
   },
-  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -32,13 +32,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-16T18:18:55.531+00:00",
-  "finished_at": "2026-10-16T18:19:12.014+00:00",
+  "started_at": "2026-11-01T11:12:49.954+00:00",
+  "finished_at": "2026-11-01T11:13:05.267+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

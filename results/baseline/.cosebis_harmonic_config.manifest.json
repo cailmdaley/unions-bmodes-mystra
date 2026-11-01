@@ -4,18 +4,18 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/emit_cosebis_harmonic_config.py --config-space-evidence results/baseline/null_tests/config_space_pte_data.json --cosebis-evidence results/baseline/cosebis/cosebis_harmonic_metrics.json --cosebis-evidence-full results/baseline/cosebis/cosebis_harmonic_metrics_full.json --harmonic-version-ptes results/baseline/cosebis/cosebis_harmonic_scan/cosebis_harmonic_version_ptes.json --out-file results/baseline/cosebis_harmonic_config.csv\n",
   "definition_version": "sha256:639273d72496287d0e14f1847c10df16cca9ff46330347460174d26e618f8fac",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:449aa286defceffb06c0edd398a7c363935d81d34791edd1ec4a06f1626e1808",
   "decisions": {},
   "input_versions": {
-    "config_space_pte_data": "sha256:31f81553a7b2a543e319a3d7591f15fe89ca82fb3287736282a52d26bcf11490",
+    "config_space_pte_data": "sha256:81df9d17fe22c0a87e81f780356d3fa14ae8d8cd99ca90bc6ee2212ef101a790",
     "cosebis_harmonic_modes_evidence": "sha256:95070d004a95c9c5d5d95c64b75ee0753f96f0dd7ec46a09104fa59d8bdc2ce6",
     "cosebis_harmonic_modes_full_evidence": "sha256:2d466897293cff96f3d93e115933f53b459de015df3d997fd376a8ab0eac17dd",
-    "cosebis_harmonic_version_ptes": "sha256:c2543a2c867a391bc00a7a184aeea85e7f58bf23b609c0dc0804c3404c54d27d"
+    "cosebis_harmonic_version_ptes": "sha256:1349e9bb5a68e0ed2e3a29615aac7186e85cc1fa46bab0f6e6ac0d93cee1b3db"
   },
-  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -23,13 +23,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-16T18:19:15.750+00:00",
-  "finished_at": "2026-10-16T18:19:16.696+00:00",
+  "started_at": "2026-11-01T11:13:01.585+00:00",
+  "finished_at": "2026-11-01T11:13:03.013+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

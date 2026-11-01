@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "output_id": "pure_eb.pure_eb_covariance_figure",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/pure_eb_covariance.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --pure-eb-data results/submitted/pure_eb/pure_eb_semianalytic_data.npz --out-file results/submitted/pure_eb/pure_eb_covariance_figure.png\n",
+  "definition_version": "sha256:513af47017ca6912e8f363621b0fea3c97228395cf913c3e2151f813dd5e4eaf",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:94c76469520a40bec579f5a9be612995713cd7183ba98bc9995ba070d3d32033",
+  "decisions": {
+    "fiducial_catalog": "size_cut"
+  },
+  "input_versions": {
+    "pure_eb_semianalytic_data": "sha256:30545d1677df98c92d8e794858db83a015b0c213080dee381c13ed54d7c99dbe",
+    "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
+  },
+  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T11:12:49.960+00:00",
+  "finished_at": "2026-11-01T11:13:05.860+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

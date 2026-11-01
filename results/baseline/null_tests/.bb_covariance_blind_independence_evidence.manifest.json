@@ -2,21 +2,23 @@
   "schema_version": 1,
   "output_id": "null_tests.bb_covariance_blind_independence_evidence",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/bb_covariance_blind_independence.py --config src/papers/bmodes/config/config.yaml --pure-eb-dir /automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/paper_plots/intermediate --cosmo-val-dir /n17data/cdaley/unions/code/sp_validation/cosmo_val/output --covariance-dir /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance --out-file results/baseline/null_tests/bb_covariance_blind_independence_evidence.png\n",
-  "definition_version": "sha256:11f2bcf4dcfb56e1936ba86402f4369de7db1b4b6c7e54f4509f68b1e9dc058f",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "recipe": "python src/papers/bmodes/scripts/bb_covariance_blind_independence.py --config src/papers/bmodes/config/config.yaml --version fiducial_version_v1463 --pure-eb-template '/automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/paper_plots/intermediate/{version}_{blind}_pure_eb_semianalytic.npz' --harmonic-template '/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_cov_{version}_blind={blind}_powspace_nbins=32.fits' --cov-integration-template '/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_{version}_{blind}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_{version}_{blind}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt' --xi-template '/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/{version}_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt' --pseudo-cl-template '/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_{version}_blind=A_powspace_nbins=32.fits' --out-file results/baseline/null_tests/bb_covariance_blind_independence_evidence.png\n",
+  "definition_version": "sha256:277a5b0ea1ed84e821d7d62c7e7fa54c6d78892dfdf60bc8ae687cbc3d0df591",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:562c88ee793e8a22f91fae577c01677bca2978836932c4d486f2106b503909ae",
   "decisions": {
-    "bb_blind_check_version": "mock_version_v146"
+    "bb_blind_check_version": "fiducial_version_v1463"
   },
   "input_versions": {
-    "pure_eb_intermediate_archive": "sha256:be1eaf5243c36c9c82f3c49e11fd131c0a468b3a12cb59641e18d56f2b5c2dbc",
-    "cosmo_val_archive": "sha256:40573c18c53587594bba0018038bf0d2aee2b10fd8c64d484f3ebe326dbef90a",
-    "covariance_archive": "sha256:8e05c73e22783bc7e1183418dc4d7085edb247d743aaa0d4837b6fbbb5ba59cc"
+    "blind_check_pure_eb": "spelling:sha256:ce1b1f23da92648b7c32239dc9658ae4bef6cff83d1c8f2307a81924c2feabf8",
+    "blind_check_harmonic_cov": "spelling:sha256:025858e4cb039c72feb626db4963c600d3616a5adc254849fc6dcc9390d003cb",
+    "blind_check_cosmocov": "spelling:sha256:56fde18c75ed1861c4d8dc1a9cfea51fc65edf564e63d2a7577e7f72ad9964c8",
+    "blind_check_xi": "spelling:sha256:2eafbe77581befb7f35433d2fe76165b579d67845739a1c146ba20fbff5f4cf4",
+    "blind_check_pseudo_cl": "spelling:sha256:5483e01e258ba7261b7b885f06dbdf661a4e4684ff417e23d92b13a05b4c4753"
   },
-  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -24,13 +26,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-16T15:57:25.870+00:00",
-  "finished_at": "2026-10-16T16:00:10.749+00:00",
+  "started_at": "2026-11-01T11:12:49.886+00:00",
+  "finished_at": "2026-11-01T11:14:01.842+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

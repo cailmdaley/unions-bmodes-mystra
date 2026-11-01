@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "output_id": "fig_pte_heatmaps",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/config_space_pte_matrices.py --config src/papers/bmodes/config/config.yaml --from-evidence results/submitted/null_tests/config_space_pte_data.json --figure appendix --scale-cut-convention grid_bin_edges --pte-threshold nominal_0p05 --out-file results/submitted/fig_pte_heatmaps.png\n",
+  "definition_version": "sha256:18176fec3ddb5d84f5771bf94f35487c88191facbc08ae7e57a590965942e261",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:2c95a8e92058f36d78a47da1ade635bef8a2f2ec82c521a9f82b09e67da2fc98",
+  "decisions": {
+    "scale_cut_convention": "grid_bin_edges",
+    "pte_threshold": "nominal_0p05"
+  },
+  "input_versions": {
+    "config_space_pte_data": "sha256:575dcb3bf1c7a58e6e4c13af3b3f35a7533e5e95df5135e2598dc8326b0bbc82",
+    "config_space_pte_matrices_script": "sha256:79740093e14d74859b9d5522c54cf701081b0970e601a5080047e7c36ec94096",
+    "print_width_script": "sha256:d1692083bf9a5226a33b7e9cc7b602f66825e21bbbad7e841d0bc8457489306a",
+    "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2",
+    "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
+  },
+  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T11:12:49.938+00:00",
+  "finished_at": "2026-11-01T11:13:10.060+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "output_id": "null_tests.pte_summary_evidence",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/generate_paper_macros.py --config src/papers/bmodes/config/config.yaml --config-space-evidence results/submitted/null_tests/config_space_pte_data.json --harmonic-space-evidence results/submitted/null_tests/harmonic_space_pte_data.json --emit evidence --out-file results/submitted/null_tests/pte_summary_evidence.json\n",
+  "definition_version": "sha256:36ab0ad58008d160155bac963c0b7dfb98ceef89b1bf97de5a9d7e4dcd19add1",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:658ca8270c95a198d8efee1ad578a2bf9df803ed19caff9dd224150bccef1e6a",
+  "decisions": {},
+  "input_versions": {
+    "config_space_pte_data": "sha256:575dcb3bf1c7a58e6e4c13af3b3f35a7533e5e95df5135e2598dc8326b0bbc82",
+    "harmonic_space_pte_data": "sha256:4976d85c5cea8eaf63c135139ace3e2e87ced5ce35644fdfd075a87828dd1fe0"
+  },
+  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T09:08:08.738+00:00",
+  "finished_at": "2026-11-01T09:08:15.102+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

@@ -4,14 +4,13 @@
   "universe_id": "baseline",
   "recipe": "python src/workflow/scripts/generate_pseudo_cl.py --ver SP_v1.4.5_leak_corr --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file results/baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p5_leak_corr_nbins32.fits\n",
   "definition_version": "sha256:0b2b482982351b5ba98473fa174bf06027f8078eaefc8bcc313168512b82cfc5",
-  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
-  "data_version": "sha256:c6c4de5e7507ade14b40860a80d9efe82597f5e05cfd8990d7fb87c68c7d7089",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:cce3aa40a600960b42d223a5aa15302d00c15be3318b62ba4e344cca980f87c7",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a"
   },
   "input_versions": {
-    "shear_catalog": "sha256:8c981053dfe2400a81136022456ff80b7325ad8ccf63d9cf4e4037964e036a15",
     "redshift_distribution": "sha256:0d712922bf6edc27600b4035cc236cccd3aa73fbd4f2bc426c3914b9a924cbe8",
     "mask_power_spectrum": "sha256:043c512476658dea60273e095e88b00e3b73559cfea394d1bda35e9548c576cb",
     "shapepipe_v14_catalogs": "spelling:sha256:476a59a7d51545a6de80b0d96e7f535550159cda928a0bf2b7efb76c5eef5f3d",
@@ -19,9 +18,9 @@
     "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da",
     "redshift_distributions_legacy": "sha256:a499c565d8ad6fda0f305251c2a7b3669b9916e09014b533d9c54e3e6f8989f7"
   },
-  "git_sha": "8a89d7b841be17766bd5041d6d15188465a58df0",
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -29,13 +28,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-08-31T18:48:24.216+00:00",
-  "finished_at": "2026-08-31T18:48:38.487+00:00",
+  "started_at": "2026-10-31T09:31:02.164+00:00",
+  "finished_at": "2026-10-31T09:31:19.515+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-e841fa2c63d0c02c",
-    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
-    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

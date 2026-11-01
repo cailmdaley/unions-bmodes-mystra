@@ -1,7 +1,7 @@
 {
   "spec": "mock_mask_geometry_analysis",
   "label": "mask-geometry",
-  "timestamp": "2026-09-28T04:40:10.208464",
+  "timestamp": "2026-11-01T06:56:17.110815",
   "n_realizations": 50,
   "mock_ids": [
     "00001",
@@ -189,20 +189,20 @@
         "chi2_empirical_sem": 0.33988184122944426,
         "chi2_empirical_median": 11.418268526290099,
         "chi2_empirical_dof": 20,
-        "chi2_analytic_mean": 17.80549769609965,
-        "chi2_analytic_sem": 0.5639285197517184,
-        "chi2_analytic_median": 17.482220621350404,
+        "chi2_analytic_mean": 17.805497696099646,
+        "chi2_analytic_sem": 0.563928519751719,
+        "chi2_analytic_median": 17.482220621350393,
         "chi2_analytic_dof": 20,
-        "pte_analytic_mean": 0.6002063385970193,
-        "pte_analytic_sem": 0.031155516148904674,
-        "pte_analytic_median": 0.6214712079072715,
-        "chi2_analytic_cut_mean": 5.951100993628805,
-        "chi2_analytic_cut_sem": 0.4303952772290594,
-        "chi2_analytic_cut_median": 5.578674586819437,
+        "pte_analytic_mean": 0.6002063385970196,
+        "pte_analytic_sem": 0.031155516148904692,
+        "pte_analytic_median": 0.621471207907272,
+        "chi2_analytic_cut_mean": 5.951100993628804,
+        "chi2_analytic_cut_sem": 0.4303952772290593,
+        "chi2_analytic_cut_median": 5.578674586819434,
         "chi2_analytic_cut_dof": 7,
-        "pte_analytic_cut_mean": 0.5727393370184912,
-        "pte_analytic_cut_sem": 0.03970149333584135,
-        "pte_analytic_cut_median": 0.5897140363634825
+        "pte_analytic_cut_mean": 0.5727393370184913,
+        "pte_analytic_cut_sem": 0.039701493335841345,
+        "pte_analytic_cut_median": 0.589714036363483
       },
       "xim_B": {
         "mean_test": {
@@ -306,17 +306,17 @@
         "chi2_empirical_dof": 20,
         "chi2_analytic_mean": 16.372084520061183,
         "chi2_analytic_sem": 0.6658334716780497,
-        "chi2_analytic_median": 15.576991455018135,
+        "chi2_analytic_median": 15.576991455018138,
         "chi2_analytic_dof": 20,
         "pte_analytic_mean": 0.683431218968238,
-        "pte_analytic_sem": 0.033905499015151504,
+        "pte_analytic_sem": 0.03390549901515151,
         "pte_analytic_median": 0.7424958095481542,
-        "chi2_analytic_cut_mean": 5.365966243661624,
+        "chi2_analytic_cut_mean": 5.365966243661623,
         "chi2_analytic_cut_sem": 0.44166963007664267,
-        "chi2_analytic_cut_median": 4.726043718088396,
+        "chi2_analytic_cut_median": 4.726043718088395,
         "chi2_analytic_cut_dof": 7,
-        "pte_analytic_cut_mean": 0.6456352289002097,
-        "pte_analytic_cut_sem": 0.03558389910524246,
+        "pte_analytic_cut_mean": 0.6456352289002096,
+        "pte_analytic_cut_sem": 0.03558389910524247,
         "pte_analytic_cut_median": 0.6933534450621621
       },
       "xip_amb": {
@@ -623,20 +623,20 @@
         "chi2_empirical_sem": 0.3230578912074047,
         "chi2_empirical_median": 11.495109321996281,
         "chi2_empirical_dof": 20,
-        "chi2_analytic_mean": 25.28736345139988,
-        "chi2_analytic_sem": 1.0431262322982142,
-        "chi2_analytic_median": 23.956698786901082,
+        "chi2_analytic_mean": 25.28736345139985,
+        "chi2_analytic_sem": 1.043126232298214,
+        "chi2_analytic_median": 23.95669878690107,
         "chi2_analytic_dof": 20,
-        "pte_analytic_mean": 0.2792520285712058,
-        "pte_analytic_sem": 0.03510824228221647,
-        "pte_analytic_median": 0.2442928613151888,
-        "chi2_analytic_cut_mean": 8.614268429002768,
-        "chi2_analytic_cut_sem": 0.7678490034162163,
-        "chi2_analytic_cut_median": 7.098146321364474,
+        "pte_analytic_mean": 0.2792520285712062,
+        "pte_analytic_sem": 0.03510824228221648,
+        "pte_analytic_median": 0.24429286131518924,
+        "chi2_analytic_cut_mean": 8.614268429002767,
+        "chi2_analytic_cut_sem": 0.7678490034162165,
+        "chi2_analytic_cut_median": 7.098146321364475,
         "chi2_analytic_cut_dof": 7,
-        "pte_analytic_cut_mean": 0.4231254720796222,
+        "pte_analytic_cut_mean": 0.42312547207962226,
         "pte_analytic_cut_sem": 0.04438925143204436,
-        "pte_analytic_cut_median": 0.4187379273197922
+        "pte_analytic_cut_median": 0.418737927319792
       },
       "xim_B": {
         "mean_test": {
@@ -738,20 +738,20 @@
         "chi2_empirical_sem": 0.39353213752151384,
         "chi2_empirical_median": 11.02590427545076,
         "chi2_empirical_dof": 20,
-        "chi2_analytic_mean": 23.674583818474524,
+        "chi2_analytic_mean": 23.67458381847452,
         "chi2_analytic_sem": 1.0362857106894154,
-        "chi2_analytic_median": 22.16318402202503,
+        "chi2_analytic_median": 22.16318402202502,
         "chi2_analytic_dof": 20,
-        "pte_analytic_mean": 0.35676215411950307,
-        "pte_analytic_sem": 0.039313366613483156,
-        "pte_analytic_median": 0.3318203381775403,
-        "chi2_analytic_cut_mean": 7.914038643354298,
-        "chi2_analytic_cut_sem": 0.5658178303412789,
-        "chi2_analytic_cut_median": 6.988012978052719,
+        "pte_analytic_mean": 0.3567621541195033,
+        "pte_analytic_sem": 0.03931336661348316,
+        "pte_analytic_median": 0.33182033817754064,
+        "chi2_analytic_cut_mean": 7.914038643354296,
+        "chi2_analytic_cut_sem": 0.5658178303412787,
+        "chi2_analytic_cut_median": 6.988012978052718,
         "chi2_analytic_cut_dof": 7,
         "pte_analytic_cut_mean": 0.4307063882783856,
         "pte_analytic_cut_sem": 0.04196393200233563,
-        "pte_analytic_cut_median": 0.430441301585499
+        "pte_analytic_cut_median": 0.43044130158549904
       },
       "xip_amb": {
         "mean_test": {
@@ -1058,16 +1058,16 @@
       "ks_pvalue": 0.7166468440414822,
       "paired_chi2": {
         "scale_cut": {
-          "delta_mean": 2.663167435373962,
-          "delta_sem": 0.5642691457310862,
-          "fractional_shift_mean": 0.44750835823910984,
+          "delta_mean": 2.6631674353739623,
+          "delta_sem": 0.5642691457310864,
+          "fractional_shift_mean": 0.44750835823910995,
           "pearson_r": 0.6905629275569928
         },
         "full_range": {
-          "delta_mean": 7.481865755300221,
-          "delta_sem": 0.851693320983483,
-          "fractional_shift_mean": 0.4201997541994654,
-          "pearson_r": 0.5786211490766713
+          "delta_mean": 7.481865755300212,
+          "delta_sem": 0.8516933209834826,
+          "fractional_shift_mean": 0.420199754199465,
+          "pearson_r": 0.5786211490766708
         }
       }
     },
@@ -1171,14 +1171,14 @@
       "ks_pvalue": 0.7166468440414822,
       "paired_chi2": {
         "scale_cut": {
-          "delta_mean": 2.548072399692675,
+          "delta_mean": 2.5480723996926744,
           "delta_sem": 0.42419921824041384,
           "fractional_shift_mean": 0.4748580747600684,
-          "pearson_r": 0.6708099153653716
+          "pearson_r": 0.6708099153653714
         },
         "full_range": {
           "delta_mean": 7.3024992984133394,
-          "delta_sem": 0.7145204882507118,
+          "delta_sem": 0.7145204882507119,
           "fractional_shift_mean": 0.4460335694862422,
           "pearson_r": 0.7294869068851739
         }

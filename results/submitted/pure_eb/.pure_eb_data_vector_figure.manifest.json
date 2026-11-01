@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "output_id": "pure_eb.pure_eb_data_vector_figure",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/pure_eb_data_vector.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --pure-eb-data results/submitted/pure_eb/pure_eb_semianalytic_data.npz --reporting-cov results/submitted/covariance/cov_reporting_ng.txt --scale-cut-convention grid_bin_edges --out-file results/submitted/pure_eb/pure_eb_data_vector_figure.png\n",
+  "definition_version": "sha256:d79e9a5e68b80985a427a6614a362754f9d9df340f78df562ab19f86908b229f",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:2dd6f2aeb559ca5356cd82e897fc6c7ced21622a46306807d489703c8b64bf66",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "scale_cut_convention": "grid_bin_edges"
+  },
+  "input_versions": {
+    "pure_eb_semianalytic_data": "sha256:30545d1677df98c92d8e794858db83a015b0c213080dee381c13ed54d7c99dbe",
+    "cov_reporting_ng": "sha256:59e36f7c04d8a249ab3cbf610eccf16fae272e4c69b92dae09f78f6ecabd4aec",
+    "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
+  },
+  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T11:12:49.959+00:00",
+  "finished_at": "2026-11-01T11:13:04.909+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

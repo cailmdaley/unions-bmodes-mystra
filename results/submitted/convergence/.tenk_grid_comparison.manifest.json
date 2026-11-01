@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "output_id": "convergence.tenk_grid_comparison",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/tenk_grid_convergence.py --config src/papers/bmodes/config/config.yaml --xi-reporting results/submitted/two_point/xi_reporting.txt --xi-1k results/submitted/two_point/xi_integration.txt --xi-10k results/submitted/two_point/xi_integration_convergence.txt --pure-eb-baseline results/submitted/pure_eb/pure_eb_semianalytic_data.npz --cosebis-baseline results/submitted/cosebis/cosebis_modes_data.npz --scale-cut-convention grid_bin_edges --integration-method adaptive_dqags --rebinning-weights none --integration-limits reporting_extent --out-file results/submitted/convergence/tenk_grid_comparison.json\n",
+  "definition_version": "sha256:00362cf4bf82f2dc7fb393b52cd37c213dffd59e45dbcbfb2fd4485d3637ee61",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:06193680ad61eac3851d7179a2f05534fecf16ba0db0e82db4bdee0061b0dd34",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "scale_cut_convention": "grid_bin_edges",
+    "pure_eb_integration_method": "adaptive_dqags",
+    "pure_eb_rebinning_weights": "none",
+    "pure_eb_integration_limits": "reporting_extent",
+    "mode_count": "n_max_20"
+  },
+  "input_versions": {
+    "xi_reporting": "sha256:108bb327ae0b21c665765f7e8190bfc84b9777c5c5f5bf6a3fa4b31fcdc23340",
+    "xi_integration": "sha256:4b17cfb4e427aa79a84bd70e566bb7f884e1b758600a454db8109ad8733a2d15",
+    "xi_integration_convergence": "sha256:9fdbcb61c1f75674c9222aae360dad0ac958721342fdb1952432ee3ba9a6cb46",
+    "pure_eb_semianalytic_data": "sha256:30545d1677df98c92d8e794858db83a015b0c213080dee381c13ed54d7c99dbe",
+    "cosebis_modes_data": "sha256:ac1c8b2af0cfe7709c0e1f124c9f4a0a1cbb46ce554e7cf903a40f0d1cb479f7",
+    "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2",
+    "tenk_grid_convergence_script": "sha256:de9e30e64f5c7ac10032963f9bfcbdfa496cf017ec4ea7be66ef48db5a18127a"
+  },
+  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T11:12:49.930+00:00",
+  "finished_at": "2026-11-01T11:14:43.610+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

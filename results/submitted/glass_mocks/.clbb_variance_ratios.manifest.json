@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.clbb_variance_ratios",
+  "universe_id": "submitted",
+  "recipe": "python src/workflow/scripts/clbb_variance_ratios.py --cl-cov-mockmatched /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/glass_mock_v1.4.6.3_v2/pseudo_cl_cov_glass_mock_v2_00001_powspace_nbins=32.fits --cl-cov-data results/submitted/covariance/cl_cov_reporting.fits --cl-files \"/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/cl_glass_mock_*_4096.npy\" --out-file results/submitted/glass_mocks/clbb_variance_ratios.json\n",
+  "definition_version": "sha256:0c1344e5ef4df8df9c0079f7ae80148b1d612bf8ac05a9c429e8a92519d9e403",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:8b5e0ce3c79b4153bedd8e7c213a6a96a1cb65c8bf4a2b5fd36be7f98cb9439a",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2",
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a"
+  },
+  "input_versions": {
+    "cl_cov_mockmatched": "sha256:2cb0d9f56a0c917dea9bc21d7a86e0651c7878444e7d15cd1ef16d2076af592c",
+    "cl_cov_reporting": "sha256:76c73b28a865f3b476270354bb2a2b2164070b203cc1d435a32bc69a96bb500f",
+    "glass_mock_cl": "spelling:sha256:16549de17bf54f1265107d167a350b66c0ade3b99b6d5a100b7ccb06f5082838"
+  },
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-31T23:40:56.313+00:00",
+  "finished_at": "2026-10-31T23:41:22.611+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.mock_pure_eb_modes",
+  "universe_id": "submitted",
+  "recipe": "python src/workflow/scripts/mock_pure_eb_scatter.py --fine-ensemble results/submitted/glass_mocks/mock_xi_scan/mock_xi_fine.npz --reporting-ensemble results/submitted/glass_mocks/mock_xi_reporting.npz --integration-method adaptive_dqags --rebinning-weights none --integration-limits reporting_extent --out-file results/submitted/glass_mocks/mock_pure_eb_modes.npz\n",
+  "definition_version": "sha256:5c630a605290db1bd55dfd2e39eb71fa01c7a18cf4dcdfc4880bf05ba9db145d",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:52c1f7a9b74fa6b51035dde23520502b4033047acdda8b5907d17e9b8eac056f",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2",
+    "pure_eb_integration_method": "adaptive_dqags",
+    "pure_eb_rebinning_weights": "none",
+    "pure_eb_integration_limits": "reporting_extent"
+  },
+  "input_versions": {
+    "mock_xi_fine": "sha256:a391f778064c7c4586c781b591d96a17b1ee453c16495e89c517fb13420578f2",
+    "mock_xi_reporting": "sha256:347e06f70a8d3dc4c65027f41a1fe5f2dbc0fb2b148148d36208824350a4cf1f"
+  },
+  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T10:16:30.838+00:00",
+  "finished_at": "2026-11-01T10:18:02.143+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

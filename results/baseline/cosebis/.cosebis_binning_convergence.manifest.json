@@ -4,7 +4,7 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/cosebis_binning_comparison.py --config src/papers/bmodes/config/config.yaml --xi-1k results/baseline/two_point/xi_integration.txt --xi-10k results/baseline/two_point/xi_integration_convergence.txt --cov-1k results/baseline/covariance/cov_integration_g.txt --scale-cut-convention grid_bin_edges --out-file results/baseline/cosebis/cosebis_binning_convergence.png\n",
   "definition_version": "sha256:6766f801b0a3412858f2aee4cd5e60f7b52b2ea79e649c7c25b5586574735284",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:1a40a2464428515be065df5fad121fab770dc6ee69d74977f0ec50bb7f914276",
   "decisions": {
     "fiducial_catalog": "size_cut",
@@ -13,13 +13,13 @@
     "scale_cut_convention": "grid_bin_edges"
   },
   "input_versions": {
-    "xi_integration": "sha256:eff7465d718f384cd89a676df4886f745a967b3d91bc7caf1d1ee709c4a77f38",
+    "xi_integration": "sha256:d26445847fdd07a235460833df86c19950577b5051de2843beed73622d026a99",
     "xi_integration_convergence": "sha256:9fdbcb61c1f75674c9222aae360dad0ac958721342fdb1952432ee3ba9a6cb46",
     "cov_integration_g": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052"
   },
-  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -27,13 +27,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-16T18:12:48.873+00:00",
-  "finished_at": "2026-10-16T18:14:56.995+00:00",
+  "started_at": "2026-11-01T00:51:59.263+00:00",
+  "finished_at": "2026-11-01T00:53:09.028+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

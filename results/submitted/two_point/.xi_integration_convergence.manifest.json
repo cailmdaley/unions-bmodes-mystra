@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "output_id": "two_point.xi_integration_convergence",
+  "universe_id": "submitted",
+  "recipe": "cp -f /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/production_out/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt results/submitted/two_point/xi_integration_convergence.txt\n",
+  "definition_version": "sha256:0a3baf729c2e9efdb68fc0a33ce8d28028b6a9ab43697e820b3be4752d5e18f6",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:9fdbcb61c1f75674c9222aae360dad0ac958721342fdb1952432ee3ba9a6cb46",
+  "decisions": {
+    "fiducial_catalog": "size_cut"
+  },
+  "input_versions": {
+    "tenk_xi_staging": "sha256:9fdbcb61c1f75674c9222aae360dad0ac958721342fdb1952432ee3ba9a6cb46"
+  },
+  "git_sha": "9f201d2234a899be9a019bba4acbdd4477452688",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-30T02:22:21.841+00:00",
+  "finished_at": "2026-10-30T02:22:22.584+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

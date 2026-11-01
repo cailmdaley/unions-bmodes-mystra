@@ -4,19 +4,18 @@
   "universe_id": "baseline",
   "recipe": "python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.8 --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file results/baseline/two_point/xi_scan/xi_sp_v1p4p8_integration.txt\n",
   "definition_version": "sha256:b7ad088ba67e1d81d7b638f3c527a3692135900b3dd18e11860acc1381427c9a",
-  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
-  "data_version": "sha256:baf6bcbbc0b7804d77a6536794b25214b614d352569d2b74c8d0d88e926aa4cc",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:b21a1f5451d291f352ef6ce1111998219923f138e6dbea6fd0e0375989747dc8",
   "decisions": {
     "fiducial_catalog": "size_cut"
   },
   "input_versions": {
-    "shear_catalog": "sha256:8c981053dfe2400a81136022456ff80b7325ad8ccf63d9cf4e4037964e036a15",
     "shapepipe_v14_catalogs": "spelling:sha256:476a59a7d51545a6de80b0d96e7f535550159cda928a0bf2b7efb76c5eef5f3d",
     "shapepipe_v145_rerun": "sha256:a59810c516c30805937388d56eede60d0417ce9375168a8813823b9be6c5acd8"
   },
-  "git_sha": "4926d72d017952a702554771a9b5d0ab3d7a5dce",
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -24,13 +23,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-09-02T20:07:58.854+00:00",
-  "finished_at": "2026-09-02T21:46:03.170+00:00",
+  "started_at": "2026-10-31T09:16:50.439+00:00",
+  "finished_at": "2026-10-31T10:03:08.400+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-e841fa2c63d0c02c",
-    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
-    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

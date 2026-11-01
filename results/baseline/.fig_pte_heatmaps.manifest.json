@@ -2,24 +2,24 @@
   "schema_version": 1,
   "output_id": "fig_pte_heatmaps",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/config_space_pte_matrices.py --config src/papers/bmodes/config/config.yaml --from-evidence results/baseline/null_tests/config_space_pte_data.json --figure appendix --scale-cut-convention grid_bin_edges --pte-threshold calibrated_0p01 --out-file results/baseline/fig_pte_heatmaps.pdf\n",
-  "definition_version": "sha256:5fef6fd3c740c4726bb3c472fdca6af728a6763b45459ceb98d37098d7a13a77",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
-  "data_version": "sha256:61087ea6aa1b81e30e9d6c6a1fa8d1e578aa53d627d8833433a9f46cf5775465",
+  "recipe": "python src/papers/bmodes/scripts/config_space_pte_matrices.py --config src/papers/bmodes/config/config.yaml --from-evidence results/baseline/null_tests/config_space_pte_data.json --figure appendix --scale-cut-convention grid_bin_edges --pte-threshold calibrated_0p01 --out-file results/baseline/fig_pte_heatmaps.png\n",
+  "definition_version": "sha256:9e7198492d9a8587ad322e6d9b8e0fbf05e6d01b943b9df263185cc7d00c7da3",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:ded196e103fd37a35c35622829ede6aabe2ab1444478d6beb20451b3f5458948",
   "decisions": {
     "scale_cut_convention": "grid_bin_edges",
     "pte_threshold": "calibrated_0p01"
   },
   "input_versions": {
-    "config_space_pte_data": "sha256:31f81553a7b2a543e319a3d7591f15fe89ca82fb3287736282a52d26bcf11490",
+    "config_space_pte_data": "sha256:81df9d17fe22c0a87e81f780356d3fa14ae8d8cd99ca90bc6ee2212ef101a790",
     "config_space_pte_matrices_script": "sha256:79740093e14d74859b9d5522c54cf701081b0970e601a5080047e7c36ec94096",
     "print_width_script": "sha256:d1692083bf9a5226a33b7e9cc7b602f66825e21bbbad7e841d0bc8457489306a",
     "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2",
     "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
   },
-  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -27,13 +27,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-16T18:18:50.648+00:00",
-  "finished_at": "2026-10-16T18:19:14.563+00:00",
+  "started_at": "2026-11-01T11:13:01.625+00:00",
+  "finished_at": "2026-11-01T11:13:15.275+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

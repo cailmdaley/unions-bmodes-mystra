@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "output_id": "cosebis.cosebis_harmonic_scan.cosebis_harmonic_version_ptes",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/merge_harmonic_version_ptes.py --members results/submitted/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p5_leak_corr.npz results/submitted/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p8_leak_corr.npz results/submitted/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p11p3_leak_corr.npz --out-file results/submitted/cosebis/cosebis_harmonic_scan/cosebis_harmonic_version_ptes.json\n",
+  "definition_version": "sha256:7b2fa0021a179a9716b9c4edd81b70aad9436a29e71da7a41632dd29a78d527b",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:481e76ce268614570eff41a151a646251fe675eb6d01448428122775533e175c",
+  "decisions": {},
+  "input_versions": {
+    "harmonic_modes_sp_v1p4p5_leak_corr": "sha256:80b2ef35e58d282d3359e0a374f09348e08ab9d22521b70a87613bab9790e436",
+    "harmonic_modes_sp_v1p4p8_leak_corr": "sha256:334367e4cf0093b69fbe631f96cc35f7a86a739d1c914596be77eb3f76ad02f3",
+    "harmonic_modes_sp_v1p4p11p3_leak_corr": "sha256:9357a58b5603353ff9f7f65695c8a348e2475ccbf03747456e572d6292f59f47"
+  },
+  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T08:09:21.103+00:00",
+  "finished_at": "2026-11-01T08:09:41.738+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

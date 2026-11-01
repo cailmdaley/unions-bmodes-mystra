@@ -2,10 +2,10 @@
   "schema_version": 1,
   "output_id": "fig_harmonic_config_cosebis_full",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --angular-range full --blind A --figure-from-modes results/baseline/cosebis/cosebis_harmonic_modes_full.npz --scale-cut-convention grid_bin_edges --out-file results/baseline/fig_harmonic_config_cosebis_full.pdf\n",
-  "definition_version": "sha256:05e847edaf814b3f0dc26dd996a1da849c4303a94e6307c8971cc842d14b9db7",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
-  "data_version": "sha256:7b5076149f54fa6efbb876b5dfc1c70460aedb86454ade6cdd998e5fdf10101d",
+  "recipe": "python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --angular-range full --blind A --figure-from-modes results/baseline/cosebis/cosebis_harmonic_modes_full.npz --scale-cut-convention grid_bin_edges --out-file results/baseline/fig_harmonic_config_cosebis_full.png\n",
+  "definition_version": "sha256:d7feb2f850aefbd9a89671b80e791c19ccef1089c545befed5b5e1854c8e134d",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:af5fa4fc977f2d3116226d075c303f554e18651f8434fedeef83b3effc7f379a",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "scale_cut_convention": "grid_bin_edges"
@@ -14,9 +14,9 @@
     "cosebis_harmonic_modes_full": "sha256:b7c8e9ecd6d92641e63ac8da4234888983e87710821fb54dd8ca0754514907c0",
     "harmonic_config_cosebis_comparison_figure_script": "sha256:e998d597e035f5faa35705c0b9e99571602c6043f4f2849d4ebc30164fd97fe1"
   },
-  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -24,13 +24,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-16T18:13:49.542+00:00",
-  "finished_at": "2026-10-16T18:14:34.044+00:00",
+  "started_at": "2026-11-01T11:12:49.929+00:00",
+  "finished_at": "2026-11-01T11:13:19.165+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

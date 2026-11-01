@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "output_id": "catalog.survey_properties",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/catalog_products.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --cat-config src/cosmo_val/cat_config.yaml --emit survey_properties --out-file results/submitted/catalog/survey_properties.json\n",
+  "definition_version": "sha256:446053f2592f24071492a1368abfab64bb18861770cf0de3b87e99e16baa36b1",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:a7befc4c35d94805c0ae40b381d15a71e6cc530ad2602ef43a793fcbc84a8aea",
+  "decisions": {
+    "fiducial_catalog": "size_cut"
+  },
+  "input_versions": {},
+  "git_sha": "9f201d2234a899be9a019bba4acbdd4477452688",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-30T02:22:21.842+00:00",
+  "finished_at": "2026-10-30T02:22:24.944+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

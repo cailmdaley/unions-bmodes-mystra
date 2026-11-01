@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "output_id": "cosebis.cosebis_harmonic_metrics",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --angular-range fiducial --blind A --metrics-from-modes results/submitted/cosebis/cosebis_harmonic_modes.npz --scale-cut-convention grid_bin_edges --out-file results/submitted/cosebis/cosebis_harmonic_metrics.json\n",
+  "definition_version": "sha256:9cf1c2e124143f475e9afdf395effdc9669e791f182f59f9fe1663a3ba3f38cc",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:de94257bff71a7e079c8a33384573179cf159278b6d8db7b020925f9dfd916ab",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "harmonic_validation_binning": "bins_96",
+    "scale_cut_convention": "grid_bin_edges"
+  },
+  "input_versions": {
+    "cosebis_harmonic_modes": "sha256:459446804eddae433d09421398982449138d8c55af9279ad88cd7bf7a2a5833d"
+  },
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T00:15:26.189+00:00",
+  "finished_at": "2026-11-01T00:15:48.157+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

@@ -4,7 +4,7 @@
   "universe_id": "baseline",
   "recipe": "# lc runs recipes as `bash -c` with no `set -e`, so without this a failed\n# compute would exit 0 via the trailing `rm` and lc would commit a\n# truncated artifact as successfully produced.\nset -e\nx=$(mktemp -d) && tar xzf results/baseline/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/baseline/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c\n# NB: braced shell expansions cannot be used in a sweep template \u2014 the\n# expander claims that syntax. Bare $cb only.\ncb=covariance_SP_v1.4.8_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked\npython src/papers/bmodes/scripts/compute_cosebis_pte_single.py \\\n  --config src/papers/bmodes/config/config.yaml \\\n  --xi-integration $x/SP_v1.4.8_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n  --cov-integration \"$c/$cb/$cb\"_processed.txt \\\n  --version SP_v1.4.8 --blind A \\\n  --out-file results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8.npz\nrm -rf \"$x\" \"$c\"\n",
   "definition_version": "sha256:6c1a2b34d5bd4b17572156cec73642ed932302f6d6cba11d0d7a133481dcbba8",
-  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:9648e611ffcdaa7a094619ecd3918c0b1951ab00121994ab29ff44df47cf5608",
   "decisions": {
     "fiducial_catalog": "size_cut",
@@ -13,12 +13,12 @@
     "mode_subsets": "n_le_6_and_n_le_20"
   },
   "input_versions": {
-    "xi_sweep": "sha256:389b59d7a75ad11e3792dac7b5890ffad965cff307165878177fe8ed44abf8b1",
+    "xi_sweep": "sha256:7fc08adb89612287f737c7e85bb1adb2a52f979822e3aab5b6e6b28384c19842",
     "cov_sweep": "sha256:21ac449a96f0874a54a6c307e1eeda23e84a5912ae031783746c9d9924d9acd8"
   },
-  "git_sha": "4926d72d017952a702554771a9b5d0ab3d7a5dce",
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -26,13 +26,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-09-02T23:32:47.769+00:00",
-  "finished_at": "2026-09-02T23:36:53.899+00:00",
+  "started_at": "2026-11-01T05:41:36.427+00:00",
+  "finished_at": "2026-11-01T05:46:08.510+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-e841fa2c63d0c02c",
-    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
-    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

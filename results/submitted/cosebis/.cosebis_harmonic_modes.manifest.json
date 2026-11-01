@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "cosebis.cosebis_harmonic_modes",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --angular-range fiducial --blind A --fiducial-version \"$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --get fiducial.version)\" --fiducial-pseudo-cl-path results/submitted/cl_bb/cl_bandpowers_fine.fits --fiducial-pseudo-cl-cov-path results/submitted/covariance/cl_cov_fine.fits --fiducial-xi-path results/submitted/two_point/xi_integration.txt --fiducial-cov-path results/submitted/covariance/cov_integration_g.txt --scale-cut-convention grid_bin_edges --out-file results/submitted/cosebis/cosebis_harmonic_modes.npz\n",
+  "definition_version": "sha256:e1e3fd15cc254bf0c67024bd9197f1ec06eb5704274ca42ff7b1b69fd67ee8d9",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:459446804eddae433d09421398982449138d8c55af9279ad88cd7bf7a2a5833d",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "harmonic_validation_binning": "bins_96",
+    "scale_cut_convention": "grid_bin_edges"
+  },
+  "input_versions": {
+    "cl_bandpowers_fine": "sha256:3534f0fcf88f9ab7e0f4189d0d0293d5d29abd84abac274f138e241655f62f93",
+    "cl_cov_fine": "sha256:0be0418853c9f0d6769fde4f628c78b8d7ea229c608d19ff009d62c663e74dec",
+    "xi_integration": "sha256:4b17cfb4e427aa79a84bd70e566bb7f884e1b758600a454db8109ad8733a2d15",
+    "cov_integration_g": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052"
+  },
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T00:14:09.371+00:00",
+  "finished_at": "2026-11-01T00:15:26.095+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

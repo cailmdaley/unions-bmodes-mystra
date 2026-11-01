@@ -4,21 +4,21 @@
   "universe_id": "baseline",
   "recipe": "# lc runs recipes as `bash -c` with no `set -e`, so without this a failed\n# compute would exit 0 via the trailing `rm` and lc would commit a\n# truncated artifact as successfully produced.\nset -e\nx=$(mktemp -d) && tar xzf results/baseline/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/baseline/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c\nl=$(mktemp -d) && tar xzf results/baseline/cl_bb/cl_scan/cl_sweep_bundle.tar.gz -C $l\n# NB: braced shell expansions cannot be used in a sweep template \u2014 the\n# expander claims that syntax. Bare $cb only.\ncb=covariance_SP_v1.4.11.3_leak_corr_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked\npython src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py \\\n  --config src/papers/bmodes/config/config.yaml \\\n  --blind A \\\n  --fiducial-version SP_v1.4.11.3_leak_corr \\\n  --fiducial-pseudo-cl-path $l/pseudo_cl_SP_v1.4.11.3_leak_corr_blind=A_powspace_nbins=96.fits \\\n  --fiducial-pseudo-cl-cov-path $l/pseudo_cl_cov_SP_v1.4.11.3_leak_corr_blind=A_powspace_nbins=96.fits \\\n  --fiducial-xi-path $x/SP_v1.4.11.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n  --fiducial-cov-path \"$c/$cb/$cb\"_processed.txt \\\n  --scale-cut-convention grid_bin_edges \\\n  --out-file results/baseline/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p11p3_leak_corr.npz\nrm -rf \"$x\" \"$c\" \"$l\"\n",
   "definition_version": "sha256:45131c33fe4d1d428dce102f136f373c512fb998122d4424034a5bd9ff158039",
-  "env_version": "sha256:5d20e139f6dd2a87d7b17a096d93e196eec959f36991c85e9c1da5975d7bda21",
-  "data_version": "sha256:66ed004af7396bb292e78cec4a9e0b3316c906dcaa4e333b10fdd0db7427366a",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:c7a51e9983fc3273238af69f41e739c8de75b20fecfdac8bdc2fd4bd501679b8",
   "decisions": {
     "fiducial_blind": "blind_a",
     "harmonic_validation_binning": "bins_96",
     "scale_cut_convention": "grid_bin_edges"
   },
   "input_versions": {
-    "xi_sweep": "sha256:389b59d7a75ad11e3792dac7b5890ffad965cff307165878177fe8ed44abf8b1",
+    "xi_sweep": "sha256:7fc08adb89612287f737c7e85bb1adb2a52f979822e3aab5b6e6b28384c19842",
     "cov_sweep": "sha256:21ac449a96f0874a54a6c307e1eeda23e84a5912ae031783746c9d9924d9acd8",
-    "cl_sweep": "sha256:4b11fd4948b313f5f64c82c844f0b2394e0c9595c6d0a7bc9a1dcadd72a58b48"
+    "cl_sweep": "sha256:531b8d298700b0e3c539da229fada8e68e5cf143d2e8bf9d443c40bf3bdc23ce"
   },
-  "git_sha": "7140756b7f62b642d4ee8c592ebb14df46d85641",
+  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -26,13 +26,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-09-12T02:39:54.773+00:00",
-  "finished_at": "2026-09-12T02:41:58.344+00:00",
+  "started_at": "2026-11-01T08:00:23.599+00:00",
+  "finished_at": "2026-11-01T08:01:45.555+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c985ceaa3193cabe",
-    "id": "991fbeee21445463e45e8a839048b2873f00345779f4b2464f60869cdee7deec",
-    "archive": ".datalad/environments/lc-env-c985ceaa3193cabe/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

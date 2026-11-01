@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "output_id": "pte_table_tex",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/generate_pte_table_tex.py --pte-csv results/submitted/pte_table_appendix.csv --calibration results/submitted/glass_mocks/mock_min_pte_calibration.json --out-file results/submitted/pte_table_tex.tex\n",
+  "definition_version": "sha256:5be5f95848204eadc6bcae8064031d73d0902bf870c88dfa8fd1f4248ce7d13c",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:005e36b1deafb5e0425da8cbac030b4d1c115f8231801fcce42fed6f7291599d",
+  "decisions": {},
+  "input_versions": {
+    "pte_table_appendix": "sha256:0f11c5a0acb8943d207e66b4294a15adac4766a694f6467b9b0dd3fcc6f99969",
+    "mock_min_pte_calibration": "sha256:c42747f91c36f1216f922ede848b4f0c48af7b1689be06640ef2312b8e144020",
+    "generate_pte_table_tex_script": "sha256:13e47ea760ed3c38ff55c310e6a0381c352130622cb8da706301e9b9f91888d4"
+  },
+  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T10:21:44.192+00:00",
+  "finished_at": "2026-11-01T10:21:44.733+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

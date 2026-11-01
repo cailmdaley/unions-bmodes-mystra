@@ -16,7 +16,7 @@
   "nu": 14,
   "nu_penalized": 12,
   "n_fitted_boundaries": 2,
-  "pte_unpenalized": 0.03867068073852945,
-  "chi2_obs": 24.60522610334214,
-  "pte_penalized": 0.016808437114168854
+  "pte_unpenalized": 0.038670680738529764,
+  "chi2_obs": 24.605226103342098,
+  "pte_penalized": 0.01680843711416907
 }

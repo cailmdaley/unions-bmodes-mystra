@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "output_id": "covariance.cov_glass_cl_reporting",
+  "universe_id": "submitted",
+  "recipe": "python src/workflow/scripts/compute_glass_mock_covariance.py --xi-files /n09data/guerrini/glass_mock_v1.4.6/results/xi_glass_mock_*_4096_nbins=20.fits --cl-files /n09data/guerrini/glass_mock_v1.4.6/results/cl_glass_mock_*_4096.npy --cl-covariance results/submitted/covariance/cov_glass_cl_reporting.npy\n",
+  "definition_version": "sha256:47f66a61ca3e1cbddfe5a74edf45ad4da8999332b3bc4b0570ddc113e145a86b",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:862812106ada085ee268a8f5e49a77f70f18e254dc0e2afcd603680699a4c3c2",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "glass_validation_strategy": "validation_only"
+  },
+  "input_versions": {
+    "glass_mock_realisations": "spelling:sha256:ca47d1fb0dc5852ae4f0f97ccebbe9fd030d11e015826516bcddde26577e96e2",
+    "glass_mock_xi": "spelling:sha256:42277772c7f0db198a41fd01fd8afe5de88dea1c78f8ee94518b6e156295fed8",
+    "glass_mock_cl": "spelling:sha256:416a42d1ae970d1babf7cba6fa40d7d5fbc915de7eb99adabb18d1f0623433cc"
+  },
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-30T09:47:57.577+00:00",
+  "finished_at": "2026-10-30T09:48:39.468+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

@@ -4,8 +4,8 @@
   "universe_id": "baseline",
   "recipe": "x=$(mktemp -d) && tar xzf results/baseline/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x && c=$(mktemp -d) && tar xzf results/baseline/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c && o=$(mktemp -d) && bash src/papers/bmodes/scripts/run_pure_eb_sweep.sh --config src/papers/bmodes/config/config.yaml --cat-config src/cosmo_val/cat_config.yaml --xi-sweep-dir $x --cov-sweep-dir $c --integration-method fixed_operator --integration-limits fine_grid_extent --rebinning-weights npairs --covariance-method exact_linear --out $o && tar czf results/baseline/pure_eb/pure_eb_sweep.tar.gz -C $o .\n",
   "definition_version": "sha256:5a354c3429557126e0ce41a4961be03af4145c493f2cdea53abcb9ce1750a2e0",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
-  "data_version": "sha256:0d499a6c1c365f08bbd8e96fa21ea2cba0f5cb4efe9f7ca21f7a374d2e7ab520",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:e1a309248b6f2711298acc3e416f234e63d052034f018973a6ad25ed9f0047b0",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a",
@@ -15,14 +15,14 @@
     "pure_eb_covariance_method": "exact_linear"
   },
   "input_versions": {
-    "xi_sweep": "sha256:389b59d7a75ad11e3792dac7b5890ffad965cff307165878177fe8ed44abf8b1",
+    "xi_sweep": "sha256:7fc08adb89612287f737c7e85bb1adb2a52f979822e3aab5b6e6b28384c19842",
     "cov_sweep": "sha256:21ac449a96f0874a54a6c307e1eeda23e84a5912ae031783746c9d9924d9acd8",
     "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da",
     "redshift_distributions_legacy": "sha256:a499c565d8ad6fda0f305251c2a7b3669b9916e09014b533d9c54e3e6f8989f7"
   },
-  "git_sha": "8679bfda5977c8848b0eb670ebc79052becaf68d",
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc5.dev20+g7edf83237",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -30,13 +30,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-09-27T23:22:04.507+00:00",
-  "finished_at": "2026-09-27T23:29:55.175+00:00",
+  "started_at": "2026-11-01T05:38:18.914+00:00",
+  "finished_at": "2026-11-01T05:41:36.334+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

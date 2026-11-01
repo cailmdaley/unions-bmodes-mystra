@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.mask_geometry_figure",
+  "universe_id": "submitted",
+  "recipe": "python src/workflow/scripts/mock_mask_geometry_analysis.py --from-stats results/submitted/glass_mocks/mask_geometry_statistics.npz --emit figure --out-file results/submitted/glass_mocks/mask_geometry_figure.png\n",
+  "definition_version": "sha256:3eba7c4f80aeb946f72d6df6ca538826fc09e761e848ca8078724a0605cd707b",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:db83cc39a2ad6a4e6b249d81f8623ad1c92775f31a97c1d15f53ab495ffdd1ce",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2"
+  },
+  "input_versions": {
+    "mask_geometry_statistics": "sha256:06fc177b22ad2c1fb83a9f75c7fb8978d2f4fef63b9ab6c8b863e4a420abae56"
+  },
+  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T10:18:08.820+00:00",
+  "finished_at": "2026-11-01T10:18:19.705+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

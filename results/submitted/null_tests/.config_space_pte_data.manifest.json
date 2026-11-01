@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "output_id": "null_tests.config_space_pte_data",
+  "universe_id": "submitted",
+  "recipe": "d_pe=$(mktemp -d) && tar xzf results/submitted/pure_eb/pure_eb_ptes.tar.gz -C $d_pe && d_cb=$(mktemp -d) && tar xzf results/submitted/cosebis/cosebis_pte_scan/cosebis_ptes_bundle.tar.gz -C $d_cb && python src/papers/bmodes/scripts/config_space_pte_matrices.py --config src/papers/bmodes/config/config.yaml --pte-intermediate-dir $d_pe --cosebis-pte-dir $d_cb --blind A --fiducial-version SP_v1.4.6.3_leak_corr --fiducial-pure-eb-pte-path results/submitted/pure_eb/pure_eb_pte_per_cut.npz --fiducial-cosebis-pte-path results/submitted/cosebis/cosebis_pte_grid/cosebis_pte_matrix.npz --emit evidence --scale-cut-convention grid_bin_edges --out-file results/submitted/null_tests/config_space_pte_data.json\n",
+  "definition_version": "sha256:ef84d80eddd2088cc22e6b61e442813103c6d291030afffae8df9984ec9a947d",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:575dcb3bf1c7a58e6e4c13af3b3f35a7533e5e95df5135e2598dc8326b0bbc82",
+  "decisions": {
+    "scale_cut_convention": "grid_bin_edges"
+  },
+  "input_versions": {
+    "pure_eb_ptes": "sha256:f0a8316c699872f7af3e187bb4b189f127fc6dc171cf343f0cca94237eaceff1",
+    "cosebis_ptes": "sha256:e18d9ec30c47ff67ed3510ee144b454d450ae8adf00b3aea592450e5cacd9571",
+    "pure_eb_pte_per_cut": "sha256:bf32f1b6481b930e6fcaa08dda65171e382a1ba2e743e589c63b4f3ee26c76e3",
+    "cosebis_pte_per_cut": "sha256:ddd441675fa706030fd26863a3455e120abf87f8406e5f39e9475ecaa491bc79",
+    "config_space_pte_matrices_script": "sha256:79740093e14d74859b9d5522c54cf701081b0970e601a5080047e7c36ec94096",
+    "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2"
+  },
+  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T09:08:02.733+00:00",
+  "finished_at": "2026-11-01T09:08:08.707+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

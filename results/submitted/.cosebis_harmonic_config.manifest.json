@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "output_id": "cosebis_harmonic_config",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/emit_cosebis_harmonic_config.py --config-space-evidence results/submitted/null_tests/config_space_pte_data.json --cosebis-evidence results/submitted/cosebis/cosebis_harmonic_metrics.json --cosebis-evidence-full results/submitted/cosebis/cosebis_harmonic_metrics_full.json --harmonic-version-ptes results/submitted/cosebis/cosebis_harmonic_scan/cosebis_harmonic_version_ptes.json --out-file results/submitted/cosebis_harmonic_config.csv\n",
+  "definition_version": "sha256:19c2131ba6c5e846bb152407dd339ee90187e23d631eabf53492d65677606c71",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:449aa286defceffb06c0edd398a7c363935d81d34791edd1ec4a06f1626e1808",
+  "decisions": {},
+  "input_versions": {
+    "config_space_pte_data": "sha256:575dcb3bf1c7a58e6e4c13af3b3f35a7533e5e95df5135e2598dc8326b0bbc82",
+    "cosebis_harmonic_modes_evidence": "sha256:de94257bff71a7e079c8a33384573179cf159278b6d8db7b020925f9dfd916ab",
+    "cosebis_harmonic_modes_full_evidence": "sha256:f14f1c04160e2116e41ef3c4a9fd930c92ea55c58451c7bf43734493517101d2",
+    "cosebis_harmonic_version_ptes": "sha256:481e76ce268614570eff41a151a646251fe675eb6d01448428122775533e175c"
+  },
+  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T09:08:08.740+00:00",
+  "finished_at": "2026-11-01T09:08:09.385+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

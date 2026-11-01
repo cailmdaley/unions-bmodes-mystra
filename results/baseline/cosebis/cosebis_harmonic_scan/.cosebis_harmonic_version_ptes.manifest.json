@@ -4,17 +4,17 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/merge_harmonic_version_ptes.py --members results/baseline/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p5_leak_corr.npz results/baseline/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p8_leak_corr.npz results/baseline/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p11p3_leak_corr.npz --out-file results/baseline/cosebis/cosebis_harmonic_scan/cosebis_harmonic_version_ptes.json\n",
   "definition_version": "sha256:3c0174c0d43b84157e053507dbab207fa6687c394a38856b25a89c2fa34ae1f0",
-  "env_version": "sha256:5d20e139f6dd2a87d7b17a096d93e196eec959f36991c85e9c1da5975d7bda21",
-  "data_version": "sha256:c2543a2c867a391bc00a7a184aeea85e7f58bf23b609c0dc0804c3404c54d27d",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:1349e9bb5a68e0ed2e3a29615aac7186e85cc1fa46bab0f6e6ac0d93cee1b3db",
   "decisions": {},
   "input_versions": {
-    "harmonic_modes_sp_v1p4p5_leak_corr": "sha256:b6a950b921c06543d8862a2a42ecafdca972ce2ca4ef9b678f91a78334418838",
-    "harmonic_modes_sp_v1p4p8_leak_corr": "sha256:4fd71d458e4aa13eaa48300ed7b5be94fe7640f504da515c69c0f185c930acb1",
-    "harmonic_modes_sp_v1p4p11p3_leak_corr": "sha256:66ed004af7396bb292e78cec4a9e0b3316c906dcaa4e333b10fdd0db7427366a"
+    "harmonic_modes_sp_v1p4p5_leak_corr": "sha256:9c2f6a48c57aeb2a3527c91aca5b26455c0ab208909458c62c674e2ef9e5b232",
+    "harmonic_modes_sp_v1p4p8_leak_corr": "sha256:ddfc2a55ac93b14446ee386bab69d0762173576b3b14b96c879cd6ae9add8cff",
+    "harmonic_modes_sp_v1p4p11p3_leak_corr": "sha256:c7a51e9983fc3273238af69f41e739c8de75b20fecfdac8bdc2fd4bd501679b8"
   },
-  "git_sha": "7140756b7f62b642d4ee8c592ebb14df46d85641",
+  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -22,13 +22,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-09-12T02:42:47.016+00:00",
-  "finished_at": "2026-09-12T02:43:19.869+00:00",
+  "started_at": "2026-11-01T08:01:45.573+00:00",
+  "finished_at": "2026-11-01T08:02:06.981+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c985ceaa3193cabe",
-    "id": "991fbeee21445463e45e8a839048b2873f00345779f4b2464f60869cdee7deec",
-    "archive": ".datalad/environments/lc-env-c985ceaa3193cabe/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

@@ -4,8 +4,8 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/tenk_grid_convergence.py --config src/papers/bmodes/config/config.yaml --xi-reporting results/baseline/two_point/xi_reporting.txt --xi-1k results/baseline/two_point/xi_integration.txt --xi-10k results/baseline/two_point/xi_integration_convergence.txt --pure-eb-baseline results/baseline/pure_eb/pure_eb_semianalytic_data.npz --cosebis-baseline results/baseline/cosebis/cosebis_modes_data.npz --scale-cut-convention grid_bin_edges --integration-method fixed_operator --rebinning-weights npairs --integration-limits fine_grid_extent --out-file results/baseline/convergence/tenk_grid_comparison.json\n",
   "definition_version": "sha256:d49d6625f5baff4a6733520f8bed0e6a4491fb5b8e0f283b452fe7ee32688d07",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
-  "data_version": "sha256:fabad3aa8bdb64477ccfbd727f1fd4e8c5c6b0ec7539012f300e32483f935b34",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:5d530ff4ecc8f367870cf5a52ff0c6c65e3d147e7540991e5c16c08ed395f13c",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a",
@@ -16,17 +16,17 @@
     "mode_count": "n_max_20"
   },
   "input_versions": {
-    "xi_reporting": "sha256:6435442415f44ffe534c8f2ee23c75072fa712c6def2724942e9713ac17ac1d4",
-    "xi_integration": "sha256:eff7465d718f384cd89a676df4886f745a967b3d91bc7caf1d1ee709c4a77f38",
+    "xi_reporting": "sha256:3f1486044603b1726b6512f03a5d04420b8cbe34421032d67c7a770268f3670e",
+    "xi_integration": "sha256:d26445847fdd07a235460833df86c19950577b5051de2843beed73622d026a99",
     "xi_integration_convergence": "sha256:9fdbcb61c1f75674c9222aae360dad0ac958721342fdb1952432ee3ba9a6cb46",
-    "pure_eb_semianalytic_data": "sha256:d05cc4d42d0c9082e17fb6110c766c0ff1dee0b6bbceadbf152a84bbd5fe1cc1",
+    "pure_eb_semianalytic_data": "sha256:7e1374ee2882b55cec68a093330a6fbf6fbab5c50e6516f4e68844800a7f2137",
     "cosebis_modes_data": "sha256:ac1c8b2af0cfe7709c0e1f124c9f4a0a1cbb46ce554e7cf903a40f0d1cb479f7",
     "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2",
     "tenk_grid_convergence_script": "sha256:de9e30e64f5c7ac10032963f9bfcbdfa496cf017ec4ea7be66ef48db5a18127a"
   },
-  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -34,13 +34,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-16T18:17:17.682+00:00",
-  "finished_at": "2026-10-16T18:20:14.523+00:00",
+  "started_at": "2026-11-01T08:00:53.542+00:00",
+  "finished_at": "2026-11-01T08:02:27.248+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "output_id": "pure_eb.pure_eb_version_comparison_figure",
+  "universe_id": "submitted",
+  "recipe": "d=$(mktemp -d) && tar xzf results/submitted/pure_eb/pure_eb_sweep.tar.gz -C $d && python src/papers/bmodes/scripts/pure_eb_version_comparison.py --config src/papers/bmodes/config/config.yaml --results-dir $d --fiducial-version SP_v1.4.6.3_leak_corr --fiducial-pure-eb-data results/submitted/pure_eb/pure_eb_semianalytic_data.npz --scale-cut-convention grid_bin_edges --out-file results/submitted/pure_eb/pure_eb_version_comparison_figure.png\n",
+  "definition_version": "sha256:f89220bedb9346c8d66c1d8b2326f8d1aa57bc347afe6da9b318145aeff2d4c1",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:595139cbe2e4263f8ed5db594c3e978b10a2de8022b92f57a12fc863c626b442",
+  "decisions": {
+    "scale_cut_convention": "grid_bin_edges"
+  },
+  "input_versions": {
+    "pure_eb_semianalytic_data": "sha256:30545d1677df98c92d8e794858db83a015b0c213080dee381c13ed54d7c99dbe",
+    "pure_eb_sweep": "sha256:4b5706593fc9a5f4123b7a474ec68334abac9db6f30bbe0190d2a5aa12e73a28",
+    "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112",
+    "print_width_script": "sha256:d1692083bf9a5226a33b7e9cc7b602f66825e21bbbad7e841d0bc8457489306a",
+    "pure_eb_version_comparison_script": "sha256:747b7ac6f301142dfd192e87cabf612f8ee0866b29aecd1fca6f79ddb1e5c750"
+  },
+  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T11:12:49.963+00:00",
+  "finished_at": "2026-11-01T11:13:06.563+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

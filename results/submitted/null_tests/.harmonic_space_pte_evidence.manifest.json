@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "output_id": "null_tests.harmonic_space_pte_evidence",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py --config src/papers/bmodes/config/config.yaml --from-evidence results/submitted/null_tests/harmonic_space_pte_data.json --figure fiducial --pte-threshold nominal_0p05 --out-file results/submitted/null_tests/harmonic_space_pte_evidence.png\n",
+  "definition_version": "sha256:7b7bdb8801cb8a8bd5ad4acd08bf3f873e556729fdd4be8dd21224f43f5b73be",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:e92a6d8124e778ef6b638453b4d5c020dc5002ebc50cc8b9fcba23dd754a80e3",
+  "decisions": {
+    "pte_threshold": "nominal_0p05"
+  },
+  "input_versions": {
+    "harmonic_space_pte_data": "sha256:4976d85c5cea8eaf63c135139ace3e2e87ced5ce35644fdfd075a87828dd1fe0",
+    "harmonic_space_pte_matrices_script": "sha256:355913b9d34126b92663905c3a0f3dde1c6fe57ce49f6da612cc30da843dad3f"
+  },
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T00:35:24.673+00:00",
+  "finished_at": "2026-11-01T00:35:34.070+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

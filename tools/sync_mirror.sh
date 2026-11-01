@@ -19,41 +19,44 @@ find "$mirror" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf -- {} +
 git -C "$repo" archive HEAD:UNIONS/pure_eb | tar -x -C "$mirror"
 find "$mirror" -name '*cov_tmp*' \( -type f -o -type l \) -delete
 
-# src is lc's qualified-output layout; dst is the MySTRA SDK's owner layout.
-# Only exact declared formats are copied: missing PNGs must remain pending.
-while IFS='|' read -r src dst; do
-  [[ -z "$src" ]] && continue
-  input="$source_results/$src"
-  output="$mirror/$dst"
-  if [[ ! -f "$input" ]]; then
-    echo "Pending: $src" >&2
-    continue
+# Copy the report's artifacts from lc's qualified-output layout
+# (results/<universe>/<a>/<b>/<file>) into MySTRA's owner layout
+# (analyses/<a>/analyses/<b>/results/<universe>/<file>); root outputs stay at
+# results/<universe>/<file>. Every baseline file under the size cap is copied,
+# which covers the report's figures and values and the inventory's metrics and
+# evidence. Inside nested sub-analyses (the sweeps) only json, csv and png are
+# copied, so per-realisation data stay in the private repository, as do the
+# large integration tables. A file whose annex content is absent stays pending.
+max_bytes=${MIRROR_MAX_BYTES:-2000000}
+copy_artifact() {
+  local input=$1 output=$2
+  if [[ ! -e "$input" ]] || head -c 15 "$input" | grep -qFx '/annex/objects/'; then
+    echo "Pending: ${input#"$source_results"/}" >&2
+    return
   fi
-  if head -c 15 "$input" | grep -qFx '/annex/objects/'; then
-    echo "Pending (annex pointer): $src" >&2
-    continue
+  if (( $(stat -L -c %s "$input") > max_bytes )); then
+    return
   fi
   mkdir -p "$(dirname "$output")"
   rm -f "$output"
   cp -L -- "$input" "$output"
-done <<'ARTIFACTS'
-baseline/null_tests/paper_claims.csv|analyses/null_tests/results/baseline/paper_claims.csv
-baseline/null_tests/paper_claims_comparison.csv|analyses/null_tests/results/baseline/paper_claims_comparison.csv
-submitted/null_tests/paper_claims.csv|results/submitted/null_tests/paper_claims.csv
-baseline/pte_table_appendix.csv|results/baseline/pte_table_appendix.csv
-baseline/pure_eb/pure_eb_data_vector_figure.png|analyses/pure_eb/results/baseline/pure_eb_data_vector_figure.png
-baseline/pure_eb/pure_eb_covariance_figure.png|analyses/pure_eb/results/baseline/pure_eb_covariance_figure.png
-baseline/pure_eb/pure_eb_version_comparison_figure.png|analyses/pure_eb/results/baseline/pure_eb_version_comparison_figure.png
-baseline/cosebis/fig_cosebis_data_vector.png|analyses/cosebis/results/baseline/fig_cosebis_data_vector.png
-baseline/cosebis/cosebis_version_comparison.png|analyses/cosebis/results/baseline/cosebis_version_comparison.png
-baseline/cl_bb/cl_data_vector_figure.png|analyses/cl_bb/results/baseline/cl_data_vector_figure.png
-baseline/cl_bb/cl_version_comparison_figure.png|analyses/cl_bb/results/baseline/cl_version_comparison_figure.png
-baseline/glass_mocks/mock_validation_figure.png|analyses/glass_mocks/results/baseline/mock_validation_figure.png
-baseline/glass_mocks/mock_min_pte_figure.png|analyses/glass_mocks/results/baseline/mock_min_pte_figure.png
-baseline/fig_pte_heatmaps.png|results/baseline/fig_pte_heatmaps.png
-baseline/fig_cl_pte_heatmap.png|results/baseline/fig_cl_pte_heatmap.png
-baseline/fig_harmonic_config_cosebis_full.png|results/baseline/fig_harmonic_config_cosebis_full.png
-ARTIFACTS
+}
+while IFS= read -r -d '' input; do
+  rel=${input#"$source_results"/baseline/}
+  dir=$(dirname "$rel")
+  if [[ "$dir" == . ]]; then
+    copy_artifact "$input" "$mirror/results/baseline/$rel"
+    continue
+  fi
+  if [[ "$dir" == */* && ! "$rel" =~ \.(json|csv|png)$ ]]; then
+    continue
+  fi
+  owner="analyses/${dir//\//\/analyses\/}"
+  copy_artifact "$input" "$mirror/$owner/results/baseline/$(basename "$rel")"
+done < <(find -L "$source_results/baseline" -type f ! -name '.*' ! -path '*/variants/*' -print0)
+# The submitted universe's claims feed the report's version comparison.
+copy_artifact "$source_results/submitted/null_tests/paper_claims.csv" \
+  "$mirror/results/submitted/null_tests/paper_claims.csv"
 
 # Remove unfetched annex pointers and annex symlinks, without following links.
 python3 - "$mirror" <<'PY'

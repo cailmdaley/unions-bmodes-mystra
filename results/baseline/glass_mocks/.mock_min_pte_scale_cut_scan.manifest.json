@@ -4,26 +4,26 @@
   "universe_id": "baseline",
   "recipe": "python src/workflow/scripts/min_pte_window_scan.py --per-mock-statistics results/baseline/glass_mocks/mock_per_mock_statistics.npz --mock-xi-fine results/baseline/glass_mocks/mock_xi_scan/mock_xi_fine.npz --mock-pure-eb-modes results/baseline/glass_mocks/mock_pure_eb_modes.npz --cosebis-xi-grid results/baseline/two_point/xi_integration.txt --covariance results/baseline/covariance/cov_integration_g.txt --pure-covariance results/baseline/pure_eb/pure_eb_semianalytic_data.npz --covariance-mockmatched /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt --pure-covariance-mockmatched results/baseline/glass_mocks/pure_cov_mockmatched.npz --reference-covariance mockmatched --xi-min-sep 0.5 --xi-max-sep 300.0 --xi-nbins 1000 --reporting-theta-min 1.0 --reporting-theta-max 250.0 --reporting-edges 21 --fiducial-window 9 16 --nmodes 20 --precision 120 --global-alpha 0.05 --cosebi-roots interpolate_ratio --processes 24 --emit calibration --out-file results/baseline/glass_mocks/mock_min_pte_scale_cut_scan.json\n",
   "definition_version": "sha256:6e0b678fcf68fa6afa65603cd97f59bf8c836913b292e7166bc490c8b83a4044",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
-  "data_version": "sha256:a4133c3418f03404a4a2f37fff0be2f8fb26dfcf1cc0bd94cbba82732f9037e9",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:f44f98dbf0b8f848fd9eb2b6985036342dd1adea2c31a2d0625b45579ef880c2",
   "decisions": {
     "reference_covariance": "mockmatched",
     "mock_suite": "v1_4_6_3_v2"
   },
   "input_versions": {
-    "mock_per_mock_statistics": "sha256:1ae306148fb12ff11998bbde4737f178355640a3d63802e1ea732f49c5d4f656",
+    "mock_per_mock_statistics": "sha256:7268c80db3498a58fbaf93282ee4db20341ae80bd9e2947d164034f5c58babb4",
     "mock_xi_fine": "sha256:67109830ad3121c15403ad8371c21f2384e9a8ab2f11d48fde62753f2c4760cf",
     "mock_pure_eb_modes": "sha256:ce3188fc9f636e1ee0b21b3d98201900a3e2d6e1b97323d74d6a4da48d303f3e",
-    "xi_integration": "sha256:eff7465d718f384cd89a676df4886f745a967b3d91bc7caf1d1ee709c4a77f38",
+    "xi_integration": "sha256:d26445847fdd07a235460833df86c19950577b5051de2843beed73622d026a99",
     "cov_integration_g": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052",
-    "pure_eb_semianalytic_data": "sha256:d05cc4d42d0c9082e17fb6110c766c0ff1dee0b6bbceadbf152a84bbd5fe1cc1",
+    "pure_eb_semianalytic_data": "sha256:7e1374ee2882b55cec68a093330a6fbf6fbab5c50e6516f4e68844800a7f2137",
     "cov_integration_mockmatched": "sha256:a65ee4c8beac7c53d45db38c2aac9226628ccd921151d27227e6a15078646780",
-    "pure_cov_mockmatched": "sha256:f18a1bec9bbae3c24d00feab10fc965d8ab7eaf0a564440efbdd1ad0a93b0781",
+    "pure_cov_mockmatched": "sha256:113a77c8bd0b72d07dd7a7710536de6b999940b0bbe90375c4ae4ab37edf3735",
     "min_pte_window_scan_script": "sha256:6f9a70ce7747dcb6a98143348bcbc957417509dcff2b45fa968865f638b6a995"
   },
-  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -31,13 +31,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-16T18:20:14.560+00:00",
-  "finished_at": "2026-10-16T18:42:09.649+00:00",
+  "started_at": "2026-11-01T05:58:19.272+00:00",
+  "finished_at": "2026-11-01T06:15:11.426+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

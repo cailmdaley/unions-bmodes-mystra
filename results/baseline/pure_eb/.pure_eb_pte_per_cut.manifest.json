@@ -4,19 +4,19 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/calculate_pure_eb_ptes.py --version \"$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --get fiducial.version)\" --blind A --pure-eb-data results/baseline/pure_eb/pure_eb_semianalytic_data.npz --cov-integration results/baseline/covariance/cov_integration_g.txt --npatch 1 --n-samples 2000 --out-file results/baseline/pure_eb/pure_eb_pte_per_cut.npz\n",
   "definition_version": "sha256:6282627fadc391bb67c76ddbc7b6ef6572d6437e67334605bbb9cea4e2b0e5f9",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
-  "data_version": "sha256:cf141b39537283b69f40059afc1d0096368a1b8f6530160afa11c8aba247654d",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:3799ab57187bcce2250d56f8f370d00701e04798cfa1bb05f204c4a8fa0b5834",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a"
   },
   "input_versions": {
-    "pure_eb_semianalytic_data": "sha256:d05cc4d42d0c9082e17fb6110c766c0ff1dee0b6bbceadbf152a84bbd5fe1cc1",
+    "pure_eb_semianalytic_data": "sha256:7e1374ee2882b55cec68a093330a6fbf6fbab5c50e6516f4e68844800a7f2137",
     "cov_integration_g": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052"
   },
-  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -24,13 +24,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-16T18:17:16.612+00:00",
-  "finished_at": "2026-10-16T18:17:30.960+00:00",
+  "started_at": "2026-11-01T07:58:17.877+00:00",
+  "finished_at": "2026-11-01T07:59:07.464+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

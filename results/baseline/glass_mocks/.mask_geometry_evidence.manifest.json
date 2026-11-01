@@ -4,15 +4,15 @@
   "universe_id": "baseline",
   "recipe": "python src/workflow/scripts/mock_mask_geometry_analysis.py --from-stats results/baseline/glass_mocks/mask_geometry_statistics.npz --emit evidence --out-file results/baseline/glass_mocks/mask_geometry_evidence.json\n",
   "definition_version": "sha256:41b764d9c5c1655ad8f1d5eb61595d16c97d3edcfd60018960f183cf889b7705",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
-  "data_version": "sha256:b475c4c7c4e414b22a7c8199875acf0fd1ad865c29bcc1bf503949497d75f8da",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:7e22a3b1cfbed86988f824bd1b3a9823b6e22a2784fe008e9d2627a5a55fda59",
   "decisions": {},
   "input_versions": {
-    "mask_geometry_statistics": "sha256:e1d4228963378cf923af93eba6d692f4a406df07b025a2bb53edc053bdd39ed6"
+    "mask_geometry_statistics": "sha256:bd1a4c9daec1363909eb2f1bb4c4c33626b792b986347ed666147bde553c38ae"
   },
-  "git_sha": "d0bba2708c26f6ff5bf7b1180b6ef9eaa1649c87",
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc5.dev20+g7edf83237",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -20,13 +20,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-09-28T02:40:10.967+00:00",
-  "finished_at": "2026-09-28T02:40:24.616+00:00",
+  "started_at": "2026-11-01T05:56:18.194+00:00",
+  "finished_at": "2026-11-01T05:56:24.452+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

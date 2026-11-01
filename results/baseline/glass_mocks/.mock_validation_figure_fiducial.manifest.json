@@ -4,22 +4,22 @@
   "universe_id": "baseline",
   "recipe": "python src/workflow/scripts/mock_validation_figure.py --per-mock-statistics results/baseline/glass_mocks/mock_per_mock_statistics.npz --campaign-evidence results/baseline/glass_mocks/mock_campaign_evidence.json --range fiducial --output results/baseline/glass_mocks/mock_validation_figure_fiducial.pdf\n",
   "definition_version": "sha256:2e8eb2bfe69a8d9f05a83615ec5bfb0e9782eeca5a26f687230d0e7bf423a29b",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
-  "data_version": "sha256:d7fa9170bbb320ef247487e3e1d5133ce6456b84a08acd54bf468b91f426dae9",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:b8af0c4a7b5c6618f09ec5b618d4f7fa620345e827a8ad66135e6d3eb215b8f9",
   "decisions": {
     "reference_covariance": "mockmatched",
     "mock_suite": "v1_4_6_3_v2"
   },
   "input_versions": {
-    "mock_per_mock_statistics": "sha256:1ae306148fb12ff11998bbde4737f178355640a3d63802e1ea732f49c5d4f656",
-    "mock_campaign_evidence": "sha256:9f0081c737d2f5330276d8f479cf27954ad2f7b74a3266d35047152d904bacff",
-    "mock_validation_figure_script": "sha256:69737229b3a3363e55e4b239f219a835d8853f6e045f56e7690f1960fbd316f2",
+    "mock_per_mock_statistics": "sha256:7268c80db3498a58fbaf93282ee4db20341ae80bd9e2947d164034f5c58babb4",
+    "mock_campaign_evidence": "sha256:d732e0a15b617bd14af3c2f095b67f42314919c28cb625bcac35a0d7d6d09f81",
+    "mock_validation_figure_script": "sha256:32465fa9eb24688c9b226b286751818a104b7365d6b169a006177e49ad66b543",
     "plotting_utils_script": "sha256:e53c7b42f75838d1d6b63327bd72e7c2a3f3d5b22b4e00e67df32a409552a0da",
     "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
   },
-  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -27,13 +27,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-16T18:19:39.035+00:00",
-  "finished_at": "2026-10-16T18:19:55.477+00:00",
+  "started_at": "2026-11-01T11:12:49.954+00:00",
+  "finished_at": "2026-11-01T11:13:07.969+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

@@ -2,10 +2,10 @@
   "schema_version": 1,
   "output_id": "cosebis.fig_cosebis_data_vector",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/cosebis_data_vector.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --plot-from-modes results/baseline/cosebis/cosebis_modes_data.npz --scale-cut-convention grid_bin_edges --out-file results/baseline/cosebis/fig_cosebis_data_vector.pdf\n",
-  "definition_version": "sha256:3e0db538f5a7e91aef8839569828d3d0c0ef5c83639aca57863e0d1790f67a16",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
-  "data_version": "sha256:6d66fafd274b1a23e06c24856b6ccc4e228a74a06643bc479b457d71cde7f385",
+  "recipe": "python src/papers/bmodes/scripts/cosebis_data_vector.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --plot-from-modes results/baseline/cosebis/cosebis_modes_data.npz --scale-cut-convention grid_bin_edges --out-file results/baseline/cosebis/fig_cosebis_data_vector.png\n",
+  "definition_version": "sha256:d4504fdfbf02443e1b609f3dd439df4cf259dc4ae3a11549d6f28fa0be93ba0c",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:e9ee19f2dfa2f70932093fe1989227dab74caa6bfefc2bfb43a5312ba330bafd",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a",
@@ -17,9 +17,9 @@
     "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112",
     "print_width_script": "sha256:d1692083bf9a5226a33b7e9cc7b602f66825e21bbbad7e841d0bc8457489306a"
   },
-  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -27,13 +27,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-16T18:12:48.866+00:00",
-  "finished_at": "2026-10-16T18:13:10.052+00:00",
+  "started_at": "2026-11-01T11:12:49.927+00:00",
+  "finished_at": "2026-11-01T11:13:09.070+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

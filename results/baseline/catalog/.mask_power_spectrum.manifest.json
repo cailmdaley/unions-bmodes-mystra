@@ -4,19 +4,17 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/catalog_products.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --cat-config src/cosmo_val/cat_config.yaml --emit mask_power_spectrum --out-file results/baseline/catalog/mask_power_spectrum.txt\n",
   "definition_version": "sha256:9d3f65cfedc580f1667571e9871ada565f8e7cb6f5b3e3d7f5ca9be1039bab1f",
-  "env_version": "sha256:ea3f44f44a8e4d260670094aa545895eaa2736d45ee303b3a84eee9d268d148f",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:043c512476658dea60273e095e88b00e3b73559cfea394d1bda35e9548c576cb",
   "decisions": {
     "fiducial_catalog": "size_cut"
   },
   "input_versions": {
-    "footprint_masks": "sha256:043c512476658dea60273e095e88b00e3b73559cfea394d1bda35e9548c576cb",
-    "footprint_masks_v1363": "sha256:b475d05c0a25aca7c39c36682aa501f45e11e4337e188f4fe2f93600bd891987",
-    "footprint_masks_v1463_mccd_footprint": "sha256:579b3d680485d29bd7d538c205690e6425bf1710162a428518a60af27374022a"
+    "footprint_masks": "sha256:043c512476658dea60273e095e88b00e3b73559cfea394d1bda35e9548c576cb"
   },
-  "git_sha": "fcec2171119704f782a71644a97bd7ecf00b49bf",
+  "git_sha": "9f201d2234a899be9a019bba4acbdd4477452688",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc6.dev26+g86acb1b1b",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -24,13 +22,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-16T15:57:26.148+00:00",
-  "finished_at": "2026-10-16T15:57:28.512+00:00",
+  "started_at": "2026-10-30T02:22:21.751+00:00",
+  "finished_at": "2026-10-30T02:22:24.958+00:00",
   "uv_version": "0.12.6",
   "image": {
-    "tag": "lc-env-c370ac20ef830b99",
-    "id": "6ff468832a4ab9f39d88e7a26f9ea4d5701e058cf03653fe91d8a7b7c74b753b",
-    "archive": ".datalad/environments/lc-env-c370ac20ef830b99/image",
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
     "arch": "amd64"
   }
 }

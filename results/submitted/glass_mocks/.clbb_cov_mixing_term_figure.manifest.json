@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.clbb_cov_mixing_term_figure",
+  "universe_id": "submitted",
+  "recipe": "python src/workflow/scripts/clbb_cov_mixing_term_figure.py --mixing-test results/submitted/glass_mocks/clbb_cov_mixing_term_test.json --out-file results/submitted/glass_mocks/clbb_cov_mixing_term_figure.png\n",
+  "definition_version": "sha256:a45aa76ecd51452adaf7b008fcb832b2ab4afb7fa2171bc19d9516390571be66",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:25deeb27c4c10db141860c4c4bafbce4209f32a648d17f7f8808b2176db54ee3",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2",
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a"
+  },
+  "input_versions": {
+    "clbb_cov_mixing_term_test": "sha256:6ef096b23a7b78b6305b6eb20c5447aaee1da63596b0b15c767619d66ae29209",
+    "clbb_cov_mixing_term_figure_script": "sha256:e793b3fe43fe023f369fd5d2908947a33b36df3c28c99f2f70f806ce5ea812fb",
+    "plotting_utils_script": "sha256:e53c7b42f75838d1d6b63327bd72e7c2a3f3d5b22b4e00e67df32a409552a0da"
+  },
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-31T23:40:56.231+00:00",
+  "finished_at": "2026-10-31T23:41:23.224+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

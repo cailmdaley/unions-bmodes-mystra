@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "output_id": "cosebis.cosebis_pte_grid.cosebis_pte_row_10",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --xi-integration results/submitted/two_point/xi_integration.txt --cov-integration results/submitted/covariance/cov_integration_g.txt --row 10 --out-file results/submitted/cosebis/cosebis_pte_grid/cosebis_pte_row_10.npz\n",
+  "definition_version": "sha256:2ecce74eec3e1eae190c640ef27c3d634f97d05c29eba841a0c325b30a814778",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:988d0eaaf5892a43fba76e3da9073cb6bf5a4f74328ef230b9450f3d4ea51dad",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "scale_cut_pair_grid": "production_grid",
+    "mode_subsets": "n_le_6_and_n_le_20"
+  },
+  "input_versions": {
+    "xi_integration": "sha256:4b17cfb4e427aa79a84bd70e566bb7f884e1b758600a454db8109ad8733a2d15",
+    "cov_integration_g": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052"
+  },
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T00:07:46.780+00:00",
+  "finished_at": "2026-11-01T00:10:11.352+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

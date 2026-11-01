@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "output_id": "two_point.xi_scan.xi_sweep_bundle",
+  "universe_id": "submitted",
+  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout xi --config src/papers/bmodes/config/config.yaml --names xi_sp_v1p4p5_reporting xi_sp_v1p4p5_integration xi_sp_v1p4p5_leak_corr_reporting xi_sp_v1p4p5_leak_corr_integration xi_sp_v1p4p6p3_reporting xi_sp_v1p4p6p3_integration xi_sp_v1p4p8_reporting xi_sp_v1p4p8_integration xi_sp_v1p4p8_leak_corr_reporting xi_sp_v1p4p8_leak_corr_integration xi_sp_v1p4p11p3_reporting xi_sp_v1p4p11p3_integration xi_sp_v1p4p11p3_leak_corr_reporting xi_sp_v1p4p11p3_leak_corr_integration --members results/submitted/two_point/xi_scan/xi_sp_v1p4p5_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p5_integration.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p5_leak_corr_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p5_leak_corr_integration.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p6p3_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p6p3_integration.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p8_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p8_integration.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p8_leak_corr_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p8_leak_corr_integration.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p11p3_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p11p3_integration.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p11p3_leak_corr_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p11p3_leak_corr_integration.txt --out-file results/submitted/two_point/xi_scan/xi_sweep_bundle.tar.gz\n",
+  "definition_version": "sha256:ae408f3d216dd45f59b1d5769824b543b84d81f41111beac63b1fe937886a596",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:22f41b3b666ee53c2424e6c06dde0a2634a04497f7a2addfa4a501456e0305a4",
+  "decisions": {},
+  "input_versions": {
+    "xi_sp_v1p4p5_reporting": "sha256:22d658be0dea5019f9c6b83e5abd5f5159859cdac0899f2ba38a4fcd0de165bd",
+    "xi_sp_v1p4p5_integration": "sha256:76c60656fa97403c08e2a2698efc241e8c330ad5ef0f5c9aa670b51b55ec48ec",
+    "xi_sp_v1p4p5_leak_corr_reporting": "sha256:3aea6be9b1b7cc5a813b4b2b80bc39736ecdd893cd00873a0343aba0287ea28e",
+    "xi_sp_v1p4p5_leak_corr_integration": "sha256:f5353ffeb74a0fce5522a75f34e6f492b226c7e4d43694bcc5cc2cf59199e9d1",
+    "xi_sp_v1p4p6p3_reporting": "sha256:c149f1fa61354b8d3bfc38d4bcd12a3f8647a74fa0d6ef7b358b71544dc3f521",
+    "xi_sp_v1p4p6p3_integration": "sha256:10b1a40847e8d1444d32ed3729ec17dec177d0bbef7e5330b501149563c54175",
+    "xi_sp_v1p4p8_reporting": "sha256:34162ee0eeac38ac32cb6bdec204ea3203d7d33b1079a36179e6a5a9a5eb886d",
+    "xi_sp_v1p4p8_integration": "sha256:c3ff7aea65e5c2683c633dea26c05e7748348a31df45c4ad52d517d84fa8f5b7",
+    "xi_sp_v1p4p8_leak_corr_reporting": "sha256:7257a1661ef690cafd5838d55766e9ef3210d3053a2431a0600beaa9726482a8",
+    "xi_sp_v1p4p8_leak_corr_integration": "sha256:6401c0a1cf5a4bdc79c59751d26cccb86c173f9d3e62a356ea490df5535c6b9a",
+    "xi_sp_v1p4p11p3_reporting": "sha256:7b0c8066e0ecdbd0d81f3274c9bbbc3b0ff2f0df01d08df89708867d8f2481e6",
+    "xi_sp_v1p4p11p3_integration": "sha256:0c395c612b15be06ed197960f0e89441b1ef6ecbee5ae393020a27777ad4d096",
+    "xi_sp_v1p4p11p3_leak_corr_reporting": "sha256:5f776da19938d7d48b471af9c1a806a138969c48df4dcc6371aed0e1508442cc",
+    "xi_sp_v1p4p11p3_leak_corr_integration": "sha256:2974fc431a30549e26e7ac598a02e386afec860ffb00e400ddfd73c26bf1813a"
+  },
+  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-01T07:58:17.807+00:00",
+  "finished_at": "2026-11-01T07:58:29.383+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

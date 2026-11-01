@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "glass_mocks.clbb_cov_mixing_term_test",
+  "universe_id": "submitted",
+  "recipe": "python src/workflow/scripts/clbb_cov_mixing_term_test.py --mock-catalogs \"/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/unions_glass_sim_*_4096.fits\" --realisation 00001 --redshift-distribution results/submitted/catalog/redshift_distribution.txt --cl-files \"/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/cl_glass_mock_*_4096.npy\" --cl-cov-mockmatched /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/glass_mock_v1.4.6.3_v2/pseudo_cl_cov_glass_mock_v2_00001_powspace_nbins=32.fits --nside 1024 --nbins 32 --power 0.5 --out-file results/submitted/glass_mocks/clbb_cov_mixing_term_test.json\n",
+  "definition_version": "sha256:7590db67fe916eb253f7d85b1e6fde329a7f90143fb6e6d23bddcd64c73790a1",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:6ef096b23a7b78b6305b6eb20c5447aaee1da63596b0b15c767619d66ae29209",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2",
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a"
+  },
+  "input_versions": {
+    "glass_mock_catalogs": "spelling:sha256:aeace7d67ae9d1f09393c4e39adaba16ca60363f2e3cba93a0486caa7e1503ac",
+    "redshift_distribution": "sha256:0d712922bf6edc27600b4035cc236cccd3aa73fbd4f2bc426c3914b9a924cbe8",
+    "glass_mock_cl": "spelling:sha256:16549de17bf54f1265107d167a350b66c0ade3b99b6d5a100b7ccb06f5082838",
+    "cl_cov_mockmatched": "sha256:2cb0d9f56a0c917dea9bc21d7a86e0651c7878444e7d15cd1ef16d2076af592c",
+    "clbb_cov_mixing_term_script": "sha256:5247648d5b95b070ad1e8662f62f8278025ee58a46866e46f436d5b5e6c28631"
+  },
+  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-10-31T09:19:20.399+00:00",
+  "finished_at": "2026-10-31T09:19:59.449+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}
