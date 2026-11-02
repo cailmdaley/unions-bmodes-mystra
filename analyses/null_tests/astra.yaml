@@ -4,7 +4,7 @@ name: "B-mode null tests, PTE matrices, and blind-independence checks"
 inputs:
   - id: submitted_paper_claims
     type: data
-    description: Claims-macro table from the submitted universe, materialized as a cross-universe reference.
+    description: Claims-macro table of the submitted paper (the `submitted` universe), the reference for comparison.
     source: "./results/submitted/null_tests/paper_claims.csv"
 
   - id: paper_claims_script
@@ -133,14 +133,12 @@ outputs:
     type: metric
     format: json
     description: |
-      Configuration-space PTE evidence: the ξ_+^B, ξ_-^B and
-      COSEBI B_n χ² PTE matrices over the
-      (θ_min, θ_max) pair grid of `geomspace(1', 250', 21)`,
-      for all catalog variants, together with the values at the
+      ξ_+^B, ξ_-^B and COSEBI B_n χ² PTE matrices over the
+      (θ_min, θ_max) pair grid of `geomspace(1', 250', 21)` for all
+      catalog variants, with the values at the
       [adopted 12'–83' cut](#../decisions.fiducial_scale_cuts).
-      This is the queryable payload behind the config-space
-      panels of the per-version PTE table and behind
-      [the config-space heatmap figure](#outputs.config_space_pte_evidence).
+      Feeds the config-space columns of the per-version PTE table
+      and [the config-space heatmap figure](#outputs.config_space_pte_evidence).
     decisions: [scale_cut_convention]
     inputs:
       - pure_eb_ptes
@@ -174,18 +172,15 @@ outputs:
     type: figure
     format: png
     description: |
-      Configuration-space PTE composite figure:
-      the fiducial-version tile of ξ_+^B / ξ_-^B / COSEBI B_n
-      PTE matrices over (θ_min, θ_max) bandpower pairs of
-      `geomspace(1', 250', 21)`, with the
-      [adopted 12'–83' fiducial
+      ξ_+^B, ξ_-^B and COSEBI B_n PTE matrices for the fiducial
+      catalog over (θ_min, θ_max) pairs of `geomspace(1', 250', 21)`,
+      with the [adopted 12'–83' fiducial
       cut](#../decisions.fiducial_scale_cuts) marked as a black
-      square. Blue = failing (PTE below the selected
-      [global PTE threshold](#../decisions.pte_threshold)); white/red =
-      consistent. Rendered from
-      [config_space_pte_data](#outputs.config_space_pte_data);
-      the per-version composite is the separate
-      root-level `fig_pte_heatmaps` output.
+      square. Blue cells fail (PTE below the
+      [global PTE threshold](#../decisions.pte_threshold));
+      white/red cells are consistent. Rendered from
+      [config_space_pte_data](#outputs.config_space_pte_data); the
+      per-version composite is the root-level `fig_pte_heatmaps`.
     decisions: [scale_cut_convention, pte_threshold]
     inputs:
       - config_space_pte_data
@@ -207,13 +202,11 @@ outputs:
     type: metric
     format: json
     description: |
-      Harmonic-space PTE evidence: the Cℓ^BB χ² PTE matrices over
-      the (ℓ_min, ℓ_max) bandpower-pair grid spanning
-      8 ≤ ℓ ≤ 2048, for all catalog variants, together with the
+      Cℓ^BB χ² PTE matrices over the (ℓ_min, ℓ_max) bandpower-pair
+      grid spanning 8 ≤ ℓ ≤ 2048 for all catalog variants, with the
       value at the
       [adopted 300 < ℓ < 1600 cut](#../decisions.fiducial_scale_cuts).
-      Queryable payload behind the harmonic column of the
-      per-version PTE table and behind
+      Feeds the harmonic column of the per-version PTE table and
       [the Cℓ^BB heatmap figure](#outputs.harmonic_space_pte_evidence).
     inputs:
       - cl_sweep
@@ -239,16 +232,14 @@ outputs:
     type: figure
     format: png
     description: |
-      Harmonic-space PTE figure: the fiducial-version tile of
-      Cℓ^BB PTE matrices over (ℓ_min, ℓ_max) bandpower pairs,
-      with the
+      Cℓ^BB PTE matrix for the fiducial catalog over (ℓ_min, ℓ_max)
+      bandpower pairs, with the
       [adopted 300 < ℓ < 1600 cut](#../decisions.fiducial_scale_cuts)
-      marked. Blue = failing (PTE below the selected
-      [global PTE threshold](#../decisions.pte_threshold)); white/red =
-      consistent. Rendered from
-      [harmonic_space_pte_data](#outputs.harmonic_space_pte_data);
-      the per-version composite is the separate
-      root-level `fig_cl_pte_heatmap` output.
+      marked. Blue cells fail (PTE below the
+      [global PTE threshold](#../decisions.pte_threshold));
+      white/red cells are consistent. Rendered from
+      [harmonic_space_pte_data](#outputs.harmonic_space_pte_data); the
+      per-version composite is the root-level `fig_cl_pte_heatmap`.
     decisions: [pte_threshold]
     inputs:
       - harmonic_space_pte_data
@@ -266,14 +257,12 @@ outputs:
     type: metric
     format: json
     description: |
-      Aggregated JSON evidence holding the six headline PTE values
-      (ξ_+^B, ξ_-^B, ξ_tot^B, COSEBI B_n n ≤ 6, COSEBI B_n
-      n ≤ 20, Cℓ^BB) at the
+      The six headline PTEs (ξ_+^B, ξ_-^B, ξ_tot^B, COSEBI B_n for
+      n ≤ 6 and n ≤ 20, Cℓ^BB) at the
       [adopted 12'–83' / 300 < ℓ < 1600
-      cuts](#../decisions.fiducial_scale_cuts) and at full
-      range, for all four catalog variants. Gathered by
-      `generate_paper_macros` from the config-space and
-      harmonic-space PTE evidence payloads.
+      cuts](#../decisions.fiducial_scale_cuts) and at full range, for
+      all four catalog variants, gathered from the config- and
+      harmonic-space PTE payloads.
     inputs:
       - config_space_pte_data
       - harmonic_space_pte_data
@@ -291,50 +280,54 @@ outputs:
     type: data
     format: tex
     description: |
-      LaTeX macro file (`claims_macros.tex`)
-      carrying the quantitative claims — the six headline PTEs
-      and the version-comparison numbers — as `\newcommand`
-      definitions. The pure-mode scale-cut macros
-      are resolved from the [scale-cut convention](#../decisions.scale_cut_convention)
-      and rounded to integer arcmin. The four harmonic/configuration COSEBI
-      cross-check macros (`\harmCosebisPteSixThreeFid`,
-      `\cfgCosebisPteSixThreeFid`, `\harmCosebisPteSixThreeFull`,
-      `\cfgCosebisPteSixThreeFull`) are emitted here too, read from
-      [cosebis_harmonic_metrics](#inputs.cosebis_harmonic_metrics) and its
-      [full-range twin](#inputs.cosebis_harmonic_metrics_full); that chain runs
-      through `covariance.cl_cov_fine`. Derived presentation of
-      [pte_summary_evidence](#outputs.pte_summary_evidence). It carries
-      the GLASS mock-calibrated global minimum-PTE criterion at both
-      windows: the mock count, fiducial/full-range global p-values,
-      the adopted [global PTE threshold](#../decisions.pte_threshold)
-      (`\mockMinPteThreshold`) alongside the raw calibration floor
-      (`\mockMinPteFloor`), and the fiducial/full-range observed minima.
-      From [mock_campaign_evidence](#inputs.mock_campaign_evidence) it emits the
-      in-cut median analytic/empirical σ ratios (`\mockSigmaRatioPure{Min,Max}`,
-      `\mockSigmaRatioCosebis`, `\mockSigmaRatioCl`)
-      and the configuration-space ⟨χ²⟩/ν range (`\mockChiTwoNuConfig{Min,Max}`);
-      from [the scale-cut scan](#inputs.mock_min_pte_scale_cut_scan) the
-      clean-sample failure rate at the adopted threshold in the fiducial window
-      (`\mockAlphaFiducial`); and from the two PTE payloads, through the
-      same routine as the root `nu_penalty_verdicts` table, the minimum ν−2
-      PTE over the six statistics at the fiducial cuts
-      (`\fiducialMinPteNuPenalty`) and the largest PTE shift the object-wise
-      PSF-leakage correction induces (`\leakCorrMaxPteShift`). It also carries
-      the survey row (`\surveyArea`, `\surveyNeff`, `\surveySigmaE`) from
-      [survey_properties](#inputs.survey_properties); the COSEBI first-mode
-      significance B₁/σ₁ at both windows (`\cosebisFirstModeSignificance{Full,Fid}`)
-      from [cosebis_modes_data](#inputs.cosebis_modes_data);
-      the full-range analytic/empirical σ comparison (`\mockCosebisFirstModeTighter`,
-      `\mockCosebisFirstModeSignificance`, `\mockPureLargeThetaTighter`) from
-      [mock_per_mock_statistics](#inputs.mock_per_mock_statistics); the ensemble-mean
-      COSEBI bias (`\mockMeanBiasCosebis`) from
-      [mock_mean_vector_stats](#inputs.mock_mean_vector_stats); the mock galaxy-density
-      excess (`\mockDensityExcess`) from
-      [mock_vs_data_noise_table](#inputs.mock_vs_data_noise_table); and the
-      non-Gaussian share of the diagonal ξ± variance over all bins and the fiducial
-      window (`\ngFractionDiagonal{All,Fiducial}`) from
-      [cov_reporting_g](#inputs.cov_reporting_g) and
-      [cov_reporting_ng](#inputs.cov_reporting_ng).
+      The paper's quantitative-claims macros (`claims_macros.tex`) as
+      `\newcommand` definitions:
+
+      - the six headline PTEs and the version-comparison numbers (the
+        values of [pte_summary_evidence](#outputs.pte_summary_evidence)),
+        with pure-mode scale cuts resolved from the
+        [scale-cut convention](#../decisions.scale_cut_convention) and
+        rounded to integer arcmin;
+      - the harmonic/configuration COSEBI cross-check PTEs
+        (`\harmCosebisPteSixThreeFid`, `\cfgCosebisPteSixThreeFid`,
+        `\harmCosebisPteSixThreeFull`, `\cfgCosebisPteSixThreeFull`) from
+        [cosebis_harmonic_metrics](#inputs.cosebis_harmonic_metrics) and its
+        [full-range twin](#inputs.cosebis_harmonic_metrics_full);
+      - the GLASS mock-calibrated global minimum-PTE criterion at both
+        windows: mock count, global p-values, the adopted
+        [global PTE threshold](#../decisions.pte_threshold)
+        (`\mockMinPteThreshold`), the raw calibration floor
+        (`\mockMinPteFloor`) and the observed minima;
+      - from [mock_campaign_evidence](#inputs.mock_campaign_evidence), the
+        in-cut median analytic/empirical σ ratios
+        (`\mockSigmaRatioPure{Min,Max}`, `\mockSigmaRatioCosebis`,
+        `\mockSigmaRatioCl`) and the configuration-space ⟨χ²⟩/ν range
+        (`\mockChiTwoNuConfig{Min,Max}`);
+      - from [the scale-cut scan](#inputs.mock_min_pte_scale_cut_scan), the
+        clean-sample failure rate at the adopted threshold in the fiducial
+        window (`\mockAlphaFiducial`);
+      - from the two PTE payloads, the minimum ν−2 PTE over the six
+        statistics at the fiducial cuts (`\fiducialMinPteNuPenalty`,
+        computed as in the root `nu_penalty_verdicts` table) and the
+        largest PTE shift induced by the object-wise PSF-leakage
+        correction (`\leakCorrMaxPteShift`);
+      - the survey row (`\surveyArea`, `\surveyNeff`, `\surveySigmaE`) from
+        [survey_properties](#inputs.survey_properties);
+      - the COSEBI first-mode significance B₁/σ₁ at both windows
+        (`\cosebisFirstModeSignificance{Full,Fid}`) from
+        [cosebis_modes_data](#inputs.cosebis_modes_data);
+      - the full-range analytic/empirical σ comparison
+        (`\mockCosebisFirstModeTighter`, `\mockCosebisFirstModeSignificance`,
+        `\mockPureLargeThetaTighter`) from
+        [mock_per_mock_statistics](#inputs.mock_per_mock_statistics);
+      - the ensemble-mean COSEBI bias (`\mockMeanBiasCosebis`) from
+        [mock_mean_vector_stats](#inputs.mock_mean_vector_stats);
+      - the mock galaxy-density excess (`\mockDensityExcess`) from
+        [mock_vs_data_noise_table](#inputs.mock_vs_data_noise_table);
+      - the non-Gaussian share of the diagonal ξ± variance over all bins
+        and over the fiducial window (`\ngFractionDiagonal{All,Fiducial}`)
+        from [cov_reporting_g](#inputs.cov_reporting_g) and
+        [cov_reporting_ng](#inputs.cov_reporting_ng).
     decisions: [scale_cut_convention, pte_threshold]
     inputs:
       - config_space_pte_data
@@ -379,16 +372,13 @@ outputs:
     type: figure
     format: png
     description: |
-      Cross-statistic blind-independence figure: BB-block
-      diagonal variance across blinds A, B, C compared
-      against the EE-block diagonal variance, in all three
-      statistic spaces (pure E/B, COSEBI, harmonic Cℓ).
-      The [catalog version](#decisions.bb_blind_check_version)
-      selects the files used for the check; blind independence is a geometric
-      property independent of catalog selection. Underwrites the
-      [blind-A fiducial
-      choice](#../decisions.fiducial_blind) without entering
-      the headline figures.
+      BB-block diagonal variance across blinds A, B and C, compared
+      with the EE-block diagonal variance, for pure E/B, COSEBIs and
+      harmonic Cℓ, on the
+      [catalog version](#decisions.bb_blind_check_version) chosen for
+      the check. Supports the [blind-A fiducial
+      choice](#../decisions.fiducial_blind); it does not enter the
+      headline figures.
     decisions: [bb_blind_check_version]
     inputs:
       - blind_check_pure_eb
@@ -417,21 +407,18 @@ decisions:
     from: ../pte_threshold
 
   bb_blind_check_version:
-    label: "Catalog version for the BB-covariance blind-independence check"
+    label: "Catalog for the blind-independence check"
     tags: [null_tests, blinding, validation]
     rationale: |
-      The
+      Blind independence is a geometric property of the footprint,
+      so one catalog version suffices for the
       [BB-covariance blind-independence
-      check](#outputs.bb_covariance_blind_independence_evidence)
-      compares per-blind covariances at the fiducial
-      leak-corrected v1.4.6.3 catalog, the version the
-      [admissible GLASS mock suite](#../inputs.glass_mock_realisations)
-      was built for. Blind independence is a geometric property
-      of the footprint, so one catalog version suffices:
-      B-mode covariance ratios are expected to sit closer to
-      unity across blinds than E-mode ratios, while finite MC
-      sampling can still introduce visible B-mode covariance
-      scatter.
+      check](#outputs.bb_covariance_blind_independence_evidence).
+      It uses the fiducial leak-corrected v1.4.6.3 catalog, for which
+      the [admissible GLASS mock suite](#../inputs.glass_mock_realisations)
+      was built. B-mode covariance ratios are expected to sit closer
+      to unity across blinds than E-mode ratios, though finite MC
+      sampling can still introduce visible B-mode covariance scatter.
     default: fiducial_version_v1463
     options:
       fiducial_version_v1463:
@@ -454,24 +441,19 @@ decisions:
     label: "Scale-cut grid alignment across statistics"
     tags: [null_tests, scale_cuts]
     rationale: |
-      The configuration-space PTE composite renders the same
-      `geomspace(1', 250', 21)` index pairs for ξ_+^B, ξ_-^B,
-      and COSEBI B_n, so that the
+      The configuration-space PTE composite uses the same
+      `geomspace(1', 250', 21)` index pairs for ξ_+^B, ξ_-^B and
+      COSEBI B_n, so the
       [adopted 12'–83' fiducial cut
-      ](#../decisions.fiducial_scale_cuts) maps to the same
-      (i = 9, j = 16) cell in every panel. The COSEBI
+      ](#../decisions.fiducial_scale_cuts) falls in the same
+      (i = 9, j = 16) cell of every panel. The COSEBI
       [stable-pair grid
-      ](#../analyses.cosebis) is a strict subset of the
-      pure-mode grid (the pure-mode grid has no
-      polynomial-root instability), so missing COSEBI cells
-      appear as NaN tiles in the composite; this is the
-      intended behaviour, and the exclusions are noted
-      with the figure. The
-      harmonic-space composite uses an independent
-      (ℓ_min, ℓ_max) bandpower-pair grid over 8 ≤ ℓ ≤ 2048;
-      no cross-grid alignment is enforced because the
-      adopted ℓ-cut is a separate decision from the adopted
-      θ-cut.
+      ](#../analyses.cosebis) is a strict subset of the pure-mode
+      grid (pure modes have no polynomial-root instability), so the
+      missing COSEBI cells appear as NaN tiles. The harmonic-space
+      composite uses its own (ℓ_min, ℓ_max) bandpower-pair grid over
+      8 ≤ ℓ ≤ 2048; the ℓ-cut is a separate decision from the θ-cut,
+      so no cross-grid alignment is enforced.
     default: aligned_with_cosebis_subset
     options:
       aligned_with_cosebis_subset:
@@ -479,5 +461,5 @@ decisions:
       independent_grids:
         label: "Independent grids per statistic"
         description: |
-          Would prevent direct visual comparison of the
-          adopted-cut cell across panels; not used.
+          A separate θ-grid per statistic, which would prevent
+          comparing the adopted-cut cell across panels.

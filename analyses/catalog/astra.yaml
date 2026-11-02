@@ -15,11 +15,10 @@ outputs:
   - id: redshift_distribution
     type: data
     description: |
-      Per-blind n(z) text file for the selected base version.
-      Path keyed by `cc[ver]['shear']['redshift_path']` in the
-      catalog config. Each base version has a single n(z) shared
-      between the leakage-corrected and uncorrected variants
-      (correction is in ellipticity calibration, not photometry).
+      Redshift distribution n(z) of the fiducial catalog for the
+      selected blind. Leakage-corrected and uncorrected variants of a
+      version share one n(z): the correction acts on ellipticities,
+      not photometry.
     format: txt
     inputs: [redshift_distributions]
     decisions: [fiducial_catalog, fiducial_blind]
@@ -36,12 +35,11 @@ outputs:
   - id: mask_power_spectrum
     type: data
     description: |
-      Footprint mask power spectrum at HEALPix nside=4096,
-      apodised and normalised, selected per catalog variant
-      (standard 2894 deg² for v1.4.5 / v1.4.6.3 / v1.4.11.3,
-      star-halo-masked 2517 deg² for v1.4.8). Consumed by
-      CosmoCov via the `mask_cl_path` field of the generated
-      `.ini` file.
+      Angular power spectrum of the footprint mask (HEALPix
+      nside 4096, apodised and normalised) used by the CosmoCov
+      covariance: the standard 2894 deg² footprint for v1.4.5,
+      v1.4.6.3 and v1.4.11.3, the star-halo-masked 2517 deg² one for
+      v1.4.8.
     format: txt
     decisions: [fiducial_catalog]
     inputs: [footprint_masks]
@@ -61,12 +59,11 @@ outputs:
   - id: survey_properties
     type: data
     description: |
-      Per-version survey-property summary used to seed CosmoCov:
-      area in deg², effective galaxy density n_eff in arcmin⁻²,
-      and the combined two-component shape noise σ_e. Sourced from the `cov_th` block of
-      `cat_config.yaml` for the selected version. For the
-      fiducial size-cut catalog: 2894 deg², n_eff = 4.957
-      arcmin⁻², σ_e = 0.378 (combined; ≈ 0.27 per component).
+      Survey properties that set the CosmoCov covariance: area
+      (deg²), effective galaxy density n_eff (arcmin⁻²) and combined
+      two-component shape noise σ_e. For the fiducial size-cut
+      catalog: 2894 deg², n_eff = 4.957 arcmin⁻², σ_e = 0.378
+      (≈ 0.27 per component).
     format: json
     inputs: []
     decisions: [fiducial_catalog]

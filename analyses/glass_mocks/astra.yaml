@@ -1,47 +1,27 @@
 version: "0.0.14"
 name: "GLASS mock covariance campaign"
 description: |
-  Two claims rest on the 350 GLASS lognormal realisations: that
-  their scatter is "comparable to the fiducial error bars" for all
-  three B-mode statistics, and that the PTEs from the χ²
-  machinery are calibrated. Neither holds without numbers behind
-  it. Two further questions lean on the same suite: the empirical
-  correlation between the six test statistics, otherwise argued
-  only qualitatively, and whether the masked catalog's pure-mode
-  failures could be mask geometry rather than contamination.
+  Validation of the B-mode estimators, covariances and PTE
+  convention on 350 systematics-free GLASS lognormal realisations.
+  The realisations carry no B power, so every B statistic they
+  produce is estimator noise: their scatter is the empirical σ to
+  hold the analytic σ against, their per-mock χ² values test the
+  PTE convention and calibrate the min-PTE threshold, their χ²
+  correlations measure how independent the six statistics are, and
+  their pure-B response to a second footprint isolates mask
+  geometry.
 
-  This sub-analysis is the one extended reduction that answers
-  all four. The realisations are systematics-free and carry no
-  B power by construction, so every B statistic they develop is
-  estimator noise: their across-realisation scatter is the
-  empirical σ to hold the analytic σ against, their per-mock χ²
-  values are a sampling distribution to test the PTE convention
-  against, and their pure-B response to a second footprint is a
-  pure geometry measurement.
-
-  The reduction is a scatter/gather: each realisation is measured
-  independently — one TreeCorr run per mock, whose stacked result is
-  the [ξ_± ensemble](#outputs.mock_xi_fine) — and the suite is then carried as
-  stacked arrays through the same ξ_± → COSEBI and ξ_± →
-  pure-E/B transforms the data use, until one compute pass compares all six
-  statistics against analytic covariances and everything reported is
-  derived from its table. Which covariance is the
-  [decision](#decisions.reference_covariance) that turns out to
-  be the whole ballgame. The realisations do not carry the
-  fiducial catalog's galaxy count on the fiducial catalog's sky —
-  they carry 17% more — so holding their scatter against the
-  fiducial analytic covariance would measure that count mismatch
-  rather than anything about the covariance. What the campaign tests
-  instead is the covariance *machinery*: the mocks' scatter,
-  known by construction, against a covariance the same
-  CosmoCov / MC / NaMaster chain builds for the mocks' own noise.
-
-  The count mismatch itself is reported as a
-  [finding](#findings.mocks_are_over_constraining): the submitted
-  description of these mocks asserts a density match that direct
-  measurement does not support, and the direction matters — the
-  suite is *quieter* than the data, so its scatter over-constrains,
-  and any error bar read off it without mock-matching is too small.
+  Each realisation is measured independently (the
+  [ξ_± ensemble](#outputs.mock_xi_fine)) and carried through the
+  same ξ_± → COSEBI and ξ_± → pure-E/B transforms the data use; one
+  compute pass then compares all six statistics against analytic
+  covariances. The key [decision](#decisions.reference_covariance)
+  is which covariance: the realisations carry 17% more galaxies
+  than the data
+  ([finding](#findings.mocks_are_over_constraining)), so they are
+  held against a covariance the same CosmoCov / MC / NaMaster chain
+  builds at the mocks' own noise. The campaign thus tests the
+  covariance machinery, not the data covariance directly.
 tags: [glass, mocks, covariance, referee]
 
 inputs:
@@ -52,94 +32,62 @@ inputs:
   - id: glass_mock_catalogs
     type: data
     description: |
-      The catalog member of the
-      [GLASS mock family](#inputs.glass_mock_realisations): one
-      HEALPix-4096 source catalogue per realisation (`RA`, `Dec`,
-      `e1`, `e2`, `w` in the `SOURCE_CATALOGUE` HDU), produced by
-      Sacha Guerrini. These are the raw shear catalogues, not
-      Sacha's precomputed data vectors — the campaign needs the
-      fine 1000-bin integration grid that the stored 20-bin ξ_±
-      cannot supply, so ξ_± is recomputed from the catalogues
-      here.
+      The source catalogues of the
+      [GLASS mock family](#inputs.glass_mock_realisations), produced
+      by Sacha Guerrini: one HEALPix-4096 catalogue per realisation
+      (`RA`, `Dec`, `e1`, `e2`, `w`). ξ_± is recomputed from them on
+      the fine 1000-bin integration grid, which the stored 20-bin ξ_±
+      cannot supply.
 
-      A catalogue holds 60 423 575 unit-weight rows
-      (`SOURCE_CATALOGUE` `NAXIS2`, realisation 00001) against
-      the fiducial catalog's 61 378 891 rows / 51.65 M
-      weight-effective galaxies on the same footprint. The
-      superseded [v1.4.6 suite](#decisions.mock_suite) held
-      35 078 729.
+      A catalogue holds 60 423 575 unit-weight rows (realisation
+      00001) against the fiducial catalog's 61 378 891 rows / 51.65 M
+      weight-effective galaxies on the same footprint; the excluded
+      [v1.4.6 suite](#decisions.mock_suite) holds 35 078 729.
     source: "/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/unions_glass_sim_*_4096.fits"
 
   - id: glass_mock_xi_reporting
     type: data
     description: |
-      Sacha's precomputed 20-bin TreeCorr ξ_± per realisation on
-      the reporting grid. The pure-E/B transform needs both
-      grids: this one defines the reporting bins the six output
-      blocks land on, and the locally recomputed fine ξ_±
-      supplies the integration grid the Schneider (2022)
-      integrals run over. The v1.4.6 member of the same family is
-      what the covariance sub-analysis stacks for
+      Sacha Guerrini's precomputed 20-bin TreeCorr ξ_± per
+      realisation on the reporting grid. It defines the reporting
+      bins of the pure-E/B transform, whose Schneider (2022)
+      integrals run over the fine ξ_±. The v1.4.6 member of the same
+      family feeds
       [cov_glass_xi_reporting](#../covariance.outputs.cov_glass_xi_reporting).
-
-      Both suites' copies of this file also carry the campaign's
-      cheapest measurement of the density difference between
-      them: at fixed θ the v1.4.6 / v1.4.6.3_v2 weighted
-      pair-count ratio is 0.349, flat across all 20 bins, which
-      is what a 0.581 galaxy-count ratio on a *shared* footprint
-      predicts and is the direct evidence that the two suites
-      differ in density rather than in sky coverage.
     source: "/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/xi_glass_mock_*_4096_nbins=20.fits"
 
   - id: glass_mock_xi_fine_measured
     type: data
     description: |
-      The suite's fine ξ_±, measured: TreeCorr on the 1000-bin
-      integration grid over [0.5', 500'] for each of the 350
-      realisations, 60 M galaxies apiece. The one product of this
-      campaign the delivered suite does not ship, and the one the
-      COSEBI and pure-E/B filters cannot do without.
-
-      Read rather than remade. These files were written 21–23
-      August 2026 by the snakemake pipeline this analysis was
-      migrated from, by `run_glass_mock_2pcf.py` — the same script
-      the recipe here would call, on the same catalogues, on the
-      same grid (`r_nom` 0.5017 … 498.28, ratio 1.006932). The
-      measurement is untouched by anything the migration changed:
-      it is a two-point count, upstream of every estimator
-      decision the campaign forks on. Remaking it costs 10–20
-      core-hours per realisation — 5 000 for the suite, plus ~700
-      for the 50-realisation masked footprint — to reproduce bytes that already
-      exist. The seam is held honest by
-      [mock_xi_fine_provenance](#outputs.mock_xi_fine_provenance),
-      which re-measures one realisation under this spec and
-      differences it against the stored one.
+      TreeCorr ξ_± of each of the 350 realisations on the 1000-bin
+      integration grid over [0.5', 500'] (`r_nom` 0.5017 … 498.28,
+      ratio 1.006932), the grid the COSEBI and pure-E/B filters
+      integrate over. Measured by `run_glass_mock_2pcf.py` in the
+      snakemake pipeline and read here rather than remade (10–20
+      core-hours per realisation); it is upstream of every estimator
+      decision.
+      [mock_xi_fine_provenance](#outputs.mock_xi_fine_provenance)
+      re-measures one realisation and differences it against the
+      stored one.
     source: "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/glass_mock_v1.4.6.3_v2/gg_glass_mock_*_nbins=1000.fits"
 
   - id: glass_mock_cl
     type: data
     description: |
-      The pseudo-Cℓ member of the GLASS family: one npy block
-      (EE/BB among its rows) per realisation. The campaign reads
-      the BB row as its sixth statistic. The optional NaMaster
-      cross-check the gather can run against locally recomputed
-      bandpowers is inactive for this suite, which ships no
-      per-mock `pseudo_cl_*` files.
+      Pseudo-Cℓ bandpowers per GLASS realisation (EE and BB among
+      the rows); the BB row is the campaign's sixth statistic.
     source: "/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/cl_glass_mock_*_4096.npy"
 
   - id: v148_pixel_mask
     type: data
     description: |
-      Bit-packed boolean HealSparse union mask (nside 131072)
-      encoding the v1.4.8 star-halo/structure cuts — v1.4.8 is
-      v1.4.6.3 plus these cuts. Applied to the mock
-      catalogues to build the second footprint of the
-      [mask-geometry test](#outputs.mask_geometry_evidence).
-      Validated 2026-08-23 against the six per-bit maps (99.74%
-      pixel agreement) and against the real catalogues: it keeps
-      85.4% of v1.4.6.3 rows where the real v1.4.8 keeps 87.8%,
-      the residual being pixelised mask versus per-object flags.
-      `workflow/config/config.yaml.pixel_mask.source_file`.
+      HealSparse union mask (nside 131072) encoding the v1.4.8
+      star-halo/structure cuts (v1.4.8 is v1.4.6.3 plus these cuts).
+      Applied to the mock catalogues to build the second footprint of
+      the [mask-geometry test](#outputs.mask_geometry_evidence). It
+      agrees with the six per-bit maps on 99.74% of pixels and keeps
+      85.4% of v1.4.6.3 rows where the real v1.4.8 keeps 87.8%, the
+      residual being pixelised mask versus per-object flags.
     source: "/n17data/UNIONS/WL/masks/mask_r_nside131072.hsp"
 
   - id: xi_integration
@@ -176,71 +124,45 @@ inputs:
     type: data
     description: |
       The [cov_integration_g](#inputs.cov_integration_g) CosmoCov
-      run repeated at the mock suite's own noise level — the ξ_±
-      half of the mock-matched reference covariance, and the
-      first of the three per-statistic channels tabulated in the
-      [reference_covariance](#decisions.reference_covariance)
-      rationale. It is the *same* CosmoCov machinery that
-      produces the fiducial analytic covariance, driven from a
-      `cat_config` survey entry (`SP_v1.4.6.3_mockv2`) carrying
-      the mocks' noise instead of the data's: `source_n_gal =
-      5.79308 arcmin⁻²` and `sigma_e = 0.37926` at the fiducial
-      `area = 2894.0304 deg²`.
-
-      That n_gal is a galaxy count wearing density units — the
-      area convention is held fixed and only the count moves — so
-      the convention-free reading is 60.36 M galaxies on the
-      common footprint, 0.1% below the 60 423 575 actually
-      delivered and therefore 0.2% low in variance. σ_e matches
-      the mocks' own 0.37926 total (0.26817 per component). The
-      superseded `SP_v1.4.6.3_mockmatched` entry alongside it
-      carries the v1.4.6 suite's count (3.3697 arcmin⁻², 35.1 M)
-      and must not be used here. See
-      [mocks_are_over_constraining](#findings.mocks_are_over_constraining).
-
-      Declared as external data rather than as an output because
-      the CosmoCov chain reaches it through a `cat_config` entry
-      that this reproduction does not carry; the pure-E/B half
-      *is* re-derivable here and is declared as
+      ξ_± covariance recomputed at the mocks' noise: `source_n_gal =
+      5.79308 arcmin⁻²` and `sigma_e = 0.37926` (0.26817 per
+      component) at the fiducial `area = 2894.0304 deg²`. It is the
+      ξ_± half of the mock-matched reference covariance (see
+      [reference_covariance](#decisions.reference_covariance)); the
+      pure-E/B half is
       [pure_cov_mockmatched](#outputs.pure_cov_mockmatched).
+
+      With the area held fixed, that n_gal corresponds to 60.36 M
+      galaxies, 0.1% below the 60 423 575 delivered (0.2% low in
+      variance). The neighbouring `SP_v1.4.6.3_mockmatched` entry
+      carries the v1.4.6 suite's count (3.3697 arcmin⁻², 35.1 M) and
+      is not used. See
+      [mocks_are_over_constraining](#findings.mocks_are_over_constraining).
     source: "/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt"
 
   - id: cl_cov_mockmatched
     type: data
     description: |
       The mock-matched C_ℓ^BB covariance for the
-      [v2 suite](#decisions.mock_suite), computed by pointing the
-      same NaMaster iNKA primitive
-      (`generate_pseudo_cl_cov.py`, the producer of
-      [cl_cov_reporting](#inputs.cl_cov_reporting)) at GLASS v2
-      realisation 00001. That primitive is entirely
-      catalogue-driven — its mask is the weighted galaxy-count map
-      and its noise bias is Ω_pix ⟨Σ_i w_i² σ_{e,i}²⟩ — so no
-      number density and no area convention enters, and the mock
-      covariance is a direct measurement rather than a rescale of
-      the data's. It retires the hand-fed 0.7325 factor the
-      earlier v2 gathers used, which is no longer the method:
-      the two agree to 0.9% (computed mock/data variance ratio
-      0.726 over 300 ≤ ℓ ≤ 1600, against the 350-realisation
-      empirical truth of 0.716 — both measured in
-      [clbb_variance_ratios](#outputs.clbb_variance_ratios)) and
-      the suite-level min-PTE
-      calibration moves by less than its own error bar, so the
-      switch changes no conclusion — it removes an
-      extrapolation, not an error.
+      [v2 suite](#decisions.mock_suite): the NaMaster iNKA
+      covariance that produces
+      [cl_cov_reporting](#inputs.cl_cov_reporting), run on GLASS v2
+      realisation 00001. The method is catalogue-driven (mask = the
+      weighted galaxy-count map, noise bias Ω_pix ⟨Σ_i w_i²
+      σ_{e,i}²⟩), so no number density or area convention enters.
+      Its mock/data variance ratio is 0.726 over 300 ≤ ℓ ≤ 1600,
+      against the 350 realisations' empirical 0.716
+      ([clbb_variance_ratios](#outputs.clbb_variance_ratios)).
     source: "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/glass_mock_v1.4.6.3_v2/pseudo_cl_cov_glass_mock_v2_00001_powspace_nbins=32.fits"
 
   - id: cosmocov_ini_data
     type: data
     description: |
-      The CosmoCov ini the fiducial ξ_± covariance run was driven
-      from. Its survey block is where the data catalogue's noise is
-      declared to the covariance chain — `area = 2894.0303815288
-      deg²`, `source_n_gal = 4.957279 arcmin⁻²`, `sigma_e =
-      0.3783980` (total, i.e. 0.267568 per component) — which makes
-      it the authoritative statement of what noise the fiducial
-      covariance was built at, rather than a number quoted about it.
-      Read by [mock_vs_data_noise_table](#outputs.mock_vs_data_noise_table).
+      The CosmoCov ini of the fiducial ξ_± covariance: its survey
+      block states the noise the covariance is built at, `area =
+      2894.0303815288 deg²`, `source_n_gal = 4.957279 arcmin⁻²`,
+      `sigma_e = 0.3783980` (total; 0.267568 per component). Read by
+      [mock_vs_data_noise_table](#outputs.mock_vs_data_noise_table).
     source: "/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked.ini"
 
   - id: cosmocov_ini_mockmatched
@@ -248,21 +170,15 @@ inputs:
     description: |
       The same ini for the `SP_v1.4.6.3_mockv2` run that produced
       [cov_integration_mockmatched](#inputs.cov_integration_mockmatched):
-      the identical machinery at the mocks' own noise, `source_n_gal
-      = 5.7930820 arcmin⁻²` and `sigma_e = 0.3792561` at the same
-      `area = 2894.0303815288 deg²`. The pair of inis is the cleanest
-      statement of the count mismatch that exists on disk, because
-      the area convention is literally held fixed between them and
-      only the count moves.
+      the mocks' noise, `source_n_gal = 5.7930820 arcmin⁻²` and
+      `sigma_e = 0.3792561` at the same `area = 2894.0303815288
+      deg²`. With the area fixed between the two inis, only the
+      galaxy count differs.
     source: "/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked.ini"
 
-  # ── The figure scripts, declared so that editing one cascades ────────────
-  # An output's identity is its recipe string and its decisions, so a restyled
-  # plotting script changes nothing lc can see and the materialised figure
-  # keeps the old look. Declaring each script as an input puts its bytes in
-  # the output's `input_versions`, which is what makes an edit land the figure
-  # `stale`. Only the figure outputs take these: the expensive compute passes
-  # deliberately do NOT, so a plotting change never triggers a recompute.
+  # ── Scripts declared as inputs so that editing one restales its outputs ──
+  # Only the figure outputs take the plotting scripts; the expensive compute
+  # passes do not, so a plotting change never triggers a recompute.
 
   - id: scale_cuts_script
     from: ../scale_cuts_script
@@ -273,11 +189,8 @@ inputs:
   - id: plotting_utils_script
     type: data
     description: |
-      The shared plotting module: the matplotlib style path,
-      the A&A column widths, the validated categorical colours and
-      the scatter-with-error-bar mark spec every figure below
-      draws from. An input to all of them, because a change here
-      changes all of them.
+      The shared plotting module (style, A&A column widths, colours,
+      mark spec) every figure here draws from.
     source: "./src/workflow/scripts/plotting_utils.py"
 
   - id: min_pte_window_scan_script
@@ -287,27 +200,23 @@ inputs:
       on the reporting grid it re-forms all six null-test statistics
       per realisation — recomputing the COSEBIs *inside each window*
       rather than carrying the fiducial values across — and reads the
-      5% quantile of the per-realisation minimum. An input to both
-      outputs below, because a change here changes both.
+      5% quantile of the per-realisation minimum.
     source: "./src/workflow/scripts/min_pte_window_scan.py"
 
   - id: pure_eb_scan_variants_script
     type: data
     description: |
-      The decision scan's variant table (which method/geometry/weights
-      triples run, and which are dropped and why). An input to every
-      scan stage so that adding or removing a variant restales the
-      looped outputs that iterate over it.
+      The decision scan's variant table: which method/geometry/weights
+      triples run, and which are dropped and why.
     source: "./src/workflow/scripts/pure_eb_scan_variants.py"
 
   - id: mock_campaign_analysis_script
     type: data
     description: |
-      The campaign script. Declared as an input to the two figures
-      it renders — the σ-ratio and PTE-uniformity panels — and
-      deliberately not to
-      [mock_per_mock_statistics](#outputs.mock_per_mock_statistics),
-      whose four-hour compute pass must not rerun for a restyle.
+      The campaign script, which computes
+      [mock_per_mock_statistics](#outputs.mock_per_mock_statistics)
+      and renders the σ-ratio and PTE-uniformity figures; an input
+      to the figures only.
     source: "./src/workflow/scripts/mock_campaign_analysis.py"
 
   - id: mock_mean_vector_plot_script
@@ -321,8 +230,7 @@ inputs:
     type: data
     description: |
       The min-PTE script, which both calibrates and renders; an
-      input to the figure only, the calibration metric being a
-      function of its inputs rather than of its typography.
+      input to the figure only.
     source: "./src/workflow/scripts/mock_min_pte_calibration.py"
 
   - id: redshift_distribution
@@ -337,9 +245,6 @@ inputs:
       The replication of `CosmologyValidation.calculate_pseudo_cl_eb_cov`
       behind
       [clbb_cov_mixing_term_test](#outputs.clbb_cov_mixing_term_test).
-      Declared as an input because the whole value of that output is
-      that the replication is faithful: a change here changes what
-      the gate means.
     source: "./src/workflow/scripts/clbb_cov_mixing_term_test.py"
 
   - id: clbb_cov_mixing_term_figure_script
@@ -354,9 +259,8 @@ inputs:
     description: |
       The composer behind
       [mock_validation_figure](#outputs.mock_validation_figure)
-      and its fiducial-cuts companion; both variants are the same
-      script under `--range`, so the two figures cannot drift
-      apart in style or in how they normalise.
+      and its fiducial-cuts companion (the same script under
+      `--range`).
     source: "./src/workflow/scripts/mock_validation_figure.py"
 
   - id: mock_xi_input_theory_script
@@ -376,12 +280,10 @@ inputs:
   - id: mock_xi_validation_script
     type: data
     description: |
-      The raw-ξ_± validation script, which both tabulates and
-      renders: one `--emit` for
+      The raw-ξ_± validation script behind both
       [mock_xi_validation_stats](#outputs.mock_xi_validation_stats)
-      and one for
-      [mock_xi_validation_figure](#outputs.mock_xi_validation_figure),
-      so the figure cannot show numbers the table does not carry.
+      and
+      [mock_xi_validation_figure](#outputs.mock_xi_validation_figure).
     source: "./src/workflow/scripts/mock_xi_validation.py"
 
   - id: mock_campaign_paper_figure_script
@@ -411,11 +313,10 @@ inputs:
       The nside-4096 footprint audit: for the data catalogue and for
       v2 realisation 00001, the galaxy row count, the number of
       occupied HEALPix pixels and the sky area they cover, plus the
-      two footprints' overlap and each one's exclusive area. This is
-      the measurement that licenses treating every area convention in
-      circulation (2405, 2757, 2894, 2949 deg²) as bookkeeping over a
-      single sky, and therefore licenses reading the noise difference
-      as a pure count ratio.
+      two footprints' overlap and each one's exclusive area. It shows
+      the area conventions in circulation (2405, 2757, 2894, 2949 deg²)
+      describe a single sky, so the noise difference is a pure count
+      ratio.
     source: "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/glass_mock_v1.4.6.3_v2/clbb_cov_work/footprint_4096.log"
 
 outputs:
@@ -431,13 +332,12 @@ outputs:
   - id: mock_xi_fine
     from: mock_xi_scan.mock_xi_fine
 
-  # Retain the old external-ingestion reduction only as the receipt's input.
   - id: mock_xi_fine_legacy_ingested
     type: data
     format: npz
     description: |
-      The superseded external-ingestion ensemble on the old 500'-grid,
-      retained only so mock_xi_fine_provenance can receipt that path.
+      The externally measured fine ξ_± ensemble on the 0.5'–500' grid,
+      stacked for [mock_xi_fine_provenance](#outputs.mock_xi_fine_provenance).
     inputs: [glass_mock_xi_fine_measured]
     decisions: [mock_suite]
     recipe:
@@ -452,20 +352,12 @@ outputs:
     type: data
     format: json
     description: |
-      The receipt on the superseded external-ingestion grid. Realisation
-      00001 is re-measured here — this spec's environment, this spec's
-      TreeCorr call, this spec's catalogue input — and differenced against
-      the stored measurement standing in for it in
+      Provenance check on the externally measured fine ξ_±: realisation
+      00001 is re-measured in this spec's environment and differenced
+      against its stored counterpart in
       [mock_xi_fine_legacy_ingested](#outputs.mock_xi_fine_legacy_ingested).
       Reports the maximum absolute and fractional Δξ_± over the 1000 bins,
-      the npairs and weight agreement, and the bin edges both sides used.
-
-      Superseded as the live path by the mock_xi_scan sweep (2026-08-31);
-      retained as the receipt on the old 500'-grid ingestion.
-
-      One realisation is ~20 minutes on 24 threads; the suite is 5 000
-      core-hours, which is the whole reason the ingest exists. If this
-      output stops matching, the ingest is what to suspect first.
+      the npairs and weight agreement, and both sides' bin edges.
     inputs: [glass_mock_catalogs, mock_xi_fine_legacy_ingested]
     decisions: [mock_suite]
     recipe:
@@ -482,14 +374,9 @@ outputs:
     type: data
     format: npz
     description: |
-      Sacha's stored 20-bin ξ_± vectors for the whole suite, stacked
+      The suite's stored 20-bin reporting-grid ξ_± vectors, stacked
       into the same ensemble layout as
-      [mock_xi_fine](#outputs.mock_xi_fine). No measurement happens
-      here — the reporting grid on the fiducial footprint ships with
-      the suite — but stacking it makes the reporting axis a declared
-      artifact rather than a directory the pure-mode stage globs, and
-      lets the fiducial and masked footprints enter that stage through
-      one interface.
+      [mock_xi_fine](#outputs.mock_xi_fine).
     inputs: [glass_mock_xi_reporting]
     decisions: [mock_suite]
     recipe:
@@ -505,14 +392,12 @@ outputs:
     format: npz
     description: |
       COSEBI E_n / B_n for n = 1 … 20 and all 350 realisations, stacked
-      as a 350 × 20 pair. Computed from
-      [mock_xi_fine](#outputs.mock_xi_fine) through exactly the
-      `cosmo_numba` `COSEBIS.cosebis_from_xipm` call the
-      COSEBI data vector uses, cut at the
-      [fiducial θ range](#decisions.scale_cut_convention). The paired
-      [mock_cosebis_modes_full](#outputs.mock_cosebis_modes_full) output
-      uses the same script on the 1–250 arcmin range for the full-range
-      min-PTE calibration.
+      as a 350 × 20 pair, computed from
+      [mock_xi_fine](#outputs.mock_xi_fine) with the same
+      `cosmo_numba` call as the data vector, over the
+      [fiducial θ range](#decisions.scale_cut_convention).
+      [mock_cosebis_modes_full](#outputs.mock_cosebis_modes_full) is
+      the 1–250 arcmin counterpart.
     inputs: [mock_xi_fine]
     decisions: [mock_suite, scale_cut_convention]
     recipe:
@@ -532,12 +417,9 @@ outputs:
     format: npz
     description: |
       Full-range COSEBI E_n / B_n for n = 1 … 20 and all 350
-      realisations, stacked as a 350 × 20 pair. This is the same
-      `mock_cosebis_scatter.py` implementation as
-      [mock_cosebis_modes](#outputs.mock_cosebis_modes), explicitly run
-      over the 1–250 arcmin range used by the data-side full-range
-      COSEBI PTEs. It is the mock distribution for the full-range
-      B_n≤6 and B_n≤20 statistics.
+      realisations, stacked as a 350 × 20 pair: as
+      [mock_cosebis_modes](#outputs.mock_cosebis_modes), over the
+      1–250 arcmin range of the full-range data PTEs.
     inputs: [mock_xi_fine]
     decisions: [mock_suite]
     recipe:
@@ -556,9 +438,8 @@ outputs:
       grid comes from
       [mock_xi_reporting](#outputs.mock_xi_reporting) and the
       integration grid from [mock_xi_fine](#outputs.mock_xi_fine),
-      truncated at 300' to match the CosmoCov integration input the
-      fiducial covariance was built on. Only the six data-vector blocks
-      are written; the analytic covariance is the campaign's business.
+      truncated at 300' to match the fiducial CosmoCov integration
+      grid.
     inputs: [mock_xi_fine, mock_xi_reporting]
     decisions: [mock_suite, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits]
     recipe:
@@ -573,17 +454,10 @@ outputs:
       resources: { cpus: 16, memory: "16GB" }
 
   # ── Scatter: the v1.4.8-masked footprint ─────────────────────────────────
-  # NOT YET MATERIALISED. The masked chain below is declared against the
-  # canonical v2 suite, which has no masked counterpart on disk; running it is
-  # a fresh scatter plus its transform. It is scoped to the first 50
-  # realisations (00001-00050), not the full 350: the masked 2PCF measurement is
-  # the campaign's most expensive stage, and 50 paired realisations resolve the
-  # mean-level geometry effect under test. The fiducial ensembles stay at 350
-  # and the geometry analysis pairs by mock ID, so the comparison runs on the
-  # 50-member intersection. A prior masked run exists at
-  # results/glass_mock_masked/ on the superseded v1.4.6 suite and saw
-  # geometry-only nulls, but it was never vetted and is not evidence for any
-  # finding here — the mask-geometry verdict is pending this chain's first run.
+  # Not yet materialised. Scoped to the first 50 realisations (00001-00050):
+  # the masked 2PCF is the campaign's most expensive stage, and 50 paired
+  # realisations resolve the mean-level geometry effect. The geometry analysis
+  # pairs by mock ID, so the comparison runs on the 50-member intersection.
 
   - id: mock_xi_fine_masked
     from: mock_xi_masked_scan.mock_xi_fine_masked
@@ -597,13 +471,9 @@ outputs:
     description: |
       Pure-mode decomposition of the masked-footprint realisations,
       the masked half of the paired
-      [geometry test](#outputs.mask_geometry_evidence). Identical
-      transform to
-      [mock_pure_eb_modes](#outputs.mock_pure_eb_modes), reading the
-      masked footprint's own two ensembles — which is why no filename
-      bridging is needed between the two chains: both grids arrive as
-      arrays on a declared interface rather than as files named by
-      whichever script produced them.
+      [geometry test](#outputs.mask_geometry_evidence): the transform
+      of [mock_pure_eb_modes](#outputs.mock_pure_eb_modes) applied to
+      the masked footprint's fine and reporting ensembles.
     inputs: [mock_xi_fine_masked, mock_xi_reporting_masked]
     decisions: [mock_suite, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits]
     recipe:
@@ -632,16 +502,9 @@ outputs:
       deterministic seeds as
       [pure_eb_semianalytic_data](#inputs.pure_eb_semianalytic_data),
       only the input covariance differs. The mocks' noise enters
-      this stage *entirely* through
-      [cov_integration_mockmatched](#inputs.cov_integration_mockmatched):
-      the script propagates that stored 2000×2000 ξ_± matrix
-      through the Schneider (2022) filters, carrying no n_eff,
-      σ_e or area of its own. There is nothing here to match to the mocks
-      independently — pointing the one input at the
-      `SP_v1.4.6.3_mockv2` run is the whole of the mock-matching
-      for the pure-mode channel, exactly as it is for COSEBIs,
-      which consume the same artifact through a different
-      transform. Consumed by the campaign when
+      only through
+      [cov_integration_mockmatched](#inputs.cov_integration_mockmatched),
+      as it does for COSEBIs. Used when
       [reference_covariance](#decisions.reference_covariance) is
       `mockmatched`.
     inputs: [cov_integration_mockmatched, xi_reporting, xi_integration, redshift_distributions]
@@ -686,32 +549,21 @@ outputs:
       resources: { cpus: 24, memory: "60GB" }
 
   # ── The six-statistic campaign: compute once, then derive ────────────────
-  # The campaign used to be one invocation that wrote a directory of mixed
-  # products. It is split here along the seam that was already there: exactly
-  # one output is *computed* — the per-realisation table, the only thing that
-  # touches a covariance file — and the metric and the four figures are
-  # derivations that read it. Re-cutting a figure no longer reruns the
-  # comparison, and nothing has to be extracted from anything.
+  # Exactly one output is computed (the per-realisation table, the only thing
+  # that touches a covariance file); the metrics and figures derive from it.
 
   - id: mock_per_mock_statistics
     type: data
     format: npz
     description: |
-      The campaign's one computed artifact: the 350 × 6 stack of
-      per-realisation χ² and PTE values, the raw per-mock B vectors,
-      and — travelling with them so that no derivation has to reopen a
-      covariance — the analytic σ vectors on both the full and the cut
-      ranges, the cut masks, and a provenance blob naming the
-      covariance triple, the scale cuts and every skipped realisation.
-
-      Holds, for each of the six statistics — B_{n≤6}, B_{n≤20},
-      ξ_+^B, ξ_-^B, ξ_tot^B, C_ℓ^BB — the vector each realisation
-      developed and its χ²/PTE against the selected reference
-      covariance at both the fiducial and full angular windows. The
-      original fiducial keys remain unchanged; `chi2_full`, `pte_full`,
-      and `dof_full` add the 1–250 arcmin / 8≤ℓ≤2048 calibration
-      alongside them. Every campaign number quoted is a
-      function of this file.
+      Per-realisation results for the six statistics (B_{n≤6},
+      B_{n≤20}, ξ_+^B, ξ_-^B, ξ_tot^B, C_ℓ^BB): each realisation's B
+      vector and its χ² and PTE against the selected reference
+      covariance, at the fiducial cuts and over the full range
+      (`chi2_full`, `pte_full`, `dof_full`; 1–250 arcmin / 8≤ℓ≤2048).
+      Also carries the analytic σ vectors on both ranges, the cut
+      masks, and the covariance triple, scale cuts and any skipped
+      realisations. Every campaign number derives from this file.
     inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, mock_xi_fine, glass_mock_cl, xi_integration, cov_integration_g, pure_eb_semianalytic_data, cl_cov_reporting, cov_integration_mockmatched, pure_cov_mockmatched, cl_cov_mockmatched]
     decisions: [reference_covariance, mock_suite, scale_cut_convention, fiducial_catalog, fiducial_blind]
     recipe:
@@ -746,14 +598,13 @@ outputs:
     type: metric
     format: json
     description: |
-      The empirical global calibration of the min-PTE criterion, from
-      the suite itself. It retains the existing top-level fiducial
-      calibration and adds a `full_range` block with the same fields:
-      the observed minimum PTE across the six test statistics, the
-      clean-mock tail fraction (one- and two-sided), and the empirical
-      min-PTE threshold for a nominal 5% global false-alarm rate — each
-      with a 68% interval (Wilson for fractions, order-statistic
-      bootstrap for thresholds). The fiducial observed PTEs are taken
+      Calibration of the min-PTE criterion on the clean realisations,
+      at the fiducial cuts (top level) and over the full range
+      (`full_range`): the data's minimum PTE across the six
+      statistics, the fraction of clean mocks at or below it (one- and
+      two-sided), and the min-PTE threshold for a 5% global
+      false-alarm rate, each with a 68% interval (Wilson for
+      fractions, order-statistic bootstrap for thresholds). The fiducial observed PTEs are taken
       from the pure-mode and COSEBI matrices at bins 9–15 (edge indices
       9/16) and C_ℓ^BB at 300 < ℓ < 1600; `full_range` uses the [0, 19]
       matrix cells and all 32 C_ℓ bands (1–250 arcmin / 8≤ℓ≤2048).
@@ -817,45 +668,26 @@ outputs:
       six per-statistic median PTEs, the number of reporting bins, and
       the reasons any statistic could not be formed.
 
-      What distinguishes this from a naive scan is that the COSEBIs are
-      **recomputed in each window**, from each realisation's
-      [fine ξ_±](#outputs.mock_xi_fine) through the same
-      `cosmo_numba` call the pipeline uses, against a COSEBI covariance
-      transformed on that same window. Holding them at their fiducial
-      values instead imports the fiducial window's COSEBI fluctuations
-      everywhere, which depresses the threshold across the plane and
-      materially changes where "threshold ≤ 0.01" holds. C_ℓ^BB does
-      not depend on the angular window; its per-realisation PTEs are
-      read unchanged from
-      [mock_per_mock_statistics](#outputs.mock_per_mock_statistics),
-      which is also what carries that file's own C_ℓ covariance choice.
+      The COSEBIs are recomputed in each window from each
+      realisation's [fine ξ_±](#outputs.mock_xi_fine), against a COSEBI
+      covariance transformed on that window; holding them at their
+      fiducial values would depress the threshold across the plane.
+      C_ℓ^BB does not depend on the angular window, so its PTEs come
+      unchanged from
+      [mock_per_mock_statistics](#outputs.mock_per_mock_statistics).
 
-      The scan is *defined* on the reporting grid's own bin edges —
-      `geomspace(1', 250', 21)`, pinned in the recipe rather than left
-      to a default — so it is the
-      [grid_bin_edges](#decisions.scale_cut_convention) reading by
-      construction, and the fiducial cell (edge indices 9, 16) is the
-      same window
+      The windows are the reporting grid's own bin edges (the
+      [grid_bin_edges](#decisions.scale_cut_convention) convention),
+      so the fiducial cell (edge indices 9, 16) is the window
       [mock_min_pte_calibration](#outputs.mock_min_pte_calibration)
-      calibrates at. That identity is the cheapest standing check on
-      the two: the cell's threshold and
-      `threshold_one_sided` agree to 2e-11 relative. It is specific to
-      that convention — under `rounded_arcmin` the pipeline cuts at
-      12.0'/83.0', which this grid cannot express, and the cell would
-      no longer be the fiducial window.
+      calibrates at; the two thresholds agree to 2e-11 relative. Under
+      `rounded_arcmin` (12.0'/83.0') that cell would not be the
+      fiducial window.
 
-      Twenty of the 210 windows — the adjacent-edge pairs, which hold
-      a single reporting bin — are marked `comparable: false` and
-      excluded from every summary over the plane. Their COSEBI basis
-      is solved over one reporting bin's θ range, where it is too
-      ill-conditioned to compare: the mocks' median B_{n≤20} PTE is
-      0.13 on those windows against ~0.45 on every window holding two
-      bins or more, and the effect switches off cleanly at two bins
-      rather than tailing away. Whether `mpmath` raises
-      `NoConvergence` on them or returns roots is a property of the
-      environment — it raises outside the project image and converges
-      inside it — so the exclusion is structural, keyed on the bin
-      count, and does not depend on the solve happening to fail.
+      The 20 single-bin windows are marked `comparable: false` and
+      excluded from summaries: the COSEBI basis is too ill-conditioned
+      over one reporting bin (median mock B_{n≤20} PTE 0.13 there,
+      against ~0.45 on every window of two bins or more).
     inputs: [mock_per_mock_statistics, mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration_g, pure_eb_semianalytic_data, cov_integration_mockmatched, pure_cov_mockmatched, min_pte_window_scan_script]
     decisions: [reference_covariance, mock_suite]
     recipe:
@@ -890,32 +722,19 @@ outputs:
     type: metric
     format: json
     description: |
-      The gate that licenses
+      Check that
       [mock_min_pte_scale_cut_scan](#outputs.mock_min_pte_scale_cut_scan)
-      to be read as the pipeline's own statistics evaluated on a
-      different window, rather than a second implementation that
-      merely resembles them. The scan re-forms all six statistics
-      from scratch; at two windows the pipeline has already stored
-      the answer, so at those two windows the two must agree.
-
-      It runs the same machinery at the fiducial window (edge indices
-      9, 16) against
+      reproduces the pipeline's own per-realisation PTEs where they
+      are stored: at the fiducial window (edge indices 9, 16) against
       [mock_per_mock_statistics](#outputs.mock_per_mock_statistics)`['pte']`
-      and at the full range (0, 20) against that file's `['pte_full']`,
-      and records the maximum absolute per-realisation PTE difference
-      for each statistic. Observed: ≤ 7e-12 at the fiducial window and
-      ≤ 3e-10 at the full range on the COSEBI columns, and at
-      floating-point noise on the pure modes. C_ℓ^BB is expected to
-      disagree at the full range and only there — the scan holds it at
-      its fixed 300 < ℓ < 1600 cut while `pte_full` uses all 32 bands
-      — and the artifact says so in its own `note` field.
-
-      The COSEBI columns are the informative ones: they degrade to
-      ~1e-5 if `--cosebi-roots shared` is used instead of the
-      per-realisation `interpolate_ratio` the recipe pins, so this
-      file is also what detects that substitution. Four minutes to
-      produce, which is why it is an output and not a note in a
-      transcript.
+      and at the full range (0, 20) against `['pte_full']`. Records
+      the maximum absolute PTE difference per statistic: ≤ 7e-12
+      (fiducial) and ≤ 3e-10 (full range) on the COSEBI columns,
+      floating-point noise on the pure modes. C_ℓ^BB disagrees at the
+      full range only, by design (the scan holds it at 300 < ℓ < 1600
+      while `pte_full` uses all 32 bands), as the `note` field says.
+      The COSEBI columns degrade to ~1e-5 with `--cosebi-roots shared`
+      instead of the pinned `interpolate_ratio`.
     inputs: [mock_per_mock_statistics, mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration_g, pure_eb_semianalytic_data, cov_integration_mockmatched, pure_cov_mockmatched, min_pte_window_scan_script]
     decisions: [reference_covariance, mock_suite]
     recipe:
@@ -943,38 +762,23 @@ outputs:
     type: figure
     format: pdf
     description: |
-      The picture behind
-      [mock_min_pte_scale_cut_scan](#outputs.mock_min_pte_scale_cut_scan),
-      and deliberately not a lone heatmap of the threshold. Three
-      panels over the (θ_min, θ_max) plane, log axes: the calibrated
-      threshold, the number of reporting bins the window contains, and
-      the mocks' median B_{n≤20} PTE.
+      [mock_min_pte_scale_cut_scan](#outputs.mock_min_pte_scale_cut_scan)
+      in three panels over the (θ_min, θ_max) plane, log axes: the
+      calibrated threshold, the number of reporting bins in the window,
+      and the mocks' median B_{n≤20} PTE. The latter two explain the
+      threshold's extremes: it rises at short, narrow windows, where
+      few, strongly correlated degrees of freedom keep every PTE near
+      0.5, and falls at the widest windows, where the analytic COSEBI
+      covariance understates the mock scatter (σ_emp / σ_ana reaching
+      1.14 by θ_max = 250′, carried by ξ_- beyond ~120′) and the
+      B-mode PTEs run low.
 
-      The second and third panels are there because the first one's
-      extremes are not equally meaningful. The threshold is pushed
-      *up* at short, narrow windows, where few and strongly correlated
-      degrees of freedom keep every PTE near 0.5 — that is the second
-      panel. It is pushed *down* at the widest windows, where the
-      analytic COSEBI covariance understates the mock scatter (σ_emp /
-      σ_ana reaching 1.14 by θ_max = 250′, carried by ξ_- beyond
-      ~120′) and the B-mode PTEs run systematically low — that is the
-      third. Read alone, the first panel would invite both artifacts
-      to be taken as sensitivity.
-
-      The 0.01 level — the threshold a region is quoted
-      for — is drawn on the first panel as a labelled contour,
-      so the claim is checkable by eye rather than by interpolating a
-      logarithmic colourbar; it closes around the short-θ_min corner
-      and stays clear of the outlined region.
-
-      The fiducial window is marked and the region the analysis
-      actually reports is outlined. The twenty single-reporting-bin
-      windows — the adjacent-edge pairs, eight of them inside the
-      analysis region — are cross-hatched rather than left blank, so
-      they cannot be misread as a threshold near zero; that is exactly
-      how they would read, since their ill-conditioned COSEBI basis
-      drives the threshold as low as 3e-06. Drawn from the scan's own
-      JSON, so the figure cannot disagree with it.
+      The 0.01 level is drawn as a labelled contour on the first
+      panel; it closes around the short-θ_min corner and stays clear
+      of the outlined analysis region. The fiducial window is marked.
+      The twenty single-bin windows (eight inside the analysis region)
+      are cross-hatched, since their ill-conditioned COSEBI basis
+      drives the threshold as low as 3e-06.
     inputs: [mock_min_pte_scale_cut_scan, min_pte_window_scan_script, plotting_utils_script]
     decisions: [reference_covariance, mock_suite]
     recipe:
@@ -992,26 +796,21 @@ outputs:
     type: metric
     format: json
     description: |
-      The campaign's machine-readable result and the artifact
-      every number in this spec's findings is read from, derived from
-      [mock_per_mock_statistics](#outputs.mock_per_mock_statistics)
-      alone.
+      The campaign's summary statistics, derived from
+      [mock_per_mock_statistics](#outputs.mock_per_mock_statistics):
+      per statistic, σ_emp/σ_ana, mean χ², PTE uniformity tests and the
+      cross-statistic correlations. The findings' numbers are read
+      from it.
 
-      Three covariance conventions are deliberately kept apart
-      and are properties of each statistic rather than live
-      choices: COSEBIs transform the ξ_± covariance through
-      `cosebis_covariance_from_xipm_covariance` with no Hartlap
-      factor; the pure-mode blocks are sliced out of the stored
-      120×120 matrix and carry Hartlap N = 2000, the
-      [MC sample count](#decisions.mc_samples) they were
-      propagated with; C_ℓ^BB selects bandpowers with the fiducial
-      powspace edge logic and takes no Hartlap factor, its
-      mock-matched reference being the directly computed
-      [cl_cov_mockmatched](#inputs.cl_cov_mockmatched). Both the
-      full 20-bin/20-mode range and the fiducial cut are reported
-      for σ, so the
-      [adopted scale cuts](#../decisions.fiducial_scale_cuts)
-      are not a fork here — only the χ² statistics use the cut.
+      Covariance conventions per statistic: COSEBIs transform the ξ_±
+      covariance with no Hartlap factor; the pure-mode blocks are
+      sliced from the stored 120×120 matrix with Hartlap N = 2000, the
+      [MC sample count](#decisions.mc_samples); C_ℓ^BB takes no Hartlap
+      factor, its mock-matched reference being
+      [cl_cov_mockmatched](#inputs.cl_cov_mockmatched). σ is reported
+      on both the full range and the fiducial cut, so only the χ²
+      statistics depend on the
+      [adopted scale cuts](#../decisions.fiducial_scale_cuts).
     inputs: [mock_per_mock_statistics]
     recipe:
       command: >
@@ -1027,11 +826,9 @@ outputs:
       Empirical σ over analytic σ, per
       COSEBI mode, per θ bin for ξ_±^B, and per ℓ band for
       C_ℓ^BB, with the fiducial cut shaded. Under
-      `reference_covariance: mockmatched` this is the panel that
-      says the analytic covariance amplitude is right; under
-      `fiducial` it is the panel that shows what the galaxy-count
-      mismatch costs — and which way it points, since the two
-      suites sit on opposite sides of the data.
+      `reference_covariance: mockmatched` it tests the analytic
+      covariance amplitude; under `fiducial` it shows the effect of
+      the galaxy-count mismatch.
     inputs: [mock_per_mock_statistics, mock_campaign_analysis_script, plotting_utils_script, paper_mplstyle]
     decisions: [reference_covariance]
     recipe:
@@ -1067,11 +864,8 @@ outputs:
     type: figure
     format: pdf
     description: |
-      The 6×6 empirical correlation
-      matrix of the test statistics across realisations, in both
-      χ² and PTE space. This is the quantitative replacement for
-      the qualitative "the tests are highly correlated" —
-      and it does not say what that phrase implies; see
+      The 6×6 correlation matrix of the test statistics across
+      realisations, in χ² and in PTE; see
       [tests_are_not_redundant](#findings.tests_are_not_redundant).
     inputs: [mock_per_mock_statistics]
     decisions: [reference_covariance]
@@ -1088,15 +882,13 @@ outputs:
     description: |
       Across-realisation mean of each B statistic in units of the
       analytic (data) σ, with σ_emp/(σ_ana√N) error bars in the
-      same units and one y-range shared across the three panels.
-      The mock-to-mock scatter itself is
+      same units and one y-range shared across the three panels, so
+      the axis reads as a fraction of a data error bar: a bias
+      resolvable at mock precision can still be negligible for the
+      data. Each pure-mode series is annotated with its χ² over the
+      full 20-bin range and the fiducial window. The scatter is
       [mock_sigma_ratio_figure](#outputs.mock_sigma_ratio_figure)'s
-      subject and is not repeated here. The y-axis reads directly
-      as "fraction of a data error bar", which is the distinction
-      that matters: a bias resolvable at mock precision (error
-      bars ≈ 1/√N of a σ) can still be negligible for the data.
-      Each pure-mode series is annotated with two χ²: the full
-      20-bin reporting range and the fiducial window.
+      subject.
     inputs: [mock_per_mock_statistics, mock_mean_vector_plot_script, plotting_utils_script, scale_cuts_script]
     decisions: [reference_covariance, scale_cut_convention]
     recipe:
@@ -1113,51 +905,31 @@ outputs:
     type: figure
     format: png
     description: |
-      The mock-validation figure: two rows over the three
-      B statistics on every reporting bin — COSEBI modes 1–20 on
-      the full 1–250′ range, ξ±^B on all reporting bins, C_ℓ^BB on
-      all 32 bands — with the scales outside the fiducial cuts
-      shaded. Row 1 is the across-realisation mean in units of the
-      analytic (data) σ, with σ_emp/(σ_ana√N) error bars, so it
-      reads as "fraction of a data error bar". Row 2 is
-      σ_ana/σ_emp, the check that the analytic covariance
-      reproduces the mock scatter — below one means the analytic
-      uncertainties are tighter than the mock scatter — with ±1/√(2N) error bars — the
-      sampling uncertainty of a ratio of standard deviations
-      estimated from N realisations. The lowest C_ℓ band is
-      dropped from the ratio panel alone — its ≈1.8 would set the
-      whole row's range — and kept in the mean panel. Colour
-      encodes the *mode*, not the statistic: every series is the
-      crimson
+      The paper's mock-validation figure, over every reporting bin of
+      the three B statistics — COSEBI modes 1–20 (at the fiducial cuts,
+      filled, and over 1–250′, open), ξ_+^B (filled) and ξ_-^B (open)
+      on all reporting bins, C_ℓ^BB on all 32 bands — with scales
+      outside the fiducial cuts shaded. Top row: across-realisation
+      mean in units of the analytic (data) σ, with σ_emp/(σ_ana√N)
+      error bars. Bottom row: σ_ana/σ_emp (below one means the
+      analytic σ is tighter than the mock scatter), with ±1/√(2N)
+      error bars; the lowest C_ℓ band (≈1.8) is dropped from this row
+      only. Series are drawn in the crimson
       [pure_eb_data_vector_figure](#outputs.pure_eb_data_vector_figure)
-      gives ξ±^B, and the statistic is named by the panel label;
-      within a panel the two series differ by marker fill —
-      COSEBIs at the fiducial cuts (filled) vs over all scales
-      (open), ξ+^B (filled) vs ξ−^B (open). The harmonic axis is the same square-root
-      scale as the C_ℓ data vector.
+      uses for ξ±^B; the harmonic axis has the C_ℓ data vector's
+      square-root scale.
 
-      The full range is shown deliberately: the estimator is tested
-      on every scale it was run on, not only on the cuts chosen
-      after the fact. What the shaded regions carry is where the
-      analytic covariance stops being trustworthy — σ_ana/σ_emp
-      rises to ≈1.8 at the lowest bandpower and returns to
-      unity only by ℓ ≈ 100, while in configuration space it falls
-      to ≈0.77 above 120′ and the low-n COSEBI modes on the full
-      range sit 20–30% low. Inside the cuts every ratio is within
-      ~17% of unity and every mean bias below 0.12σ; the companion
-      [mock_validation_figure_fiducial](#outputs.mock_validation_figure_fiducial)
-      isolates that view.
-
-      The full 32-band per-mock C_ℓ stack is not carried in
-      [mock_per_mock_statistics](#outputs.mock_per_mock_statistics),
-      which stores only the in-cut bands, so this figure reads
-      the per-mock npy blocks
-      ([glass_mock_cl](#inputs.glass_mock_cl)) directly. The
-      directory comes from the campaign's own provenance rather
-      than a default, and the script asserts that the masked full
-      stack reproduces the stored in-cut one — a wrong C_ℓ suite
-      otherwise renders as a plausible covariance failure instead
-      of an error.
+      Outside the cuts the analytic covariance degrades: σ_ana/σ_emp
+      rises to ≈1.8 at the lowest bandpower and returns to unity only
+      by ℓ ≈ 100, falls to ≈0.77 above 120′ in configuration space,
+      and sits 20–30% low for the low-n full-range COSEBI modes. Inside
+      the cuts every ratio is within ~17% of unity and every mean bias
+      below 0.12σ
+      ([mock_validation_figure_fiducial](#outputs.mock_validation_figure_fiducial)
+      shows that view). The full 32-band C_ℓ stack is read from
+      [glass_mock_cl](#inputs.glass_mock_cl), since
+      [mock_per_mock_statistics](#outputs.mock_per_mock_statistics)
+      stores only the in-cut bands.
     inputs: [mock_per_mock_statistics, mock_campaign_evidence, glass_mock_cl, mock_validation_figure_script, plotting_utils_script, paper_mplstyle]
     decisions: [reference_covariance, mock_suite]
     recipe:
@@ -1177,11 +949,9 @@ outputs:
       The same two rows restricted to each statistic's fiducial
       scale cuts — COSEBI modes 1–20 on 12–83′, ξ±^B on the seven
       reporting bins inside the config-space cut, C_ℓ^BB on the
-      seventeen bands fully inside the harmonic cut. Nothing is
-      shaded because nothing lies outside the cuts. Kept as a
-      companion to [mock_validation_figure](#outputs.mock_validation_figure):
-      it is the zoom on the scales the
-      null-test PTEs actually use.
+      seventeen bands fully inside the harmonic cut: the zoom of
+      [mock_validation_figure](#outputs.mock_validation_figure) on the
+      scales the null-test PTEs use.
     inputs: [mock_per_mock_statistics, mock_campaign_evidence, mock_validation_figure_script, plotting_utils_script, paper_mplstyle]
     decisions: [reference_covariance, mock_suite]
     recipe:
@@ -1199,29 +969,15 @@ outputs:
     type: data
     format: npz
     description: |
-      The campaign's reference covariance for raw ξ_±, on the
-      reporting grid. The
-      [reference_covariance](#decisions.reference_covariance)
-      decision settles that mock validation is done against the
-      CosmoCov run built at the *suite's* own noise level
-      ([cov_integration_mockmatched](#inputs.cov_integration_mockmatched),
-      `SP_v1.4.6.3_mockv2`), not the catalogue's: held against the
-      data covariance the mocks simply report their own 17% galaxy
-      excess. That run exists only on the 1000-bin integration
-      grid, so this output binds it to the 20 reporting bins the
-      suite reports ξ_± on — `Cov_rep = B Cov_fine Bᵀ`, one
-      operator applied to the ξ_+ and ξ_- halves alike.
-
-      TreeCorr's 20-bin ξ_± is a pair-weighted average within each
-      bin, so `B` carries the pair density a uniform field gives.
-      The unweighted `pointwise` operator the submitted pure-mode
-      chain applies to the input ξ_± is written alongside as
-      `cov_pointwise`; the two σ agree to 1.3% at worst, adjacent
-      fine bins being almost perfectly correlated, so nothing here
-      turns on the choice.
-
-      This is a rebin, not a rescale: no data-level covariance is
-      touched and no density factor is applied by hand.
+      The mock-matched ξ_± covariance
+      ([cov_integration_mockmatched](#inputs.cov_integration_mockmatched))
+      rebinned from the 1000-bin integration grid to the 20 reporting
+      bins, `Cov_rep = B Cov_fine Bᵀ`, the
+      [reference](#decisions.reference_covariance) for raw ξ_±. `B` is
+      pair-weighted, matching TreeCorr's binning; the unweighted
+      `pointwise` operator of the submitted pure-mode chain is written
+      alongside as `cov_pointwise`, and the two σ agree to 1.3% at
+      worst.
     inputs: [cov_integration_mockmatched, mock_xi_reporting, mock_xi_reporting_cov_script]
     decisions: [mock_suite, reference_covariance]
     recipe:
@@ -1237,29 +993,20 @@ outputs:
     type: data
     format: npz
     description: |
-      The theory ξ_± the GLASS suite was generated from, on the
-      suite's own reporting grid. The delivered suite ships no
-      theory vector and the generation is external to this
-      project, so this output rebuilds it: CAMB under the
-      generator's exact setup — the
-      [cosmology snapshot](#inputs.cosmology_snapshot)'s Planck-18
+      The theory ξ_± the GLASS suite was generated from, on its
+      reporting grid, rebuilt with CAMB under the generator's setup:
+      the [cosmology snapshot](#inputs.cosmology_snapshot)'s Planck-18
       values, HMcode `mead2020_feedback` at log T_AGN = 7.8, A_s
-      rescaled to σ_8 = 0.8102 — with a lensing source window on
-      the fiducial [n(z)](#inputs.redshift_distributions),
-      resolved through `sp_validation`'s own reader so it is the
-      same n(z) every other stage uses.
+      rescaled to σ_8 = 0.8102, and the fiducial
+      [n(z)](#inputs.redshift_distributions).
 
-      The transform is an explicit Bessel sum over the multipoles
-      supplied, **band-limited at the simulation's own
-      ℓ_max = NSide = 4096**, and that is the whole reason this
-      output exists rather than a call into CCL: the FFTLog path
-      extrapolates the input spectrum past its last multipole, so
-      a "truncated" transform run through it silently restores
-      power the maps do not have — and ξ_- at 1′ is built almost
-      entirely out of ℓ ~ 10⁴. The unbanded transform is written
-      alongside (`xip_untruncated` / `xim_untruncated`), together
-      with the curved-sky FFTLog result, so the band limit and the
-      flat-sky kernel are both readable rather than assumed.
+      The transform is an explicit Bessel sum band-limited at the
+      simulation's ℓ_max = NSide = 4096. An FFTLog transform would
+      extrapolate past the last multipole and restore power the maps
+      lack, which matters because ξ_- at 1′ is built almost entirely
+      from ℓ ~ 10⁴. The unbanded transform (`xip_untruncated` /
+      `xim_untruncated`) and the curved-sky FFTLog result are written
+      alongside.
     inputs: [mock_xi_reporting, cosmology_snapshot, redshift_distributions, mock_xi_input_theory_script]
     decisions: [mock_suite]
     recipe:
@@ -1275,38 +1022,22 @@ outputs:
     type: figure
     format: png
     description: |
-      The undressed check. Every other validation figure in this
-      campaign lives downstream of a pure-mode or COSEBI filter,
-      so a defect in the *input* — the 20-bin ξ_± the suite ships
-      — would reach them dressed as an estimator problem. This is
-      the same two-row logic applied before any transform, on
-      ξ_+ and ξ_- themselves, with a middle row the B-mode
-      figures do not need because their expectation is zero.
+      Validation of the raw 20-bin ξ_± before any pure-mode or COSEBI
+      filter. Row 1: θξ_±, the across-realisation mean against
+      [the input theory](#outputs.mock_xi_input_theory), band-limited
+      at the simulation's ℓ_max and unbanded. Row 2: (mean −
+      theory)/σ_ana, a fraction of a single realisation's error bar,
+      with σ_emp/(σ_ana√N) error bars as in
+      [mock_validation_figure](#outputs.mock_validation_figure). Row
+      3: σ_emp/σ_ana. σ_ana comes from the mock-matched
+      [mock_xi_reporting_cov_mockmatched](#outputs.mock_xi_reporting_cov_mockmatched).
+      Scales outside the fiducial 12–83′ cut are shaded.
 
-      Row 1 is θξ_± : the across-realisation mean against
-      [the input theory](#outputs.mock_xi_input_theory), drawn
-      both band-limited at the simulation's ℓ_max and unbanded.
-      Row 2 is the residual as a fraction of a *single*
-      realisation's error bar, (mean − theory)/σ_ana, with
-      σ_emp/(σ_ana√N) error bars — the same normalisation
-      [mock_validation_figure](#outputs.mock_validation_figure)'s
-      top row uses, so the axis reads as "fraction of an error
-      bar" and the significance sits in the error bar rather than
-      in the point. Row 3 is σ_emp/σ_ana. Both rows take σ_ana
-      from
-      [mock_xi_reporting_cov_mockmatched](#inputs.mock_xi_reporting_cov_mockmatched),
-      the mock-matched reference, not the data covariance. Scales
-      outside the fiducial 12–83′ cut are shaded, as in
-      [mock_validation_figure](#outputs.mock_validation_figure),
-      whose style and colours this follows.
-
-      What it shows: above ≈6′ the mock mean reproduces the input
-      theory to a few per cent with no trend, and below it the
-      apparent collapse of ξ_- — a factor ~100 at 1′ — is
-      reproduced bin for bin by band-limiting the theory at
-      ℓ = 4096. It is the simulation's resolution, not a defect
-      in the mocks or in the ξ_± measurement, and it lies wholly
-      outside the fiducial cut.
+      Above ≈6′ the mock mean reproduces the input theory to a few per
+      cent with no trend; below it the drop of ξ_- (a factor ~100 at
+      1′) is reproduced bin for bin by band-limiting the theory at
+      ℓ = 4096, the simulation's resolution, wholly outside the
+      fiducial cut.
     inputs: [mock_xi_reporting, mock_xi_input_theory, mock_xi_reporting_cov_mockmatched, mock_xi_validation_script, plotting_utils_script]
     decisions: [mock_suite, reference_covariance]
     recipe:
@@ -1326,27 +1057,18 @@ outputs:
       [mock_xi_validation_figure](#outputs.mock_xi_validation_figure),
       per reporting bin: mean ξ_± over theory, the residual in
       units of a single realisation's σ_ana and in units of
-      σ_emp/√N, σ_emp, σ_ana and their ratio — plus two columns
-      the figure has no room for.
+      σ_emp/√N, σ_emp, σ_ana and their ratio. Two further columns:
 
-      The first is the pure shape-noise σ the ensemble's *own*
-      measured pair counts imply, σ_e²/√(2N_pair). For raw ξ_+ it
-      rises from 1.0 at 1′ to 4.2 at 221′: sample variance takes
-      over with θ, and the near-unity scatter ratios quoted for
-      ξ_+^B are a statement about a *noise-only* statistic that
-      does not carry over to the raw correlation function. It is
-      also what makes the footprint-geometry effect negligible
-      here — a 13% pair deficit moves σ by under 1% at every
-      separation, because shape noise is only 5.7% of the ξ_+
-      variance at 221′.
-
-      The second is the galaxy count each bin's pair count implies
-      under a uniform-density footprint of the fiducial area. It
-      sits at 1.02 of the delivered count at 1′ — which is what
-      fixes the area convention — and falls monotonically to 0.87
-      at 221′: a 13% pair deficit from annuli running off the
-      footprint edge, the geometry effect the pure-mode scatter
-      inherits at large θ.
+      - The shape-noise σ implied by the measured pair counts,
+        σ_e²/√(2N_pair). The total σ over it rises from 1.0 at 1′ to 4.2 at
+        221′ for raw ξ_+ as sample variance takes over, so shape noise
+        is only 5.7% of the ξ_+ variance at 221′ and the footprint pair
+        deficit moves σ by under 1% at every separation.
+      - The galaxy count each bin's pair count implies for a
+        uniform-density footprint of the fiducial area: 1.02 of the
+        delivered count at 1′, falling monotonically to 0.87 at 221′ as
+        annuli run off the footprint edge — the geometry effect the
+        pure-mode scatter inherits at large θ.
     inputs: [mock_xi_reporting, mock_xi_input_theory, mock_xi_reporting_cov_mockmatched, mock_xi_validation_script]
     decisions: [mock_suite, reference_covariance]
     recipe:
@@ -1388,17 +1110,12 @@ outputs:
       σ_emp/√N uncertainty, and the largest absolute normalised
       mean with the mode or bin it falls in.
 
-      The mean-vector χ² is quoted on **two labelled ranges**, and
-      for the pure modes they differ materially: `full_range` is
-      the whole 20-bin reporting grid, `fiducial_window` is the
-      bins the null test is actually claimed on (9–15, resolved by
-      `scale_cuts.resolve_fiducial_bin_window`). The mocks carry a
-      small mean B residual at the smallest scales — ⟨ξ_+^B⟩ sits
-      at ≈−0.1σ in the first three bins against a ≈0.055σ error —
-      which the cut excludes, so ξ_+^B reads PTE 0.004 on the full
-      range and 0.13 inside the cut. The full range is the
-      pipeline diagnostic; the window is what the null
-      test rests on.
+      The mean-vector χ² is quoted on the full 20-bin reporting grid
+      (`full_range`) and on the fiducial bins 9–15
+      (`fiducial_window`). For the pure modes they differ: ⟨ξ_+^B⟩
+      sits at ≈−0.1σ in the first three bins against a ≈0.055σ error,
+      a small-scale residual the cut excludes, so ξ_+^B reads PTE 0.004
+      on the full range and 0.13 inside the cut.
     inputs: [mock_per_mock_statistics, scale_cuts_script]
     decisions: [reference_covariance, scale_cut_convention]
     recipe:
@@ -1420,10 +1137,8 @@ outputs:
       The mask-geometry test's computed artifact: per-realisation χ²
       and PTE for every pure-mode block under both footprints, on the
       full 20 bins and on the fiducial cut, together with the full
-      comparison report the two derivations below read.
-
-      NOT YET MATERIALISED — it waits on the masked scatter chain
-      above, which has never been run on this suite.
+      comparison report the two derivations below read. Not yet
+      materialised: it waits on the masked scatter chain.
     inputs: [mock_pure_eb_modes, mock_pure_eb_modes_masked, pure_eb_semianalytic_data]
     decisions: [mock_suite, fiducial_catalog, fiducial_blind]
     recipe:
@@ -1440,24 +1155,18 @@ outputs:
     type: metric
     format: json
     description: |
-      The mask-geometry verdict, derived from
-      [mask_geometry_statistics](#outputs.mask_geometry_statistics).
-      The same 50 realisations (the masked chain's subset of the
-      suite) transformed
-      under two footprints are compared four ways: the mean B
-      vector against the empirical covariance of the mean (Hartlap on
-      the inverse) per footprint; per-realisation χ²
-      against each footprint's own empirical covariance with a KS
-      test between the two samples; the **paired** masked−fiducial
-      difference, where cosmic variance cancels and which is the
-      sharpest geometry test; and per-realisation χ² against the
-      fiducial MC-propagated analytic covariance, on the full 20
-      bins and on the fiducial cut.
-
-      The ambiguous-mode blocks act as the control: they *should*
-      move enormously between footprints, and if they do while
-      the pure-B blocks do not, the decomposition is putting
-      geometry exactly where it belongs.
+      Whether the v1.4.8 mask's geometry alone generates pure-mode B,
+      from [mask_geometry_statistics](#outputs.mask_geometry_statistics).
+      The same 50 realisations under two footprints are compared four
+      ways: the mean B vector against the empirical covariance of the
+      mean (Hartlap on the inverse) per footprint; per-realisation χ²
+      against each footprint's empirical covariance, with a KS test
+      between the two; the paired masked−fiducial difference, where
+      cosmic variance cancels (the sharpest test); and per-realisation
+      χ² against the fiducial analytic covariance, on the full 20 bins
+      and the fiducial cut. The ambiguous modes are the control: they
+      should move strongly between footprints while the pure-B blocks
+      do not.
     inputs: [mask_geometry_statistics]
     recipe:
       command: >
@@ -1493,25 +1202,17 @@ outputs:
       sample and the v1.4.6.3_v2 GLASS suite — carrying the galaxy
       count, the occupied nside-4096 sky, the area convention, n_eff
       under it, the per-component σ_e, and the two ratios that follow:
-      noise power σ_e²/N and its square, the B-mode variance ratio.
+      noise power σ_e²/N and its square, the B-mode variance ratio
+      (a mock B variance is pure shape noise, so it scales as
+      (σ_e²/N)²). Read from the two CosmoCov inis and the footprint
+      audit; both catalogues occupy one sky to within 0.3 deg², so the
+      area cancels.
 
-      Every cell is read or derived from three declared artifacts and
-      nothing else: the two CosmoCov ini files, which are what the
-      covariance chain itself was driven from, and the footprint
-      audit. The derivation is one line of physics — with no B signal
-      by construction, a mock B variance is pure shape noise, so it
-      scales as (σ_e²/N)² — and it is what makes the ratio
-      convention-free: the audit shows both catalogues occupy one sky
-      to within 0.3 deg², so the area cancels.
-
-      This is the table
-      [mocks_are_over_constraining](#findings.mocks_are_over_constraining)
-      rests on for its *prediction*: the count and σ_e ratio say the
-      mock BB variance should be 0.7389 of the data's. What the
-      covariance machinery and the realisations themselves actually
-      deliver is measured separately, in
-      [clbb_variance_ratios](#outputs.clbb_variance_ratios), and the
-      finding is the two held against each other.
+      This is the prediction in
+      [mocks_are_over_constraining](#findings.mocks_are_over_constraining):
+      mock BB variance 0.7389 of the data's, tested against the
+      measured ratios in
+      [clbb_variance_ratios](#outputs.clbb_variance_ratios).
     inputs: [cosmocov_ini_data, cosmocov_ini_mockmatched, mock_footprint_audit]
     decisions: [mock_suite, fiducial_catalog]
     recipe:
@@ -1527,32 +1228,18 @@ outputs:
     type: metric
     format: json
     description: |
-      The measured half of the density finding: how much quieter the
-      mocks' C_ℓ^BB actually is than the data's, over the harmonic
-      reporting cut 300 ≤ ℓ ≤ 1600 (the 17 bandpowers whose powspace
-      edges fall entirely inside it), in two independent readings.
-
-      The **machinery** ratio is the diagonal of
-      [cl_cov_mockmatched](#inputs.cl_cov_mockmatched) — the fiducial
-      NaMaster iNKA primitive pointed at a mock catalogue — over
-      the diagonal of the data's
-      [cl_cov_reporting](#inputs.cl_cov_reporting). It is what the
-      covariance chain predicts at the mocks' noise, with nothing
-      hand-fed. The **empirical** ratio is the sample variance of the
-      suite's own BB bandpowers
+      The measured mock-to-data C_ℓ^BB variance ratio over the 17
+      bandpowers inside 300 ≤ ℓ ≤ 1600, two ways. The machinery ratio
+      is the diagonal of
+      [cl_cov_mockmatched](#inputs.cl_cov_mockmatched) over that of
+      the data's [cl_cov_reporting](#inputs.cl_cov_reporting): what the
+      covariance chain predicts at the mocks' noise. The empirical
+      ratio is the sample variance of the suite's BB bandpowers
       ([glass_mock_cl](#inputs.glass_mock_cl)) over the same data
-      diagonal: what the realisations do, and the truth the machinery
-      ratio is checked against. The mocks carry no B signal by
-      construction, so both are pure shape-noise variance ratios and
-      the count mismatch is the whole of what they measure.
-
-      Deliberately independent of
-      [reference_covariance](#decisions.reference_covariance): this
-      output is the evidence that motivates that decision, so it
-      measures both sides regardless of which one is selected. Mean
-      and median over the cut plus the per-band values, so the
-      near-flatness of the ratio across the cut is visible rather
-      than asserted.
+      diagonal. With no B signal, both are pure shape-noise ratios.
+      Mean, median and per-band values. Independent of
+      [reference_covariance](#decisions.reference_covariance), which it
+      motivates.
     inputs: [cl_cov_mockmatched, cl_cov_reporting, glass_mock_cl]
     decisions: [mock_suite, fiducial_catalog, fiducial_blind]
     recipe:
@@ -1578,44 +1265,26 @@ outputs:
     type: metric
     format: json
     description: |
-      Where the low-ℓ C_ℓ^BB covariance miscalibration comes from.
-      [clbb_variance_ratios](#outputs.clbb_variance_ratios) measures
-      the mock/data variance ratio inside the reporting cut; this
-      output asks the separate question of why σ_emp/σ_ana falls to
-      0.56 at ℓ ≈ 12 *outside* it, recorded in the fiber
-      `analytic-covariance-large-scale-miscalibration`.
-
-      The script replicates `CosmologyValidation.
-      calculate_pseudo_cl_eb_cov` line for line — the mask is
-      realisation 00001's weighted galaxy-count map, the noise bias
-      is Ω_pix ⟨Σ_i w_i² σ_{e,i}²⟩, `fiducial_input_inka` is the
-      `coupled` branch the chain actually runs — and recomputes the
-      bandpower covariance under three fiducial E-mode inputs,
-      sharing one `NmtField` / `NmtWorkspace` /
-      `NmtCovarianceWorkspace` so the only thing that varies is
-      C_ℓ^EE:
+      Diagnostic of why the analytic C_ℓ^BB covariance is too large at
+      low ℓ (σ_emp/σ_ana falls to 0.56 at ℓ ≈ 12, outside the
+      reporting cut). It replicates the chain's NaMaster iNKA
+      covariance on realisation 00001 (weighted galaxy-count mask,
+      noise bias Ω_pix ⟨Σ_i w_i² σ_{e,i}²⟩, `coupled` iNKA input) and
+      recomputes it under three E-mode inputs, varying only C_ℓ^EE:
 
       - `a_theory`, the chain's own input `[C_ℓ^EE·pixwin², 0, 0, 0]`
-        plus the decoupled noise bias. This is the **gate**: it must
-        reproduce the stored
-        [cl_cov_mockmatched](#inputs.cl_cov_mockmatched) diagonal,
-        and `gate_max_frac_deviation_from_stored` records by how
-        much it misses.
-      - `b_noEE`, the same with C_ℓ^EE zeroed, leaving shape noise
-        alone. The gap between this and `a_theory` is the E-to-B
+        plus the decoupled noise bias: a gate that must reproduce the
+        stored [cl_cov_mockmatched](#inputs.cl_cov_mockmatched)
+        diagonal (`gate_max_frac_deviation_from_stored`).
+      - `b_noEE`, C_ℓ^EE zeroed: its gap to `a_theory` is the E-to-B
         mask-mixing contribution to the BB variance.
-      - `c_mockEE`, the suite's own mean C_ℓ^EE in place of theory.
-        This separates a wrong *input spectrum* from a wrong
-        *coupling kernel*: if the ratio barely moves, the spectrum
-        fed to the covariance is not the problem.
+      - `c_mockEE`, the suite's mean C_ℓ^EE in place of theory: if the
+        ratio barely moves, the input spectrum is not the problem and
+        the coupling is.
 
-      Carries σ_BB per bandpower for all three plus the suite's
-      empirical scatter, and σ_emp/σ_ana for each, over the full
-      8 ≤ ℓ ≤ 2048 grid rather than the reporting cut — the whole
-      point is the bands below it.
-
-      Diagnostic only: nothing upstream is changed on the strength
-      of it, and no fiducial covariance is regenerated.
+      Carries σ_BB per bandpower for all three and the empirical
+      scatter, with σ_emp/σ_ana for each, over the full 8 ≤ ℓ ≤ 2048
+      grid.
     inputs: [glass_mock_catalogs, redshift_distribution, glass_mock_cl, cl_cov_mockmatched, clbb_cov_mixing_term_script]
     decisions: [mock_suite, fiducial_catalog, fiducial_blind]
     recipe:
@@ -1640,8 +1309,7 @@ outputs:
       drawn: σ(C_ℓ^BB) per bandpower for the empirical scatter and
       the three analytic variants above, with σ_emp/σ_ana beneath
       and the harmonic reporting cut 300 < ℓ < 1600 shaded in both
-      panels. Log in ℓ across the full 8–2048 grid, so the bands
-      the miscalibration lives in are visible rather than cropped.
+      panels; log ℓ over the full 8–2048 grid.
     inputs: [clbb_cov_mixing_term_test, clbb_cov_mixing_term_figure_script, plotting_utils_script]
     decisions: [mock_suite, fiducial_catalog, fiducial_blind]
     recipe:
@@ -1667,9 +1335,7 @@ outputs:
   # PureEBTransform, which dispatches on the method — so dqags in the averaged
   # geometry needed no new numerics, only an explicit geometry override
   # (`geometry_for(method, geometry)`, `--geometry` on the data chain,
-  # `--transform-averaged` on the mock chains).  Verified 2026-09-04: the
-  # adopted variant reproduces results/baseline/glass_mocks/mock_pure_eb_modes
-  # bit-for-bit, max|diff| = 0.
+  # `--transform-averaged` on the mock chains).
   #
   # The reverse pairing is a genuine constraint and is absent:
   # fixed_operator cannot be evaluated pointwise, because
@@ -1695,9 +1361,9 @@ outputs:
   #   averaged_uniform_dqags    dqags     / averaged  / uniform / fine_grid_extent   (cross term)
   #   pointwise_fixedop         operator  / pointwise / none    / reporting_extent   (snapped corner)
   #   pointwise_fixedop_reporting  operator / pointwise / none  / reporting_extent   (snapped corner, reporting local term)
-  #   averaged_uniform_fixedop  operator  / averaged  / uniform / fine_grid_extent   (ADOPTED, baseline)
+  #   averaged_uniform_fixedop  operator  / averaged  / uniform / fine_grid_extent
   #   averaged_uniform_fixedop_reporting  operator / averaged / uniform / fine_grid_extent  (reporting local term; covariance aliased)
-  #   averaged_npairs_fixedop   operator  / averaged  / npairs  / fine_grid_extent   (ruled arm)
+  #   averaged_npairs_fixedop   operator  / averaged  / npairs  / fine_grid_extent   (ADOPTED, baseline)
   #
   # The last two pointwise-operator entries differ in ONE thing.  The transform
   # is a local term plus an integral term; the local term is
@@ -1773,59 +1439,37 @@ outputs:
     type: data
     format: tar.gz
     description: |
-      Both MC-propagated pure-mode covariances for the `pointwise_fixedop`
-      variant — the snapped-evaluation corner — bundled as
-      `pointwise_fixedop__data.npz` and
-      `pointwise_fixedop__mockmatched.npz`. The first is the twin of
+      MC-propagated pure-mode covariances for the `pointwise_fixedop`
+      variant (fixed operator, pointwise geometry, snapped evaluation):
+      `pointwise_fixedop__data.npz`, the counterpart of
       [pure_eb_semianalytic_data](#../pure_eb.pure_eb_semianalytic_data)
-      and also carries the data's own pure-mode vectors, which is what
-      the variant's data PTE is computed from downstream; the second is
-      the twin of
+      carrying the data's pure-mode vectors for the variant's data PTE,
+      and `pointwise_fixedop__mockmatched.npz`, the counterpart of
       [pure_cov_mockmatched](#outputs.pure_cov_mockmatched).
 
-      One output per variant rather than one looped output, so the four
-      run in parallel on separate nodes. Per variant rather than shared,
-      because the transform that propagates the draws *is* the thing
-      under scan: the `dqags` quadrature error is noise per draw and
+      Each variant propagates its own covariance because the transform is
+      what is scanned: `dqags` quadrature error is noise per draw and
       inflates the propagated variance (ξ_-^B bin 0 by ×3.3, ξ_-^amb by
-      ×17), so one shared covariance would compare each variant's data
-      vector against another variant's error bars. Seeds are identical
-      across variants (42 + chunk/batch id, same block sizes), so the
-      variant-to-variant difference carries no Monte-Carlo noise of its
-      own.
+      ×17). Seeds are identical across variants (42 + chunk/batch id), so
+      variant-to-variant differences carry no Monte-Carlo noise of their
+      own. 500 draws rather than the fiducial 2000 give ≈0.4%
+      per-element noise against the 10–30% differences being resolved;
+      the downstream Hartlap correction reads the draw count from the
+      bundle.
 
-      **500 draws, not the fiducial 2000.** The scan compares variants
-      against each other rather than reporting an absolute error bar,
-      and 500 draws give ≈0.4% per-element noise against the 10–30%
-      differences being resolved. At 2000 this variant alone would run
-      four times as long. The fiducial 2000-draw covariance is a
-      separate artifact and is untouched. The Hartlap correction
-      downstream is read from this bundle's provenance, so it tracks the
-      draw count rather than the pipeline's 2000.
-
-      **Read this variant alongside its snap offsets.** The single-grid
-      operator evaluates only at integration-grid nodes, so each of the 20
-      reporting abscissae is snapped to the nearest fine node in log θ —
-      offsets of −0.312% to +0.272%, recorded per point in the transform's
-      `snap_offsets` and carried into the mode provenance as
-      `snap_offset_max`. The consequence is larger than the shift: the
-      operator's local term is then read at a *single fine node* rather than
-      from the 20-bin reporting average that
+      The single-grid operator evaluates only at integration-grid nodes,
+      so each reporting abscissa is snapped to the nearest fine node in
+      log θ (offsets −0.312% to +0.272%, recorded as `snap_offsets`). Its
+      local term is then read at a single fine node rather than from the
+      20-bin reporting measurement
       [pointwise_dqags](#outputs.pure_eb_scan_covariance_pointwise_dqags)
-      uses, so it carries that node's own shot noise. Measured on realisation
-      00001, the resulting ξ_±^B is ~7× the pointwise-dqags amplitude at
-      ξ_+^B and ~2× at ξ_-^B, oscillating in sign across bins and *not*
-      confined to the grid edges — the excess is fine-bin noise, not a
-      quadrature effect. The variant completes the method × geometry square,
-      but it is the noisiest corner of it and should not be read as "the
-      operator in the submitted geometry" — for that reading, see
-      [pure_eb_scan_covariance_pointwise_fixedop_reporting](#outputs.pure_eb_scan_covariance_pointwise_fixedop_reporting),
-      which snaps identically but restores the reporting-grid local term.
-
-      Cost: free. The operator is assembled once and applied as a matvec, so
-      a realisation transforms in well under a second; 500 draws × 2
-      covariances is minutes, and the time limit is margin for the chunked
-      driver rather than for the transform.
+      uses, so it carries fine-bin shot noise: on realisation 00001 its
+      ξ_±^B is ~7× the pointwise-dqags amplitude at ξ_+^B and ~2× at
+      ξ_-^B, oscillating in sign and not confined to the grid edges. It
+      completes the method × geometry square but is not "the operator in
+      the submitted geometry"; that is
+      [pure_eb_scan_covariance_pointwise_fixedop_reporting](#outputs.pure_eb_scan_covariance_pointwise_fixedop_reporting).
+      Cost: minutes (a matvec per draw).
     inputs: [xi_reporting, xi_integration, cov_integration_g, cov_integration_mockmatched, redshift_distributions]
     decisions: [fiducial_catalog, fiducial_blind]
     recipe:
@@ -1851,52 +1495,27 @@ outputs:
     type: data
     format: tar.gz
     description: |
-      Both MC-propagated pure-mode covariances for the
-      `pointwise_fixedop_reporting` variant — the *hybrid* snapped corner —
-      bundled as `pointwise_fixedop_reporting__data.npz` and
-      `pointwise_fixedop_reporting__mockmatched.npz`. Same two roles as
-      every other bundle in this scan: the first is the twin of
+      MC-propagated pure-mode covariances (500 draws) for the
+      `pointwise_fixedop_reporting` variant:
+      `pointwise_fixedop_reporting__data.npz`, the counterpart of
       [pure_eb_semianalytic_data](#../pure_eb.pure_eb_semianalytic_data)
-      and carries the data's own pure-mode vectors, which is what this
-      variant's data PTE is computed from downstream; the second is the
-      twin of [pure_cov_mockmatched](#outputs.pure_cov_mockmatched).
+      carrying the data's pure-mode vectors for the variant's data PTE,
+      and `pointwise_fixedop_reporting__mockmatched.npz`, the
+      counterpart of [pure_cov_mockmatched](#outputs.pure_cov_mockmatched).
 
-      **What it separates.** The Schneider-2022 transform is a *local*
-      term plus an *integral* term. The local term is
-      0.5·(ξ_+ ± ξ_-) evaluated **at the reporting abscissa**: the
-      reference implementation writes it as
-      `xip_E[i] = 0.5 * (xip[i] + xim[i] + int_tmp) - …`, and the operator
-      adds exactly the same coefficients onto its own evaluation column
-      (`out[ii] += 0.5`, `out[ii + n] ± 0.5`).
+      The Schneider (2022) transform is a local term, 0.5·(ξ_+ ± ξ_-) at
+      the reporting abscissa, plus an integral term.
       [pointwise_dqags](#outputs.pure_eb_scan_covariance_pointwise_dqags)
-      takes that term from the 20-bin reporting measurement and only the
-      integral from the fine grid.
-      [pointwise_fixedop](#outputs.pure_eb_scan_covariance_pointwise_fixedop),
-      forced by the single-grid operator to evaluate at a node, takes
-      **both** from the snapped fine node — roughly 1/50 of a reporting
-      bin's pairs — so its per-point noise is fine-bin shot noise, not a
-      quadrature effect. This variant snaps identically for the integral
-      term (same nearest-node choice in log θ, same recorded offsets) and
-      restores the reporting local term
-      (`local_from_eval_grid=True` on `PureEBTransform`). It is therefore
-      the like-for-like operator counterpart of the submitted pointwise
-      chain: what remains between the two is quadrature plus the snapped
-      integral's θ shift.
-
-      Measured on realisation 00001, the hybrid's ξ_±^B sits at the
-      pointwise-dqags amplitude rather than the ~7×/~2× excess
-      `pointwise_fixedop` shows, which is what identifies that excess as
-      the local term's fine-bin noise.
-
-      **500 draws, not the fiducial 2000**, for the reason every bundle in
-      this scan carries: the comparison is variant-against-variant, and
-      500 draws give ≈0.4% per-element noise against the 10–30%
-      differences being resolved. The Hartlap correction downstream reads
-      the draw count from this bundle's provenance.
-
-      Cost: free, like its neighbour. The operator is assembled once and
-      applied as a matvec, and the local-term correction is one vector
-      add per draw; the time limit is margin for the chunked driver.
+      takes the local term from the 20-bin reporting measurement;
+      [pointwise_fixedop](#outputs.pure_eb_scan_covariance_pointwise_fixedop)
+      takes both terms from the snapped fine node (~1/50 of a reporting
+      bin's pairs). This variant snaps identically for the integral but
+      restores the reporting local term, making it the like-for-like
+      operator counterpart of the submitted chain: what remains is
+      quadrature plus the snapped integral's θ shift. On realisation
+      00001 its ξ_±^B sits at the pointwise-dqags amplitude rather than
+      `pointwise_fixedop`'s ~7×/~2× excess, identifying that excess as
+      fine-bin noise in the local term. Cost: minutes.
     inputs: [xi_reporting, xi_integration, cov_integration_g, cov_integration_mockmatched, redshift_distributions]
     decisions: [fiducial_catalog, fiducial_blind]
     recipe:
@@ -1920,37 +1539,25 @@ outputs:
     type: data
     format: tar.gz
     description: |
-      Both MC-propagated pure-mode covariances for the `pointwise_dqags`
-      variant — SUBMITTED — bundled as
-      `pointwise_dqags__data.npz` and
-      `pointwise_dqags__mockmatched.npz`. The first is the twin of
-      [pure_eb_semianalytic_data](#../pure_eb.pure_eb_semianalytic_data)
-      and also carries the data's own pure-mode vectors, which is what
-      the variant's data PTE is computed from downstream; the second is
-      the twin of
+      MC-propagated pure-mode covariances for the `pointwise_dqags`
+      variant, the submitted paper's chain (adaptive quadrature,
+      pointwise geometry): `pointwise_dqags__data.npz`, the counterpart
+      of [pure_eb_semianalytic_data](#../pure_eb.pure_eb_semianalytic_data)
+      carrying the data's pure-mode vectors for the variant's data PTE,
+      and `pointwise_dqags__mockmatched.npz`, the counterpart of
       [pure_cov_mockmatched](#outputs.pure_cov_mockmatched).
 
-      One output per variant rather than one looped output, so the four
-      run in parallel on separate nodes. Per variant rather than shared,
-      because the transform that propagates the draws *is* the thing
-      under scan: the `dqags` quadrature error is noise per draw and
+      Each variant propagates its own covariance because the transform is
+      what is scanned: `dqags` quadrature error is noise per draw and
       inflates the propagated variance (ξ_-^B bin 0 by ×3.3, ξ_-^amb by
-      ×17), so one shared covariance would compare each variant's data
-      vector against another variant's error bars. Seeds are identical
-      across variants (42 + chunk/batch id, same block sizes), so the
-      variant-to-variant difference carries no Monte-Carlo noise of its
-      own.
+      ×17). Seeds are identical across variants (42 + chunk/batch id), so
+      variant-to-variant differences carry no Monte-Carlo noise of their
+      own. 500 draws rather than the fiducial 2000 give ≈0.4%
+      per-element noise against the 10–30% differences being resolved;
+      the downstream Hartlap correction reads the draw count from the
+      bundle.
 
-      **500 draws, not the fiducial 2000.** The scan compares variants
-      against each other rather than reporting an absolute error bar,
-      and 500 draws give ≈0.4% per-element noise against the 10–30%
-      differences being resolved. At 2000 this variant alone would run
-      four times as long. The fiducial 2000-draw covariance is a
-      separate artifact and is untouched. The Hartlap correction
-      downstream is read from this bundle's provenance, so it tracks the
-      draw count rather than the pipeline's 2000.
-
-      Cost: the submitted pointwise chain: 20 evaluation abscissae, the cheapest of the four. Measured at 19 s per transform on 4 cores, so
+      Cost: 20 evaluation abscissae, 19 s per transform on 4 cores, so
       500 draws × 2 covariances is ≈21 core-hours, ≈0.9 h on 24.
     inputs: [xi_reporting, xi_integration, cov_integration_g, cov_integration_mockmatched, redshift_distributions]
     decisions: [fiducial_catalog, fiducial_blind]
@@ -1977,37 +1584,27 @@ outputs:
     type: data
     format: tar.gz
     description: |
-      Both MC-propagated pure-mode covariances for the `averaged_uniform_dqags`
-      variant — cross term — bundled as
-      `averaged_uniform_dqags__data.npz` and
-      `averaged_uniform_dqags__mockmatched.npz`. The first is the twin of
+      MC-propagated pure-mode covariances for the `averaged_uniform_dqags`
+      variant, the cross term (adaptive quadrature in the averaged
+      geometry, uniform weights): `averaged_uniform_dqags__data.npz`, the
+      counterpart of
       [pure_eb_semianalytic_data](#../pure_eb.pure_eb_semianalytic_data)
-      and also carries the data's own pure-mode vectors, which is what
-      the variant's data PTE is computed from downstream; the second is
-      the twin of
+      carrying the data's pure-mode vectors for the variant's data PTE,
+      and `averaged_uniform_dqags__mockmatched.npz`, the counterpart of
       [pure_cov_mockmatched](#outputs.pure_cov_mockmatched).
 
-      One output per variant rather than one looped output, so the four
-      run in parallel on separate nodes. Per variant rather than shared,
-      because the transform that propagates the draws *is* the thing
-      under scan: the `dqags` quadrature error is noise per draw and
+      Each variant propagates its own covariance because the transform is
+      what is scanned: `dqags` quadrature error is noise per draw and
       inflates the propagated variance (ξ_-^B bin 0 by ×3.3, ξ_-^amb by
-      ×17), so one shared covariance would compare each variant's data
-      vector against another variant's error bars. Seeds are identical
-      across variants (42 + chunk/batch id, same block sizes), so the
-      variant-to-variant difference carries no Monte-Carlo noise of its
-      own.
+      ×17). Seeds are identical across variants (42 + chunk/batch id), so
+      variant-to-variant differences carry no Monte-Carlo noise of their
+      own. 500 draws rather than the fiducial 2000 give ≈0.4%
+      per-element noise against the 10–30% differences being resolved;
+      the downstream Hartlap correction reads the draw count from the
+      bundle.
 
-      **500 draws, not the fiducial 2000.** The scan compares variants
-      against each other rather than reporting an absolute error bar,
-      and 500 draws give ≈0.4% per-element noise against the 10–30%
-      differences being resolved. At 2000 this variant alone would run
-      four times as long. The fiducial 2000-draw covariance is a
-      separate artifact and is untouched. The Hartlap correction
-      downstream is read from this bundle's provenance, so it tracks the
-      draw count rather than the pipeline's 2000.
-
-      Cost: the adaptive quadrature at ~1000 fine-grid nodes, four times the operator per draw and the only expensive member. Measured at 209 s per transform on 4 cores, so
+      Cost: adaptive quadrature at ~1000 fine-grid nodes, the only
+      expensive variant, 209 s per transform on 4 cores, so
       500 draws × 2 covariances is ≈232 core-hours, ≈9.7 h on 24.
     inputs: [xi_reporting, xi_integration, cov_integration_g, cov_integration_mockmatched, redshift_distributions]
     decisions: [fiducial_catalog, fiducial_blind]
@@ -2034,37 +1631,25 @@ outputs:
     type: data
     format: tar.gz
     description: |
-      Both MC-propagated pure-mode covariances for the `averaged_uniform_fixedop`
-      variant — ADOPTED (baseline) — bundled as
-      `averaged_uniform_fixedop__data.npz` and
-      `averaged_uniform_fixedop__mockmatched.npz`. The first is the twin of
+      MC-propagated pure-mode covariances for the `averaged_uniform_fixedop`
+      variant (fixed operator, averaged geometry, uniform weights):
+      `averaged_uniform_fixedop__data.npz`, the counterpart of
       [pure_eb_semianalytic_data](#../pure_eb.pure_eb_semianalytic_data)
-      and also carries the data's own pure-mode vectors, which is what
-      the variant's data PTE is computed from downstream; the second is
-      the twin of
+      carrying the data's pure-mode vectors for the variant's data PTE,
+      and `averaged_uniform_fixedop__mockmatched.npz`, the counterpart of
       [pure_cov_mockmatched](#outputs.pure_cov_mockmatched).
 
-      One output per variant rather than one looped output, so the four
-      run in parallel on separate nodes. Per variant rather than shared,
-      because the transform that propagates the draws *is* the thing
-      under scan: the `dqags` quadrature error is noise per draw and
+      Each variant propagates its own covariance because the transform is
+      what is scanned: `dqags` quadrature error is noise per draw and
       inflates the propagated variance (ξ_-^B bin 0 by ×3.3, ξ_-^amb by
-      ×17), so one shared covariance would compare each variant's data
-      vector against another variant's error bars. Seeds are identical
-      across variants (42 + chunk/batch id, same block sizes), so the
-      variant-to-variant difference carries no Monte-Carlo noise of its
-      own.
+      ×17). Seeds are identical across variants (42 + chunk/batch id), so
+      variant-to-variant differences carry no Monte-Carlo noise of their
+      own. 500 draws rather than the fiducial 2000 give ≈0.4%
+      per-element noise against the 10–30% differences being resolved;
+      the downstream Hartlap correction reads the draw count from the
+      bundle.
 
-      **500 draws, not the fiducial 2000.** The scan compares variants
-      against each other rather than reporting an absolute error bar,
-      and 500 draws give ≈0.4% per-element noise against the 10–30%
-      differences being resolved. At 2000 this variant alone would run
-      four times as long. The fiducial 2000-draw covariance is a
-      separate artifact and is untouched. The Hartlap correction
-      downstream is read from this bundle's provenance, so it tracks the
-      draw count rather than the pipeline's 2000.
-
-      Cost: the fixed-quadrature operator, a matvec per draw once the operator is assembled. Measured at 54 s per transform on 4 cores, so
+      Cost: 54 s per transform on 4 cores, so
       500 draws × 2 covariances is ≈60 core-hours, ≈2.5 h on 24.
     inputs: [xi_reporting, xi_integration, cov_integration_g, cov_integration_mockmatched, redshift_distributions]
     decisions: [fiducial_catalog, fiducial_blind]
@@ -2091,37 +1676,26 @@ outputs:
     type: data
     format: tar.gz
     description: |
-      Both MC-propagated pure-mode covariances for the `averaged_npairs_fixedop`
-      variant — the adopted selection since 2026-09-07 — bundled as
-      `averaged_npairs_fixedop__data.npz` and
-      `averaged_npairs_fixedop__mockmatched.npz`. The first is the twin of
+      MC-propagated pure-mode covariances for the `averaged_npairs_fixedop`
+      variant, the baseline selection (fixed operator, averaged
+      geometry, pair-count weights): `averaged_npairs_fixedop__data.npz`,
+      the counterpart of
       [pure_eb_semianalytic_data](#../pure_eb.pure_eb_semianalytic_data)
-      and also carries the data's own pure-mode vectors, which is what
-      the variant's data PTE is computed from downstream; the second is
-      the twin of
+      carrying the data's pure-mode vectors for the variant's data PTE,
+      and `averaged_npairs_fixedop__mockmatched.npz`, the counterpart of
       [pure_cov_mockmatched](#outputs.pure_cov_mockmatched).
 
-      One output per variant rather than one looped output, so the four
-      run in parallel on separate nodes. Per variant rather than shared,
-      because the transform that propagates the draws *is* the thing
-      under scan: the `dqags` quadrature error is noise per draw and
+      Each variant propagates its own covariance because the transform is
+      what is scanned: `dqags` quadrature error is noise per draw and
       inflates the propagated variance (ξ_-^B bin 0 by ×3.3, ξ_-^amb by
-      ×17), so one shared covariance would compare each variant's data
-      vector against another variant's error bars. Seeds are identical
-      across variants (42 + chunk/batch id, same block sizes), so the
-      variant-to-variant difference carries no Monte-Carlo noise of its
-      own.
+      ×17). Seeds are identical across variants (42 + chunk/batch id), so
+      variant-to-variant differences carry no Monte-Carlo noise of their
+      own. 500 draws rather than the fiducial 2000 give ≈0.4%
+      per-element noise against the 10–30% differences being resolved;
+      the downstream Hartlap correction reads the draw count from the
+      bundle.
 
-      **500 draws, not the fiducial 2000.** The scan compares variants
-      against each other rather than reporting an absolute error bar,
-      and 500 draws give ≈0.4% per-element noise against the 10–30%
-      differences being resolved. At 2000 this variant alone would run
-      four times as long. The fiducial 2000-draw covariance is a
-      separate artifact and is untouched. The Hartlap correction
-      downstream is read from this bundle's provenance, so it tracks the
-      draw count rather than the pipeline's 2000.
-
-      Cost: the same operator and window under pair-count weights; the weighting changes the average, not the transform cost. Measured at 54 s per transform on 4 cores, so
+      Cost: 54 s per transform on 4 cores, so
       500 draws × 2 covariances is ≈60 core-hours, ≈2.5 h on 24.
     inputs: [xi_reporting, xi_integration, cov_integration_g, cov_integration_mockmatched, redshift_distributions]
     decisions: [fiducial_catalog, fiducial_blind]
@@ -2149,16 +1723,11 @@ outputs:
     format: npz
     description: |
       Pure-mode ξ_±^{E,B,amb} for every realisation under every variant,
-      keyed `<variant>__<block>` — the scan's twin of
-      [mock_pure_eb_modes](#outputs.mock_pure_eb_modes), through the same
-      `compute_ensemble` call, so a variant that also exists as a
-      universe selection is bit-identical to that universe's product.
-
-      This is the artifact that makes the decisions measurable. The
-      realisations carry no B power by construction, so the
-      across-realisation mean of ξ_±^B is the variant's own
-      rectification bias and its scatter is the variant's noise —
-      neither of which a single data vector can separate.
+      keyed `<variant>__<block>`, computed as
+      [mock_pure_eb_modes](#outputs.mock_pure_eb_modes) is. With no B
+      power in the realisations, the across-realisation mean of ξ_±^B is
+      each variant's rectification bias and its scatter the variant's
+      noise.
     inputs: [mock_xi_fine, mock_xi_reporting, pure_eb_scan_variants_script]
     decisions: [mock_suite]
     recipe:
@@ -2179,8 +1748,7 @@ outputs:
     type: metric
     format: json
     description: |
-      The scan's one computed table, and the artifact the re-decision is
-      read from. Per variant:
+      The scan's results, per variant:
 
       - **Mock bias** — per-realisation χ²/PTE for ξ_+^B, ξ_-^B and
         ξ_tot^B against the selected reference covariance, and the
@@ -2192,22 +1760,13 @@ outputs:
         uniform. A variant can be unbiased and still mis-calibrated if
         its propagated covariance has the wrong amplitude.
       - **The data** — the real catalogue's PTE for the same three
-        statistics at the adopted 12'–83' window, computed through that
-        variant's own covariance by the same `calculate_pure_eb_ptes`
-        call the single-variant fiducial output makes.
+        statistics at the adopted 12'–83' window, through that
+        variant's own covariance.
 
-      Reuses
-      [mock_campaign_analysis](#outputs.mock_per_mock_statistics)'s
-      covariance slicing and scale-cut constants rather than restating
-      them, and reuses `calculate_pure_eb_ptes` for the data side; this
-      stage adds the variant loop and one correction.
-
-      **The Hartlap factor is 500, not the pipeline's 2000.** The scan's
-      covariances are 500-draw, so the correction on their inverse has
-      to match. The count is read out of each bundle's own provenance
-      rather than restated here, so it tracks whatever the covariance
-      stage actually ran and cannot silently drift — which it would have
-      done had this stage kept the pipeline's `HARTLAP_N_PURE`.
+      Covariance slicing and scale cuts follow
+      [mock_campaign_analysis](#outputs.mock_per_mock_statistics). The
+      Hartlap correction uses the scan covariances' 500 draws, read
+      from each bundle.
     inputs: [pure_eb_scan_covariance_pointwise_dqags, pure_eb_scan_covariance_pointwise_fixedop, pure_eb_scan_covariance_pointwise_fixedop_reporting, pure_eb_scan_covariance_averaged_uniform_dqags, pure_eb_scan_covariance_averaged_uniform_fixedop, pure_eb_scan_covariance_averaged_npairs_fixedop, mock_pure_eb_modes_scan, cov_integration_g, xi_reporting, xi_integration, pure_eb_scan_variants_script, scale_cuts_script]
     decisions: [reference_covariance, scale_cut_convention, mock_suite, fiducial_catalog, fiducial_blind]
     recipe:
@@ -2229,23 +1788,16 @@ outputs:
     type: figure
     format: png
     description: |
-      The scan as one figure: two rows over one column per
-      variant. The top row is the across-realisation mean ξ_±^B in units
-      of the analytic (data) σ with σ_emp/(σ_ana√N) error bars — the
-      variant's rectification bias, on mocks that contain no B mode; the
-      bottom row is σ_emp/σ_ana with the 1/√(2(N−1)) sampling error —
-      whether its propagated covariance has the right amplitude. Each
-      column is annotated with the DATA's PTE under that variant, so the
-      mock verdict and the number that variant would report sit on the same
-      axes. Adopted scale cuts shaded, adopted and submitted columns
-      marked.
-
-      The companion of
-      [mock_campaign_figure](#outputs.mock_campaign_figure), sharing its
-      style and row structure: A&A double-column width, the publication
-      matplotlib style, no suptitle. A function of
-      [pure_eb_scan_statistics](#outputs.pure_eb_scan_statistics) alone,
-      so re-cutting it never re-runs a transform.
+      The pure-E/B decision scan
+      ([pure_eb_scan_statistics](#outputs.pure_eb_scan_statistics)),
+      one column per variant. Top row: across-realisation mean ξ_±^B in
+      units of the analytic (data) σ with σ_emp/(σ_ana√N) error bars,
+      the variant's rectification bias. Bottom row: σ_emp/σ_ana with
+      the 1/√(2(N−1)) sampling error, whether its propagated covariance
+      has the right amplitude. Each column is annotated with the data's
+      PTE under that variant. Adopted scale cuts shaded; adopted and
+      submitted columns marked. Styled as
+      [mock_campaign_figure](#outputs.mock_campaign_figure).
     inputs: [pure_eb_scan_statistics, pure_eb_decision_comparison_figure_script, plotting_utils_script, pure_eb_scan_variants_script]
     recipe:
       command: >
@@ -2258,24 +1810,15 @@ outputs:
     type: figure
     format: png
     description: |
-      What the ratio panels cannot show: how noisy each variant is.
-      [pure_eb_decision_comparison_figure](#outputs.pure_eb_decision_comparison_figure)
-      reads everything in units of the variant's own σ_ana, which answers
-      "is it biased, is its covariance calibrated" and says nothing about
-      "which variant would you rather measure with" — a variant can sit at
-      mean/σ = 0.1 because its error bar is twice everyone else's. So this
-      one plots the scatter itself: per variant and per reporting bin, the
-      across-realisation standard deviation of the mock pure-B vector,
-      times θ in arcmin so that seven curves flatten enough to share one
-      pair of axes.
-
-      Two panels, ξ_+^B and ξ_−^B, seven lines each in the data-viz
-      categorical order with a dash pattern apiece — adopted heavy and
-      solid, submitted dashed — over the adopted variant's analytic θσ in
-      thin grey, so every variant's spread is read against the one error
-      bar the null test uses. The [12, 83]′ window is shaded. Units are
-      arcmin, quoted in 1e-6. A function of the mock ensemble and one
-      covariance bundle alone.
+      How noisy each pure-E/B variant is, which
+      [pure_eb_decision_comparison_figure](#outputs.pure_eb_decision_comparison_figure),
+      normalised by each variant's own σ_ana, cannot show. Per variant
+      and reporting bin, the across-realisation standard deviation of
+      the mock pure-B vector times θ (arcmin, in units of 1e-6), in two
+      panels (ξ_+^B, ξ_−^B) of seven lines, adopted heavy and solid,
+      submitted dashed. The thin grey reference is the analytic θσ from
+      the `averaged_uniform_fixedop` covariance bundle. The [12, 83]′
+      window is shaded.
     inputs: [mock_pure_eb_modes_scan, pure_eb_scan_covariance_averaged_uniform_fixedop, pure_eb_scan_scatter_figure_script, pure_eb_scan_variants_script, mock_campaign_analysis_script, plotting_utils_script]
     recipe:
       command: >
@@ -2318,24 +1861,15 @@ decisions:
     label: "Analytic covariance the mock scatter is compared against"
     tags: [glass, covariance]
     rationale: |
-      This is the decision the whole campaign turns on, and it is
-      easy to get wrong in a way that inverts the verdict on
-      the covariance amplitude.
-
-      What the campaign tests is the *machinery*: the mock
-      realisations' empirical scatter is held against an analytic
-      covariance computed for the mocks' own noise by the same
-      code that produces the fiducial covariance. Agreement means
-      that machinery gets the amplitude right on a catalogue
-      whose true scatter is known by construction. It is not a
-      comparison of the mock covariance against the data
-      covariance, and nothing here should be read that way — the
-      two catalogues carry different noise, so their covariances
-      differ by design.
-
-      "Mock-matched" resolves to just **two** independent
-      rebuilds, not one per statistic, and each is the fiducial
-      primitive pointed at the mocks:
+      Which analytic covariance the mocks' empirical scatter is held
+      against. The realisations carry 17% more galaxies than the data
+      ([mocks_are_over_constraining](#findings.mocks_are_over_constraining)),
+      so against the data covariance they would measure that count
+      mismatch rather than the covariance's accuracy. The campaign
+      therefore tests the covariance *machinery*: the same code that
+      builds the fiducial covariance, run at the mocks' own noise, held
+      against scatter known by construction. Mock-matching is two
+      rebuilds of the fiducial primitives:
 
       | statistic | mock-matched reference | traces to |
       |---|---|---|
@@ -2343,161 +1877,81 @@ decisions:
       | ξ_+^B, ξ_-^B, ξ_tot^B | [pure_cov_mockmatched](#outputs.pure_cov_mockmatched), the 2000-sample MC propagation | the CosmoCov run |
       | C_ℓ^BB | [cl_cov_mockmatched](#inputs.cl_cov_mockmatched), NaMaster iNKA on a mock catalogue | itself |
 
-      Five of the six statistics therefore trace back to a single
-      artifact — the
-      [CosmoCov ξ_± run at the mocks' noise](#inputs.cov_integration_mockmatched)
-      — with two consumers: the campaign transforms it for
-      COSEBIs, and `mock_matched_pure_eb_cov.py` draws
-      multivariate-normal samples from it and pushes them through
-      the Schneider (2022) filters for the pure modes. The MC
-      propagation carries no noise parameters of its own; it
-      inherits whatever ξ_± covariance it is handed. So the
-      mock-versus-data matching problem lives in exactly one
-      declared input, and getting that one artifact right is the
-      whole of it for the configuration-space channels.
+      Five of the six statistics trace to one artifact, the
+      [CosmoCov ξ_± run at the mocks' noise](#inputs.cov_integration_mockmatched),
+      transformed for COSEBIs and MC-propagated through the Schneider
+      (2022) filters for the pure modes. C_ℓ^BB needs no density
+      parameter: NaMaster reads the mock catalogue's weighted count map
+      and noise bias directly.
 
-      C_ℓ^BB is the separate and cleanest path, because it needs
-      no density parameter at all: the primitive reads the mock
-      catalogue's own weighted count map and noise bias. It
-      replaces an earlier hand-fed 0.7325 rescale of the data
-      covariance, which is retired and is not the current method.
+      The CosmoCov rebuild changes only the count: it keeps the data's
+      `area = 2894.03` deg² and sets `source_n_gal = 60 423 575 /
+      2894.03 deg² = 5.793 arcmin⁻²`. Shot noise depends on n_gal × A,
+      so the area convention cancels there, and f_sky enters the
+      cosmic-variance term identically on both sides of the mock
+      comparison. Mock and data occupy one footprint (data 2750.65 deg²,
+      mock 2709.91 deg², overlap 2703.17 deg²), so the count ratio —
+      51.65 M weight-effective data galaxies against 60 423 575 mock
+      galaxies, σ_e agreeing to 0.2% (0.26757 vs 0.26822) — sets the
+      noise difference: mock BB variance 0.726 of the data's from the
+      machinery, 0.716 empirically
+      ([clbb_variance_ratios](#outputs.clbb_variance_ratios)).
 
-      Mock-matching is necessary because the mocks do not carry
-      the catalog's galaxy count. The convention-free statement
-      is galaxies-per-sky, since mock and data catalogues occupy
-      the same footprint: an nside-4096 audit puts data galaxies
-      on 2750.65 deg², mock galaxies on 2709.91 deg² and their
-      overlap at 2703.17 deg², with only 0.26 deg² of the data
-      footprint outside the mock mask, so the areas in
-      circulation (2405, 2757, 2894 deg²) are bookkeeping over
-      one sky and cancel from any ratio. On that sky the fiducial
-      catalog carries 51.65 M weight-effective galaxies
-      (61 378 891 rows; equivalently 4.9573 arcmin⁻² × 2894.03
-      deg², or the weighted H12 n_eff 4.8636 × 2949.79 deg² — the
-      product is the invariant, not either factor) against the
-      suite's 60 423 575 unit-weight galaxies. Per-component σ_e
-      agrees to 0.2% (0.26757 data, 0.26822 mock), so the count
-      ratio is the whole story: the mocks are *under*-noised,
-      with a BB variance 0.726 of the data's against an empirical
-      truth of 0.716. That is
-      [mocks_are_over_constraining](#findings.mocks_are_over_constraining),
-      and the two measured ratios it rests on are
-      [clbb_variance_ratios](#outputs.clbb_variance_ratios).
+      The data covariance keeps the 2894.03 deg² footprint convention
+      shared with Papers III and IV rather than the 2750.65 deg² the
+      galaxies occupy, a choice worth about 5% of the sample-variance
+      term and outside this campaign.
 
-      The mock-matched rebuild moves the count and leaves the area
-      convention alone: the mockmatched CosmoCov ini keeps
-      `area = 2894.03` — the data's own convention, Σmask × pixarea
-      of the nside-4096 binary footprint mask — and sets
-      `source_n_gal = 60 423 575 / 2894.03 deg² = 5.793 arcmin⁻²`.
-      That is the consistent choice on both terms of the covariance.
-      Shot noise depends on the product n_gal × A, so the convention
-      cancels there outright; f_sky enters the cosmic-variance term
-      identically on the mock and data sides, so it cancels from the
-      mock-versus-machinery comparison this campaign makes. C_ℓ^BB
-      needs no convention at all — NaMaster reads the mock count map
-      directly. Which area is the better f_sky for the *data*
-      covariance (2894.03 deg² footprint versus the 2750.65 deg² the
-      galaxies actually occupy) is a separate question, worth about
-      5% of the sample-variance term and out of scope here; ruled
-      (Cail, 2026-08-31): the data covariance keeps the 2894.03 deg²
-      footprint convention — the same area the data products
-      themselves use, shared with Papers III and IV. Nothing was
-      computed any other way, so the ruling changes no artifact. For reference, the
-      convention-free target for a correctly generated suite is
-      51.65 M galaxies on the shared footprint — 4.957 arcmin⁻² on
-      the footprint mask, or 5.20 on the occupied-pixel mask.
-
-      `mockmatched` is therefore the default and the selection
-      to quote. `fiducial` is retained
-      as the diagnostic that *demonstrates* the count mismatch is
-      the whole effect rather than a covariance error — it is the
-      only place mock scatter meets the data covariance, and the
-      ratio between the two runs' σ ratios recovers the count
-      ratio.
+      `mockmatched` is the default. `fiducial` is a diagnostic: it is
+      the only place mock scatter meets the data covariance, and the
+      ratio between the two runs' σ ratios recovers the count ratio.
     default: mockmatched
     options:
       mockmatched:
-        label: "The fiducial covariance machinery rerun at the mocks' own noise"
+        label: "Mock-matched"
         description: |
-          The two rebuilds of the table above:
-          `--cosebis-cov-mockmatched` takes the
-          `SP_v1.4.6.3_mockv2` CosmoCov run and
-          `--pure-cov-mockmatched` the MC propagation of that
-          same run, while `--cl-cov-mockmatched` takes the
-          independently computed mock-catalogue NaMaster
-          covariance. Materialised as
-          `results/glass_mock_v1.4.6.3_v2/campaign_350_avg_wide/`
-          with its C_ℓ column in
-          `campaign_350_avg_wide_clbbcov/`.
+          The fiducial covariance machinery rerun at the mocks' own
+          noise (the CosmoCov run, its MC propagation, and the
+          mock-catalogue NaMaster covariance).
       fiducial:
-        label: "The fiducial covariance, unmodified"
+        label: "Fiducial data covariance"
         description: |
-          `--cosebis-cov` and `--pure-cov` take the fiducial
-          v1.4.6.3 leak-corrected covariances at blind A, C_ℓ^BB
-          unscaled — the data's noise held against the mocks'
-          scatter. Diagnostic only: it measures the galaxy-count
-          difference between the two catalogues, not the
-          covariance's accuracy.
+          The fiducial v1.4.6.3 leak-corrected covariances at blind A,
+          unmodified; diagnostic only, since it measures the
+          galaxy-count difference rather than the covariance's
+          accuracy.
 
   mock_suite:
     label: "GLASS realisation suite"
     tags: [glass]
     rationale: |
-      Two suites of 350 GLASS lognormal realisations were
-      delivered, and only the later one is admissible.
-
-      The 2026-03 **v1.4.6.3_v2** suite is generated against the
-      fiducial catalog and is the suite everything here
-      is computed on. It backs every quoted product: the direct mock-matched C_ℓ^BB covariance and the
-      C_ℓ channel rebuilt on it, the suite-level min-PTE
-      calibration, and the corrected transform-averaged
-      wide-operator campaign.
-
-      The earlier **v1.4.6** suite is excluded rather than kept
-      as a live alternative. It is not a different defensible
-      analysis path — it is a stale one, generated on a 1600 deg²
-      mask that is not the data's footprint and carrying a third
-      fewer galaxies than the catalog, and every result computed
-      on it has been recomputed on v2. It is
-      declared here because a reader will encounter it in the
-      campaign's file tree and in earlier notes, and needs to
-      know why it is not the answer.
+      Which suite of 350 GLASS lognormal realisations to validate on.
+      The v1.4.6.3_v2 suite is generated on the fiducial catalog's
+      footprint and backs every product here. The v1.4.6 suite is
+      excluded: it sits on a 1600 deg² mask that is not the data's
+      footprint and carries a third fewer galaxies than the catalog.
     default: v1_4_6_3_v2
     options:
       v1_4_6_3_v2:
-        label: "v1.4.6.3_v2 suite (2026-03, fiducial catalog)"
+        label: "v1.4.6.3_v2 suite"
         insights: [tessore23_glass_lognormal_mocks]
         description: |
-          `/n09data/guerrini/glass_mock_v1.4.6.3_v2/results`, 350
-          realisations of 60 423 575 unit-weight galaxies on the
-          fiducial footprint — 17% more than the data's 51.65 M
-          weight-effective galaxies, hence slightly under-noised.
-          Ships catalogues, stored 20-bin ξ_± and per-mock Cℓ,
-          and has a directly computed mock C_ℓ^BB covariance
-          ([cl_cov_mockmatched](#inputs.cl_cov_mockmatched)). It
-          has no masked counterpart on disk: the
-          [masked chain](#outputs.mock_xi_fine_masked) is
-          declared against it, scoped to 50 realisations, and not
-          yet run.
+          350 realisations of 60 423 575 unit-weight galaxies on the
+          fiducial footprint, 17% more than the data's 51.65 M
+          weight-effective galaxies; ships catalogues, 20-bin ξ_± and
+          per-mock Cℓ, with a directly computed mock C_ℓ^BB covariance
+          ([cl_cov_mockmatched](#inputs.cl_cov_mockmatched)). The
+          [masked chain](#outputs.mock_xi_fine_masked) is declared on
+          50 of its realisations and not yet run.
       v1_4_6:
-        label: "v1.4.6 suite (submitted, stale density)"
+        label: "v1.4.6 suite (submitted)"
         excluded: true
         excluded_reason: |
-          Stale-density suite. `/n09data/guerrini/glass_mock_v1.4.6/results`
-          holds 35 078 729 unit-weight galaxies per realisation
-          on a 1600.33 deg² mask, not the data's footprint: the
-          generator's default 6.0905 arcmin⁻² — a density frozen
-          at the 2405 deg² era of the survey-area bookkeeping —
-          applied to that smaller sky. The "n_eff = 3.3697
-          arcmin⁻²" figure in older notes is that count divided
-          by the 2894 deg² convention, and describes neither the
-          suite's own density nor the data's. This is the suite the submitted
-          mock description rests on and the one the original 2026-08 campaign and
-          the unvetted masked-footprint run were computed on;
-          both are superseded by the v2 suite, which sits far
-          closer to the catalog's own count. Retained as a named
-          option so the file tree and the earlier notes remain
-          legible.
+          35 078 729 galaxies per realisation on a 1600.33 deg² mask
+          that is not the data's footprint (the generator's default
+          6.0905 arcmin⁻² on a smaller sky). It is the suite the
+          submitted mock description rests on; v2 sits far closer to
+          the catalog's count.
 
 prior_insights:
 
@@ -2512,13 +1966,10 @@ prior_insights:
       Paper IV attributes the gap to iNKA accounting for a spatially
       varying galaxy number density, which breaks the stationary-noise
       assumption the other two estimates make.
-
-      Quoted here because the same GLASS suites are on the other side
-      of that comparison, and this sub-analysis measures them to be
-      under-noised by a comparable factor. See
-      [mocks_are_over_constraining](#findings.mocks_are_over_constraining)
-      for how the two readings compose — additively, not in
-      contradiction.
+    notes: |
+      The same GLASS suite is on the other side of that comparison and
+      is under-noised by a comparable factor; the two effects add (see
+      [mocks_are_over_constraining](#findings.mocks_are_over_constraining)).
     created_at: "2026-08-29T00:00:00Z"
     evidence:
       - id: ev_main_text
@@ -2567,58 +2018,44 @@ prior_insights:
           exact: "readily produces simulated data sets with per cent-level accurate two-point statistics of galaxy clustering and weak lensing"
         location:
           page: 1
-    scope: |
-      Tessore et al. 2023, OJAp 6, 11 — abstract. Source: arxiv
-      2302.01942 main.tex lines 72–78. Paper TeX line 225. The
-      UNIONS suite itself is Paper III's.
+    scope: "Tessore et al. 2023, OJAp 6, 11 (abstract); the UNIONS suite itself is Paper III's."
 
 
 findings:
 
   mock_xi_matches_input_theory_above_band_limit:
     id: mock_xi_matches_input_theory_above_band_limit
-    label: "The suite's raw ξ_± is unbiased above its band limit, and band-limited below it"
+    label: "Mock ξ_± matches input theory above the band limit"
     claim: |
-      The across-realisation mean ξ_± of the 350 unmasked GLASS
-      realisations reproduces the theory the suite was generated
-      from to within a few per cent at every separation above
-      ≈6′, with no trend: |mean/theory − 1| ≤ 0.03 over the whole
-      12′–83′ fiducial window for both ξ_+ and ξ_-. The mocks
-      carry no ξ_± bias the null tests inherit.
+      Above ≈6′ the across-realisation mean ξ_± of the unmasked GLASS
+      realisations reproduces the theory the suite was generated from
+      to within a few per cent with no trend, so the mocks carry no
+      ξ_± bias into the null tests. Below ≈6′ they fall away from the
+      unbanded prediction, ξ_- most strongly, entirely because the
+      maps are band-limited at ℓ_max = NSide = 4096; these scales lie
+      outside the fiducial cut.
+    notes: |
+      350 realisations. Inside the 12′–83′ window |mean/theory − 1| ≤
+      0.03 for both ξ_+ and ξ_-; bin by bin |mean − theory| ≤ 0.33
+      σ_ana (ξ_+) and ≤ 0.46 σ_ana (ξ_-) against an error of the mean
+      of ≈0.05 σ_ana, scattered in sign. That is the size of the
+      band-limited transform's own ±2–3% ringing (2% of ξ_+ at 18′ is
+      0.30 σ_ana), so it bounds a mock ξ_± bias at a third of an error
+      bar rather than measuring one.
 
-      Below ≈6′ they depart dramatically — ξ_- at 1.2′ is ~100
-      times smaller than the unbanded prediction, and ξ_+ sits a
-      few per cent off — and the departure is *entirely* the
-      simulation's resolution. The maps are NSide 4096 and the
-      generator sets ℓ_max = NSide, while ξ_-(1′) is built almost
-      entirely out of ℓ ~ 10⁴. Truncating the theory at ℓ = 4096
-      accounts for essentially all of it: over the first six
-      reporting bins the theory's own band ratio runs 0.006,
-      0.020, 0.071, 0.166, 0.40, 0.81, against a measured mock
-      mean over *unbanded* theory of ≈0, 0.00, 0.089, 0.208,
-      0.49, 0.86. The two track each other across two orders of
-      magnitude, with the mocks sitting 10–20% above the sharp
-      cut — the residual a lognormal field's extra small-scale
-      power and a band edge that is not perfectly sharp would
-      give. This is why the transform in
+      Below ≈6′: ξ_- at 1.2′ is ~100 times smaller than the unbanded
+      prediction, since ξ_-(1′) is built almost entirely from ℓ ~ 10⁴.
+      Over the first six reporting bins the theory's band ratio (cut at
+      ℓ = 4096) runs 0.006, 0.020, 0.071, 0.166, 0.40, 0.81, against a
+      measured mock mean over unbanded theory of ≈0, 0.00, 0.089, 0.208,
+      0.49, 0.86 — tracking across two orders of magnitude, with the
+      mocks 10–20% above the sharp cut, as lognormal small-scale power
+      and an imperfectly sharp band edge would give. This is why
       [mock_xi_input_theory](#outputs.mock_xi_input_theory) is an
-      explicit band-limited sum: run through an FFTLog that
-      extrapolates past the last supplied multipole, the same
-      comparison reads as a catastrophic small-scale failure of
-      the mocks.
-
-      The affected scales lie wholly outside the fiducial cut, so
-      no null-test claim rests on them — but any future use
-      of this suite below ≈6′, in ξ_- especially, is measuring the
-      simulation's band limit.
-
-      Bin by bin the residual inside the cut is |mean − theory| ≤
-      0.33 σ_ana (ξ_+) and ≤ 0.46 σ_ana (ξ_-) against an error of
-      the mean of ≈0.05 σ_ana, so it is statistically resolved but
-      scattered in sign with no trend. Its size is what the
-      band-limited transform's own ±2–3% ringing predicts: 2% of
-      ξ_+ at 18′ is 0.30 σ_ana. It bounds a mock ξ_± bias at the
-      third of an error bar level rather than measuring one.
+      explicit band-limited sum: an FFTLog that extrapolates past the
+      last multipole makes the same comparison look like a
+      catastrophic small-scale failure. Any use of this suite below
+      ≈6′, in ξ_- especially, measures the band limit.
     created_at: "2026-09-13T00:00:00Z"
     derived: true
     evidence:
@@ -2629,43 +2066,38 @@ findings:
 
   mock_xi_scatter_falls_below_analytic_at_large_theta:
     id: mock_xi_scatter_falls_below_analytic_at_large_theta
-    label: "Raw ξ_+ scatter falls 15–18% below the mock-matched analytic Gaussian σ above 100′"
+    label: "Mock ξ_+ scatter falls below analytic σ above 100′"
     claim: |
-      Against the campaign's own
+      Against the
       [mock-matched reference covariance](#outputs.mock_xi_reporting_cov_mockmatched),
-      the suite's raw ξ_± scatter sits on unity inside the
-      12′–83′ window: σ_emp/σ_ana = 0.94–1.03 for ξ_+ and
-      0.99–1.12 for ξ_-. The analytic Gaussian covariance machinery
-      reproduces the mocks' ξ_± scatter where the null tests use it.
-      (Against the *data* covariance the same ratios read
-      0.87–0.98 and 0.87–0.97 — the suite's 17% galaxy excess,
-      [mocks_are_over_constraining](#findings.mocks_are_over_constraining),
-      and the reason mock validation must not use it.)
+      the mocks' raw ξ_± scatter matches the analytic Gaussian σ inside
+      the fiducial window, but above 100′ the ξ_+ scatter falls below
+      it while ξ_- stays near unity. The deficit is neither a density
+      nor a footprint effect, and reads as the realisations carrying
+      less large-scale sample variance than the analytic covariance
+      predicts — a reading of the residual, not an established
+      mechanism.
+    notes: |
+      σ_emp/σ_ana inside 12′–83′: 0.94–1.03 (ξ_+), 0.99–1.12 (ξ_-).
+      Against the *data* covariance the same ratios read 0.87–0.98 and
+      0.87–0.97, the suite's galaxy excess
+      ([mocks_are_over_constraining](#findings.mocks_are_over_constraining)),
+      which is why mock validation must not use it. Above 96′ ξ_- sits
+      at 0.98–1.07 and ξ_+ at 0.82–0.86.
 
-      Outside the window the two correlation functions part
-      company. ξ_- stays near unity (0.98–1.07 above 96′), while
-      ξ_+ falls to 0.82–0.86 there. The deficit survives the
-      correct noise-level reference, so it is not a density
-      effect, and it is not footprint geometry either: the
-      measured pair deficit at 221′ is 13%, but shape noise is
-      only 5.7% of the ξ_+ variance there, so that deficit moves
-      σ by 0.4% — under 1% at every separation. What remains is
-      that the realisations carry less large-scale sample variance
-      at those separations than the analytic Gaussian covariance
-      predicts. This is a reading of the residual, not a mechanism
-      established here; ξ_+ at >100′ draws on the lowest
-      multipoles, where a lognormal shell construction on a single
-      footprint is least trusted.
+      Not footprint geometry: the measured pair deficit at 221′ is 13%,
+      but shape noise is only 5.7% of the ξ_+ variance there, so it
+      moves σ by 0.4% (under 1% at every separation). ξ_+ above 100′
+      draws on the lowest multipoles, where a lognormal shell
+      construction on a single footprint is least trusted.
 
-      Separately, and independently of the covariance: the
-      measured pair counts fall away from the uniform-density,
-      no-edge prediction. The implied galaxy count per bin is flat
-      at the delivered value below ≈3′ and declines monotonically
-      to 0.87 of it by 221′. That decline — not its absolute
-      level, which floats with the area convention — is the
-      footprint-edge effect the *noise-only* pure-mode statistics
-      inherit at large θ, and it is invisible in raw ξ_± for the
-      reason above.
+      The pair counts themselves fall away from the uniform-density,
+      no-edge prediction: the implied galaxy count per bin is flat
+      below ≈3′ and declines monotonically to 0.87 of it by 221′. That
+      decline (not its absolute level, which floats with the area
+      convention) is the footprint-edge effect the noise-only pure-mode
+      statistics inherit at large θ; it is invisible in raw ξ_± for
+      the reason above.
     created_at: "2026-09-13T00:00:00Z"
     derived: true
     evidence:
@@ -2676,48 +2108,38 @@ findings:
     id: mock_ptes_skew_low_by_ng_term
     label: "Configuration-space PTEs skew mildly low; C_ℓ^BB PTEs are uniform"
     claim: |
-      We use the same realizations to test the χ²_ν sampling
-      distribution assumed for the PTE. The C_ℓ^BB PTEs are uniform,
-      while the configuration-space PTEs skew mildly low, with
-      ⟨χ²⟩/ν = 1.07–1.20. This excess matches the covariance
-      comparison above. In configuration space the analytic Gaussian σ is
-      slightly smaller than the mock scatter, which raises χ² by the
-      inverse square of their ratio; in harmonic space the two agree.
-      Calibrating p_thr on the same realizations partially absorbs
-      this skew.
-
-      We therefore set the passing threshold p_thr on the
-      systematics-free mock realizations such that a clean sample
-      fails 5% of the time, as would be the case for a single test at
-      PTE = 0.05. We adopt a representative single value, p_thr =
-      0.01, which is conservative for nearly all scale-cut
-      combinations; at the fiducial cuts the calibrated value is
-      0.006.
+      On the clean realizations the C_ℓ^BB PTEs are uniform, while the
+      configuration-space PTEs skew mildly low because the analytic σ
+      there is slightly smaller than the mock scatter, which raises χ²
+      by the inverse square of their ratio. Calibrating the passing
+      threshold p_thr on the same realizations partially absorbs this
+      skew.
     notes: |
-      From the 350 GLASS v1.4.6.3_v2 realisations against the
-      mock-matched reference covariance
+      350 GLASS v1.4.6.3_v2 realisations against the mock-matched
+      reference covariance
       ([mock_campaign_evidence](#outputs.mock_campaign_evidence)).
       ⟨χ²⟩/ν: B_{n≤6} 1.105, B_{n≤20} 1.073, ξ_+^B 1.197, ξ_-^B
-      1.131, ξ_tot^B 1.148, C_ℓ^BB 0.987. KS p-values for PTE
-      uniformity: B_{n≤6} 2.7×10⁻³, B_{n≤20} 9.2×10⁻⁵, ξ_+^B
-      2.4×10⁻⁹, ξ_-^B 1.4×10⁻⁴, ξ_tot^B 2.8×10⁻¹⁰, C_ℓ^BB 0.79.
+      1.131, ξ_tot^B 1.148, C_ℓ^BB 0.987 (the paper's 1.07–1.20 for
+      configuration space). KS p-values for PTE uniformity: B_{n≤6}
+      2.7×10⁻³, B_{n≤20} 9.2×10⁻⁵, ξ_+^B 2.4×10⁻⁹, ξ_-^B 1.4×10⁻⁴,
+      ξ_tot^B 2.8×10⁻¹⁰, C_ℓ^BB 0.79.
 
       The configuration-space excess has the size of the non-Gaussian
-      covariance term the analytic Gaussian covariance omits. On
-      the 20-bin reporting grid the (G+NG)/G diagonal ratio inside the
-      12′–83′ window averages 1.102 (ξ_+) and 1.105 (ξ_-)
-      (`results/baseline/covariance/cov_reporting_{g,ng}.txt`), a
-      non-Gaussian share of 9% of the diagonal variance there and 7%
-      over all bins. The accepted paper prints 11% and 8%
+      term the Gaussian covariance omits: on the 20-bin reporting grid
+      the (G+NG)/G diagonal ratio inside 12′–83′ averages 1.102 (ξ_+)
+      and 1.105 (ξ_-), a non-Gaussian share of 9% of the diagonal
+      variance there and 7% over all bins. The paper prints 11% and 8%
       (`ngFractionDiagonalFiducial`, `ngFractionDiagonalAll`); the
-      16 Oct baseline's own macro file gives 9% and 7%.
+      baseline's own macro file gives 9% and 7%.
 
-      Minimum-PTE calibration at the fiducial cuts
-      ([mock_min_pte_calibration](#outputs.mock_min_pte_calibration)):
-      the observed minimum, ξ_-^B at 0.0193, sits at or above the
+      p_thr is set so a clean sample fails 5% of the time; the paper
+      adopts p_thr = 0.01, conservative for nearly all scale-cut
+      combinations, against a calibrated 0.006 at the fiducial cuts
+      ([mock_min_pte_calibration](#outputs.mock_min_pte_calibration)).
+      The observed minimum, ξ_-^B at 0.0193, sits at or above the
       minimum of 38 of 350 clean realisations (10.9% one-sided; 58,
-      16.6%, two-sided); the 5% global threshold is 0.0058 one-sided
-      and 0.0034 two-sided.
+      16.6%, two-sided); the 5% threshold is 0.0058 one-sided and
+      0.0034 two-sided.
     created_at: "2026-08-31T00:00:00Z"
     evidence:
       - id: ev1
@@ -2736,148 +2158,67 @@ findings:
 
   mocks_are_over_constraining:
     id: mocks_are_over_constraining
-    label: "The mocks' galaxy number density is 17% higher than the data's"
+    label: "Mock galaxy density 17% above the data's"
     claim: |
-      The galaxies carry unit weights and Gaussian intrinsic
-      ellipticities matching the data's σ_e. … Because of an error in
-      the catalog generation, their galaxy number density is 17%
-      higher than that of the data, which we account for when
-      comparing covariances. … For these comparisons we recompute the
-      analytic Gaussian covariances at the galaxy density of the realizations.
+      Because of an error in the catalog generation, the GLASS
+      realizations' galaxy number density is 17% higher than the
+      data's, so their shape noise and B-mode scatter are lower. Mock
+      scatter is therefore compared only against analytic covariances
+      recomputed at the realizations' galaxy density.
     notes: |
-      **What the excess does.** The GLASS realisations carry more
-      galaxies than the catalogue they stand in for, and are
-      therefore quieter than the data: their B-mode scatter is
-      *smaller* than the data's, and any error bar taken from them
-      without correction understates the real uncertainty. On a
-      footprint shared with the data to better than 0.3 deg², the
-      v1.4.6.3_v2 suite holds 60 423 575 unit-weight galaxies against
-      the fiducial catalogue's 51.65 million weight-effective galaxies
-      — 17% more. Per-component ellipticity dispersion agrees to 0.2%
-      (0.267568 data, 0.268175 mock), so that count ratio is the whole
-      of the noise difference: shape noise power σ_e²/N is 0.8596 of
-      the data's, and the B-mode variance, which for these mocks is
-      pure noise, 0.7389 of it. The measured numbers agree with that
-      prediction and sit just below it: the covariance machinery run
-      at the mocks' own noise gives a C_ℓ^BB variance ratio of 0.725,
-      and the 350 realisations themselves scatter at 0.716 of the
-      data's variance.
-
-      The consequence is a methodological constraint, not a defect in
-      the campaign: mock scatter may be compared only against a
-      covariance built at the mocks' own noise, which is what
+      **Size.** On a footprint shared with the data to better than 0.3
+      deg², the v1.4.6.3_v2 suite holds 60 423 575 unit-weight galaxies
+      against the fiducial catalogue's 51.65 million weight-effective
+      galaxies. Per-component σ_e agrees to 0.2% (0.267568 data,
+      0.268175 mock), so the count ratio is the whole noise difference:
+      predicted shape-noise power σ_e²/N is 0.8596 of the data's and
+      the (pure-noise) B-mode variance 0.7389 of it
+      ([mock_vs_data_noise_table](#outputs.mock_vs_data_noise_table)).
+      Measured, as 17-band means over 300 ≤ ℓ ≤ 1600
+      ([clbb_variance_ratios](#outputs.clbb_variance_ratios)): the
+      covariance machinery at the mocks' noise gives a C_ℓ^BB variance
+      ratio of 0.725, and the 350 realisations scatter at 0.716 of the
+      data's variance. Held against the data covariance, the mocks
+      would appear to validate an error bar roughly 15% too large;
       [reference_covariance](#decisions.reference_covariance) =
-      `mockmatched` does. Held against the fiducial data covariance the
-      same realisations would appear to validate an error bar roughly
-      15% too large, and the campaign would be measuring the count
-      mismatch rather than the covariance.
+      `mockmatched` avoids this.
 
-      **Provenance of each number.** The counts, areas, σ_e values,
-      the 0.8596 noise-power ratio and the 0.7389 variance ratio are
-      all in
-      [mock_vs_data_noise_table](#outputs.mock_vs_data_noise_table),
-      derived there from the two CosmoCov inis and the footprint
-      audit and from nothing else — and they are a *prediction*, from
-      counts and σ_e alone. The two measured ratios are the test of
-      that prediction, and they come from
-      [clbb_variance_ratios](#outputs.clbb_variance_ratios): the
-      17-band means over 300 ≤ ℓ ≤ 1600 of the mock-matched-to-data
-      covariance diagonal ratio (0.7250) and of the 350 realisations'
-      sample-variance-to-data ratio (0.7157). Both were first
-      obtained by hand during the campaign and recorded in
-      `results/glass_mock_v1.4.6.3_v2/RUNBOOK_v2_campaign.md`
-      (lines 66-67 and 93-94) and in the plotting script beside it,
-      `clbb_cov_work/plot_cl_cov_comparison.py`, as 0.726 and 0.716;
-      the declared output reproduces them to within 0.001.
+      **Origin.** The generator (`make_unions_glass_sim.py`) defaults
+      `--neff` to 6.0905 arcmin⁻², the catalogue n_eff of the 2405 deg²
+      area convention (4.957 at the current 2894 deg²), and the run
+      scripts do not override it. It applies that density to an
+      occupied-pixel nside-4096 mask of 2757.25 deg²: 6.0905 × 2757.25 ×
+      3600 = 60.45 M, against 60.27–60.42 M realised per realisation.
+      The catalogue's A = 2894.03 deg² is the full footprint mask, in
+      which roughly 5% of pixels hold no galaxy; data galaxies occupy
+      2750.65 deg² of it. Paper III and Paper IV describe the mocks as
+      matching the data's number density; neither prints a numeric
+      mock density, and Sacha Guerrini has confirmed the excess.
 
-      **The submitted descriptions say the opposite.** Paper III
-      writes that the catalogues "were created using the same mask,
-      effective number density and σ_e as the data", and Paper IV
-      that the mocks reproduce "the footprint, the number density,
-      the shape noise, and the redshift distribution of the UNIONS
-      weak lensing sample". Neither paper prints a numeric mock
-      density, so neither statement is checkable from the text; both
-      are superseded here by direct measurement of the delivered
-      catalogues, which Sacha Guerrini has confirmed in discussion.
+      **Areas.** Quoted areas range over 2405, 2757, 2894 and 2949 deg²
+      but describe one sky: data galaxies occupy 2750.65 deg², mock
+      galaxies 2709.91 deg², their overlap 2703.17 deg², and only 0.26
+      deg² of the data footprint lies outside the mock mask. n_eff × A
+      is the convention-free quantity (4.9573 arcmin⁻² × 2894.03 deg²
+      and the weighted H12 4.8636 × 2949.79 deg² both give 51.65 M). The
+      "n_eff = 3.3697 arcmin⁻²" in the campaign code is the v1.4.6
+      count divided by 2894 deg², not a density.
 
-      **The origin, read off the generator.** Sacha's
-      `make_unions_glass_sim.py` takes the density as `--neff`, with
-      a default of 6.0905 arcmin⁻², and neither `run_glass_mock.sh`
-      nor `run_glass_mock_local.sh` overrides it. 6.0905 is the
-      catalogue n_eff of the 2405 deg² area era; when the high-res
-      footprint mask moved the area to 2894 deg² the catalogue n_eff
-      became 4.957, and the generator default did not follow. The
-      generator applies that density to
-      `/n09data/guerrini/glass_mock_v1.4.6.3_v2/mask_nside4096.fits`,
-      built by `create_mask.py` as the nside-4096 pixels containing
-      at least one catalogue galaxy: 2757.25 deg². The product
-      6.0905 × 2757.25 × 3600 = 60.45 M is the 60.27–60.42 M
-      realised per realisation. The catalogue's own A = 2894.03 in
-      `cat_config.yaml` is a different definition at the same nside —
-      Σmask × pixarea of
-      `sp_validation/cosmo_inference/data/mask/mask_map_footprint_nside_4096.fits`,
-      the binary footprint mask derived from the HealSparse pixel
-      mask, in which roughly 5% of pixels contain no galaxy because
-      sub-pixel holes are filled at nside 4096. Data galaxies occupy
-      2750.65 deg² of it. So the excess is a density default frozen
-      at an older area convention, applied on an occupied-pixel mask
-      rather than the footprint mask the catalogue's area comes from.
+      **Paper IV.** Paper IV finds its Gaussian iNKA covariance
+      overestimates the small-scale variance relative to the GLASS
+      mocks (15%) and `OneCovariance` (~20%), attributing it to iNKA's
+      treatment of a spatially varying number density
+      ([paper_iv_inka_overestimates_variance](#prior_insights.paper_iv_inka_overestimates_variance)).
+      The density excess makes the mocks' variance ~26% low by
+      construction, an independent contribution in the same direction;
+      part of that gap is plausibly the mocks being under-noised. The
+      two effects are additive and nothing here quantifies the split.
 
-      **Corroboration from Paper IV, read carefully.** Paper IV
-      reports that its fiducial Gaussian iNKA covariance
-      *overestimates* the small-scale variance relative to both
-      `OneCovariance` and the GLASS mocks — "a discrepancy of 15%"
-      against the mocks in its Fig. 4 caption, "by around 20%"
-      against `OneCovariance` in its Appendix D — and attributes the
-      gap to iNKA's treatment of a spatially varying number density,
-      which breaks the stationary-noise assumption the other two
-      make. See
-      [paper_iv_inka_overestimates_variance](#prior_insights.paper_iv_inka_overestimates_variance).
-
-      That mechanism is real and is not disputed here. But it is
-      measured as a *gap between two estimates*, and this finding
-      identifies an independent contribution to the same gap running
-      in the same direction: if the GLASS mocks carry 17% more
-      galaxies than the data, their variance is ~26% low by
-      construction, so a comparison against them will show any
-      correctly normalised covariance "overestimating". Part of
-      Paper IV's submitted 15-20% is therefore plausibly the mocks
-      being under-noised rather than iNKA being wrong. This is a
-      partial reattribution and not a reversal: the two effects are
-      additive, Paper IV's homogeneous-density test isolates its own
-      mechanism directly, and nothing here quantifies the split.
-
-      **The measurement chain is deliberately convention-free.**
-      Areas quoted for this survey range over 2405, 2757, 2894 and
-      2949 deg² depending on the bookkeeping, and the nside-4096
-      audit shows they describe one sky: data galaxies occupy
-      2750.65 deg², v2 mock galaxies 2709.91 deg², their overlap
-      2703.17 deg², and only 0.26 deg² of the data footprint falls
-      outside the mock mask. Since area cancels from any ratio taken
-      on one footprint, the physical quantity is galaxies-per-sky,
-      and n_eff × A is its convention-free form (4.9573 arcmin⁻² ×
-      2894.03 deg² and the weighted H12 4.8636 × 2949.79 deg² both
-      give 51.65 M). The "n_eff = 3.3697 arcmin⁻²" that appears in
-      the campaign code and in earlier notes is the *v1.4.6* count
-      divided by the 2894 deg² convention — a count ratio in density
-      clothing, not that suite's density on its own sky.
-
-      **The superseded suite missed the other way.** The
-      [v1.4.6 suite](#decisions.mock_suite) carried 35 078 729
-      galaxies, 32% *fewer* than the data — and on a 1600.33 deg²
-      mask rather than the data's footprint, so it is not comparable
-      to the data by a count ratio alone. It is excluded, and its row
-      is left out of the table rather than asserted there.
-
-      The two suites do not share a mask.
-      `/n09data/guerrini/glass_mock_v1.4.6/mask_nside4096.fits`
-      covers 1600.33 deg², and 6.0905 × 1600.33 × 3600 = 35.08 M is
-      exactly the v1.4.6 count: the same frozen density default on a
-      smaller sky. An earlier pixel-level count that put both suites
-      at ≈6.09 arcmin⁻² on their own masks was therefore right, and
-      the reading that they sit on one sky differing only in count
-      was wrong. Nothing in the campaign rests on v1.4.6, which
-      should not have been used at all.
+      **The excluded v1.4.6 suite** ([mock_suite](#decisions.mock_suite))
+      carries 35 078 729 galaxies, 32% fewer than the data, on a
+      1600.33 deg² mask: the same 6.0905 default on a smaller sky
+      (6.0905 × 1600.33 × 3600 = 35.08 M). Nothing in the campaign rests
+      on it.
     created_at: "2026-08-29T00:00:00Z"
     derived: true
     evidence:
@@ -2901,34 +2242,33 @@ findings:
     id: covariance_amplitude_validated
     label: "Analytic σ matches the mock scatter at the fiducial cuts"
     claim: |
-      We also use the simulations to test the covariances, comparing
-      the analytic Gaussian σ of each statistic with the scatter across
-      realizations. At the fiducial cuts, the median ratio of analytic
-      to mock σ over bins is 0.92–0.95 in configuration space and
-      1.01 in harmonic space. The agreement degrades on the large
-      scales outside the fiducial cuts. There the analytic Gaussian σ is about
-      17% too small for the first COSEBI mode and for ξ_±^B above
-      100′, while for C_ℓ^BB below ℓ ≈ 100 it is too large because
-      E-to-B leakage is treated only approximately (Nicola et al.
-      2021). PSF leakage already excludes these scales (Paper I), so
-      the miscalibration does not affect our choice of scale cuts.
+      At the fiducial cuts the analytic σ of each B-mode statistic
+      matches the scatter across the realizations, slightly smaller in
+      configuration space and in agreement in harmonic space. The
+      agreement degrades on large scales outside the fiducial cuts,
+      which PSF leakage already excludes (Paper I), so the
+      miscalibration does not affect the choice of scale cuts.
     notes: |
-      From the 350 GLASS v1.4.6.3_v2 realisations against the
-      mock-matched reference covariance, as mock-over-analytic
-      σ_emp/σ_ana (the paper quotes the inverse): COSEBI B_1–B_20
-      median 1.055 (range 0.974–1.086); ξ_+^B over the seven
-      fiducial-cut θ bins median 1.087 (1.000–1.164); ξ_-^B median
-      1.059 (0.978–1.127); C_ℓ^BB over the 17 fiducial-cut bands
-      median 0.993 (0.926–1.086). Inverted, these are the paper's
-      0.95, 0.92, 0.94 and 1.01.
+      Median ratio of analytic to mock σ over bins (paper): 0.92–0.95
+      in configuration space, 1.01 in harmonic space. Outside the cuts
+      the analytic σ is about 17% too small for the first COSEBI mode
+      and for ξ_±^B above 100′, and too large for C_ℓ^BB below ℓ ≈ 100,
+      where E-to-B leakage is treated only approximately (Nicola et al.
+      2021).
 
-      What this validates is the covariance *machinery*: the mocks'
-      scatter is known by construction, and the same
-      CosmoCov / NaMaster chain that builds the
-      fiducial covariance, pointed at the mocks' noise, reproduces it
-      to ~10%. It is not a statement that the mock and data
-      covariances agree — they should not, since the two catalogues
-      carry different galaxy counts.
+      From the 350 GLASS v1.4.6.3_v2 realisations against the
+      mock-matched reference covariance, as σ_emp/σ_ana (the inverse of
+      the paper's ratio): COSEBI B_1–B_20 median 1.055 (range
+      0.974–1.086); ξ_+^B over the seven fiducial-cut θ bins median
+      1.087 (1.000–1.164); ξ_-^B median 1.059 (0.978–1.127); C_ℓ^BB over
+      the 17 fiducial-cut bands median 0.993 (0.926–1.086). Inverted,
+      these are the paper's 0.95, 0.92, 0.94 and 1.01.
+
+      This validates the covariance machinery: the same CosmoCov /
+      NaMaster chain that builds the fiducial covariance, pointed at
+      the mocks' noise, reproduces their scatter to ~10%. It does not
+      say the mock and data covariances agree; they differ by the
+      galaxy-count excess.
     created_at: "2026-08-29T00:00:00Z"
     evidence:
       - id: ev1
@@ -2945,35 +2285,30 @@ findings:
     id: chi2_machinery_conservative
     label: "The null tests are conservative"
     claim: |
-      For all B-mode null tests, we retain only the Gaussian part of
-      the covariance. In configuration space, this keeps the
-      calculation tractable on the finely binned integration grid.
-      This approximation underestimates the true variances because it
-      omits connected trispectrum and super-sample covariance terms,
-      which can also add off-diagonal structure. … In configuration
-      space, the non-Gaussian terms contribute about 11% of the
-      diagonal variance of ξ_± within the fiducial scale cuts. The
-      null tests are therefore conservative: a test that passes with
-      the Gaussian-only covariance would generally pass with a more
-      complete covariance estimate, as the simulations confirm.
+      The null tests use only the Gaussian part of the covariance,
+      which underestimates the true variances by omitting connected
+      trispectrum and super-sample terms. They are therefore
+      conservative: a test that passes with the Gaussian-only
+      covariance would generally pass with a more complete covariance
+      estimate, as the simulations confirm.
     notes: |
+      The paper puts the non-Gaussian share of the ξ_± diagonal
+      variance within the fiducial cuts at about 11%; the baseline's
+      reporting-grid covariances give 9% (see
+      [mock_ptes_skew_low_by_ng_term](#findings.mock_ptes_skew_low_by_ng_term)).
+
       Across the 350 GLASS v1.4.6.3_v2 realisations, against the
       mock-matched reference covariance, the mean χ² exceeds ν for
       five of the six statistics — 6.63 against ν = 6 for B_{n≤6},
       21.46 against 20 for B_{n≤20}, 8.38 against 7 for ξ_+^B, 7.91
       against 7 for ξ_-^B, 16.07 against 14 for ξ_tot^B — and falls
-      just below for the sixth, 16.78 against 17 for C_ℓ^BB, whose
-      PTE distribution passes a KS test of uniformity at p = 0.79. A
-      mean χ² above ν makes the reported PTEs systematically lower
-      than the true tail probabilities. The 16 Oct reporting-grid
-      covariances put the non-Gaussian share inside the fiducial
-      window at 9%, not the 11% the paper prints (see
-      [mock_ptes_skew_low_by_ng_term](#findings.mock_ptes_skew_low_by_ng_term)).
-      The `fiducial` selection of
+      just below for C_ℓ^BB, 16.78 against 17, whose PTEs pass a KS
+      test of uniformity at p = 0.79. A mean χ² above ν makes the
+      reported PTEs lower than the true tail probabilities. The
+      `fiducial` selection of
       [reference_covariance](#decisions.reference_covariance) would
-      show these means inflated by the galaxy-count difference rather
-      than by any covariance error, but it has not been run on this
-      suite.
+      inflate these means by the galaxy-count difference rather than
+      any covariance error; it is not run on this suite.
     created_at: "2026-08-29T00:00:00Z"
     evidence:
       - id: ev1
@@ -2988,28 +2323,24 @@ findings:
 
   tests_are_not_redundant:
     id: tests_are_not_redundant
-    label: "The six null-test statistics are not perfectly correlated"
+    label: "Null-test statistics are not redundant"
     claim: |
-      The six B-mode test statistics are not perfectly correlated.
-      Across the 350 v1.4.6.3_v2 realisations the χ² Pearson
-      correlations between statistics from different estimator
-      families lie between 0.25 and 0.53: 0.41 between B_{n≤6} and
-      ξ_+^B, 0.37 between B_{n≤6} and C_ℓ^BB, 0.35 between ξ_+^B
-      and C_ℓ^BB, 0.46 between ξ_-^B and C_ℓ^BB, 0.53 between
-      ξ_tot^B and C_ℓ^BB. Pairs sharing a data vector correlate
-      more strongly and still stay below unity: 0.72 for ξ_+^B with
-      ξ_tot^B and 0.68 for ξ_-^B with ξ_tot^B, both nested by
-      construction, and 0.53 for B_{n≤6} with B_{n≤20}.
+      The six B-mode test statistics are not perfectly correlated
+      across the clean realizations: statistics from different
+      estimator families correlate only moderately, and even pairs
+      sharing a data vector stay well below unity. This is why the
+      minimum PTE over the six skews low and its threshold is
+      calibrated on the mocks
+      ([pte_threshold](#../decisions.pte_threshold)).
     notes: |
-      `correlations.chi2.pearson` in `mock_campaign_evidence`
-      (row-major over B_n<=6, B_n<=20, xi+^B, xi-^B, xi_tot^B,
-      C_ell^BB); the PTE Pearson matrix in the same file tells the
-      same story (0.37 for B_{n≤6} with C_ℓ^BB). Imperfect
-      correlation is why the minimum PTE over the six skews low and
-      its threshold is calibrated on the mocks
-      ([pte_threshold](#../decisions.pte_threshold)), and why
-      simultaneous passage is a stronger statement than any single
-      test.
+      χ² Pearson correlations across the 350 v1.4.6.3_v2 realisations
+      (`correlations.chi2.pearson` in `mock_campaign_evidence`).
+      Different families, 0.25–0.53: 0.41 B_{n≤6}–ξ_+^B, 0.37
+      B_{n≤6}–C_ℓ^BB, 0.35 ξ_+^B–C_ℓ^BB, 0.46 ξ_-^B–C_ℓ^BB, 0.53
+      ξ_tot^B–C_ℓ^BB. Shared data vector: 0.72 ξ_+^B–ξ_tot^B and 0.68
+      ξ_-^B–ξ_tot^B (nested by construction), 0.53 B_{n≤6}–B_{n≤20}.
+      The PTE Pearson matrix tells the same story (0.37 for B_{n≤6}
+      with C_ℓ^BB).
     created_at: "2026-08-29T00:00:00Z"
     evidence:
       - id: ev1

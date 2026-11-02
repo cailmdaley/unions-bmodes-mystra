@@ -23,31 +23,16 @@ inputs:
 
   - id: cosmocov_libgsl
     from: ../cosmocov_libgsl
-    # The CosmoCov executable. `run_cosmocov_chain.sh` carries the path as a
-    # shell default, which put it outside lc's view; the recipes below now pass
-    # it as `--cosmocov {inputs.cosmocov_binary}` so the declaration is what
-    # the chain actually runs.
-
-  # survey_properties was removed: CosmoCov resolves area/n_eff/sigma_e
-  # directly from cat_config.yaml rather than from that catalog output — no
-  # recipe here ever referenced it.
+    # The recipes pass the binary and library explicitly (`--cosmocov`,
+    # `--libgsl`) so the declared inputs are what the chain runs. CosmoCov reads
+    # area / n_eff / sigma_e from cat_config.yaml, not from a catalog output.
 
   - id: redshift_distributions
     from: ../redshift_distributions
-    # The catalog unit's `redshift_distribution` output was likewise dropped
-    # from here, on the reasoning that the n(z) path resolves from
-    # cat_config.yaml and no recipe spells `{inputs...}` for it. That reasoning
-    # covered the recipe text but not the sandbox: lc binds only *declared*
-    # inputs, so `generate_pseudo_cl_cov.py` — which follows
-    # cat_config's `redshift_path` at runtime — hit FileNotFoundError on a file
-    # plainly present on the host. This alias is what makes the read legal: the
-    # family source's literal prefix (`/n17data/sguerrini/UNIONS/WL/nz`) is
-    # bound, and the config-resolved path underneath it resolves. The root
-    # family, not the catalog output, because the config names the raw tree.
-    # The CosmoCov chain needs it too, by a second route:
-    # `generate_cosmocov_ini.py` builds its own
-    # `/n17data/sguerrini/UNIONS/WL/nz/...` path from the version string and
-    # writes it into the `.ini` the binary then reads.
+    # The raw n(z) tree. lc binds only declared inputs, and both
+    # `generate_pseudo_cl_cov.py` (via cat_config's `redshift_path`) and
+    # `generate_cosmocov_ini.py` (which writes an n(z) path under
+    # `/n17data/sguerrini/UNIONS/WL/nz/` into the `.ini`) read files inside it.
 
   - id: glass_mock_realisations
     from: ../glass_mock_realisations
@@ -61,49 +46,41 @@ inputs:
   - id: glass_mock_xi
     type: data
     description: |
-      The ξ_± member of the
-      [GLASS mock family](#../inputs.glass_mock_realisations): one
-      20-bin TreeCorr FITS data vector per realisation, on the
-      4096-patch reporting grid. Declared as its own input, with
-      the glob spelled here, so that `{inputs.glass_mock_xi}` is a
-      pattern the shell expands to the 350 real files and lc binds
-      the containing directory.
+      ξ_± measured on each of the 350 realisations of the earlier
+      v1.4.6 [GLASS mock suite](#../inputs.glass_mock_realisations)
+      (the suite [mock_suite](#../glass_mocks.decisions.mock_suite)
+      excludes): one 20-bin TreeCorr FITS data vector per
+      realisation.
     source: "/n09data/guerrini/glass_mock_v1.4.6/results/xi_glass_mock_*_4096_nbins=20.fits"
 
   - id: glass_mock_cl
     type: data
     description: |
-      The pseudo-Cℓ member of the
-      [GLASS mock family](#../inputs.glass_mock_realisations): one
-      npy block (EE/BB among its rows) per realisation. Companion
-      to [glass_mock_xi](#inputs.glass_mock_xi), declared the same
-      way and for the same reason.
+      Pseudo-Cℓ (EE and BB among the rows) of each realisation of
+      the same v1.4.6 GLASS suite as
+      [glass_mock_xi](#inputs.glass_mock_xi), one npy file per
+      realisation.
     source: "/n09data/guerrini/glass_mock_v1.4.6/results/cl_glass_mock_*_4096.npy"
 
   - id: footprint_mask_starhalo
     type: data
     description: |
       Star-halo-masked 2517 deg² footprint mask power spectrum
-      (HEALPix nside=4096, apodised and normalised) — the v1.4.8
-      counterpart of the standard footprint carried by
-      [footprint_masks](#../inputs.footprint_masks). Declared as
-      its own file input so that the
-      [cov_scan sweep](#analyses.cov_scan), which selects a mask
-      per catalog version, receives both footprints as lc-declared
-      paths rather than a directory to compose names inside; the
-      v1.4.8 members take this one, every other member the
-      standard footprint.
+      (HEALPix nside=4096, apodised and normalised) for the masked
+      v1.4.8 catalog — the counterpart of the standard footprint in
+      [footprint_masks](#../inputs.footprint_masks). The
+      [cov_scan sweep](#analyses.cov_scan) uses it for v1.4.8 and
+      the standard footprint for every other version.
     source: "/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_starhalo_nside_4096_norm.txt"
 
 outputs:
   - id: cosmology_snapshot
     type: data
     description: |
-      Frozen JSON dump of `sp_validation.cosmology.PLANCK18`
-      (Ω_m, σ_8, n_s, Ω_b, h, w_0, w_a, plus derived Ω_v) used
-      to seed every CosmoCov `.ini`. Materialised by the
-      `cosmology_params` rule so that the snakemake parse-time
-      DAG does not import sp_validation; one snapshot per run.
+      The Planck 2018 fiducial cosmology
+      (`sp_validation.cosmology.PLANCK18`: Ω_m, σ_8, n_s, Ω_b, h,
+      w_0, w_a, plus derived Ω_v) as JSON, used to write every
+      CosmoCov `.ini`.
     format: json
     recipe:
       # Dump the PLANCK18 snapshot (+ derived Omega_v) straight to {output}.
@@ -114,15 +91,10 @@ outputs:
   - id: cov_blocks
     type: data
     description: |
-      Concatenated CosmoCov covariance matrix assembled from the
-      three shear-shear block pairs (`++`, `--`, `+-`) per
-      `(version, blind, gaussian, grid, mask)` tuple. The three
-      blocks are each computed independently by
-      `rule covariance_cosmocov` (one Slurm task per block,
-      running the CosmoCov C++ binary), then joined by
-      `rule covariance_cat` into the single matrix consumed
-      downstream. Block runtimes range from minutes on the
-      reporting grid to hours on the integration grid.
+      Raw CosmoCov output for the fiducial catalog on the 20-bin
+      reporting grid: the three [shear-shear blocks](#decisions.block_pairs)
+      (`++`, `--`, `+-`) concatenated into one text file, before
+      processing into a covariance matrix.
     decisions: [fiducial_catalog, fiducial_blind, covariance_class]
     inputs: [cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
     format: txt
@@ -148,9 +120,10 @@ outputs:
       Reporting-grid 20-bin Gaussian-only CosmoCov covariance for
       the [fiducial catalog](#../decisions.fiducial_catalog) at
       [blind A](#../decisions.fiducial_blind), with the standard
-      footprint mask applied. Used as the Gaussian seed for
-      reporting-grid Monte-Carlo cross-checks and as the
-      Gaussian-only diagonal extracted by `cosmocov_process.py`.
+      footprint mask applied: the Gaussian part of the
+      [Gaussian + non-Gaussian run](#outputs.cov_reporting_ng).
+      Together they give the non-Gaussian share of the ξ_±
+      diagonal variance quoted in the paper.
     decisions: [fiducial_catalog, fiducial_blind]
     inputs: [cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
     format: txt
@@ -176,14 +149,11 @@ outputs:
       Reporting-grid 20-bin full Gaussian + non-Gaussian
       CosmoCov covariance for the
       [fiducial catalog](#../decisions.fiducial_catalog) at
-      [blind A](#../decisions.fiducial_blind), masked. Includes
-      connected-trispectrum and super-sample-covariance terms
-      via CosmoCov's `cng = 1`. Reported in covariance
-      diagnostics; the null-test PTEs use the
-      [Gaussian-only flavour](#decisions.covariance_class)
-      throughout, so this matrix is materialised for
-      cross-checking variance ratios but does not enter the
-      headline PTEs.
+      [blind A](#../decisions.fiducial_blind), masked, including
+      connected-trispectrum and super-sample-covariance terms.
+      It sets the non-Gaussian share of the diagonal variance
+      quoted in the paper but does not enter the PTEs, which use
+      the [Gaussian-only covariance](#decisions.covariance_class).
     decisions: [fiducial_catalog, fiducial_blind]
     inputs: [cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
     format: txt
@@ -213,15 +183,12 @@ outputs:
       covariance for the
       [fiducial catalog](#../decisions.fiducial_catalog) at
       [blind A](#../decisions.fiducial_blind), with the
-      standard footprint mask applied. This is the Gaussian
-      draw source for the
-      [2000 MC realisations](#../decisions.mc_samples) that
-      propagate through the pure-mode and COSEBI filters; it is
-      also the closed-form covariance the COSEBI linear
-      transform uses. Non-Gaussian terms are not computed at
-      this binning — the
-      [Gaussian-only choice](#decisions.covariance_class) is
-      forced by tractability on the 1000-bin integration grid.
+      standard footprint mask applied, on 0.5–300 arcmin. The
+      pure-mode and COSEBI covariances derive from it, by the
+      linear transform and through the
+      [2000 MC realisations](#../decisions.mc_samples). Only the
+      [Gaussian part](#decisions.covariance_class) is tractable
+      on this grid.
     decisions: [fiducial_catalog, fiducial_blind]
     inputs: [cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
     format: txt
@@ -246,11 +213,9 @@ outputs:
   - id: cov_processed_qa
     type: figure
     description: |
-      Per-`(version, blind, gaussian, grid, mask)` covariance
-      structure plot generated by `cosmocov_process.py` showing
-      the diagonal variance, off-diagonal correlation
-      structure, and condition number diagnostics. Used in the
-      covariance review notebooks; not a reported result.
+      Diagnostic plot of the fiducial reporting-grid CosmoCov
+      covariance: diagonal variance, off-diagonal correlation
+      structure and condition number. Not a reported result.
     decisions: [fiducial_catalog, fiducial_blind]
     inputs: [cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
     format: png
@@ -274,13 +239,12 @@ outputs:
   - id: cov_glass_xi_reporting
     type: data
     description: |
-      Sample covariance of ξ_± across the 350 GLASS mock
-      realisations on the reporting grid (20 bins, 4096
-      patches). Materialised once for v1.4.6 catalog
-      properties (the geometry of v1.4.6.3 is identical at this
-      level). Compared diagonally against
-      [cov_reporting_ng](#outputs.cov_reporting_ng) for
-      validation; not used as a production covariance source.
+      Sample covariance of the 20-bin ξ_± data vector across the
+      350 realisations of the v1.4.6 GLASS suite
+      ([glass_mock_xi](#inputs.glass_mock_xi)), a validation
+      comparator for
+      [cov_reporting_ng](#outputs.cov_reporting_ng); not a
+      covariance source for the PTEs.
     decisions: [fiducial_catalog, glass_validation_strategy]
     inputs: [glass_mock_realisations, glass_mock_xi, glass_mock_cl]
     format: npy
@@ -299,13 +263,11 @@ outputs:
   - id: cov_glass_cl_reporting
     type: data
     description: |
-      Sample covariance of NaMaster pseudo-Cℓ across the 350
-      GLASS mock realisations on the harmonic reporting grid
-      (32 √ℓ-linear bandpowers). Validation companion to
-      [cov_glass_xi_reporting](#outputs.cov_glass_xi_reporting);
-      compared against the
-      [pseudo-Cℓ bandpower covariance](#outputs.cl_cov_reporting)
-      for reporting-grid agreement.
+      Sample covariance of the pseudo-Cℓ bandpowers across the
+      same 350 mocks as
+      [cov_glass_xi_reporting](#outputs.cov_glass_xi_reporting), a
+      validation comparator for the
+      [pseudo-Cℓ bandpower covariance](#outputs.cl_cov_reporting).
     decisions: [fiducial_catalog, glass_validation_strategy]
     inputs: [glass_mock_realisations, glass_mock_xi, glass_mock_cl]
     format: npy
@@ -324,15 +286,11 @@ outputs:
   - id: cl_cov_reporting
     type: data
     description: |
-      NaMaster pseudo-Cℓ bandpower covariance for the fiducial
-      catalog at blind A on the harmonic reporting grid (32
-      √ℓ-linear bandpowers). Produced inline with
-      [cl_bb's pseudo-Cℓ data vector](#../analyses.cl_bb) by
-      the `pseudo_cl_cov` rule under NaMaster's iNKA Gaussian
-      framework (matching Paper IV's BB / EB covariance
-      choice). Materialised here rather than in cl_bb so that
-      it is co-located with the configuration-space CosmoCov
-      runs as a single covariance package.
+      Gaussian (NaMaster iNKA) covariance of the pseudo-Cℓ
+      bandpowers for the fiducial catalog at blind A, on the
+      32-bandpower √ℓ-spaced grid of
+      [cl_bb's data vector](#../analyses.cl_bb) — the covariance
+      Paper IV uses for its BB / EB null tests.
     decisions: [fiducial_catalog, fiducial_blind]
     inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script]
     format: fits
@@ -352,16 +310,11 @@ outputs:
   - id: cl_cov_fine
     type: data
     description: |
-      Fiducial-catalog twin of
-      [cl_cov_reporting](#outputs.cl_cov_reporting) on the 96-bin
-      √ℓ-linear fine grid, matching
-      [cl_bb.cl_bandpowers_fine](#../cl_bb.outputs.cl_bandpowers_fine).
-      Required by the harmonic COSEBI cross-check: the compute pass
-      of `harmonic_config_cosebis_comparison.py` needs both the
-      96-bin bandpowers and their covariance, and the July run read
-      the covariance from the canonical CosmoStat tree rather than
-      reproducing it. Its per-version counterparts for the three
-      non-fiducial leak-corrected catalogs come from the
+      As [cl_cov_reporting](#outputs.cl_cov_reporting), on the 96-bin
+      √ℓ-spaced fine grid of
+      [cl_bb.cl_bandpowers_fine](#../cl_bb.outputs.cl_bandpowers_fine),
+      for the harmonic-space COSEBI transform. The other three
+      leak-corrected catalogs' counterparts come from the
       [cl_scan sweep](#../cl_bb.analyses.cl_scan).
     decisions: [fiducial_catalog, fiducial_blind]
     inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script]
@@ -379,9 +332,9 @@ outputs:
 
   - id: cov_sweep
     # Re-export of the generated cov_scan sweep's gather output — the only edge
-    # into the sweep. The bundle keeps the July-canonical per-version
-    # `covariance_{ver}_A_g_..._masked/` subdirectory layout, so every
-    # `--cov-dir` consumer is unchanged. Regenerate with
+    # into the sweep. The bundle uses the per-version
+    # `covariance_{ver}_A_g_..._masked/` subdirectory layout that every
+    # `--cov-dir` consumer reads. Regenerate with
     #   scripts/sweep_expand.py -o analyses/covariance/analyses/cov_scan/astra.yaml \
     #       analyses/covariance/analyses/cov_scan/cov_scan.sweep.yaml
     from: cov_scan.cov_sweep_bundle
@@ -398,186 +351,145 @@ decisions:
     label: "Semi-analytical covariance engine"
     tags: [covariance, method]
     rationale: |
-      `CosmoCov` (Krause & Eifler 2017; Fang, Eifler & Krause
-      2020) is the configuration-space covariance code adopted
-      by Paper III for cosmological inference; the same engine is
-      reused here for parity. CosmoCov computes
-      shear-shear correlation-function covariances analytically
-      with optional connected-trispectrum and super-sample
-      terms, requires no simulations as a primary covariance
-      source, and uses 2D-FFTLog (`fang.eifler.krause20`) for
-      numerically stable real-space transforms on
-      arcmin-scale grids. The harmonic-space pseudo-Cℓ
-      covariance uses NaMaster's iNKA framework instead — this
-      sub-analysis exposes both engines because the analysis
-      ingests CosmoCov for ξ_± and iNKA for Cℓ_BB, matching
-      Paper III and Paper IV respectively.
+      Each B-mode statistic starts from the covariance
+      prescription of its companion cosmology paper. For ξ_±
+      (and the pure-mode and COSEBI statistics derived from it)
+      that is `CosmoCov` (Krause & Eifler 2017; Fang, Eifler &
+      Krause 2020), Paper III's analytic code, whose 2D-FFTLog
+      transforms give numerically stable real-space covariances
+      without simulations. For Cℓ^BB and Cℓ^EB it is NaMaster's
+      iNKA Gaussian covariance, as in Paper IV's B-mode null
+      tests. The GLASS mocks validate both rather than replace
+      them.
     default: cosmocov
     options:
       cosmocov:
         label: "CosmoCov (fiducial; configuration-space)"
         insights: [fang20_2dfftlog_stable_real_space_covariance]
         description: |
-          Krause & Eifler 2017 covariance code; runs as a C++
-          binary launched per `(block, .ini)` tuple from the
-          `covariance_cosmocov` rule.
+          Analytic configuration-space covariance code of Krause
+          & Eifler 2017.
       namaster_inka:
         label: "NaMaster iNKA (fiducial; harmonic-space)"
         description: |
           NaMaster's improved Narrow Kernel Approximation
-          Gaussian covariance; computed inline with the
-          `pseudo_cl_cov` rule. Used for the BB and EB
-          bandpower covariances directly. Paper IV validates it
-          against 10,000 Gaussian sims (their Appendix C).
+          Gaussian bandpower covariance, which Paper IV validates
+          against Gaussian simulations (their Appendix C).
       mock_sample_covariance:
         label: "GLASS sample covariance"
         description: |
-          Empirical sample covariance from the 350 GLASS mock
-          realisations. Used as a validation reference, not a
-          production covariance source.
+          Sample covariance across the 350 GLASS mock
+          realisations.
         excluded: true
         excluded_reason: |
-          350 mocks at data-vector dimension up to 40 leave
-          enough Hartlap bias and noise on the inverse that
-          the reported PTEs would be inflated; CosmoCov is
-          unbiased at the price of a fixed cosmology
-          assumption.
+          The mocks validate the analytic covariances; a
+          350-realisation sample covariance is too noisy to
+          invert for the PTEs without correction.
 
   covariance_class:
     label: "Gaussian vs Gaussian + non-Gaussian covariance"
     tags: [covariance, statistics, primary]
     rationale: |
-      All B-mode null-test PTEs use Gaussian-only
-      covariance: in configuration space because the
-      non-Gaussian (cng) terms are intractable on the 1000-bin
-      integration grid required for pure-mode and COSEBI
-      filter integration, and in harmonic space because Paper
-      IV's iNKA covariance for the BB and EB spectra is
-      Gaussian by construction (non-Gaussian terms enter only
-      Paper IV's EE cosmological likelihood, not the BB/EB
-      null tests). The non-Gaussian connected-trispectrum and
-      super-sample terms are positive-definite contributions
-      to the variance, so their omission underestimates the
-      true variance and the reported PTEs are conservative —
-      a null test that passes with Gaussian-only covariance
-      would generally pass with the full covariance.
+      All B-mode null tests use only the Gaussian part of the
+      covariance. In configuration space this keeps the
+      calculation tractable on the 1000-bin integration grid;
+      in harmonic space Paper IV likewise adds non-Gaussian
+      terms only for its EE cosmology analysis. Omitting the
+      connected-trispectrum and super-sample terms
+      underestimates the variances (by about 11% of the ξ_±
+      diagonal within the fiducial cuts), so the null tests are
+      conservative: a test that passes with the Gaussian-only
+      covariance would generally pass with a more complete one,
+      as the GLASS mocks confirm.
     default: gaussian_only
     options:
       gaussian_only:
         label: "Gaussian only (fiducial for null tests)"
         description: |
-          `ng = 0` and `cng = 0` in the CosmoCov `.ini`.
-          Materialised at both reporting and integration grids.
-          NaMaster iNKA covariance is Gaussian by default; no
-          flag toggle.
+          Gaussian CosmoCov terms on both grids; NaMaster iNKA
+          is Gaussian by construction.
       gaussian_plus_ng:
         label: "Gaussian + non-Gaussian"
         description: |
-          `ng = 1` and `cng = 1` in the CosmoCov `.ini`;
-          computed at reporting grid only. Used for variance
-          ratio diagnostics in covariance review; not in
-          the reported PTEs.
+          Adds connected-trispectrum and super-sample terms;
+          computed on the 20-bin reporting grid only, to size
+          the non-Gaussian contribution.
 
   mask_application:
     label: "Footprint mask in covariance"
     tags: [covariance, geometry]
     rationale: |
-      CosmoCov can either ignore the survey footprint
-      (`c_footprint_file = ""` in the `.ini`) or include it via
-      a precomputed mask power spectrum. The fiducial
-      runs use the
+      CosmoCov either treats the survey as a contiguous area or
+      includes the footprint geometry through a mask power
+      spectrum. The fiducial runs use the
       [standard 2894 deg² or star-halo 2517 deg² mask
       power spectrum](#inputs.mask_power_spectrum) appropriate
-      to the catalog version; the unmasked variant is retained
-      to expose the geometry contribution to the covariance
-      diagonal as a sanity check (the masked / unmasked
-      variance ratio is a fixed-cosmology fingerprint of the
-      footprint).
+      to the catalog version, since the footprint's shape sets
+      the sample variance. The unmasked variant serves only as a
+      diagnostic of the geometry's contribution to the
+      covariance diagonal.
     default: masked
     options:
       masked:
         label: "Masked (fiducial)"
         description: |
-          `_masked` suffix on the covariance directory; the
-          standard footprint power spectrum or the star-halo
-          variant is supplied via `c_footprint_file`. Standard
-          footprint for v1.4.5 / v1.4.6.3 / v1.4.11.3;
-          star-halo for v1.4.8.
+          Standard footprint for v1.4.5 / v1.4.6.3 / v1.4.11.3;
+          star-halo footprint for v1.4.8.
       unmasked:
         label: "Unmasked"
         description: |
-          No mask path; CosmoCov assumes a contiguous area of
-          `area` deg². Used for diagnostic comparisons only.
+          A contiguous area with no footprint geometry;
+          diagnostic only.
 
   block_pairs:
     label: "Shear-shear block pairs computed by CosmoCov"
     tags: [covariance, structure]
     rationale: |
       CosmoCov computes the shear-shear covariance as three
-      independent block pairs: ++ (ξ_+ auto), -- (ξ_- auto),
-      and +- (ξ_+ × ξ_- cross). All three are required for the
-      reported PTEs because the joint ξ_tot^B test concatenates ξ_+
-      and ξ_- and weights against the full block matrix; pure
-      E/B and COSEBI mode integration also samples the
-      cross-block under the integral kernels. Computing fewer
-      blocks is therefore not a viable production option; the
-      decision is exposed for documentation rather than choice.
+      blocks: ++ (ξ_+ auto), -- (ξ_- auto) and +- (cross). The
+      joint ξ_tot^B test needs the cross-block, and the pure-mode
+      and COSEBI transforms mix ξ_+ and ξ_-, so all three are
+      required; the decision documents the structure rather than
+      offering a real choice.
     default: all_three
     options:
       all_three:
         label: "All three: ++, --, +-"
-        description: |
-          `BLOCK_PAIRS = [("++", "1"), ("--", "2"),
-          ("+-", "3")]` in the source Snakefile. Concatenated
-          by `rule covariance_cat` into one text matrix.
       auto_only:
         label: "Auto blocks only (++, --)"
         description: |
-          Sufficient for separate ξ_+^B and ξ_-^B PTEs;
-          insufficient for the reported joint ξ_tot^B
-          test.
+          Enough for separate ξ_+^B and ξ_-^B PTEs.
         excluded: true
         excluded_reason: |
-          Joint ξ_tot^B requires the cross-block; the joint PTE
-          is reported.
+          The reported joint ξ_tot^B test needs the cross-block.
 
   glass_validation_strategy:
     label: "GLASS mock-validation use"
     tags: [covariance, validation]
     rationale: |
-      The 350 GLASS lognormal mocks are matched to v1.4.6
-      catalog properties under the
-      [Planck-18 fiducial](#../decisions.fiducial_cosmology) and
-      contain no PSF systematics by construction. They serve a
-      different role than the CosmoCov covariance: they
-      validate that the
-      [estimator pipeline as a whole](#../analyses.null_tests)
-      recovers B-modes consistent with zero on a noise-only
-      input. The quantitative validation claim is that
-      COSEBI mean B_n over a 100-realisation subset is biased
-      by less than 0.3σ per mode, while the mock scatter is
-      comparable to the adopted fiducial error bars. The mocks
-      also validate the diagonal of the analytic covariance
-      against an independent sample. They are not a production
-      covariance source — Hartlap bias on a 350-realisation
-      sample inverse at data-vector dimension ≤ 40 would inflate
-      the reported PTEs more than the missing non-Gaussian terms
-      suppress them.
+      The GLASS lognormal mocks, generated under the
+      [Planck-18 fiducial](#../decisions.fiducial_cosmology),
+      carry no PSF leakage or other imaging systematics. They
+      test whether the
+      [estimators](#../analyses.null_tests) produce spurious
+      B modes from a systematics-free input, and whether the
+      analytic σ matches the scatter across realisations. The
+      analytic covariances, not the mock sample covariance,
+      enter the PTEs.
     default: validation_only
     options:
       validation_only:
         label: "Validation comparator (fiducial)"
         description: |
-          Sample covariance compared diagonally against
-          CosmoCov; ensemble-mean B-modes compared against
-          zero. CosmoCov drives the reported PTEs.
+          Mock scatter is compared with the analytic σ and the
+          ensemble-mean B modes with zero.
       sample_covariance_production:
         label: "GLASS sample covariance as production"
         excluded: true
         excluded_reason: |
-          Insufficient realisations for a production inverse
-          covariance; would introduce Hartlap inflation
-          exceeding the missing non-Gaussian effect.
+          The mocks validate the analytic covariances; 350
+          realisations give too noisy an inverse to replace
+          them.
 
 analyses:
 
@@ -610,6 +522,5 @@ prior_insights:
         location:
           page: 1
     scope: |
-      Fang, Eifler & Krause 2020, MNRAS 497, 2699 — abstract.
-      Source: arxiv 2004.04833 main.tex line 119. Validated for
-      DES-Y3- and LSST-Y1-like surveys (paper TeX line 423).
+      Fang, Eifler & Krause 2020, MNRAS 497, 2699; validated for
+      DES-Y3- and LSST-Y1-like surveys.

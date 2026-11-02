@@ -12,8 +12,9 @@ inputs:
   - id: tenk_xi_staging
     type: data
     description: |
-      TreeCorr ξ± dump on the 10,000-bin convergence grid for the size-cut catalog.
-      The file is an external input to `xi_integration_convergence`.
+      TreeCorr ξ± of the size-cut catalog on the 10,000-bin
+      convergence grid, computed outside the pipeline by a
+      multi-node MPI run.
     source: "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/production_out/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt"
 
 outputs:
@@ -21,10 +22,7 @@ outputs:
     type: data
     description: |
       TreeCorr ξ_±(θ) on the reporting grid: 20 logarithmic
-      bins over [1', 250'], as a single TreeCorr text dump.
-      The same file is consumed at
-      reporting binning by the pure E/B and Cℓ data-vector
-      figures and the version-comparison stack.
+      bins over [1', 250'].
     format: txt
     inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
     decisions: [fiducial_catalog]
@@ -43,12 +41,10 @@ outputs:
     type: data
     description: |
       TreeCorr ξ_±(θ) on the integration grid: 1000 logarithmic
-      bins over [0.5', 300']. Filter integration for pure E/B
-      mode and COSEBI B_n consumes this run; the integration
-      grid extends below the reporting θ_min and above the
-      reporting θ_max so the filters' extended kernels are
-      evaluated on real catalog measurements rather than zero
-      padding. 2.5 h on 24 cores per catalog version.
+      bins over [0.5', 300'], the input to the pure-mode and COSEBI
+      integrals. It extends beyond the reporting range so the
+      filters' kernels are evaluated on measurements rather than
+      zero padding.
     format: txt
     inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
     decisions: [fiducial_catalog]
@@ -65,11 +61,9 @@ outputs:
   - id: xi_integration_convergence
     type: data
     description: |
-      One-shot 10,000-bin TreeCorr ξ_± over [0.5', 300'] for the
-      size-cut catalog only, used to demonstrate COSEBI mode
-      stability against the 1000-bin fiducial. MPI-distributed
-      across 30 tasks × 12 OpenMP threads on 6 nodes, ~22 h
-      wall time. Materialised once; not re-run per iteration.
+      TreeCorr ξ_± on a 10,000-bin grid over [0.5', 300'] for the
+      size-cut catalog, used to test the convergence of the pure
+      modes and COSEBIs against the 1000-bin integration grid.
     format: txt
     decisions: [fiducial_catalog]
     inputs: [tenk_xi_staging]
@@ -112,65 +106,48 @@ decisions:
     label: "Reporting-grid angular binning"
     tags: [two_point, binning]
     rationale: |
-      The reporting grid [1', 250'] in 20 logarithmic bins is
-      the historical UNIONS convention for cosmic-shear ξ_±
-      and is shared with Papers III and IV's cosmological
-      inference. The geometric bin edges define the indices
-      used by the
-      [adopted scale cuts](#../decisions.fiducial_scale_cuts)
-      (the size-cut catalog's 12'–83' fiducial maps to indices
-      9 and 16 of `geomspace(1, 250, 21)`). 1' is below the PSF
-      coherence length and is the smallest scale at which
-      shape measurement remains well-defined; 250' is large
-      enough to cover the survey but small enough to avoid the
-      large-scale variance regime where the Gaussian
-      covariance approximation breaks down.
+      20 logarithmic bins over [1', 250'] match the
+      configuration-space data vector of Paper III. The bin edges
+      define the
+      [adopted scale cuts](#../decisions.fiducial_scale_cuts):
+      the fiducial 12'–83' window spans edges 9 to 16 of
+      `geomspace(1, 250, 21)`.
     default: bins_20
     options:
       bins_20:
         label: "20 log bins over [1', 250'] (fiducial)"
         description: |
-          `min_sep=1.0`, `max_sep=250.0`, `nbins=20` in
-          `workflow/config/config.yaml.fiducial`.
+          The binning of the paper and of Paper III.
       bins_40:
         label: "40 log bins over [1', 250']"
         description: |
-          Finer reporting grid; not used in the fiducial analysis, exposed
-          for sensitivity studies only.
+          Finer reporting grid for sensitivity studies; not used
+          in the paper.
 
   patch_count:
     label: "TreeCorr patch decomposition"
     tags: [two_point, covariance]
     rationale: |
-      `npatch = 1` is the production value (config
-      `fiducial.npatch: 1`). The UNIONS-3500 footprint has no
-      natural spatial-jackknife structure that yields stable
-      empirical covariance at the relevant angular scales —
-      neighbouring patches are too correlated and the corner
-      patches are too small. The
-      [covariance sub-analysis](#../analyses.covariance) uses
-      semi-analytical CosmoCov, so empirical jackknife is not
-      needed for the reported PTEs. The 120-patch alternative was
-      built for cross-check sensitivity studies and is
-      explicitly excluded from the production fiducial.
+      Patches only serve a jackknife covariance. The
+      [covariance sub-analysis](#../analyses.covariance) is
+      semi-analytic (CosmoCov), so the measurement runs on a single
+      patch; the jackknife was only a development cross-check, which
+      the paper reports agrees with the semi-analytic ξ_± covariance
+      at the ten-percent level over the fiducial range.
     default: npatch_1
     options:
       npatch_1:
         label: "1 patch (fiducial)"
         description: |
-          Single-patch TreeCorr; spatial-jackknife covariance
-          unavailable.
+          Single-patch TreeCorr; no jackknife covariance.
       npatch_120:
         label: "120 patches"
         description: |
-          120-patch decomposition for spatial-jackknife
-          sensitivity tests; not used by the reported PTEs.
+          Enables a spatial-jackknife covariance.
         excluded: true
         excluded_reason: |
-          Empirical jackknife covariance is not the adopted
-          covariance source; CosmoCov is. The 120-patch run is
-          retained in `config.yaml.npatches` for one-off
-          checks but does not enter any reported PTE.
+          The reported PTEs use the CosmoCov covariance, not a
+          jackknife.
 
 analyses:
 
