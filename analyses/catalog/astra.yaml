@@ -2,8 +2,6 @@ version: "0.0.14"
 name: "Catalog preparation"
 
 inputs:
-  - id: shapepipe_v14_catalogs
-    from: ../shapepipe_v14_catalogs
 
   - id: redshift_distributions
     from: ../redshift_distributions

@@ -2,10 +2,6 @@ version: "0.0.14"
 name: "B-mode null tests, PTE matrices, and blind-independence checks"
 
 inputs:
-  - id: submitted_paper_claims
-    type: data
-    description: Claims-macro table of the submitted paper (the `submitted` universe), the reference for comparison.
-    source: "./results/submitted/null_tests/paper_claims.csv"
 
   - id: paper_claims_script
     type: data
@@ -55,9 +51,6 @@ inputs:
 
   - id: scale_cuts_script
     from: ../scale_cuts_script
-
-  - id: harmonic_space_pte_matrices_script
-    from: ../harmonic_space_pte_matrices_script
 
   - id: generate_paper_macros_script
     from: ../generate_paper_macros_script
@@ -117,18 +110,6 @@ outputs:
         python src/papers/bmodes/scripts/paper_claims.py extract
         {inputs.pte_summary_macros} {output}
 
-  - id: paper_claims_comparison
-    type: table
-    format: csv
-    description: |
-      Claims-macro values in this universe and the submitted universe, with
-      changes marked by comparing their display text.
-    inputs: [paper_claims, submitted_paper_claims, paper_claims_script]
-    recipe:
-      command: >-
-        python src/papers/bmodes/scripts/paper_claims.py compare
-        {inputs.paper_claims} {inputs.submitted_paper_claims} {output}
-
   - id: config_space_pte_data
     type: metric
     format: json
@@ -138,7 +119,7 @@ outputs:
       catalog variants, with the values at the
       [adopted 12'–83' cut](#../decisions.fiducial_scale_cuts).
       Feeds the config-space columns of the per-version PTE table
-      and [the config-space heatmap figure](#outputs.config_space_pte_evidence).
+      and the configuration-space PTE heatmaps.
     decisions: [scale_cut_convention]
     inputs:
       - pure_eb_ptes
@@ -168,36 +149,6 @@ outputs:
         --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
 
-  - id: config_space_pte_evidence
-    type: figure
-    format: png
-    description: |
-      ξ_+^B, ξ_-^B and COSEBI B_n PTE matrices for the fiducial
-      catalog over (θ_min, θ_max) pairs of `geomspace(1', 250', 21)`,
-      with the [adopted 12'–83' fiducial
-      cut](#../decisions.fiducial_scale_cuts) marked as a black
-      square. Blue cells fail (PTE below the
-      [global PTE threshold](#../decisions.pte_threshold));
-      white/red cells are consistent. Rendered from
-      [config_space_pte_data](#outputs.config_space_pte_data); the
-      per-version composite is the root-level `fig_pte_heatmaps`.
-    decisions: [scale_cut_convention, pte_threshold]
-    inputs:
-      - config_space_pte_data
-      - config_space_pte_matrices_script
-      - scale_cuts_script
-    recipe:
-      # Pure render: no re-compute of the PTE grids, the matrices come from the
-      # evidence payload written by config_space_pte_data.
-      command: >
-        python src/papers/bmodes/scripts/config_space_pte_matrices.py
-        --config src/papers/bmodes/config/config.yaml
-        --from-evidence {inputs.config_space_pte_data}
-        --figure fiducial
-        --scale-cut-convention {decisions.scale_cut_convention}
-        --pte-threshold {decisions.pte_threshold}
-        --out-file {output}
-
   - id: harmonic_space_pte_data
     type: metric
     format: json
@@ -207,7 +158,7 @@ outputs:
       value at the
       [adopted 300 < ℓ < 1600 cut](#../decisions.fiducial_scale_cuts).
       Feeds the harmonic column of the per-version PTE table and
-      [the Cℓ^BB heatmap figure](#outputs.harmonic_space_pte_evidence).
+      the Cℓ^BB PTE heatmap.
     inputs:
       - cl_sweep
       - cl_bandpowers_reporting
@@ -228,54 +179,6 @@ outputs:
         --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
 
-  - id: harmonic_space_pte_evidence
-    type: figure
-    format: png
-    description: |
-      Cℓ^BB PTE matrix for the fiducial catalog over (ℓ_min, ℓ_max)
-      bandpower pairs, with the
-      [adopted 300 < ℓ < 1600 cut](#../decisions.fiducial_scale_cuts)
-      marked. Blue cells fail (PTE below the
-      [global PTE threshold](#../decisions.pte_threshold));
-      white/red cells are consistent. Rendered from
-      [harmonic_space_pte_data](#outputs.harmonic_space_pte_data); the
-      per-version composite is the root-level `fig_cl_pte_heatmap`.
-    decisions: [pte_threshold]
-    inputs:
-      - harmonic_space_pte_data
-      - harmonic_space_pte_matrices_script
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
-        --config src/papers/bmodes/config/config.yaml
-        --from-evidence {inputs.harmonic_space_pte_data}
-        --figure fiducial
-        --pte-threshold {decisions.pte_threshold}
-        --out-file {output}
-
-  - id: pte_summary_evidence
-    type: metric
-    format: json
-    description: |
-      The six headline PTEs (ξ_+^B, ξ_-^B, ξ_tot^B, COSEBI B_n for
-      n ≤ 6 and n ≤ 20, Cℓ^BB) at the
-      [adopted 12'–83' / 300 < ℓ < 1600
-      cuts](#../decisions.fiducial_scale_cuts) and at full range, for
-      all four catalog variants, gathered from the config- and
-      harmonic-space PTE payloads.
-    inputs:
-      - config_space_pte_data
-      - harmonic_space_pte_data
-    recipe:
-      # Terminal gather over the two PTE evidence payloads; no heavy compute.
-      command: >
-        python src/papers/bmodes/scripts/generate_paper_macros.py
-        --config src/papers/bmodes/config/config.yaml
-        --config-space-evidence {inputs.config_space_pte_data}
-        --harmonic-space-evidence {inputs.harmonic_space_pte_data}
-        --emit evidence
-        --out-file {output}
-
   - id: pte_summary_macros
     type: data
     format: tex
@@ -283,8 +186,7 @@ outputs:
       The paper's quantitative-claims macros (`claims_macros.tex`) as
       `\newcommand` definitions:
 
-      - the six headline PTEs and the version-comparison numbers (the
-        values of [pte_summary_evidence](#outputs.pte_summary_evidence)),
+      - the six headline PTEs and the version-comparison numbers,
         with pure-mode scale cuts resolved from the
         [scale-cut convention](#../decisions.scale_cut_convention) and
         rounded to integer arcmin;
@@ -415,8 +317,7 @@ decisions:
       [BB-covariance blind-independence
       check](#outputs.bb_covariance_blind_independence_evidence).
       It uses the fiducial leak-corrected v1.4.6.3 catalog, for which
-      the [admissible GLASS mock suite](#../inputs.glass_mock_realisations)
-      was built. B-mode covariance ratios are expected to sit closer
+      the GLASS mock suite was built. B-mode covariance ratios are expected to sit closer
       to unity across blinds than E-mode ratios, though finite MC
       sampling can still introduce visible B-mode covariance scatter.
     default: fiducial_version_v1463

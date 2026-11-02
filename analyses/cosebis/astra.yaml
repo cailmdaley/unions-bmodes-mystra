@@ -5,9 +5,6 @@ inputs:
   - id: xi_integration
     from: ../two_point.xi_integration
 
-  - id: xi_integration_convergence
-    from: ../two_point.xi_integration_convergence
-
   - id: xi_sweep
     from: ../two_point.xi_sweep
 
@@ -105,30 +102,6 @@ outputs:
     #       analyses/cosebis/analyses/cosebis_pte_scan/cosebis_pte_scan.sweep.yaml
     from: cosebis_pte_scan.cosebis_ptes_bundle
 
-  - id: cosebis_binning_convergence
-    type: figure
-    format: png
-    description: |
-      B_n and the n ≤ 6 / n ≤ 20 PTEs of the
-      [fiducial catalog](#../decisions.fiducial_catalog) on the
-      1000-bin and 10,000-bin integration grids. The null-test
-      verdicts are stable between grids (fiducial n ≤ 20 PTE
-      0.94 → 0.75; full range 1.1e-4 → 4.1e-4), while individual
-      high-n B_n move by up to 1.37 σ
-      ([convergence finding](#../convergence.findings.cosebis_verdicts_stable_at_1000_bins)).
-    decisions: [fiducial_catalog, fiducial_blind, mode_subsets, scale_cut_convention]
-    inputs: [xi_integration, xi_integration_convergence, cov_integration_g]
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/cosebis_binning_comparison.py
-        --config src/papers/bmodes/config/config.yaml
-        --xi-1k {inputs.xi_integration}
-        --xi-10k {inputs.xi_integration_convergence}
-        --cov-1k {inputs.cov_integration_g}
-        --scale-cut-convention {decisions.scale_cut_convention}
-        --out-file {output}
-      resources: { cpus: 8, memory: "16GB" }
-
   - id: cosebis_version_comparison
     type: figure
     format: png
@@ -173,7 +146,7 @@ outputs:
       [harmonic_validation_binning](#decisions.harmonic_validation_binning)),
       and the configuration path of
       [cosebis_modes_data](#outputs.cosebis_modes_data). Feeds the
-      [harmonic/configuration cross-check figure](#../outputs.fig_harmonic_config_cosebis);
+      [harmonic/configuration cross-check figure](#../outputs.fig_harmonic_config_cosebis_full);
       PTEs are in
       [cosebis_harmonic_metrics](#outputs.cosebis_harmonic_metrics).
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
@@ -249,8 +222,7 @@ outputs:
       over the full angular range: the harmonic-path full-range COSEBI
       PTE behind the
       [CCD-scale COSEBI pattern](#../findings.ccd_scale_cosebi_pattern)
-      and the configuration-path χ² (also in
-      [config_space_pte_evidence](#../null_tests.outputs.config_space_pte_evidence)).
+      and the configuration-path χ².
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
     inputs: [cosebis_harmonic_modes_full]
     recipe:

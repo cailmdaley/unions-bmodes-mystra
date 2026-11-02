@@ -89,30 +89,6 @@ inputs:
       2517 deg² star-halo-masked variant in the same directory.
     source: "/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_nside_4096_norm.txt"
 
-  - id: planck18_cosmology
-    type: data
-    description: |
-      Planck 2018 + BAO ΛCDM cosmology (astropy `Planck18`, Table 2
-      + BAO): Ω_m=0.3111, σ_8=0.8102, n_s=0.9660, Ω_b=0.0492,
-      h=0.6766, w_0=-1, w_a=0. Used only to evaluate the CosmoCov
-      covariance; no other step assumes a cosmology.
-    source: "sp_validation.cosmology.PLANCK18 (Python module)"
-
-  - id: glass_mock_realisations
-    type: data
-    description: |
-      350 systematics-free lognormal cosmic-shear mocks made with
-      `GLASS` (Tessore et al. 2023) under the Planck-18 cosmology, from
-      the suite described in Paper III, reproducing the survey footprint, redshift
-      distribution and per-component σ_e, with unit weights (the v1.4.6.3_v2
-      suite; see [mock_suite](#glass_mocks.decisions.mock_suite)).
-      The galaxy count does not match the catalog
-      ([mocks_are_over_constraining](#glass_mocks.findings.mocks_are_over_constraining)).
-      They validate the semi-analytical covariance and calibrate the
-      PTE threshold; they are not the covariance behind the reported
-      PTEs.
-    source: "/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/{xi,cl}_glass_mock_{seed:05d}_4096*.{fits,npy}"
-
   - id: blind_check_pure_eb
     type: data
     description: |
@@ -233,12 +209,9 @@ outputs:
   # ---------------------------------------------------------------------------
   # Re-exported sub-analysis artifacts. A root recipe reaches a child artifact
   # only through an alias declared here (Output.from), which it then names in
-  # its own `inputs:`; aliases inherit format and recipe from the source. Some
-  # aliases are not consumed by any root recipe and serve as root-level
-  # handles on those artifacts.
+  # its own `inputs:`; aliases inherit format and recipe from the source.
   # ---------------------------------------------------------------------------
   - {id: paper_claims, from: null_tests.paper_claims}
-  - {id: paper_claims_comparison, from: null_tests.paper_claims_comparison}
   - {id: config_space_pte_data, from: null_tests.config_space_pte_data}
   - {id: harmonic_space_pte_data, from: null_tests.harmonic_space_pte_data}
   - {id: mock_min_pte_calibration, from: glass_mocks.mock_min_pte_calibration}
@@ -248,19 +221,8 @@ outputs:
   - {id: cosebis_harmonic_modes_evidence, from: cosebis.cosebis_harmonic_metrics}
   - {id: cosebis_harmonic_modes_full_evidence, from: cosebis.cosebis_harmonic_metrics_full}
   - {id: cosebis_harmonic_version_ptes, from: cosebis.cosebis_harmonic_version_ptes}
-  - {id: cosebis_harmonic_modes, from: cosebis.cosebis_harmonic_modes}
   - {id: cosebis_harmonic_modes_full, from: cosebis.cosebis_harmonic_modes_full}
   - {id: cosebis_modes_data, from: cosebis.cosebis_modes_data}
-  - {id: cosebis_pte_per_cut, from: cosebis.cosebis_pte_per_cut}
-  - {id: cosebis_ptes, from: cosebis.cosebis_ptes}
-  - {id: pure_eb_pte_per_cut, from: pure_eb.pure_eb_pte_per_cut}
-  - {id: pure_eb_ptes, from: pure_eb.pure_eb_ptes}
-  - {id: cl_sweep, from: cl_bb.cl_sweep}
-  - {id: cl_bandpowers_reporting, from: cl_bb.cl_bandpowers_reporting}
-  - {id: cl_bandpowers_fine, from: cl_bb.cl_bandpowers_fine}
-  - {id: cl_cov_reporting, from: covariance.cl_cov_reporting}
-  - {id: xi_integration, from: two_point.xi_integration}
-  - {id: cov_integration_g, from: covariance.cov_integration_g}
 
   # ---------------------------------------------------------------------------
   # Tables and metrics.
@@ -363,37 +325,13 @@ outputs:
         --cosebis-modes-npz {inputs.cosebis_modes_data}
         --out-file {output}
 
-  - id: pte_combined_dof_penalized
-    type: metric
-    format: json
-    description: |
-      Combined pure-mode B-mode PTE (ξ_tot^B) of the fiducial catalog
-      at fiducial cuts, with the two scale-cut boundaries treated as
-      fitted parameters: χ²_obs is recovered from the stored PTE at
-      ν=14 (7 θ bins × ξ_+/ξ_-) and re-evaluated at ν−2=12. The
-      submitted paper's footnote used a window matched on bin means,
-      9.1'–83' (ν=16), and so quotes a penalized PTE from that wider
-      window.
-    decisions: [scale_cut_convention]
-    inputs: [pure_eb_pte_per_cut, scale_cuts_script]
-    recipe:
-      # numpy + scipy.stats only; exact (no MC re-run); runs in seconds.
-      command: >
-        python src/papers/bmodes/scripts/emit_pte_combined_dof_penalized.py
-        --pte-per-cut-npz {inputs.pure_eb_pte_per_cut}
-        --config src/papers/bmodes/config/config.yaml
-        --scale-cut-convention {decisions.scale_cut_convention}
-        --out-file {output}
-
   - id: nu_penalty_verdicts
     type: table
     format: csv
     description: |
       The ν → ν−2 penalty for treating the two scale-cut boundaries
       as fitted parameters, applied across the whole
-      [PTE table](#outputs.pte_table_appendix) rather than to the
-      combined statistic alone as in
-      [pte_combined_dof_penalized](#outputs.pte_combined_dof_penalized).
+      [PTE table](#outputs.pte_table_appendix).
       One row per catalog version × statistic × cut (4 × 6 × 2 = 48).
       χ²_obs is recovered from each stored PTE and re-evaluated at
       ν−2; ν counts θ bins for ξ_±^B (twice that for ξ_tot^B; 7 at
@@ -445,15 +383,6 @@ outputs:
   - {id: fig_versions_cl, from: cl_bb.cl_version_comparison_figure}
   - {id: fig_versions_cosebis, from: cosebis.cosebis_version_comparison}
 
-  # The GLASS mock campaign in one figure: mean B vector over σ_ana on
-  # top, σ_emp/σ_ana below, sharing the three statistic columns.
-  - {id: fig_mock_campaign, from: glass_mocks.mock_campaign_figure}
-
-  # The pure-E/B decision scan: five (method, geometry, weights, limits)
-  # variants on mock rectification bias, covariance calibration and the data's
-  # own PTE.
-  - {id: fig_pure_eb_decision_scan, from: glass_mocks.pure_eb_decision_comparison_figure}
-
   - id: fig_pte_heatmaps
     type: figure
     format: png
@@ -474,10 +403,9 @@ outputs:
       - scale_cuts_script
       - paper_mplstyle
     recipe:
-      # Pure render, the appendix twin of null_tests.config_space_pte_evidence:
-      # the per-version PTE grids are already in the evidence payload written by
-      # null_tests.config_space_pte_data, so this re-runs no sweep — it only
-      # selects the 4×3 appendix composite instead of that output's fiducial 1×3.
+      # Pure render: the per-version PTE grids are already in the evidence
+      # payload written by null_tests.config_space_pte_data, so this re-runs no
+      # sweep; it draws the 4×3 appendix composite.
       command: >
         python src/papers/bmodes/scripts/config_space_pte_matrices.py
         --config src/papers/bmodes/config/config.yaml
@@ -516,35 +444,6 @@ outputs:
         --pte-threshold {decisions.pte_threshold}
         --out-file {output}
 
-  - id: fig_harmonic_config_cosebis
-    type: figure
-    format: png
-    description: |
-      COSEBI E_n and B_n at the adopted 12′–83′ cut, computed from
-      configuration-space ξ± (filled circles) and from harmonic-space
-      Cℓ bandpowers (open squares), from
-      [cosebis_harmonic_modes](#outputs.cosebis_harmonic_modes). The
-      two paths agree within filter-function differences. The
-      full-range counterpart is
-      [fig_harmonic_config_cosebis_full](#outputs.fig_harmonic_config_cosebis_full).
-    decisions: [fiducial_catalog, scale_cut_convention]
-    inputs:
-      - cosebis_harmonic_modes
-      - harmonic_config_cosebis_comparison_figure_script
-    recipe:
-      # Figure-consumes-data: cosebis.cosebis_harmonic_modes is this exact
-      # invocation and already holds the En/Bn/covariance payload for both
-      # paths, so this is the plot-only sibling of that unit's
-      # --metrics-from-modes pass — same flag family, --figure-from-modes.
-      command: >
-        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
-        --angular-range fiducial --blind A
-        --figure-from-modes {inputs.cosebis_harmonic_modes}
-        --scale-cut-convention {decisions.scale_cut_convention}
-        --out-file {output}
-      resources: { cpus: 1, memory: "4GB" }
-
   - id: fig_harmonic_config_cosebis_full
     type: figure
     format: png
@@ -560,8 +459,7 @@ outputs:
       - cosebis_harmonic_modes_full
       - harmonic_config_cosebis_comparison_figure_script
     recipe:
-      # Same plot-only mode as fig_harmonic_config_cosebis, over the full-range
-      # modes NPZ.
+      # Plot-only mode over the full-range modes NPZ.
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
         --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
@@ -704,18 +602,15 @@ decisions:
     label: "θ-cut convention"
     tags: [scale_cuts, primary]
     rationale: |
-      Whether the stated 12'–83' [configuration-space
-      cut](#decisions.fiducial_scale_cuts) means the enclosing
-      edges of the reporting grid geomspace(1', 250', 21) — edges 9
-      and 16, θ ∈ (11.997', 82.861') — or the rounded values
-      literally. The two differ at the third significant digit,
-      which moves the configuration-space COSEBI fiducial χ²/PTE
-      between 3.25/0.78 and 4.679/0.586. Bin edges are adopted on
-      the principle that a stated cut lands on the bin edge at the
-      conservative end, so a cut never keeps more scales than its
-      printed number. Only the θ cuts are affected: the ℓ cut sits
-      on bandpower edges, and the full 1'–250' range is the same
-      under both readings.
+      What the stated 12'–83' [configuration-space
+      cut](#decisions.fiducial_scale_cuts) denotes. The null tests
+      run on whole bins of the reporting grid geomspace(1', 250', 21),
+      so the cut is edges 9 and 16, θ ∈ (11.997', 82.861'), and 12'
+      and 83' are those edges rounded to the arcminute. Reading the
+      rounded values literally moves the configuration-space COSEBI
+      fiducial χ²/PTE from 3.25/0.78 to 4.679/0.586. Only the θ cuts
+      are affected: the ℓ cut sits on bandpower edges, and the full
+      1'–250' range is the same under both readings.
     default: grid_bin_edges
     options:
       grid_bin_edges:
@@ -1105,6 +1000,10 @@ findings:
           exact: '"p_global_one_sided_count": 38'
       - id: ev3
         artifact: fig_pure_eb_decomposition
+      - id: ev4
+        artifact: nu_penalty_verdicts
+        quote:
+          exact: "Size_cuts,SP_v1.4.6.3_leak_corr,fiducial,xim_B,7,5,16.7177,0.0193098,0.00506742,0.0142423,0,0,0"
     scope: "Size-cut catalog; 12′–83′ in configuration space, 300 < ℓ < 1600 in harmonic space."
 
   ccd_scale_cosebi_pattern:

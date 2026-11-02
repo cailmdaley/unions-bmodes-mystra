@@ -233,9 +233,8 @@ outputs:
       treatment](#decisions.pure_eb_covariance_method), from that
       version's data in [pure_eb_sweep](#outputs.pure_eb_sweep) and
       covariance in [cov_sweep](#../covariance.outputs.cov_sweep).
-      Feeds the per-version PTE heatmaps
-      ([config_space_pte_evidence](#../null_tests.outputs.config_space_pte_evidence),
-      [fig_pte_heatmaps](#../outputs.fig_pte_heatmaps)).
+      Feeds the per-version [PTE
+      heatmaps](#../outputs.fig_pte_heatmaps).
     format: tar.gz
     decisions: [fiducial_catalog, fiducial_blind]
     inputs: [pure_eb_sweep, cov_sweep, redshift_distributions, redshift_distributions_legacy]

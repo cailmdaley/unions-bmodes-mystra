@@ -59,8 +59,7 @@ outputs:
       difference in units of the fiducial analytic σ, plus the
       fiducial-window (12'–83') χ²/PTE on each grid. For the COSEBIs
       it also carries all four combinations of integration grid ×
-      COSEBI interval, which
-      [tenk_cosebi_figure](#outputs.tenk_cosebi_figure) renders.
+      COSEBI interval.
 
       Both grids are scored with the same 1,000-bin covariance: the
       Monte-Carlo-propagated pure-mode matrix from
@@ -105,61 +104,6 @@ outputs:
         --integration-limits {decisions.pure_eb_integration_limits}
         --out-file {output}
       resources: { cpus: 16, memory: "150GB" }
-
-  - id: tenk_grid_figure
-    type: figure
-    format: png
-    description: |
-      The 10,000-bin minus 1,000-bin difference in units of σ, per
-      reporting bin for ξ_+^B, ξ_-^B, ξ_+^amb and ξ_-^amb, and per
-      mode for the fiducial-cut B_n, with the fiducial 12'–83' window
-      shaded and a ±0.1 σ band for scale.
-    decisions: [scale_cut_convention]
-    inputs: [tenk_grid_comparison, tenk_grid_convergence_script]
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/tenk_grid_convergence.py
-        --plot-from-json {inputs.tenk_grid_comparison}
-        --scale-cut-convention {decisions.scale_cut_convention}
-        --integration-method fixed_operator
-        --rebinning-weights npairs
-        --integration-limits fine_grid_extent
-        --out-file {output}
-      resources: { cpus: 1, memory: "4GB" }
-
-  - id: tenk_cosebi_figure
-    type: figure
-    format: png
-    description: |
-      The COSEBI B_n / σ_n data vector (not the difference) at the
-      fiducial 12'–83' cut and over the full range, for four
-      combinations of integration grid × COSEBI interval: (1) 1,000
-      bins on its own interval [12.053', 82.141'], (2) 10,000 bins on
-      its own [12.003', 82.800'], (3) 10,000 bins on the 1,000-bin
-      interval, and (4) 1,000 bins on the 10,000-bin interval. Curve
-      (4) is approximate: the coarse nodes are 0.64% apart, so it
-      picks up one extra coarse bin (at the top at the fiducial cut,
-      [12.053', 82.668']; at the bottom over the full range,
-      [1.0009', 248.46'] against [1.0074', 248.46']). Each panel
-      prints the interval each curve ran in.
-
-      (1) vs (3) isolates resolution at fixed interval, (1) vs (4)
-      isolates interval at fixed resolution, and (1) vs (2) is both
-      together, as the pipeline would deliver from each grid. σ_n is
-      the 1,000-bin T^T C_ξ T mode covariance for every curve, so the
-      ±1 band is common.
-    decisions: [scale_cut_convention, mode_count]
-    inputs: [tenk_grid_comparison, tenk_grid_convergence_script]
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/tenk_grid_convergence.py
-        --plot-cosebis-from-json {inputs.tenk_grid_comparison}
-        --scale-cut-convention {decisions.scale_cut_convention}
-        --integration-method fixed_operator
-        --rebinning-weights npairs
-        --integration-limits fine_grid_extent
-        --out-file {output}
-      resources: { cpus: 1, memory: "4GB" }
 
 decisions:
 

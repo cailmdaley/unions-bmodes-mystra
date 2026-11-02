@@ -594,9 +594,7 @@ outputs:
     re-exports — the exact artifact the serial loop wrote, keys
     in the same order with the same dtypes, shapes and NaN
     placement, so
-    [fig_pte_heatmaps](#../../../outputs.fig_pte_heatmaps) and
-    [config_space_pte_evidence](#../../../null_tests.outputs.config_space_pte_evidence)
-    read it unchanged (`theta_grid`, `pte_B_6`, `pte_B_20`, and
+    [fig_pte_heatmaps](#../../../outputs.fig_pte_heatmaps) reads it unchanged (`theta_grid`, `pte_B_6`, `pte_B_20`, and
     the full-range `[0, 20]` cell). `merge_cosebis_pte_rows.py`
     recomputes nothing: it rebuilds the global pair list from the
     same `_pte_scale_cut_pairs()` the members restrict and places

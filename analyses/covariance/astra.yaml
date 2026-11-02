@@ -34,34 +34,6 @@ inputs:
     # `generate_cosmocov_ini.py` (which writes an n(z) path under
     # `/n17data/sguerrini/UNIONS/WL/nz/` into the `.ini`) read files inside it.
 
-  - id: glass_mock_realisations
-    from: ../glass_mock_realisations
-    # Provenance handle only. The declared source spells the whole family
-    # (`{xi,cl}_..._{seed:05d}_...{fits,npy}`), so it is not a path a recipe can
-    # compose names inside — `{inputs.glass_mock_realisations}/xi_*.fits`
-    # renders the pattern verbatim and the shell then brace-expands it into
-    # nonsense. The two globs the stacking script actually opens are declared
-    # below as their own inputs.
-
-  - id: glass_mock_xi
-    type: data
-    description: |
-      ξ_± measured on each of the 350 realisations of the earlier
-      v1.4.6 [GLASS mock suite](#../inputs.glass_mock_realisations)
-      (the suite [mock_suite](#../glass_mocks.decisions.mock_suite)
-      excludes): one 20-bin TreeCorr FITS data vector per
-      realisation.
-    source: "/n09data/guerrini/glass_mock_v1.4.6/results/xi_glass_mock_*_4096_nbins=20.fits"
-
-  - id: glass_mock_cl
-    type: data
-    description: |
-      Pseudo-Cℓ (EE and BB among the rows) of each realisation of
-      the same v1.4.6 GLASS suite as
-      [glass_mock_xi](#inputs.glass_mock_xi), one npy file per
-      realisation.
-    source: "/n09data/guerrini/glass_mock_v1.4.6/results/cl_glass_mock_*_4096.npy"
-
   - id: footprint_mask_starhalo
     type: data
     description: |
@@ -87,32 +59,6 @@ outputs:
       # Source of truth remains sp_validation.cosmology.PLANCK18.
       command: >
         python -c "import json; from sp_validation.cosmology import PLANCK18; d = dict(PLANCK18); d['Omega_v'] = 1 - PLANCK18['Omega_m']; json.dump(d, open('{output}', 'w'), indent=2)"
-
-  - id: cov_blocks
-    type: data
-    description: |
-      Raw CosmoCov output for the fiducial catalog on the 20-bin
-      reporting grid: the three [shear-shear blocks](#decisions.block_pairs)
-      (`++`, `--`, `+-`) concatenated into one text file, before
-      processing into a covariance matrix.
-    decisions: [fiducial_catalog, fiducial_blind, covariance_class]
-    inputs: [cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
-    format: txt
-    recipe:
-      # Same reporting-grid CosmoCov chain as cov_reporting_ng, emitting the
-      # concatenated raw blocks (++/--/+-) — one file, written to {output}.
-      command: >
-        bash src/workflow/scripts/run_cosmocov_chain.sh
-        --version "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)" --blind {decisions.fiducial_blind}
-        --min-sep 1.0 --max-sep 250.0 --nbins 20 --gaussian ng
-        --planck18-json {inputs.cosmology_snapshot}
-        --cat-config src/cosmo_val/cat_config.yaml
-        --cosmocov {inputs.cosmocov_binary}
-        --libgsl {inputs.cosmocov_libgsl}
-        --mask-cls {inputs.mask_power_spectrum}
-        --nz {inputs.redshift_distribution}
-        --emit blocks --out-file {output}
-      resources: { cpus: 4, memory: "16GB" }
 
   - id: cov_reporting_g
     type: data
@@ -209,79 +155,6 @@ outputs:
         --nz {inputs.redshift_distribution}
         --emit processed --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
-
-  - id: cov_processed_qa
-    type: figure
-    description: |
-      Diagnostic plot of the fiducial reporting-grid CosmoCov
-      covariance: diagonal variance, off-diagonal correlation
-      structure and condition number. Not a reported result.
-    decisions: [fiducial_catalog, fiducial_blind]
-    inputs: [cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
-    format: png
-    recipe:
-      # Same reporting-grid CosmoCov chain, emitting cosmocov_process's
-      # correlation-structure QA figure (PNG, per the project figure convention)
-      # as this output's single file.
-      command: >
-        bash src/workflow/scripts/run_cosmocov_chain.sh
-        --version "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)" --blind {decisions.fiducial_blind}
-        --min-sep 1.0 --max-sep 250.0 --nbins 20 --gaussian ng
-        --planck18-json {inputs.cosmology_snapshot}
-        --cat-config src/cosmo_val/cat_config.yaml
-        --cosmocov {inputs.cosmocov_binary}
-        --libgsl {inputs.cosmocov_libgsl}
-        --mask-cls {inputs.mask_power_spectrum}
-        --nz {inputs.redshift_distribution}
-        --emit plot --out-file {output}
-      resources: { cpus: 4, memory: "16GB" }
-
-  - id: cov_glass_xi_reporting
-    type: data
-    description: |
-      Sample covariance of the 20-bin ξ_± data vector across the
-      350 realisations of the v1.4.6 GLASS suite
-      ([glass_mock_xi](#inputs.glass_mock_xi)), a validation
-      comparator for
-      [cov_reporting_ng](#outputs.cov_reporting_ng); not a
-      covariance source for the PTEs.
-    decisions: [fiducial_catalog, glass_validation_strategy]
-    inputs: [glass_mock_realisations, glass_mock_xi, glass_mock_cl]
-    format: npy
-    recipe:
-      # compute_glass_mock_covariance.py stacks the 350 pre-computed mock data
-      # vectors (xi_+/xi_- 20-bin + pseudo-Cl EE/BB) and writes the xi-only
-      # sample covariance to {output}. Sub-second np.cov over 350x40 vectors;
-      # the cost is loading 700 FITS/npy files. Globs expand in the shell.
-      command: >
-        python src/workflow/scripts/compute_glass_mock_covariance.py
-        --xi-files {inputs.glass_mock_xi}
-        --cl-files {inputs.glass_mock_cl}
-        --xi-covariance {output}
-      resources: { cpus: 4, memory: "8GB" }
-
-  - id: cov_glass_cl_reporting
-    type: data
-    description: |
-      Sample covariance of the pseudo-Cℓ bandpowers across the
-      same 350 mocks as
-      [cov_glass_xi_reporting](#outputs.cov_glass_xi_reporting), a
-      validation comparator for the
-      [pseudo-Cℓ bandpower covariance](#outputs.cl_cov_reporting).
-    decisions: [fiducial_catalog, glass_validation_strategy]
-    inputs: [glass_mock_realisations, glass_mock_xi, glass_mock_cl]
-    format: npy
-    recipe:
-      # Same stacking script as cov_glass_xi_reporting, selecting the pseudo-Cl
-      # sample covariance as this output's single file (the stack is cheap; the
-      # cost is the 700-file load, duplicated rather than projected from a
-      # sibling output's directory).
-      command: >
-        python src/workflow/scripts/compute_glass_mock_covariance.py
-        --xi-files {inputs.glass_mock_xi}
-        --cl-files {inputs.glass_mock_cl}
-        --cl-covariance {output}
-      resources: { cpus: 4, memory: "8GB" }
 
   - id: cl_cov_reporting
     type: data
