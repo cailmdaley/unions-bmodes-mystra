@@ -2,8 +2,8 @@
   "schema_version": 1,
   "output_id": "null_tests.pte_summary_macros",
   "universe_id": "submitted",
-  "recipe": "python src/papers/bmodes/scripts/generate_paper_macros.py --config src/papers/bmodes/config/config.yaml --config-space-evidence results/submitted/null_tests/config_space_pte_data.json --harmonic-space-evidence results/submitted/null_tests/harmonic_space_pte_data.json --mock-min-pte-calibration results/submitted/glass_mocks/mock_min_pte_calibration.json --mock-campaign-evidence results/submitted/glass_mocks/mock_campaign_evidence.json --mock-scale-cut-scan results/submitted/glass_mocks/mock_min_pte_scale_cut_scan.json --harmonic-config-fiducial-evidence results/submitted/cosebis/cosebis_harmonic_metrics.json --harmonic-config-full-evidence results/submitted/cosebis/cosebis_harmonic_metrics_full.json --scale-cut-convention grid_bin_edges --pte-threshold nominal_0p05 --survey-properties results/submitted/catalog/survey_properties.json --cosebis-modes-data results/submitted/cosebis/cosebis_modes_data.npz --mock-per-mock-statistics results/submitted/glass_mocks/mock_per_mock_statistics.npz --mock-mean-vector-stats results/submitted/glass_mocks/mock_mean_vector_stats.json --mock-noise-table results/submitted/glass_mocks/mock_vs_data_noise_table.csv --cov-reporting-g results/submitted/covariance/cov_reporting_g.txt --cov-reporting-ng results/submitted/covariance/cov_reporting_ng.txt --emit macros --out-file results/submitted/null_tests/pte_summary_macros.tex\n",
-  "definition_version": "sha256:1fb2de9a8b0c025133d4956f85e55939fe4a63b58a5a632a9b538f7d6404dd2a",
+  "recipe": "python src/papers/bmodes/scripts/generate_paper_macros.py --config results/submitted/catalog/selected_config.yaml --config-space-evidence results/submitted/null_tests/config_space_pte_data.json --harmonic-space-evidence results/submitted/null_tests/harmonic_space_pte_data.json --mock-min-pte-calibration results/submitted/glass_mocks/mock_min_pte_calibration.json --mock-campaign-evidence results/submitted/glass_mocks/mock_campaign_evidence.json --mock-scale-cut-scan results/submitted/glass_mocks/mock_min_pte_scale_cut_scan.json --harmonic-config-fiducial-evidence results/submitted/cosebis/cosebis_harmonic_metrics.json --harmonic-config-full-evidence results/submitted/cosebis/cosebis_harmonic_metrics_full.json --scale-cut-convention grid_bin_edges --pte-threshold nominal_0p05 --survey-properties results/submitted/catalog/survey_properties.json --cosebis-modes-data results/submitted/cosebis/cosebis_modes_data.npz --mock-per-mock-statistics results/submitted/glass_mocks/mock_per_mock_statistics.npz --mock-mean-vector-stats results/submitted/glass_mocks/mock_mean_vector_stats.json --mock-noise-table results/submitted/glass_mocks/mock_vs_data_noise_table.csv --cov-reporting-g results/submitted/covariance/cov_reporting_g.txt --cov-reporting-ng results/submitted/covariance/cov_reporting_ng.txt --emit macros --out-file results/submitted/null_tests/pte_summary_macros.tex\n",
+  "definition_version": "sha256:3eacd0d41015778d1b3d7ccdc68261157adf3bc4a02cdda9e4a0959cfdab49e8",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:4edb75ffe15074cadb3f690fc32d1216886e57f1ab800ddd577b06e36bc3dae7",
   "decisions": {
@@ -11,23 +11,24 @@
     "pte_threshold": "nominal_0p05"
   },
   "input_versions": {
-    "config_space_pte_data": "sha256:575dcb3bf1c7a58e6e4c13af3b3f35a7533e5e95df5135e2598dc8326b0bbc82",
-    "harmonic_space_pte_data": "sha256:4976d85c5cea8eaf63c135139ace3e2e87ced5ce35644fdfd075a87828dd1fe0",
-    "mock_min_pte_calibration": "sha256:c42747f91c36f1216f922ede848b4f0c48af7b1689be06640ef2312b8e144020",
-    "mock_campaign_evidence": "sha256:ae01e841ed365fdc4496fdd6de6f94a8a6f82e475d6b48992f559b748f3c5518",
-    "mock_min_pte_scale_cut_scan": "sha256:46b41374ca610d47fcb6fdf6bfe5be2ebeb063d3e19e923b6aabca1f730ef8cb",
-    "cosebis_harmonic_metrics": "sha256:de94257bff71a7e079c8a33384573179cf159278b6d8db7b020925f9dfd916ab",
-    "cosebis_harmonic_metrics_full": "sha256:f14f1c04160e2116e41ef3c4a9fd930c92ea55c58451c7bf43734493517101d2",
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "config_space_pte_data": "sha256:5e0de818cd3ea1cf57055d71e088d9941cf2e3e8c558563a5e4e45109aa40e4d",
+    "harmonic_space_pte_data": "sha256:22585a20942f4375ee01e09fb14e88c21d402d60ab6221655ac69b8934ffad8b",
+    "mock_min_pte_calibration": "sha256:42f925f9d9d146a0df96f4e19879b4b75fbee5ca290f989e2738fc80ad2c8558",
+    "mock_campaign_evidence": "sha256:e5a5fb2a692b993f58c06407de61bcebab820babb57ab6d50158ab34e25e878b",
+    "mock_min_pte_scale_cut_scan": "sha256:1cf7b319ced067cc7c7c80081d0179fba96b2c2413b7e314ddd756908fbf26d6",
+    "cosebis_harmonic_metrics": "sha256:d7440fd26462826a759f2474cfae36b3d5f0d6d0c4ac8948a3f93d3f186db6c4",
+    "cosebis_harmonic_metrics_full": "sha256:23f7d1a72f75b1e9b53dadfbada528dcc1948e7d8758da035c18e4ac2980d229",
     "survey_properties": "sha256:a7befc4c35d94805c0ae40b381d15a71e6cc530ad2602ef43a793fcbc84a8aea",
     "cosebis_modes_data": "sha256:ac1c8b2af0cfe7709c0e1f124c9f4a0a1cbb46ce554e7cf903a40f0d1cb479f7",
-    "mock_per_mock_statistics": "sha256:09ad203d5b0b39ef25face2ba90e9483b888068782ebb3f58a15c8e66d05920b",
+    "mock_per_mock_statistics": "sha256:1f4ba097281123c41a3bf3430bbe3305b05546223b4a2eec6fa9b86a9fac0f8b",
     "mock_mean_vector_stats": "sha256:0fe8d907d4ad9cff4d803175f8b1c91eadce1b2f42b5c94e16bf548bdc7481c2",
     "mock_vs_data_noise_table": "sha256:599a6d3ee3aca35c49ae0366c9492a6b908a4988a319bd68ee7ac20fd37dccda",
     "cov_reporting_g": "sha256:03d07c501ac2fc395a5cd5c6817d9913e3aa2c3232cddf0c50334162012f12f4",
     "cov_reporting_ng": "sha256:59e36f7c04d8a249ab3cbf610eccf16fae272e4c69b92dae09f78f6ecabd4aec",
-    "generate_paper_macros_script": "sha256:19de64a5fc8cdebea9f71adf37cc96d3c88e0f93ba3beb7f3c1225c8dbae2037"
+    "generate_paper_macros_script": "sha256:2667191be296773644670f5d74c8c5826f1d541529dea967bc37b815e848d80d"
   },
-  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -37,8 +38,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T10:37:58.689+00:00",
-  "finished_at": "2026-11-01T10:38:05.070+00:00",
+  "started_at": "2026-11-04T08:58:13.668+00:00",
+  "finished_at": "2026-11-04T08:58:19.966+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

@@ -1,0 +1,286 @@
+"""Parameter-plumbing regression tests; run in the project environment on Slurm.
+
+These use small synthetic arrays and process stubs, not the GLASS ensemble.
+The real-recipe default-output comparison is tools/prove_decision_identity.py.
+"""
+
+import copy
+import json
+import io
+import zlib
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path[:0] = [str(ROOT / "src/papers/bmodes/scripts"), str(ROOT / "src/workflow/scripts")]
+
+import bundle_sweep
+import compute_cosebis_pte_single as pairs
+import generate_pseudo_cl as cl
+import generate_pseudo_cl_cov as cl_cov
+import merge_cosebis_pte_rows as merge
+import paper_config
+import primary_null_test_report as reporting
+import prove_decision_identity as identity
+
+
+class DecisionWiringTests(unittest.TestCase):
+    def test_scale_cut_pair_options_and_row_partition(self):
+        production = pairs._pte_scale_cut_pairs()
+        self.assertEqual(len(production), 206)
+        self.assertNotIn((9, 10), production)
+        for expected in [production]:
+            rows = [pairs._pte_scale_cut_pairs(row=i) for i in range(20)]
+            self.assertEqual([pair for row in rows for pair in row], expected)
+            with tempfile.TemporaryDirectory() as tmp:
+                members = []
+                for i, row in enumerate(rows):
+                    p = Path(tmp) / f"row_{i}.npz"
+                    arrays = {k: np.zeros((21, 21)) for k in merge.MATRICES}
+                    np.savez(p, version="test", blind="A", nmodes=20,
+                             mode_subsets=np.array([6, 20]), theta_grid=np.arange(21),
+                             pairs=np.asarray(row, dtype=int).reshape(-1, 2),
+                             theta_min=np.array([x for x, y in row]),
+                             theta_max=np.array([y for x, y in row]),
+                             En=np.zeros((len(row), 20)), Bn=np.zeros((len(row), 20)),
+                             convergence_failure=np.zeros(len(row), dtype=bool), **arrays)
+                    members.append(str(p))
+                output = Path(tmp) / "merged.npz"
+                merge.main(["--members", *members, "--out-file", str(output)])
+                with np.load(output) as data:
+                    np.testing.assert_array_equal(data["pairs"], expected)
+                    self.assertEqual(data["En"].shape, (len(expected), 20))
+
+    def test_harmonic_count_changes_bundle_names_not_member_ids(self):
+        versions = ["SP_v1.4.5", "SP_v1.4.5_leak_corr"]
+        config = paper_config.load_config(ROOT / "src/papers/bmodes/config/catalogs/size_cut.yaml")
+        default = bundle_sweep._cl_map(versions, 96, config)
+        alternative = bundle_sweep._cl_map(versions, 128, config)
+        self.assertEqual(set(default), set(alternative))
+        for key in default:
+            self.assertEqual(alternative[key], default[key].replace("nbins=96", "nbins=128"))
+
+    def test_estimator_and_noise_reach_existing_primitives(self):
+        for method in ["catalog"]:
+            with tempfile.TemporaryDirectory() as tmp, patch.object(cl, "CosmologyValidation") as cv:
+                cl.generate_pseudo_cl("test", tmp, "unused", binning="powspace", nbins=128)
+                self.assertEqual(cv.call_args.kwargs["cell_method"], method)
+                self.assertEqual(cv.call_args.kwargs["n_ell_bins"], 128)
+                cv.return_value.calculate_pseudo_cl.assert_called_once()
+            with tempfile.TemporaryDirectory() as tmp, patch.object(cl_cov, "CosmologyValidation") as cv:
+                cl_cov.generate_pseudo_cl_cov("test", tmp, "unused", nbins=128)
+                cv.return_value.calculate_pseudo_cl_eb_cov.assert_called_once()
+
+    def test_option_id_parses_as_harmonic_bin_count(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = str(Path(tmp) / "cl.fits")
+            def fake_generate(**kwargs):
+                self.assertEqual(kwargs["nbins"], 128)
+                path = Path(kwargs["output_dir"]) / "generated.fits"
+                path.write_bytes(b"fixture")
+                return str(path)
+            with patch.object(cl, "generate_pseudo_cl", side_effect=fake_generate):
+                cl._from_cli(["--ver", "test", "--cat-config", "unused", "--nbins", "bins_128",
+                              "--out-file", output])
+            self.assertEqual(Path(output).read_bytes(), b"fixture")
+
+    def test_leakage_selects_primary_and_complete_scan_twins(self):
+        original = paper_config.load_config(ROOT / "src/papers/bmodes/config/catalogs/size_cut.yaml")
+        self.assertEqual(paper_config.select_leakage(copy.deepcopy(original), "applied"), original)
+        raw = paper_config.select_leakage(copy.deepcopy(original), "uncorrected")
+        self.assertEqual(raw["fiducial"]["version"], "SP_v1.4.6.3")
+        self.assertEqual(paper_config.comparison_versions(raw),
+                         [v.removesuffix("_leak_corr") for v in paper_config.comparison_versions(original)])
+        slots = bundle_sweep.nonfiducial_versions(original)
+        for config in (original, raw):
+            actual = [paper_config.scan_version(config, v) for v in slots]
+            self.assertEqual(set(actual + [config["fiducial"]["version"]]),
+                             {v for v in original["versions"] if "_ecut" not in v})
+            for mapping in (bundle_sweep._xi_map(slots, config), bundle_sweep._cov_map(slots, config),
+                            bundle_sweep._cosebis_ptes_map(slots, config), bundle_sweep._cl_map(slots, 128, config)):
+                self.assertEqual(len(set(mapping.values())), len(mapping))
+            fine = bundle_sweep._cl_map(slots, 128, config)
+            for name, path in fine.items():
+                if name.endswith("_fine"):
+                    self.assertEqual("_leak_corr" in path, config is original)
+        self.assertEqual(paper_config.scan_version(raw, "SP_v1.4.6.3"), "SP_v1.4.6.3_leak_corr")
+
+    def test_selected_family_is_recalibrated_from_selected_columns(self):
+        names = ["B_n<=6", "B_n<=20", "xi+^B", "xi-^B", "xi_tot^B", "C_ell^BB"]
+        ptes = np.tile([.4, .001, .5, .6, .7, .8], (10, 1))
+        reference = dict(observed_ptes=dict(zip(names, [.3, .002, .4, .5, .6, .7])),
+                         window_bins=[9, 15], scale_cut_arcmin=[12, 83],
+                         scale_cut_convention="grid_bin_edges", global_alpha=.05)
+        full = dict(reference, window_bins=[0, 19], scale_cut_arcmin=[1, 250])
+        reference["full_range"] = full
+        both = reporting.select_report(reference, names, ptes, "adopted", "n_le_6_and_n_le_20")
+        six = reporting.select_report(reference, names, ptes, "full_range", "n_le_6_only")
+        self.assertAlmostEqual(both["calibration"]["threshold_one_sided"], .001)
+        self.assertAlmostEqual(six["calibration"]["threshold_one_sided"], .4)
+        self.assertEqual(six["calibration"]["window_bins"], [0, 19])
+        self.assertNotIn("B_n<=20", six["calibration"]["stat_names"])
+
+    def test_harmonic_alternative_keeps_six_modes(self):
+        import harmonic_config_cosebis_comparison as harmonic
+        self.assertEqual(harmonic._RELIABLE_MODE_MAX_BY_NBINS[128], 6)
+
+    def test_identity_gate_and_explicit_renames(self):
+        self.assertEqual(identity.old_name("baseline/glass_mocks/.mock_xi_fine.manifest.json"),
+                         "baseline/glass_mocks/.mock_xi_fine.manifest.json")
+        self.assertEqual(identity.old_name("baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p5_fine.fits"),
+                         "baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p5_leak_corr_nbins96.fits")
+        self.assertEqual(identity.old_name("covariance_SP_v1.4.5_A_integration/covariance_SP_v1.4.5_A_integration_processed.txt"),
+                         "covariance_SP_v1.4.5_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.5_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt")
+        self.assertLess(identity.array_delta(np.array([1.]), np.array([1.+1e-13])), 1e-12)
+        with self.assertRaises(ValueError):
+            identity.array_delta(np.array([1.]), np.array([1.+1e-10]))
+        with self.assertRaises(ValueError):
+            identity.array_delta(np.array([1]), np.array([2]))
+        self.assertLess(identity.array_delta(np.array([1.]), np.array([1.+1e-5]), 1e-4), 1e-4)
+        with self.assertRaises(ValueError):
+            identity.array_delta(np.array([1.]), np.array([1.+1e-3]), 1e-4)
+        with self.assertRaises(ValueError):
+            identity.array_delta(np.array([1]), np.array([2]), 1e-4)
+        self.assertNotIn("baseline/pure_eb/pure_eb_semianalytic_data.npz", identity.ARCH_UNCHANGED)
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            for tree in ["before", "results"]:
+                directory = tmp / tree / "baseline/checker"
+                directory.mkdir(parents=True)
+                (directory / ".output.manifest.json").write_text("{}")
+                (directory / "output.txt").write_text("1.0 2.0\n")
+            targets = tmp / "reruns.txt"
+            targets.write_text("baseline/checker.output\n")
+            out = tmp / "identity.csv"
+            argv = ["prove_decision_identity.py", "--before", str(tmp / "before"),
+                    "--results", str(tmp / "results"), "--out", str(out), "--rerun-targets", str(targets)]
+            with patch.object(sys, "argv", argv), self.assertRaises(SystemExit) as exit_:
+                identity.main()
+            self.assertEqual(exit_.exception.code, 0)
+            self.assertIn("checker/output.txt", out.read_text())
+            targets.write_text("baseline/checker.missing\n")
+            with patch.object(sys, "argv", argv), self.assertRaisesRegex(ValueError, "missing from identity proof"):
+                identity.main()
+
+    def test_identity_multiblock_treecorr_text(self):
+        old = b"## main\n# x y\n1.0 2.0\n## cov\n3.0 0.0 0.0\n"
+        new = old.replace(b"3.0 0.0", b"3.000000000000001 0.0")
+        self.assertLess(identity.compare(old, new, "xi.txt")[1], 1e-12)
+        with self.assertRaises(ValueError):
+            identity.compare(old, new.replace(b"# x y", b"# y x"), "xi.txt")
+        with self.assertRaises(ValueError):
+            identity.compare(old, new.replace(b"1.0 2.0", b"1.0 2.1"), "xi.txt")
+        with self.assertRaises(ValueError):
+            identity.compare(b"1e15 1e-5\n", b"1e15 2e-5\n", "xi.txt")
+
+    def test_identity_provenance_ignores_only_generated_timestamp(self):
+        def npz(timestamp, version):
+            output = io.BytesIO()
+            np.savez(output, x=np.array([1.]), provenance=json.dumps(dict(generated=timestamp, version=version)))
+            return output.getvalue()
+        a = npz("yesterday", "v1")
+        self.assertEqual(identity.compare(a, npz("today", "v1"), "statistics.npz")[1], 0)
+        with self.assertRaises(ValueError):
+            identity.compare(a, npz("today", "v2"), "statistics.npz")
+
+    def test_identity_pdf_keeps_drawing_commands_and_font_programs_exact(self):
+        def pdf(subset, date, drawing=b"1 2 m", font=b"MyFont"):
+            stream = zlib.compress(b"/FontName /" + subset + b"+" + font + b" def\n" + drawing)
+            return (b"%PDF-1.4\n%test\n1 0 obj\n<< /FontName /" + subset + b"+" + font
+                    + b" /CreationDate (" + date + b") >>\nendobj\n2 0 obj\n<< /Filter /FlateDecode /Length "
+                    + str(len(stream)).encode() + b" >>\nstream\n" + stream
+                    + b"\nendstream\nendobj\ntrailer\n<< /Size 3 /Root 1 0 R >>\n")
+        a = pdf(b"ABCDEF", b"yesterday")
+        self.assertEqual(identity.compare(a, pdf(b"GHIJKL", b"today"), "figure.pdf")[0], "pdf_payload_identical")
+        for changes in [dict(drawing=b"1 3 m"), dict(font=b"OtherFont")]:
+            with self.assertRaises(ValueError):
+                identity.compare(a, pdf(b"GHIJKL", b"today", **changes), "figure.pdf")
+
+    def test_mc_option_reaches_all_chunks(self):
+        import calculate_pure_eb_ptes as ptes
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            artifact = tmp / "covariance.npz"
+            vectors = {k: np.zeros(2) for k in
+                       ("theta", "xip_E", "xim_E", "xip_B", "xim_B", "xip_amb", "xim_amb")}
+            for method, count in [("monte_carlo", 500), ("monte_carlo", 1000),
+                                  ("monte_carlo", 2000), ("exact_linear", None)]:
+                record = dict(covariance_method=method)
+                if count is not None:
+                    record["n_samples"] = count
+                np.savez(artifact, cov_pure_eb=np.eye(12), **vectors, **record)
+                matrices = dict(xip_B=np.zeros((2, 2)), xim_B=np.zeros((2, 2)), combined=np.zeros((2, 2)))
+                with patch.object(ptes, "calculate_eb_statistics", return_value=dict(pte_matrices=matrices)) as stats:
+                    ptes.calculate_ptes("test", "A", artifact, None, 1, out_file=tmp / "ptes.npz")
+                    self.assertEqual(stats.call_args.kwargs["n_samples"],
+                                     ptes.NO_HARTLAP_N if count is None else count)
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            python = tmp / "python"
+            python.write_text(f"#!{sys.executable}\n" + '''import json, pathlib, sys
+args = sys.argv[2:]
+def get(flag): return args[args.index(flag)+1]
+out = pathlib.Path(get("--out")); out.mkdir(parents=True, exist_ok=True)
+if pathlib.Path(sys.argv[1]).name == "precompute_pure_eb_chunk.py":
+    (out / ("pure_eb_chunk_"+get("--chunk-id")+".npz")).write_text(get("--n-samples"))
+else:
+    chunks = pathlib.Path(get("--chunks-dir"))
+    values = [int(p.read_text()) for p in sorted(chunks.glob("*.npz"))]
+    (out / (get("--version")+"_"+get("--blind")+"_pure_eb_semianalytic.npz")).write_text(json.dumps(values))
+''')
+            python.chmod(0o755)
+            env = dict(os.environ, PATH=f"{tmp}:{os.environ['PATH']}")
+            for option, expected in [("n_1000", 1000), ("n_2000", 2000), ("n_5000", 5000)]:
+                output = tmp / f"{option}.npz"
+                subprocess.run(["bash", str(ROOT / "src/papers/bmodes/scripts/run_pure_eb_semianalytic.sh"),
+                                "--version", "test", "--blind", "A", "--cat-config", "unused",
+                                "--xi-reporting", "unused", "--xi-integration", "unused",
+                                "--cov-integration", "unused", "--integration-method", "adaptive_dqags",
+                                "--integration-limits", "reporting_extent", "--rebinning-weights", "none",
+                                "--covariance-method", "monte_carlo", "--n-samples", option,
+                                "--n-chunks", "2", "--nproc", "2", "--out-file", str(output)],
+                               check=True, env=env)
+                self.assertEqual(json.loads(output.read_text()), [expected, expected])
+
+    def test_cosmocov_options_reach_real_ini_generator(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            cosmology = tmp / "cosmology.json"
+            cosmology.write_text(json.dumps(dict(Omega_m=.3, Omega_v=.7, sigma_8=.8,
+                                                 n_s=.96, Omega_b=.05, h=.7)))
+            catalog = tmp / "catalog.yaml"
+            catalog.write_text("test:\n  cov_th: {A: 100, sigma_e: 0.3, n_e: 5}\n")
+            mask = tmp / "mask.txt"
+            mask.write_text("0 1\n")
+            binary = tmp / "cosmocov"
+            binary.write_text(f"#!{sys.executable}\n" + '''import pathlib, sys
+ini = dict(line.split(":", 1) for line in pathlib.Path(sys.argv[2]).read_text().splitlines() if ":" in line)
+ini = {k.strip(): v.strip() for k, v in ini.items()}
+i = int(sys.argv[1]); pm = ["++", "--", "+-"][i-1]
+pathlib.Path(f"cov_tmp_ssss_{pm}_cov_Ntheta{ini['ntheta']}_Ntomo1_{i}").write_text(f"{i},{ini['ng']},{ini['c_footprint_file']}\\n")
+''')
+            binary.chmod(0o755)
+            for cls, ng in [("gaussian_only", "0"), ("ng", "1")]:
+                for treatment in [None, "masked", "unmasked"]:
+                    output = tmp / f"{cls}_{treatment}.txt"
+                    subprocess.run(["bash", str(ROOT / "src/workflow/scripts/run_cosmocov_chain.sh"),
+                                    "--version", "test", "--blind", "A", "--min-sep", "1",
+                                    "--max-sep", "250", "--nbins", "3", "--gaussian", cls,
+                                    *(["--mask-application", treatment] if treatment else []),
+                                    "--mask-cls", str(mask),
+                                    "--planck18-json", str(cosmology), "--cat-config", str(catalog),
+                                    "--cosmocov", str(binary), "--libgsl", str(mask),
+                                    "--emit", "blocks", "--out-file", str(output)], check=True)
+                    footprint = "mask_cls.txt" if treatment != "unmasked" and ng == "1" else "no_footprint_mask"
+                    self.assertEqual(output.read_text(), "".join(f"{i},{ng},{footprint}\n" for i in (1, 2, 3)))
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -39,6 +39,7 @@ decisions:
   # 2000-draw Monte Carlo, Hartlap-corrected at χ² time
   pure_eb_covariance_method: monte_carlo
   # workflow/scripts/precompute_pure_eb_chunk.py: 20 chunks × 100 = 2000
+  harmonic_validation_binning: bins_96
   mc_samples: n_2000
   # CosmoCov is theory; no Hartlap correction applied
   hartlap_correction: none

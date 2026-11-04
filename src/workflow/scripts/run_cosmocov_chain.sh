@@ -41,7 +41,8 @@ COSMOCOV=/n23data1/n06data/lgoh/scratch/UNIONS/CosmoCov/covs/cov
 LIBGSL=/lib64/libgsl.so.23.1.0
 
 VERSION=""; BLIND="A"; MINSEP=""; MAXSEP=""; NBINS=""; GAUSSIAN=""
-PLANCK18=""; CATCONFIG=""; MASKCLS=""; NZ=""; EMIT=""; OUTFILE=""
+# A supplied spectrum applies to SSC unless explicitly disabled.
+PLANCK18=""; CATCONFIG=""; MASKCLS=""; MASKAPPLICATION="masked"; NZ=""; EMIT=""; OUTFILE=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --version) VERSION="$2"; shift 2;;
@@ -53,6 +54,7 @@ while [ $# -gt 0 ]; do
     --planck18-json) PLANCK18="$2"; shift 2;;
     --cat-config) CATCONFIG="$2"; shift 2;;
     --mask-cls) MASKCLS="$2"; shift 2;;
+    --mask-application) MASKAPPLICATION="$2"; shift 2;;
     --nz) NZ="$2"; shift 2;;
     --cosmocov) COSMOCOV="$2"; shift 2;;
     --libgsl) LIBGSL="$2"; shift 2;;
@@ -62,6 +64,19 @@ while [ $# -gt 0 ]; do
     *) echo "unknown arg: $1" >&2; exit 2;;
   esac
 done
+
+# ASTRA option IDs and the legacy single-letter spelling name the same terms.
+case "$GAUSSIAN" in
+  gaussian_only) GAUSSIAN=g;;
+esac
+case "$MASKAPPLICATION" in
+  masked) ;;
+  unmasked) MASKCLS="";;
+  *) echo "--mask-application must be masked or unmasked" >&2; exit 2;;
+esac
+# The nside-4096 spectra are too short for Gaussian w_mask() on either grid.
+# They affect only survey_variance() in SSC; do not pass an unused file for G.
+if [ "$GAUSSIAN" = g ]; then MASKCLS=""; fi
 
 case "$EMIT" in
   blocks|processed|processed_g|plot) ;;

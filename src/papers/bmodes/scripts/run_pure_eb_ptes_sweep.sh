@@ -47,7 +47,7 @@ fi
 
 for ver in $VERSIONS; do
   pureeb="$PUREEBSWEEP/${ver}_${BLIND}_pure_eb_semianalytic.npz"
-  covbase="covariance_${ver}_${BLIND}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked"
+  covbase="covariance_${ver}_${BLIND}_integration"
   covint="$COVSWEEP/$covbase/${covbase}_processed.txt"
   for f in "$pureeb" "$covint"; do
     [ -f "$f" ] || { echo "MISSING upstream input for $ver: $f" >&2; exit 1; }
@@ -56,7 +56,7 @@ for ver in $VERSIONS; do
   python "$PSCRIPTS/calculate_pure_eb_ptes.py" \
     --version "$ver" --blind "$BLIND" \
     --pure-eb-data "$pureeb" --cov-integration "$covint" \
-    --npatch 1 --n-samples 2000 --out "$OUT"
+    --npatch 1 --out "$OUT"
   echo "[pure_eb_ptes_sweep] $ver -> $OUT/${ver}_${BLIND}_pure_eb_ptes.npz"
 done
 echo "[pure_eb_ptes_sweep] done -> $OUT"

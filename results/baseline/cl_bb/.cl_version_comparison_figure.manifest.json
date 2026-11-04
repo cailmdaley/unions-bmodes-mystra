@@ -2,20 +2,21 @@
   "schema_version": 1,
   "output_id": "cl_bb.cl_version_comparison_figure",
   "universe_id": "baseline",
-  "recipe": "d=$(mktemp -d) && tar xzf results/baseline/cl_bb/cl_scan/cl_sweep_bundle.tar.gz -C $d && python src/papers/bmodes/scripts/cl_version_comparison.py --config src/papers/bmodes/config/config.yaml --results-dir $d --fiducial-version SP_v1.4.6.3_leak_corr --fiducial-pseudo-cl-path results/baseline/cl_bb/cl_bandpowers_reporting.fits --fiducial-pseudo-cl-cov-path results/baseline/covariance/cl_cov_reporting.fits --out-file results/baseline/cl_bb/cl_version_comparison_figure.png\n",
-  "definition_version": "sha256:7e48df5e3d36675713fc69bc7d5611afe9e1cb8d3145a767ee8642ddf7de109d",
+  "recipe": "d=$(mktemp -d) && tar xzf results/baseline/cl_bb/cl_scan/cl_sweep_bundle.tar.gz -C $d && python src/papers/bmodes/scripts/cl_version_comparison.py --config results/baseline/catalog/selected_config.yaml --results-dir $d --fiducial-version \"$(python src/papers/bmodes/scripts/paper_config.py --config results/baseline/catalog/selected_config.yaml --get fiducial.version)\" --fiducial-pseudo-cl-path results/baseline/cl_bb/cl_bandpowers_reporting.fits --fiducial-pseudo-cl-cov-path results/baseline/covariance/cl_cov_reporting.fits --out-file results/baseline/cl_bb/cl_version_comparison_figure.png\n",
+  "definition_version": "sha256:9527ac4aab6334529b5ce725175f39eb87486c6fcb7c536a1086dd656d0db36c",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:8ecdef2943b30ff2e01343c5307e472aa469077d81cfa6694a7747fff8e5c0ab",
   "decisions": {},
   "input_versions": {
-    "cl_sweep": "sha256:531b8d298700b0e3c539da229fada8e68e5cf143d2e8bf9d443c40bf3bdc23ce",
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "cl_sweep": "sha256:0efffbf6440adbec89faecbffa6cae2496369b48067378e28122be5702b84b9f",
     "cl_bandpowers_reporting": "sha256:f27662b55fe2bee589a530db9f1a1c8f1c116bbb7f6910de9f58326960bfc334",
     "cl_cov_reporting": "sha256:76c73b28a865f3b476270354bb2a2b2164070b203cc1d435a32bc69a96bb500f",
     "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112",
     "print_width_script": "sha256:d1692083bf9a5226a33b7e9cc7b602f66825e21bbbad7e841d0bc8457489306a",
-    "cl_version_comparison_script": "sha256:11ca9b23b3aec376de5ddf75457a61aefeb2fc922d141e9cf941ebe13fddcc8b"
+    "cl_version_comparison_script": "sha256:3e01003a3d3bacbf5a42e6c4fbe69d89af7a80ed0e31cda814400ffd6920c12f"
   },
-  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -25,8 +26,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T11:12:49.933+00:00",
-  "finished_at": "2026-11-01T11:13:06.493+00:00",
+  "started_at": "2026-11-04T08:54:59.243+00:00",
+  "finished_at": "2026-11-04T08:55:10.949+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

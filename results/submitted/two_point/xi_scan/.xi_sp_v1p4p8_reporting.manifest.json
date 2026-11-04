@@ -2,18 +2,19 @@
   "schema_version": 1,
   "output_id": "two_point.xi_scan.xi_sp_v1p4p8_reporting",
   "universe_id": "submitted",
-  "recipe": "python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.8 --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file results/submitted/two_point/xi_scan/xi_sp_v1p4p8_reporting.txt\n",
-  "definition_version": "sha256:374a6bc6b20c90394d457026a58f80cdc223d6c180c35d7b2295b4f69bbd308e",
+  "recipe": "python src/workflow/scripts/run_2pcf.py --ver \"$(python src/papers/bmodes/scripts/paper_config.py --config results/submitted/catalog/selected_config.yaml --scan-version SP_v1.4.8)\" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file results/submitted/two_point/xi_scan/xi_sp_v1p4p8_reporting.txt\n",
+  "definition_version": "sha256:e55a650138cdd830b6ae2c7d16d6ba07c3bfab02d3994dc8c7148fb5b7ea23ed",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:34162ee0eeac38ac32cb6bdec204ea3203d7d33b1079a36179e6a5a9a5eb886d",
+  "data_version": "sha256:97bf1ca90335fc07aec15ec7a679a985f89b1d7395f34881c0b66ee3a4e8d867",
   "decisions": {
     "fiducial_catalog": "size_cut"
   },
   "input_versions": {
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
     "shapepipe_v14_catalogs": "spelling:sha256:476a59a7d51545a6de80b0d96e7f535550159cda928a0bf2b7efb76c5eef5f3d",
     "shapepipe_v145_rerun": "sha256:a59810c516c30805937388d56eede60d0417ce9375168a8813823b9be6c5acd8"
   },
-  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -23,8 +24,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-31T07:43:25.852+00:00",
-  "finished_at": "2026-10-31T07:44:31.187+00:00",
+  "started_at": "2026-11-03T23:56:10.346+00:00",
+  "finished_at": "2026-11-03T23:57:08.610+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

@@ -304,7 +304,8 @@ def generate_macros(
 
         # Filter to leak_corr versions only to avoid duplicate macro definitions
         # (both SP_v1.4.6 and SP_v1.4.6_leak_corr map to configPteSix)
-        leak_corr_versions = {k: v for k, v in versions.items() if "leak_corr" in k}
+        leak_corr_versions = {k: v for k, v in versions.items()
+                              if k.endswith("_leak_corr") == fiducial_version.endswith("_leak_corr")}
 
         # Generate individual macros for each version
         for ver, ver_data in leak_corr_versions.items():
@@ -379,7 +380,8 @@ def generate_macros(
         # duplicate macro definitions — both SP_v1.4.6_ecut07_leak_corr and
         # SP_v1.4.6_leak_corr would map to the same clPteSix prefix.
         leak_corr_versions = {
-            k: v for k, v in versions.items() if "leak_corr" in k and "ecut" not in k
+            k: v for k, v in versions.items()
+            if k.endswith("_leak_corr") == fiducial_version.endswith("_leak_corr") and "ecut" not in k
         }
 
         for ver, ver_data in leak_corr_versions.items():
@@ -784,6 +786,8 @@ _VERSION_SLUGS = {
     "SP_v1.4.8_leak_corr": "Masked",
     "SP_v1.4.11.3_leak_corr": "Relaxed_flags",
 }
+
+_VERSION_SLUGS.update({k.removesuffix("_leak_corr"): v for k, v in list(_VERSION_SLUGS.items())})
 
 # Statistic column names, in CSV column order. They are `{astra:value col=}`
 # query targets, so they stay space-free ASCII slugs matching the spec.

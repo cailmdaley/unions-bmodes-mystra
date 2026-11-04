@@ -33,6 +33,8 @@ tags:
 - generated
 - cosebis
 inputs:
+- id: selected_config
+  from: ../selected_config
 - id: xi_sweep
   from: ../xi_sweep
 - id: cov_sweep
@@ -47,7 +49,7 @@ decisions:
   scale_cut_convention:
     from: ../scale_cut_convention
 outputs:
-- id: harmonic_modes_sp_v1p4p5_leak_corr
+- id: harmonic_modes_sp_v1p4p5
   type: data
   description: |
     Harmonic-path (paper Eq. 19, 96-bin √ℓ-linear bandpowers) and
@@ -58,6 +60,7 @@ outputs:
     B-mode PTEs are consumed (through the gather) — the paper
     figure is rendered from the fiducial NPZ.
   inputs:
+  - selected_config
   - xi_sweep
   - cov_sweep
   - cl_sweep
@@ -76,14 +79,17 @@ outputs:
       l=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $l
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      cb=covariance_SP_v1.4.5_leak_corr_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked
+      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr --fine-grid)
+      cb=covariance_"$ver"_A_integration
+      nb=$(printf '%s' {decisions.harmonic_validation_binning} | tr -cd '0-9')
       python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py \
-        --config src/papers/bmodes/config/config.yaml \
+        --config {inputs.selected_config} \
         --blind A \
-        --fiducial-version SP_v1.4.5_leak_corr \
-        --fiducial-pseudo-cl-path $l/pseudo_cl_SP_v1.4.5_leak_corr_blind=A_powspace_nbins=96.fits \
-        --fiducial-pseudo-cl-cov-path $l/pseudo_cl_cov_SP_v1.4.5_leak_corr_blind=A_powspace_nbins=96.fits \
-        --fiducial-xi-path $x/SP_v1.4.5_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
+        --fiducial-version $ver \
+        --harmonic-validation-binning {decisions.harmonic_validation_binning} \
+        --fiducial-pseudo-cl-path "$l/pseudo_cl_$ver"_blind=A_powspace_nbins=$nb.fits \
+        --fiducial-pseudo-cl-cov-path "$l/pseudo_cl_cov_$ver"_blind=A_powspace_nbins=$nb.fits \
+        --fiducial-xi-path "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --fiducial-cov-path "$c/$cb/$cb"_processed.txt \
         --scale-cut-convention {decisions.scale_cut_convention} \
         --out-file {output}
@@ -92,7 +98,7 @@ outputs:
       cpus: 8
       memory: 16GB
   format: npz
-- id: harmonic_modes_sp_v1p4p8_leak_corr
+- id: harmonic_modes_sp_v1p4p8
   type: data
   description: |
     Harmonic-path (paper Eq. 19, 96-bin √ℓ-linear bandpowers) and
@@ -103,6 +109,7 @@ outputs:
     B-mode PTEs are consumed (through the gather) — the paper
     figure is rendered from the fiducial NPZ.
   inputs:
+  - selected_config
   - xi_sweep
   - cov_sweep
   - cl_sweep
@@ -121,14 +128,17 @@ outputs:
       l=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $l
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      cb=covariance_SP_v1.4.8_leak_corr_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked
+      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr --fine-grid)
+      cb=covariance_"$ver"_A_integration
+      nb=$(printf '%s' {decisions.harmonic_validation_binning} | tr -cd '0-9')
       python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py \
-        --config src/papers/bmodes/config/config.yaml \
+        --config {inputs.selected_config} \
         --blind A \
-        --fiducial-version SP_v1.4.8_leak_corr \
-        --fiducial-pseudo-cl-path $l/pseudo_cl_SP_v1.4.8_leak_corr_blind=A_powspace_nbins=96.fits \
-        --fiducial-pseudo-cl-cov-path $l/pseudo_cl_cov_SP_v1.4.8_leak_corr_blind=A_powspace_nbins=96.fits \
-        --fiducial-xi-path $x/SP_v1.4.8_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
+        --fiducial-version $ver \
+        --harmonic-validation-binning {decisions.harmonic_validation_binning} \
+        --fiducial-pseudo-cl-path "$l/pseudo_cl_$ver"_blind=A_powspace_nbins=$nb.fits \
+        --fiducial-pseudo-cl-cov-path "$l/pseudo_cl_cov_$ver"_blind=A_powspace_nbins=$nb.fits \
+        --fiducial-xi-path "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --fiducial-cov-path "$c/$cb/$cb"_processed.txt \
         --scale-cut-convention {decisions.scale_cut_convention} \
         --out-file {output}
@@ -137,7 +147,7 @@ outputs:
       cpus: 8
       memory: 16GB
   format: npz
-- id: harmonic_modes_sp_v1p4p11p3_leak_corr
+- id: harmonic_modes_sp_v1p4p11p3
   type: data
   description: |
     Harmonic-path (paper Eq. 19, 96-bin √ℓ-linear bandpowers) and
@@ -148,6 +158,7 @@ outputs:
     B-mode PTEs are consumed (through the gather) — the paper
     figure is rendered from the fiducial NPZ.
   inputs:
+  - selected_config
   - xi_sweep
   - cov_sweep
   - cl_sweep
@@ -166,14 +177,17 @@ outputs:
       l=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $l
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      cb=covariance_SP_v1.4.11.3_leak_corr_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked
+      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr --fine-grid)
+      cb=covariance_"$ver"_A_integration
+      nb=$(printf '%s' {decisions.harmonic_validation_binning} | tr -cd '0-9')
       python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py \
-        --config src/papers/bmodes/config/config.yaml \
+        --config {inputs.selected_config} \
         --blind A \
-        --fiducial-version SP_v1.4.11.3_leak_corr \
-        --fiducial-pseudo-cl-path $l/pseudo_cl_SP_v1.4.11.3_leak_corr_blind=A_powspace_nbins=96.fits \
-        --fiducial-pseudo-cl-cov-path $l/pseudo_cl_cov_SP_v1.4.11.3_leak_corr_blind=A_powspace_nbins=96.fits \
-        --fiducial-xi-path $x/SP_v1.4.11.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
+        --fiducial-version $ver \
+        --harmonic-validation-binning {decisions.harmonic_validation_binning} \
+        --fiducial-pseudo-cl-path "$l/pseudo_cl_$ver"_blind=A_powspace_nbins=$nb.fits \
+        --fiducial-pseudo-cl-cov-path "$l/pseudo_cl_cov_$ver"_blind=A_powspace_nbins=$nb.fits \
+        --fiducial-xi-path "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --fiducial-cov-path "$c/$cb/$cb"_processed.txt \
         --scale-cut-convention {decisions.scale_cut_convention} \
         --out-file {output}
@@ -199,12 +213,12 @@ outputs:
     from the member NPZs through the same `_metrics_from_modes`
     pass the fiducial metrics outputs use.
   inputs:
-  - harmonic_modes_sp_v1p4p5_leak_corr
-  - harmonic_modes_sp_v1p4p8_leak_corr
-  - harmonic_modes_sp_v1p4p11p3_leak_corr
+  - harmonic_modes_sp_v1p4p5
+  - harmonic_modes_sp_v1p4p8
+  - harmonic_modes_sp_v1p4p11p3
   recipe:
     command: |
-      python src/papers/bmodes/scripts/merge_harmonic_version_ptes.py --members {inputs.harmonic_modes_sp_v1p4p5_leak_corr} {inputs.harmonic_modes_sp_v1p4p8_leak_corr} {inputs.harmonic_modes_sp_v1p4p11p3_leak_corr} --out-file {output}
+      python src/papers/bmodes/scripts/merge_harmonic_version_ptes.py --members {inputs.harmonic_modes_sp_v1p4p5} {inputs.harmonic_modes_sp_v1p4p8} {inputs.harmonic_modes_sp_v1p4p11p3} --out-file {output}
     resources:
       cpus: 1
       memory: 4GB

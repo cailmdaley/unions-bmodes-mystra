@@ -143,7 +143,9 @@ def main(argv=None):
         sigma_e=cov_th["sigma_e"],
         n_e=cov_th["n_e"],
         nz=a.nz or build_redshift_path(a.version, a.blind),
-        mask=a.mask_cls,
+        # A blank value makes CosmoCov's sscanf reuse the previous n(z) path.
+        # A nonexistent filename selects its actual area-only/analytic window.
+        mask=a.mask_cls or "no_footprint_mask",
         min_sep=a.min_sep,
         max_sep=a.max_sep,
         nbins=a.nbins,

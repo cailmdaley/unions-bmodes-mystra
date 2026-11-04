@@ -23,6 +23,8 @@ description: |
 tags: [sweep, generated, cl_bb]
 
 inputs:
+  - id: selected_config
+    from: ../selected_config
   - id: redshift_distribution
     from: ../redshift_distribution
   - id: mask_power_spectrum
@@ -42,10 +44,14 @@ inputs:
     from: ../shapepipe_v145_rerun
 
 decisions:
+  leakage_correction:
+    from: ../leakage_correction
   fiducial_catalog:
     from: ../fiducial_catalog
   fiducial_blind:
     from: ../fiducial_blind
+  harmonic_validation_binning:
+    from: ../harmonic_validation_binning
 
 matrix:
   version:
@@ -56,7 +62,11 @@ matrix:
     - SP_v1.4.8_leak_corr
     - SP_v1.4.11.3
     - SP_v1.4.11.3_leak_corr
-  nbins: [32, 96]
+    - SP_v1.4.5_leak_corr
+    - SP_v1.4.8_leak_corr
+    - SP_v1.4.11.3_leak_corr
+  slot: [SP_v1.4.5, SP_v1.4.5_leak_corr, fiducial_counterpart, SP_v1.4.8, SP_v1.4.8_leak_corr, SP_v1.4.11.3, SP_v1.4.11.3_leak_corr, SP_v1.4.5, SP_v1.4.8, SP_v1.4.11.3]
+  grid: [nbins32, nbins32, nbins32, nbins32, nbins32, nbins32, nbins32, fine, fine, fine]
   product: [cl, cl_cov]
   # Per-product resource envelopes, from the fiducial single-version recipes
   # (cl_bandpowers_* 12/32GB/2h; cl_cov_reporting 12/16GB/3h), raised to cover
@@ -64,29 +74,20 @@ matrix:
   mem: ["32GB", "16GB"]
   ptime: ["4h", "8h"]
 
-zip: [[product, mem, ptime]]
-
-# The 96-bin fine grid is only ever consumed for the leak-corrected versions
-# (the harmonic COSEBI cross-check runs on leak-corrected catalogs only), so
-# the four uncorrected variants are dropped from that grid.
-exclude:
-  - {version: SP_v1.4.5, nbins: 96}
-  - {version: SP_v1.4.6.3, nbins: 96}
-  - {version: SP_v1.4.8, nbins: 96}
-  - {version: SP_v1.4.11.3, nbins: 96}
+zip: [[product, mem, ptime], [version, slot, grid]]
 
 template:
-  id: pseudo_${product}_${version}_nbins${nbins}
+  id: pseudo_${product}_${slot}_${grid}
   type: data
   format: fits
   description: |
     Pseudo-Cℓ `${product}` product for catalog version
-    `${version}` on the ${nbins}-bin √ℓ-linear bandpower grid at
+    `${version}` on the `${grid}` √ℓ-linear bandpower grid at
     blind A (nside 1024, npatch 1). The per-version analogue of
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_${product}.py` invocation, different `--ver`.
-  inputs: [redshift_distribution, mask_power_spectrum, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, redshift_distributions_legacy]
-  decisions: [fiducial_catalog, fiducial_blind]
+  inputs: [selected_config, redshift_distribution, mask_power_spectrum, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, redshift_distributions_legacy]
+  decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning]
   recipe:
     # The per-version unit of work. generate_pseudo_cl.py and
     # generate_pseudo_cl_cov.py take an identical flag family, so one template
@@ -95,9 +96,9 @@ template:
     # the gather does the canonical naming.
     command: >
       python src/workflow/scripts/generate_pseudo_${product}.py
-      --ver ${version}
+      --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version ${version} $(if [ ${grid} = fine ]; then printf -- '--fine-grid'; fi))"
       --cat-config src/cosmo_val/cat_config.yaml
-      --nside 1024 --npatch 1 --binning powspace --nbins ${nbins} --power 0.5 --blind A
+      --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ ${grid} = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A
       --out-file {output}
     resources: { cpus: 12, memory: "${mem}" }
 
@@ -114,10 +115,13 @@ gather:
     [cl_bb.cl_sweep](#../outputs.cl_sweep); consumers untar it into
     a temp dir and pass that as `--results-dir`, unchanged from the
     July contract.
+  decisions: [fiducial_catalog, leakage_correction, harmonic_validation_binning]
   recipe:
     command: >
       python src/papers/bmodes/scripts/bundle_sweep.py
-      --layout cl --config src/papers/bmodes/config/config.yaml
+      --layout cl --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+      --leakage-correction {decisions.leakage_correction}
+      --harmonic-validation-binning {decisions.harmonic_validation_binning}
       --names ${members}
       --members ${member_refs}
       --out-file {output}

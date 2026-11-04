@@ -2,20 +2,21 @@
   "schema_version": 1,
   "output_id": "fig_cl_pte_heatmap",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py --config src/papers/bmodes/config/config.yaml --from-evidence results/baseline/null_tests/harmonic_space_pte_data.json --figure appendix --pte-threshold calibrated_0p01 --out-file results/baseline/fig_cl_pte_heatmap.png\n",
-  "definition_version": "sha256:f4217c03abef41e5a0a60a2dfeb10d350647b9e9a8e0c9475b551c9ead90fe57",
+  "recipe": "python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py --config results/baseline/catalog/selected_config.yaml --from-evidence results/baseline/null_tests/harmonic_space_pte_data.json --figure appendix --pte-threshold calibrated_0p01 --out-file results/baseline/fig_cl_pte_heatmap.png\n",
+  "definition_version": "sha256:dcc4b8c938268f64c6d32d00f8746ba767c4987bd4cd7efef646d777e4bf392a",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:d02d41d13af6875b9475669046c63bed2345dd6ecc1a4996a5aeaae7942262d0",
   "decisions": {
     "pte_threshold": "calibrated_0p01"
   },
   "input_versions": {
-    "harmonic_space_pte_data": "sha256:5500f609fde47cc30bef172f4826ef773458cbf516b0278facdaf1e96995d921",
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "harmonic_space_pte_data": "sha256:564c2c3f9885b0f88a7d1bd5c67ed5f800c8498e1421f14d7051d7bd9efc491f",
     "harmonic_space_pte_matrices_script": "sha256:355913b9d34126b92663905c3a0f3dde1c6fe57ce49f6da612cc30da843dad3f",
     "print_width_script": "sha256:d1692083bf9a5226a33b7e9cc7b602f66825e21bbbad7e841d0bc8457489306a",
     "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
   },
-  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -25,8 +26,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T11:13:04.674+00:00",
-  "finished_at": "2026-11-01T11:13:15.024+00:00",
+  "started_at": "2026-11-04T08:56:12.862+00:00",
+  "finished_at": "2026-11-04T08:56:23.041+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

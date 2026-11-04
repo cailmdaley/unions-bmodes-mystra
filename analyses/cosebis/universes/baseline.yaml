@@ -8,5 +8,4 @@ description: |
 decisions:
   mode_count: n_max_20
   mode_subsets: n_le_6_and_n_le_20
-  harmonic_validation_binning: bins_96
   scale_cut_pair_grid: production_grid

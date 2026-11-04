@@ -27,7 +27,7 @@ from print_width import savefig_at_width
 # The paper stacks Fig. 8's three version-comparison panels at 0.88\textwidth.
 STACKED_PRINT_WIDTH = 0.88 * FIG_WIDTH_FULL
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
-from paper_config import load_config
+from paper_config import load_config, comparison_versions
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -261,7 +261,7 @@ def main(
     plotting_config = config["plotting"]
     version_labels = plotting_config["version_labels"]
     # Leak-corrected, non-ecut versions (matches VERSIONS_LEAK_CORR in claims.smk)
-    versions = [v for v in config["versions"] if "_leak_corr" in v and "_ecut" not in v]
+    versions = comparison_versions(config)
     blind = config["fiducial"]["blind"]
 
     # Fiducial version whose NPZ may be overridden with an explicit lc path

@@ -394,7 +394,6 @@ def main() -> None:
                 pure_eb_data=str(data_cov),
                 cov_integration=args.cov_integration,
                 npatch=args.npatch,
-                n_samples=hartlap_n,
                 out_file=str(pte_path),
             )
             with np.load(pte_path, allow_pickle=False) as ptes:

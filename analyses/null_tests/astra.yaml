@@ -2,6 +2,8 @@ version: "0.0.14"
 name: "B-mode null tests, PTE matrices, and blind-independence checks"
 
 inputs:
+  - id: selected_config
+    from: ../catalog.selected_config
 
   - id: paper_claims_script
     type: data
@@ -122,6 +124,7 @@ outputs:
       and the configuration-space PTE heatmaps.
     decisions: [scale_cut_convention]
     inputs:
+      - selected_config
       - pure_eb_ptes
       - cosebis_ptes
       - pure_eb_pte_per_cut
@@ -137,11 +140,11 @@ outputs:
         d_pe=$(mktemp -d) && tar xzf {inputs.pure_eb_ptes} -C $d_pe &&
         d_cb=$(mktemp -d) && tar xzf {inputs.cosebis_ptes} -C $d_cb &&
         python src/papers/bmodes/scripts/config_space_pte_matrices.py
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --pte-intermediate-dir $d_pe
         --cosebis-pte-dir $d_cb
         --blind A
-        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
         --fiducial-pure-eb-pte-path {inputs.pure_eb_pte_per_cut}
         --fiducial-cosebis-pte-path {inputs.cosebis_pte_per_cut}
         --emit evidence
@@ -160,6 +163,7 @@ outputs:
       Feeds the harmonic column of the per-version PTE table and
       the Cℓ^BB PTE heatmap.
     inputs:
+      - selected_config
       - cl_sweep
       - cl_bandpowers_reporting
       - cl_cov_reporting
@@ -170,9 +174,9 @@ outputs:
       command: >
         d_cl=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d_cl &&
         python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --results-dir $d_cl
-        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
         --fiducial-pseudo-cl-path {inputs.cl_bandpowers_reporting}
         --fiducial-pseudo-cl-cov-path {inputs.cl_cov_reporting}
         --emit evidence
@@ -232,6 +236,7 @@ outputs:
         [cov_reporting_ng](#inputs.cov_reporting_ng).
     decisions: [scale_cut_convention, pte_threshold]
     inputs:
+      - selected_config
       - config_space_pte_data
       - harmonic_space_pte_data
       - mock_min_pte_calibration
@@ -250,7 +255,7 @@ outputs:
     recipe:
       command: >
         python src/papers/bmodes/scripts/generate_paper_macros.py
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --config-space-evidence {inputs.config_space_pte_data}
         --harmonic-space-evidence {inputs.harmonic_space_pte_data}
         --mock-min-pte-calibration {inputs.mock_min_pte_calibration}
@@ -283,6 +288,7 @@ outputs:
       headline figures.
     decisions: [bb_blind_check_version]
     inputs:
+      - selected_config
       - blind_check_pure_eb
       - blind_check_harmonic_cov
       - blind_check_cosmocov
@@ -291,7 +297,7 @@ outputs:
     recipe:
       command: >
         python src/papers/bmodes/scripts/bb_covariance_blind_independence.py
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --version {decisions.bb_blind_check_version}
         --pure-eb-template '{inputs.blind_check_pure_eb}'
         --harmonic-template '{inputs.blind_check_harmonic_cov}'
@@ -361,6 +367,8 @@ decisions:
         label: "Aligned θ-grids with COSEBI subset (fiducial)"
       independent_grids:
         label: "Independent grids per statistic"
+        excluded: true
+        excluded_reason: "The PTE composite indexes shared reporting-bin edges; separate θ-grids have no implemented comparison path."
         description: |
           A separate θ-grid per statistic, which would prevent
           comparing the adopted-cut cell across panels.

@@ -1,0 +1,58 @@
+{
+  "primary_range": "fiducial",
+  "mode_subsets": "n_le_6_and_n_le_20",
+  "calibration": {
+    "stat_names": [
+      "B_n<=6",
+      "B_n<=20",
+      "xi+^B",
+      "xi-^B",
+      "xi_tot^B",
+      "C_ell^BB"
+    ],
+    "n_mocks": 350,
+    "observed_ptes": {
+      "B_n<=6": 0.7766087895181015,
+      "B_n<=20": 0.9425005109990287,
+      "xi+^B": 0.8227229942733204,
+      "xi-^B": 0.01930975550858644,
+      "xi_tot^B": 0.038670680738529764,
+      "C_ell^BB": 0.2985647125046436
+    },
+    "window_bins": [
+      9,
+      15
+    ],
+    "scale_cut_arcmin": [
+      11.997009531682911,
+      82.86135043349967
+    ],
+    "scale_cut_convention": "grid_bin_edges",
+    "observed_min": 0.01930975550858644,
+    "observed_min_two_sided": 0.01930975550858644,
+    "p_global_one_sided": 0.10857142857142857,
+    "p_global_one_sided_count": 38,
+    "p_global_one_sided_interval_68": [
+      0.09312396880341928,
+      0.12622466668285745
+    ],
+    "p_global_two_sided": 0.1657142857142857,
+    "p_global_two_sided_count": 58,
+    "p_global_two_sided_interval_68": [
+      0.14689689337266268,
+      0.18641544496233273
+    ],
+    "global_alpha": 0.05,
+    "threshold_one_sided": 0.005773478384709811,
+    "threshold_one_sided_interval_68": [
+      0.0044147306404785334,
+      0.007587252080218625
+    ],
+    "threshold_two_sided": 0.003413056478095997,
+    "threshold_two_sided_interval_68": [
+      0.002770523427067468,
+      0.004661902291970278
+    ],
+    "definition": "Empirical fraction of clean mocks whose minimum PTE across the selected correlated tests is <= the observed minimum."
+  }
+}

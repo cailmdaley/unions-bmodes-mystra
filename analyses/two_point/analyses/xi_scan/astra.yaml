@@ -26,11 +26,15 @@ tags:
 - generated
 - two_point
 inputs:
+- id: selected_config
+  from: ../selected_config
 - id: shapepipe_v14_catalogs
   from: ../shapepipe_v14_catalogs
 - id: shapepipe_v145_rerun
   from: ../shapepipe_v145_rerun
 decisions:
+  leakage_correction:
+    from: ../leakage_correction
   fiducial_catalog:
     from: ../fiducial_catalog
 outputs:
@@ -44,13 +48,14 @@ outputs:
     [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.5 --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5)" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
@@ -65,13 +70,14 @@ outputs:
     [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.5 --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5)" --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
@@ -86,13 +92,14 @@ outputs:
     [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.5_leak_corr --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr)" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
@@ -107,18 +114,19 @@ outputs:
     [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.5_leak_corr --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr)" --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
   format: txt
-- id: xi_sp_v1p4p6p3_reporting
+- id: xi_fiducial_counterpart_reporting
   type: data
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.6.3` on the
@@ -128,18 +136,19 @@ outputs:
     [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.6.3 --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.6.3)" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
   format: txt
-- id: xi_sp_v1p4p6p3_integration
+- id: xi_fiducial_counterpart_integration
   type: data
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.6.3` on the
@@ -149,13 +158,14 @@ outputs:
     [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.6.3 --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.6.3)" --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
@@ -170,13 +180,14 @@ outputs:
     [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.8 --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8)" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
@@ -191,13 +202,14 @@ outputs:
     [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.8 --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8)" --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
@@ -212,13 +224,14 @@ outputs:
     [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.8_leak_corr --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr)" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
@@ -233,13 +246,14 @@ outputs:
     [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.8_leak_corr --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr)" --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
@@ -254,13 +268,14 @@ outputs:
     [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.11.3 --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3)" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
@@ -275,13 +290,14 @@ outputs:
     [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.11.3 --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3)" --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
@@ -296,13 +312,14 @@ outputs:
     [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.11.3_leak_corr --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr)" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
@@ -317,13 +334,14 @@ outputs:
     [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs:
+  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   decisions:
   - fiducial_catalog
   recipe:
     command: |
-      python src/workflow/scripts/run_2pcf.py --ver SP_v1.4.11.3_leak_corr --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
+      python src/workflow/scripts/run_2pcf.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr)" --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file {output}
     resources:
       cpus: 24
       memory: 30GB
@@ -343,8 +361,8 @@ outputs:
   - xi_sp_v1p4p5_integration
   - xi_sp_v1p4p5_leak_corr_reporting
   - xi_sp_v1p4p5_leak_corr_integration
-  - xi_sp_v1p4p6p3_reporting
-  - xi_sp_v1p4p6p3_integration
+  - xi_fiducial_counterpart_reporting
+  - xi_fiducial_counterpart_integration
   - xi_sp_v1p4p8_reporting
   - xi_sp_v1p4p8_integration
   - xi_sp_v1p4p8_leak_corr_reporting
@@ -353,9 +371,12 @@ outputs:
   - xi_sp_v1p4p11p3_integration
   - xi_sp_v1p4p11p3_leak_corr_reporting
   - xi_sp_v1p4p11p3_leak_corr_integration
+  decisions:
+  - fiducial_catalog
+  - leakage_correction
   recipe:
     command: |
-      python src/papers/bmodes/scripts/bundle_sweep.py --layout xi --config src/papers/bmodes/config/config.yaml --names xi_sp_v1p4p5_reporting xi_sp_v1p4p5_integration xi_sp_v1p4p5_leak_corr_reporting xi_sp_v1p4p5_leak_corr_integration xi_sp_v1p4p6p3_reporting xi_sp_v1p4p6p3_integration xi_sp_v1p4p8_reporting xi_sp_v1p4p8_integration xi_sp_v1p4p8_leak_corr_reporting xi_sp_v1p4p8_leak_corr_integration xi_sp_v1p4p11p3_reporting xi_sp_v1p4p11p3_integration xi_sp_v1p4p11p3_leak_corr_reporting xi_sp_v1p4p11p3_leak_corr_integration --members {inputs.xi_sp_v1p4p5_reporting} {inputs.xi_sp_v1p4p5_integration} {inputs.xi_sp_v1p4p5_leak_corr_reporting} {inputs.xi_sp_v1p4p5_leak_corr_integration} {inputs.xi_sp_v1p4p6p3_reporting} {inputs.xi_sp_v1p4p6p3_integration} {inputs.xi_sp_v1p4p8_reporting} {inputs.xi_sp_v1p4p8_integration} {inputs.xi_sp_v1p4p8_leak_corr_reporting} {inputs.xi_sp_v1p4p8_leak_corr_integration} {inputs.xi_sp_v1p4p11p3_reporting} {inputs.xi_sp_v1p4p11p3_integration} {inputs.xi_sp_v1p4p11p3_leak_corr_reporting} {inputs.xi_sp_v1p4p11p3_leak_corr_integration} --out-file {output}
+      python src/papers/bmodes/scripts/bundle_sweep.py --layout xi --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --leakage-correction {decisions.leakage_correction} --names xi_sp_v1p4p5_reporting xi_sp_v1p4p5_integration xi_sp_v1p4p5_leak_corr_reporting xi_sp_v1p4p5_leak_corr_integration xi_fiducial_counterpart_reporting xi_fiducial_counterpart_integration xi_sp_v1p4p8_reporting xi_sp_v1p4p8_integration xi_sp_v1p4p8_leak_corr_reporting xi_sp_v1p4p8_leak_corr_integration xi_sp_v1p4p11p3_reporting xi_sp_v1p4p11p3_integration xi_sp_v1p4p11p3_leak_corr_reporting xi_sp_v1p4p11p3_leak_corr_integration --members {inputs.xi_sp_v1p4p5_reporting} {inputs.xi_sp_v1p4p5_integration} {inputs.xi_sp_v1p4p5_leak_corr_reporting} {inputs.xi_sp_v1p4p5_leak_corr_integration} {inputs.xi_fiducial_counterpart_reporting} {inputs.xi_fiducial_counterpart_integration} {inputs.xi_sp_v1p4p8_reporting} {inputs.xi_sp_v1p4p8_integration} {inputs.xi_sp_v1p4p8_leak_corr_reporting} {inputs.xi_sp_v1p4p8_leak_corr_integration} {inputs.xi_sp_v1p4p11p3_reporting} {inputs.xi_sp_v1p4p11p3_integration} {inputs.xi_sp_v1p4p11p3_leak_corr_reporting} {inputs.xi_sp_v1p4p11p3_leak_corr_integration} --out-file {output}
     resources:
       cpus: 1
       memory: 4GB

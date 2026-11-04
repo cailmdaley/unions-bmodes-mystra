@@ -2,8 +2,8 @@
   "schema_version": 1,
   "output_id": "cosebis.cosebis_version_comparison",
   "universe_id": "baseline",
-  "recipe": "x=$(mktemp -d) && c=$(mktemp -d) && tar xzf results/baseline/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x && tar xzf results/baseline/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c && python src/papers/bmodes/scripts/cosebis_version_comparison.py --config src/papers/bmodes/config/config.yaml --results-dir $x --cov-dir $c --fiducial-version SP_v1.4.6.3_leak_corr --fiducial-xi-path results/baseline/two_point/xi_integration.txt --fiducial-cov-path results/baseline/covariance/cov_integration_g.txt --scale-cut-convention grid_bin_edges --out-file results/baseline/cosebis/cosebis_version_comparison.png\n",
-  "definition_version": "sha256:57f8e496084a0db826459980d7aa9e2c743ecaedbd70672c222252f2f126cf4c",
+  "recipe": "x=$(mktemp -d) && c=$(mktemp -d) && tar xzf results/baseline/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x && tar xzf results/baseline/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c && python src/papers/bmodes/scripts/cosebis_version_comparison.py --config results/baseline/catalog/selected_config.yaml --results-dir $x --cov-dir $c --fiducial-version \"$(python src/papers/bmodes/scripts/paper_config.py --config results/baseline/catalog/selected_config.yaml --get fiducial.version)\" --fiducial-xi-path results/baseline/two_point/xi_integration.txt --fiducial-cov-path results/baseline/covariance/cov_integration.txt --scale-cut-convention grid_bin_edges --out-file results/baseline/cosebis/cosebis_version_comparison.png\n",
+  "definition_version": "sha256:bc7c6a369eddd532b86bfd8b5dc433be0398043fddb83e7d515b62b0c3bb62a5",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:319be9ccd0c2a79928c242ed0ed857d864985167507051be09fdd5f7a3658efa",
   "decisions": {
@@ -13,15 +13,16 @@
     "scale_cut_convention": "grid_bin_edges"
   },
   "input_versions": {
-    "xi_sweep": "sha256:7fc08adb89612287f737c7e85bb1adb2a52f979822e3aab5b6e6b28384c19842",
-    "cov_sweep": "sha256:21ac449a96f0874a54a6c307e1eeda23e84a5912ae031783746c9d9924d9acd8",
-    "xi_integration": "sha256:d26445847fdd07a235460833df86c19950577b5051de2843beed73622d026a99",
-    "cov_integration_g": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052",
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "xi_sweep": "sha256:a21ed886d33d8b4ff68b27fe4457161b2260053b7f391770d11db86fec85ab71",
+    "cov_sweep": "sha256:7503199d43b0381627fecea743b03f82b7e75d754847cdd03800362411eed766",
+    "xi_integration": "sha256:ac1981ed80625d173b650eb6343d6c2318a8afd53b67c178d0599cf512c0a7ef",
+    "cov_integration": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052",
     "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112",
     "print_width_script": "sha256:d1692083bf9a5226a33b7e9cc7b602f66825e21bbbad7e841d0bc8457489306a",
-    "cosebis_version_comparison_script": "sha256:9dcac219cd527d87075f04e53daac51d39d1c1b5a0a7c5c6f5ffecb3f87b389e"
+    "cosebis_version_comparison_script": "sha256:b57e312c411f2111cde1babd03b9e2f3daeb56b8c744b780dd11cc70dd33dceb"
   },
-  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -31,8 +32,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T11:12:49.955+00:00",
-  "finished_at": "2026-11-01T11:14:37.884+00:00",
+  "started_at": "2026-11-04T07:42:12.711+00:00",
+  "finished_at": "2026-11-04T07:44:38.142+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

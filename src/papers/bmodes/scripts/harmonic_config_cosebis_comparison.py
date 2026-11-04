@@ -45,7 +45,7 @@ plt.style.use(PAPER_MPLSTYLE)
 # to <0.3% on GLASS mocks. Higher modes are progressively less reliable due
 # to W_n(ell) oscillation resolution. We use 6 to match the mode range used
 # for cosmological inference throughout the paper.
-_RELIABLE_MODE_MAX_BY_NBINS = {32: 6, 96: 6}
+_RELIABLE_MODE_MAX_BY_NBINS = {32: 6, 96: 6, 128: 6}
 
 
 def _safe_sigma(covariance_diag):
@@ -972,10 +972,7 @@ def _versions_all_for_plots(config):
 def _cov_integration_path(cov_dir, version, blind, min_sep, max_sep, nbins):
     """Reproduce common.covariance_path for the Gaussian integration-grid,
     masked covariance (suffix _processed.txt)."""
-    base = (
-        f"covariance_{version}_{blind}_g"
-        f"_minsep={min_sep}_maxsep={max_sep}_nbins={nbins}_masked"
-    )
+    base = f"covariance_{version}_{blind}_integration"
     return os.path.join(cov_dir, base, f"{base}_processed.txt")
 
 
@@ -1099,9 +1096,12 @@ def _from_cli(argv=None):
         ),
     )
     add_scale_cut_convention_argument(ap)
+    ap.add_argument("--harmonic-validation-binning", type=lambda value: int(value.removeprefix("bins_")))
     a = ap.parse_args(argv)
 
     config = load_config(a.config)
+    if a.harmonic_validation_binning is not None:
+        config["cl"]["cosebis_nbins"] = a.harmonic_validation_binning
 
     # --- Render modes: read a modes NPZ, recompute nothing, write one file. ---
     if a.metrics_from_modes or a.figure_from_modes:

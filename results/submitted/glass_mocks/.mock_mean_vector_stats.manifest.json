@@ -2,8 +2,8 @@
   "schema_version": 1,
   "output_id": "glass_mocks.mock_mean_vector_stats",
   "universe_id": "submitted",
-  "recipe": "python src/workflow/scripts/mock_mean_vector_plot.py --stats results/submitted/glass_mocks/mock_per_mock_statistics.npz --label mockmatched --config src/papers/bmodes/config/config.yaml --scale-cut-convention grid_bin_edges --emit stats --out-file results/submitted/glass_mocks/mock_mean_vector_stats.json\n",
-  "definition_version": "sha256:42f6fb0f6e901db37b454f6f3ebb3fd2a78d740e7a86282574c2e4a72d368831",
+  "recipe": "python src/workflow/scripts/mock_mean_vector_plot.py --stats results/submitted/glass_mocks/mock_per_mock_statistics.npz --label mockmatched --config results/submitted/catalog/selected_config.yaml --scale-cut-convention grid_bin_edges --emit stats --out-file results/submitted/glass_mocks/mock_mean_vector_stats.json\n",
+  "definition_version": "sha256:dbac1b84fe81d50a36ea19152b612a030797e132141cf240186a3fea95ef6424",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:0fe8d907d4ad9cff4d803175f8b1c91eadce1b2f42b5c94e16bf548bdc7481c2",
   "decisions": {
@@ -11,10 +11,11 @@
     "scale_cut_convention": "grid_bin_edges"
   },
   "input_versions": {
-    "mock_per_mock_statistics": "sha256:09ad203d5b0b39ef25face2ba90e9483b888068782ebb3f58a15c8e66d05920b",
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "mock_per_mock_statistics": "sha256:1f4ba097281123c41a3bf3430bbe3305b05546223b4a2eec6fa9b86a9fac0f8b",
     "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2"
   },
-  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -24,8 +25,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T10:21:42.920+00:00",
-  "finished_at": "2026-11-01T10:21:53.090+00:00",
+  "started_at": "2026-11-04T03:41:34.072+00:00",
+  "finished_at": "2026-11-04T03:41:43.277+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

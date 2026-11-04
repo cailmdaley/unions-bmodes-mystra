@@ -17,6 +17,8 @@ description: |
 tags: [sweep, generated, two_point]
 
 inputs:
+  - id: selected_config
+    from: ../selected_config
   # Each member opens its own version's catalog through cat_config.
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
@@ -24,10 +26,13 @@ inputs:
     from: ../shapepipe_v145_rerun
 
 decisions:
+  leakage_correction:
+    from: ../leakage_correction
   fiducial_catalog:
     from: ../fiducial_catalog
 
 matrix:
+  slot: [SP_v1.4.5, SP_v1.4.5_leak_corr, fiducial_counterpart, SP_v1.4.8, SP_v1.4.8_leak_corr, SP_v1.4.11.3, SP_v1.4.11.3_leak_corr]
   version:
     - SP_v1.4.5
     - SP_v1.4.5_leak_corr
@@ -43,10 +48,10 @@ matrix:
 
 # grid/min_sep/max_sep/nbins are one composite axis: the two angular grids,
 # not their cartesian product.
-zip: [[grid, min_sep, max_sep, nbins]]
+zip: [[version, slot], [grid, min_sep, max_sep, nbins]]
 
 template:
-  id: xi_${version}_${grid}
+  id: xi_${slot}_${grid}
   type: data
   format: txt
   description: |
@@ -56,7 +61,7 @@ template:
     text dump. The per-version analogue of
     [xi_${grid}](#../outputs.xi_${grid}); same `run_2pcf.py`
     invocation, different `--ver`.
-  inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+  inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun]
   decisions: [fiducial_catalog]
   recipe:
     # The per-version unit of work: exactly the run_2pcf.py CLI the fiducial
@@ -65,7 +70,7 @@ template:
     # schedules the members itself.
     command: >
       python src/workflow/scripts/run_2pcf.py
-      --ver ${version} --min-sep ${min_sep} --max-sep ${max_sep} --nbins ${nbins} --npatch 1
+      --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version ${version})" --min-sep ${min_sep} --max-sep ${max_sep} --nbins ${nbins} --npatch 1
       --cat-config src/cosmo_val/cat_config.yaml
       --no-fits --out-file {output}
     resources: { cpus: 24, memory: "30GB" }
@@ -82,10 +87,12 @@ gather:
     E/B sweep (`--xi-sweep-dir`) reconstruct. Re-exported by
     [two_point.xi_sweep](#../outputs.xi_sweep); consumers untar it
     into a temp dir, unchanged from the July contract.
+  decisions: [fiducial_catalog, leakage_correction]
   recipe:
     command: >
       python src/papers/bmodes/scripts/bundle_sweep.py
-      --layout xi --config src/papers/bmodes/config/config.yaml
+      --layout xi --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+      --leakage-correction {decisions.leakage_correction}
       --names ${members}
       --members ${member_refs}
       --out-file {output}

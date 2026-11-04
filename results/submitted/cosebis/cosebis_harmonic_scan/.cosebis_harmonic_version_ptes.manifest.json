@@ -2,17 +2,17 @@
   "schema_version": 1,
   "output_id": "cosebis.cosebis_harmonic_scan.cosebis_harmonic_version_ptes",
   "universe_id": "submitted",
-  "recipe": "python src/papers/bmodes/scripts/merge_harmonic_version_ptes.py --members results/submitted/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p5_leak_corr.npz results/submitted/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p8_leak_corr.npz results/submitted/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p11p3_leak_corr.npz --out-file results/submitted/cosebis/cosebis_harmonic_scan/cosebis_harmonic_version_ptes.json\n",
-  "definition_version": "sha256:7b2fa0021a179a9716b9c4edd81b70aad9436a29e71da7a41632dd29a78d527b",
+  "recipe": "python src/papers/bmodes/scripts/merge_harmonic_version_ptes.py --members results/submitted/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p5.npz results/submitted/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p8.npz results/submitted/cosebis/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p11p3.npz --out-file results/submitted/cosebis/cosebis_harmonic_scan/cosebis_harmonic_version_ptes.json\n",
+  "definition_version": "sha256:8426808dfee718bdcd6af150d255d85ff15989653e8908f3fb09a35c3e4fcf20",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:481e76ce268614570eff41a151a646251fe675eb6d01448428122775533e175c",
+  "data_version": "sha256:11a2869f1dfc09742392bdde30b44f504f685b23deeaa6bc681293c85f07729a",
   "decisions": {},
   "input_versions": {
-    "harmonic_modes_sp_v1p4p5_leak_corr": "sha256:80b2ef35e58d282d3359e0a374f09348e08ab9d22521b70a87613bab9790e436",
-    "harmonic_modes_sp_v1p4p8_leak_corr": "sha256:334367e4cf0093b69fbe631f96cc35f7a86a739d1c914596be77eb3f76ad02f3",
-    "harmonic_modes_sp_v1p4p11p3_leak_corr": "sha256:9357a58b5603353ff9f7f65695c8a348e2475ccbf03747456e572d6292f59f47"
+    "harmonic_modes_sp_v1p4p5": "sha256:e2aa7bf4a9265523b721ace2bb29c7e96f803febaf30cefc67691ac7c0061bd7",
+    "harmonic_modes_sp_v1p4p8": "sha256:e6bbe9bef3f2dbf76379930c04ba7aeae7b960ea97cf5b16f2e5f681ed42ff9f",
+    "harmonic_modes_sp_v1p4p11p3": "sha256:463cb78e5f4d962339cbbba42069efb3511d2962ca1e1ce61153de2bb93ccd1a"
   },
-  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -22,8 +22,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T08:09:21.103+00:00",
-  "finished_at": "2026-11-01T08:09:41.738+00:00",
+  "started_at": "2026-11-04T08:58:57.026+00:00",
+  "finished_at": "2026-11-04T08:59:15.468+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

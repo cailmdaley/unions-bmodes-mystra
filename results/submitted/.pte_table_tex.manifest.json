@@ -9,10 +9,10 @@
   "decisions": {},
   "input_versions": {
     "pte_table_appendix": "sha256:0f11c5a0acb8943d207e66b4294a15adac4766a694f6467b9b0dd3fcc6f99969",
-    "mock_min_pte_calibration": "sha256:c42747f91c36f1216f922ede848b4f0c48af7b1689be06640ef2312b8e144020",
+    "mock_min_pte_calibration": "sha256:42f925f9d9d146a0df96f4e19879b4b75fbee5ca290f989e2738fc80ad2c8558",
     "generate_pte_table_tex_script": "sha256:13e47ea760ed3c38ff55c310e6a0381c352130622cb8da706301e9b9f91888d4"
   },
-  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -22,8 +22,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T10:21:44.192+00:00",
-  "finished_at": "2026-11-01T10:21:44.733+00:00",
+  "started_at": "2026-11-04T04:16:49.394+00:00",
+  "finished_at": "2026-11-04T04:16:50.036+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

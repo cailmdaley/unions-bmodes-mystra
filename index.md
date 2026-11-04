@@ -9,6 +9,12 @@ At Stage-III sensitivities, cosmic shear $B$ modes unambiguously indicate system
 +++
 
 
+:::{note}
+The [resolved configuration](#outputs.selected_config) selects corrected or raw shear consistently across the reproduction.
+The [primary null-test report](#outputs.primary_null_test_report) selects the adopted or full range and the reported COSEBI subsets, recalibrating the selected test family from stored mock PTEs.
+The tables and figures below retain the complete two-range, six-test reference comparison.
+:::
+
 # Introduction
 
 Weak gravitational lensing distorts the observed shapes of distant galaxies, encoding information about the intervening matter distribution along the line of sight {cite:p}`blandford.etal91,miraldaescude91,kaiser92`. First detections came in 2000 {cite:p}`bacon.etal00,kaiser.etal00,vanwaerbeke.etal00,wittman.etal00`. The scalar gravitational potential produces a shear field that is curl-free to leading order and can be decomposed into gradient-like $E$ modes and curl-like $B$ modes; under the Born approximation, scalar density perturbations source only $E$-mode power {cite:p}`stebbins96,kamionkowski.etal97`. Higher-order effects (lens-lens coupling, source clustering, and intrinsic alignments) can produce $B$ modes {cite:p}`hilbert.etal09,schneider.etal02b,crittenden.etal02`, but these are orders of magnitude below current sensitivity {cite:p}`cooray.hu02`. They are likely only accessible to future ultra-high-precision measurements, potentially through cross-correlation techniques involving CMB lensing rotation reconstructions and large-scale-structure tracers {cite:p}`robertson.etal25`. For galaxy shear measurements at current sensitivity, detected $B$-mode power indicates residual observational systematic effects rather than cosmological signal, though the absence of $B$ modes does not rule out systematic contamination.

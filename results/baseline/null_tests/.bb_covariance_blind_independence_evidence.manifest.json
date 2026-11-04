@@ -2,21 +2,22 @@
   "schema_version": 1,
   "output_id": "null_tests.bb_covariance_blind_independence_evidence",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/bb_covariance_blind_independence.py --config src/papers/bmodes/config/config.yaml --version fiducial_version_v1463 --pure-eb-template '/automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/paper_plots/intermediate/{version}_{blind}_pure_eb_semianalytic.npz' --harmonic-template '/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_cov_{version}_blind={blind}_powspace_nbins=32.fits' --cov-integration-template '/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_{version}_{blind}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_{version}_{blind}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt' --xi-template '/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/{version}_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt' --pseudo-cl-template '/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_{version}_blind=A_powspace_nbins=32.fits' --out-file results/baseline/null_tests/bb_covariance_blind_independence_evidence.png\n",
-  "definition_version": "sha256:277a5b0ea1ed84e821d7d62c7e7fa54c6d78892dfdf60bc8ae687cbc3d0df591",
+  "recipe": "python src/papers/bmodes/scripts/bb_covariance_blind_independence.py --config results/baseline/catalog/selected_config.yaml --version fiducial_version_v1463 --pure-eb-template '/automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/paper_plots/intermediate/{version}_{blind}_pure_eb_semianalytic.npz' --harmonic-template '/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_cov_{version}_blind={blind}_powspace_nbins=32.fits' --cov-integration-template '/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_{version}_{blind}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_{version}_{blind}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt' --xi-template '/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/{version}_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt' --pseudo-cl-template '/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_{version}_blind=A_powspace_nbins=32.fits' --out-file results/baseline/null_tests/bb_covariance_blind_independence_evidence.png\n",
+  "definition_version": "sha256:3476bee3e68aeb23a7ec643cde8a98657a7d73a1d0b356dcf957bf309493ccd7",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:562c88ee793e8a22f91fae577c01677bca2978836932c4d486f2106b503909ae",
   "decisions": {
     "bb_blind_check_version": "fiducial_version_v1463"
   },
   "input_versions": {
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
     "blind_check_pure_eb": "spelling:sha256:ce1b1f23da92648b7c32239dc9658ae4bef6cff83d1c8f2307a81924c2feabf8",
     "blind_check_harmonic_cov": "spelling:sha256:025858e4cb039c72feb626db4963c600d3616a5adc254849fc6dcc9390d003cb",
     "blind_check_cosmocov": "spelling:sha256:56fde18c75ed1861c4d8dc1a9cfea51fc65edf564e63d2a7577e7f72ad9964c8",
     "blind_check_xi": "spelling:sha256:2eafbe77581befb7f35433d2fe76165b579d67845739a1c146ba20fbff5f4cf4",
     "blind_check_pseudo_cl": "spelling:sha256:5483e01e258ba7261b7b885f06dbdf661a4e4684ff417e23d92b13a05b4c4753"
   },
-  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_sha": "e3e85c6429bbfc19124dba4416a1bce9bf09ee86",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -26,8 +27,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T11:12:49.886+00:00",
-  "finished_at": "2026-11-01T11:14:01.842+00:00",
+  "started_at": "2026-11-03T19:20:03.718+00:00",
+  "finished_at": "2026-11-03T19:22:32.088+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

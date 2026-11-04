@@ -9,14 +9,14 @@ to ``{out}/{version}_{blind}_pure_eb_ptes.npz``.
 
 The Hartlap factor follows the covariance artifact
 (``pure_mode_covariance.hartlap_samples``): the Monte Carlo draw count it
-records, or no correction for an exact covariance. ``--n-samples`` is the
-draw count assumed for an artifact that records none.
+records, or no correction for an exact covariance.
+Unrecorded historical artifacts use the shared 2000-draw convention.
 
     python calculate_pure_eb_ptes.py \
         --version SP_v1.4.6.3_leak_corr --blind A \
         --pure-eb-data <..._pure_eb_semianalytic.npz> \
         --cov-integration <cov ..._processed.txt> \
-        --npatch 1 --n-samples 2000 --out-file <ptes.npz>
+        --npatch 1 --out-file <ptes.npz>
 """
 
 import argparse
@@ -47,7 +47,6 @@ def calculate_ptes(
     pure_eb_data,
     cov_integration,
     npatch,
-    n_samples,
     output_dir=None,
     out_file=None,
 ):
@@ -67,7 +66,7 @@ def calculate_ptes(
         "cov": dataset["cov_pure_eb"],
     }
 
-    n_hartlap = hartlap_samples(dataset) if "covariance_method" in dataset.files else int(n_samples)
+    n_hartlap = hartlap_samples(dataset)
     print(f"Calculating PTE matrices for {version} (Hartlap N={n_hartlap})...")
     results = calculate_eb_statistics(
         results,
@@ -105,12 +104,6 @@ def _from_cli(argv=None):
     )
     ap.add_argument("--npatch", type=int, default=1)
     ap.add_argument(
-        "--n-samples",
-        type=int,
-        default=2000,
-        help="MC draw count for an artifact that records no covariance_method",
-    )
-    ap.add_argument(
         "--out",
         default=None,
         help="Output directory; writes {version}_{blind}_pure_eb_ptes.npz "
@@ -128,7 +121,6 @@ def _from_cli(argv=None):
         pure_eb_data=a.pure_eb_data,
         cov_integration=a.cov_integration,
         npatch=a.npatch,
-        n_samples=a.n_samples,
         output_dir=a.out,
         out_file=a.out_file,
     )

@@ -24,6 +24,8 @@ description: |
 tags: [sweep, generated, cosebis]
 
 inputs:
+  - id: selected_config
+    from: ../selected_config
   - id: xi_sweep
     from: ../xi_sweep
   - id: cov_sweep
@@ -45,8 +47,12 @@ matrix:
     - SP_v1.4.8_leak_corr
     - SP_v1.4.11.3_leak_corr
 
+  slot: [SP_v1.4.5, SP_v1.4.8, SP_v1.4.11.3]
+
+zip: [[version, slot]]
+
 template:
-  id: harmonic_modes_${version}
+  id: harmonic_modes_${slot}
   type: data
   format: npz
   description: |
@@ -57,7 +63,7 @@ template:
     same compute pass, different `--fiducial-version`. Only its
     B-mode PTEs are consumed (through the gather) — the paper
     figure is rendered from the fiducial NPZ.
-  inputs: [xi_sweep, cov_sweep, cl_sweep]
+  inputs: [selected_config, xi_sweep, cov_sweep, cl_sweep]
   decisions: [fiducial_blind, harmonic_validation_binning, scale_cut_convention]
   recipe:
     # The three version-sweep bundles are untarred into temp dirs and this
@@ -74,14 +80,17 @@ template:
       l=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $l
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      cb=covariance_${version}_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked
+      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version ${version} --fine-grid)
+      cb=covariance_"$ver"_A_integration
+      nb=$(printf '%s' {decisions.harmonic_validation_binning} | tr -cd '0-9')
       python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py \
-        --config src/papers/bmodes/config/config.yaml \
+        --config {inputs.selected_config} \
         --blind A \
-        --fiducial-version ${version} \
-        --fiducial-pseudo-cl-path $l/pseudo_cl_${version}_blind=A_powspace_nbins=96.fits \
-        --fiducial-pseudo-cl-cov-path $l/pseudo_cl_cov_${version}_blind=A_powspace_nbins=96.fits \
-        --fiducial-xi-path $x/${version}_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
+        --fiducial-version $ver \
+        --harmonic-validation-binning {decisions.harmonic_validation_binning} \
+        --fiducial-pseudo-cl-path "$l/pseudo_cl_$ver"_blind=A_powspace_nbins=$nb.fits \
+        --fiducial-pseudo-cl-cov-path "$l/pseudo_cl_cov_$ver"_blind=A_powspace_nbins=$nb.fits \
+        --fiducial-xi-path "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --fiducial-cov-path "$c/$cb/$cb"_processed.txt \
         --scale-cut-convention {decisions.scale_cut_convention} \
         --out-file {output}

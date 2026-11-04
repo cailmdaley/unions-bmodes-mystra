@@ -2,18 +2,19 @@
   "schema_version": 1,
   "output_id": "pure_eb.pure_eb_covariance_figure",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/pure_eb_covariance.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --pure-eb-data results/baseline/pure_eb/pure_eb_semianalytic_data.npz --out-file results/baseline/pure_eb/pure_eb_covariance_figure.png\n",
-  "definition_version": "sha256:9c0b51572bed11f16270eb7d699ec938cdbe445614aa706d6bb759fd370ba733",
+  "recipe": "python src/papers/bmodes/scripts/pure_eb_covariance.py --config results/baseline/catalog/selected_config.yaml --pure-eb-data results/baseline/pure_eb/pure_eb_semianalytic_data.npz --out-file results/baseline/pure_eb/pure_eb_covariance_figure.png\n",
+  "definition_version": "sha256:3d3b50602784c98ff139bf9c68ed12b2b2f726a2e6b017b6f2b64a865395c2bd",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:5e6ae0e21f3045439e62ec4b2a39443a1ca37cd0e488f00dc0d6052268d5b1d8",
   "decisions": {
     "fiducial_catalog": "size_cut"
   },
   "input_versions": {
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
     "pure_eb_semianalytic_data": "sha256:7e1374ee2882b55cec68a093330a6fbf6fbab5c50e6516f4e68844800a7f2137",
     "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
   },
-  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -23,8 +24,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T11:12:49.929+00:00",
-  "finished_at": "2026-11-01T11:13:06.466+00:00",
+  "started_at": "2026-11-03T23:58:12.740+00:00",
+  "finished_at": "2026-11-03T23:58:20.926+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

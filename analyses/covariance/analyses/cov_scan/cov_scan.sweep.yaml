@@ -6,27 +6,25 @@ version: "1.0"
 name: "CosmoCov integration-grid catalog-version scan"
 description: |
   Design-B producer sweep: integration-grid 1000-bin Gaussian-only
-  masked CosmoCov covariance for every non-fiducial, non-ecut
+  area-only CosmoCov covariance for every non-fiducial, non-ecut
   catalog version (7 variants — 3 leak-corrected + 4 uncorrected),
   the version-swept analogue of
-  [cov_integration_g](#../outputs.cov_integration_g). Each version
+  [cov_integration](#../outputs.cov_integration). Each version
   is its own lc output — a full `run_cosmocov_chain.sh` chain, the
   heaviest members in the reproduction — and the gather bundles
   them under the canonical
-  `covariance_{ver}_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/`
+  `covariance_{ver}_A_integration/`
   per-version subdirectory layout that `--cov-dir` consumers read.
   Covariance is recomputed per variant — it is NOT assumed
-  correction-invariant: the masked v1.4.8 star-halo geometry
-  differs outright and the uncorrected variants differ in σ_e.
+  correction-invariant: v1.4.8 has a different survey area
+  and the uncorrected variants differ in σ_e.
 tags: [sweep, generated, covariance]
 
 inputs:
+  - id: selected_config
+    from: ../selected_config
   - id: cosmology_snapshot
     from: ../../covariance.cosmology_snapshot
-  - id: mask_power_spectrum
-    from: ../mask_power_spectrum
-  - id: footprint_mask_starhalo
-    from: ../footprint_mask_starhalo
   # The chain's two host reads that no `{inputs...}` used to name: the CosmoCov
   # binary it execs, and the n(z) that generate_cosmocov_ini.py composes from
   # the version string and writes into the .ini. Every member needs both; all
@@ -39,6 +37,8 @@ inputs:
     from: ../cosmocov_libgsl
 
 decisions:
+  leakage_correction:
+    from: ../leakage_correction
   fiducial_catalog:
     from: ../fiducial_catalog
   fiducial_blind:
@@ -47,6 +47,7 @@ decisions:
     from: ../covariance_class
 
 matrix:
+  slot: [SP_v1.4.5, SP_v1.4.5_leak_corr, fiducial_counterpart, SP_v1.4.8, SP_v1.4.8_leak_corr, SP_v1.4.11.3, SP_v1.4.11.3_leak_corr]
   version:
     - SP_v1.4.5
     - SP_v1.4.5_leak_corr
@@ -55,48 +56,36 @@ matrix:
     - SP_v1.4.8_leak_corr
     - SP_v1.4.11.3
     - SP_v1.4.11.3_leak_corr
-  # Per [mask_application](#../decisions.mask_application), v1.4.8 (corrected or
-  # not) takes the star-halo footprint power spectrum and every other version
-  # the standard footprint — mirrors covariance.smk get_mask_cls_path. Carried
-  # as an axis zipped to `version` because interpolation has no conditionals.
-  mask:
-    - mask_power_spectrum
-    - mask_power_spectrum
-    - mask_power_spectrum
-    - footprint_mask_starhalo
-    - footprint_mask_starhalo
-    - mask_power_spectrum
-    - mask_power_spectrum
 
-zip: [[version, mask]]
+zip: [[version, slot]]
 
 template:
-  id: cov_${version}
+  id: cov_${slot}
   type: data
   format: txt
   description: |
-    Processed Gaussian-only masked CosmoCov ξ_± covariance for
+    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `${version}` on the 1000-bin integration grid
-    ([0.5', 300'], blind A), computed against the `${mask}`
-    footprint power spectrum. The per-version analogue of
-    [cov_integration_g](#../outputs.cov_integration_g); same
+    ([0.5', 300'], blind A).
+    The per-version analogue of
+    [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
-  inputs: [cosmology_snapshot, mask_power_spectrum, footprint_mask_starhalo, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
+  inputs: [selected_config, cosmology_snapshot, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
   decisions: [fiducial_catalog, fiducial_blind, covariance_class]
   recipe:
     # The per-version unit of work: one run_cosmocov_chain.sh chain, exactly as
-    # the fiducial cov_integration_g recipe calls it. CosmoCov scratch (.ini,
+    # the fiducial cov_integration recipe calls it. CosmoCov scratch (.ini,
     # .log, cov_tmp*/order_cov_tmp*) stays inside the chain's own scratch dir;
     # only the processed matrix reaches {output}.
     command: >
       bash src/workflow/scripts/run_cosmocov_chain.sh
-      --version ${version} --blind A
-      --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g
+      --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version ${version})" --blind A
+      --min-sep 0.5 --max-sep 300.0 --nbins 1000
+      --gaussian {decisions.covariance_class}
       --planck18-json {inputs.cosmology_snapshot}
       --cat-config src/cosmo_val/cat_config.yaml
       --cosmocov {inputs.cosmocov_binary}
       --libgsl {inputs.cosmocov_libgsl}
-      --mask-cls {inputs.${mask}}
       --emit processed --out-file {output}
     resources: { cpus: 4, memory: "16GB" }
 
@@ -107,16 +96,19 @@ gather:
   description: |
     The ${n_members} scan members bundled under their
     July-canonical per-version subdirectory layout
-    `covariance_{ver}_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/{base}_processed.txt`
-    — the exact tree `cosebis_version_comparison` (`--cov-dir`) and
+    `covariance_{ver}_A_integration/{base}_processed.txt`
+    for the Gaussian-only integration covariance.
+    This is the tree `cosebis_version_comparison` (`--cov-dir`) and
     the pure E/B sweep read. Re-exported by
     [covariance.cov_sweep](#../outputs.cov_sweep); consumers untar
     it into a temp dir and pass the archive root as `--cov-dir`,
     unchanged from the July contract.
+  decisions: [fiducial_catalog, leakage_correction]
   recipe:
     command: >
       python src/papers/bmodes/scripts/bundle_sweep.py
-      --layout cov --config src/papers/bmodes/config/config.yaml
+      --layout cov --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+      --leakage-correction {decisions.leakage_correction}
       --names ${members}
       --members ${member_refs}
       --out-file {output}

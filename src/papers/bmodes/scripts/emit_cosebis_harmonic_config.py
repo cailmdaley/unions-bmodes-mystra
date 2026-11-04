@@ -30,6 +30,8 @@ import math
 from datetime import datetime, timezone
 from pathlib import Path
 
+from paper_config import load_config
+
 
 def _sig3(x):
     """Format a float to 3 significant figures; scientific for |x|<1e-3 or >=1e4, else fixed."""
@@ -67,6 +69,7 @@ def main():
             "non-fiducial leak-corrected versions' harmonic rows."
         ),
     )
+    parser.add_argument("--config", required=True)
     parser.add_argument("--out-file", required=True, help="output CSV path")
     args = parser.parse_args()
 
@@ -80,6 +83,9 @@ def main():
     harmonic_fid_evidence = _payload(args.cosebis_evidence)
     harmonic_full_evidence = _payload(args.cosebis_evidence_full)
 
+    slugs = _VERSION_SLUGS
+    if load_config(args.config).get("leakage_correction") == "uncorrected":
+        slugs = {k.removesuffix("_leak_corr"): v for k, v in slugs.items()}
     config_versions = config_evidence.get("versions", {})
     harmonic_fid_ptes = harmonic_fid_evidence.get("harmonic_b_mode_ptes", {})
     harmonic_full_ptes = harmonic_full_evidence.get("harmonic_b_mode_ptes", {})
@@ -98,7 +104,7 @@ def main():
             **harmonic_full_ptes,
         }
 
-    for version_full in _VERSION_SLUGS:
+    for version_full in slugs:
         if version_full not in harmonic_fid_ptes:
             print(
                 f"WARNING: no harmonic PTEs for {version_full}; "
@@ -107,7 +113,7 @@ def main():
             )
 
     rows = []
-    for version_full, slug in _VERSION_SLUGS.items():
+    for version_full, slug in slugs.items():
         # Harmonic space: fiducial and full-range come from separate evidence
         # carriers (--angular-range fiducial vs full).
         for cut, harm_ptes in [

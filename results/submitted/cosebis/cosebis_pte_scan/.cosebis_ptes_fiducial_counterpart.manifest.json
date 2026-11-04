@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "output_id": "cosebis.cosebis_pte_scan.cosebis_ptes_fiducial_counterpart",
+  "universe_id": "submitted",
+  "recipe": "# lc runs recipes as `bash -c` with no `set -e`, so without this a failed\n# compute would exit 0 via the trailing `rm` and lc would commit a\n# truncated artifact as successfully produced.\nset -e\nx=$(mktemp -d) && tar xzf results/submitted/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/submitted/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c\n# NB: braced shell expansions cannot be used in a sweep template \u2014 the\n# expander claims that syntax. Bare $cb only.\nver=$(python src/papers/bmodes/scripts/paper_config.py --config results/submitted/catalog/selected_config.yaml --scan-version SP_v1.4.6.3)\ncb=covariance_\"$ver\"_A_integration\npython src/papers/bmodes/scripts/compute_cosebis_pte_single.py \\\n  --config results/submitted/catalog/selected_config.yaml \\\n  --xi-integration \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n  --cov-integration \"$c/$cb/$cb\"_processed.txt \\\n  --version $ver --blind A \\\n  --out-file results/submitted/cosebis/cosebis_pte_scan/cosebis_ptes_fiducial_counterpart.npz\nrm -rf \"$x\" \"$c\"\n",
+  "definition_version": "sha256:f5cca45f422d079792aa996ee24e8fedf6e6909f043d46089a4607ad6a63b65e",
+  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "data_version": "sha256:22bb1f84228d2740510bdc9766fddbfdaa7c4c6ea3002f5164a1a560201dfa71",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "scale_cut_pair_grid": "production_grid"
+  },
+  "input_versions": {
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "xi_sweep": "sha256:b2187ac5f1c26542e107b6c04d48b7eda3a330db8a389a80a6a395d4a2ec164b",
+    "cov_sweep": "sha256:bd948ef8d6b73924fb98a43f23cf3ba54444881ba9a45dc18636dd2210615e43"
+  },
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-04T02:38:12.426+00:00",
+  "finished_at": "2026-11-04T02:42:54.860+00:00",
+  "uv_version": "0.12.6",
+  "image": {
+    "tag": "lc-env-54f5826a45ef4844",
+    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
+    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "arch": "amd64"
+  }
+}

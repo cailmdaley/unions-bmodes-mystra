@@ -42,7 +42,7 @@ LOCALEVAL=""
 # job, so under lc (whose SLURM venue runs one task per allocated core) every
 # concurrent task forked 16 processes into a slot sized for one. Same knob as
 # the TreeCorr cap in run_2pcf.py, set by the runner; --nproc still overrides.
-NCHUNKS=20; NSAMPLES=2000; NPROC="${OMP_NUM_THREADS:-1}"
+NCHUNKS=20; NSAMPLES=""; NPROC="${OMP_NUM_THREADS:-1}"
 MINSEP=1.0; MAXSEP=250.0; NBINS=20
 MINSEPINT=0.5; MAXSEPINT=300.0; NBINSINT=1000; NPATCH=1
 
@@ -63,7 +63,7 @@ while [ $# -gt 0 ]; do
     --out) OUT="$2"; shift 2;;
     --out-file) OUTFILE="$2"; shift 2;;
     --n-chunks) NCHUNKS="$2"; shift 2;;
-    --n-samples) NSAMPLES="$2"; shift 2;;
+    --n-samples) NSAMPLES="${2#n_}"; shift 2;;
     --nproc) NPROC="$2"; shift 2;;
     --min-sep) MINSEP="$2"; shift 2;;
     --max-sep) MAXSEP="$2"; shift 2;;
@@ -80,6 +80,7 @@ done
 [ -n "$INTLIMITS" ] || { echo "--integration-limits is required" >&2; exit 2; }
 [ -n "$REBINWEIGHTS" ] || { echo "--rebinning-weights is required" >&2; exit 2; }
 [ -n "$COVMETHOD" ] || { echo "--covariance-method is required" >&2; exit 2; }
+[ -n "$NSAMPLES" ] || { echo "--n-samples is required" >&2; exit 2; }
 GEOMETRY_FLAG=""
 [ -z "$GEOMETRY" ] || GEOMETRY_FLAG="--geometry $GEOMETRY"
 LOCALEVAL_FLAG="$LOCALEVAL"

@@ -2,8 +2,9 @@ id: baseline
 description: |
   UNIONS Paper II covariance fiducial: Gaussian-only CosmoCov
   blocks for all three ξ± pairings, evaluated with the survey
-  mask applied, with GLASS mocks used to validate the analytical
-  covariance rather than as the production covariance source.
+  correction absent (the nside-4096 spectrum is too short for Gaussian
+  w_mask), with GLASS mocks validating the analytical covariance.
+  The reporting G+NG diagnostic uses the footprint spectrum for SSC only.
 decisions:
   covariance_engine: cosmocov
   covariance_class: gaussian_only

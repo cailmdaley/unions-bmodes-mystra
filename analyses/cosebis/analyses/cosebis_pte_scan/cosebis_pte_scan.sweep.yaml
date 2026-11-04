@@ -27,22 +27,25 @@ description: |
 tags: [sweep, generated, cosebis]
 
 inputs:
+  - id: selected_config
+    from: ../selected_config
   - id: xi_sweep
     from: ../xi_sweep
   - id: cov_sweep
     from: ../cov_sweep
 
 decisions:
+  leakage_correction:
+    from: ../leakage_correction
   fiducial_catalog:
     from: ../fiducial_catalog
   fiducial_blind:
     from: ../fiducial_blind
   scale_cut_pair_grid:
     from: ../scale_cut_pair_grid
-  mode_subsets:
-    from: ../mode_subsets
 
 matrix:
+  slot: [SP_v1.4.5, SP_v1.4.5_leak_corr, fiducial_counterpart, SP_v1.4.8, SP_v1.4.8_leak_corr, SP_v1.4.11.3, SP_v1.4.11.3_leak_corr]
   version:
     - SP_v1.4.5
     - SP_v1.4.5_leak_corr
@@ -52,8 +55,10 @@ matrix:
     - SP_v1.4.11.3
     - SP_v1.4.11.3_leak_corr
 
+zip: [[version, slot]]
+
 template:
-  id: cosebis_ptes_${version}
+  id: cosebis_ptes_${slot}
   type: data
   format: npz
   description: |
@@ -64,8 +69,8 @@ template:
     [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut);
     same `compute_cosebis_pte_single.py` invocation, different
     `--version` and a different pair of upstream files.
-  inputs: [xi_sweep, cov_sweep]
-  decisions: [fiducial_catalog, fiducial_blind, scale_cut_pair_grid, mode_subsets]
+  inputs: [selected_config, xi_sweep, cov_sweep]
+  decisions: [fiducial_catalog, fiducial_blind, scale_cut_pair_grid]
   recipe:
     # The two version-sweep bundles are untarred into temp dirs and this
     # version's 1000-bin integration ξ_± and Gaussian integration covariance
@@ -81,12 +86,13 @@ template:
       c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      cb=covariance_${version}_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked
+      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version ${version})
+      cb=covariance_"$ver"_A_integration
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py \
-        --config src/papers/bmodes/config/config.yaml \
-        --xi-integration $x/${version}_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
+        --config {inputs.selected_config} \
+        --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --cov-integration "$c/$cb/$cb"_processed.txt \
-        --version ${version} --blind A \
+        --version $ver --blind A \
         --out-file {output}
       rm -rf "$x" "$c"
     # Mirrors the fiducial cosebis_pte_per_cut envelope exactly (8 cpus, 16GB,
@@ -110,10 +116,12 @@ gather:
     [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut) and
     reaches the heatmap through
     `--fiducial-cosebis-pte-path`.
+  decisions: [fiducial_catalog, leakage_correction]
   recipe:
     command: >
       python src/papers/bmodes/scripts/bundle_sweep.py
-      --layout cosebis_ptes --config src/papers/bmodes/config/config.yaml
+      --layout cosebis_ptes --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+      --leakage-correction {decisions.leakage_correction}
       --names ${members}
       --members ${member_refs}
       --out-file {output}

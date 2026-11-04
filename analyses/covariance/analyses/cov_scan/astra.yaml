@@ -13,29 +13,27 @@ version: '1.0'
 name: CosmoCov integration-grid catalog-version scan
 description: |
   Design-B producer sweep: integration-grid 1000-bin Gaussian-only
-  masked CosmoCov covariance for every non-fiducial, non-ecut
+  area-only CosmoCov covariance for every non-fiducial, non-ecut
   catalog version (7 variants — 3 leak-corrected + 4 uncorrected),
   the version-swept analogue of
-  [cov_integration_g](#../outputs.cov_integration_g). Each version
+  [cov_integration](#../outputs.cov_integration). Each version
   is its own lc output — a full `run_cosmocov_chain.sh` chain, the
   heaviest members in the reproduction — and the gather bundles
   them under the canonical
-  `covariance_{ver}_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/`
+  `covariance_{ver}_A_integration/`
   per-version subdirectory layout that `--cov-dir` consumers read.
   Covariance is recomputed per variant — it is NOT assumed
-  correction-invariant: the masked v1.4.8 star-halo geometry
-  differs outright and the uncorrected variants differ in σ_e.
+  correction-invariant: v1.4.8 has a different survey area
+  and the uncorrected variants differ in σ_e.
 tags:
 - sweep
 - generated
 - covariance
 inputs:
+- id: selected_config
+  from: ../selected_config
 - id: cosmology_snapshot
   from: ../../covariance.cosmology_snapshot
-- id: mask_power_spectrum
-  from: ../mask_power_spectrum
-- id: footprint_mask_starhalo
-  from: ../footprint_mask_starhalo
 - id: redshift_distributions
   from: ../redshift_distributions
 - id: cosmocov_binary
@@ -43,6 +41,8 @@ inputs:
 - id: cosmocov_libgsl
   from: ../cosmocov_libgsl
 decisions:
+  leakage_correction:
+    from: ../leakage_correction
   fiducial_catalog:
     from: ../fiducial_catalog
   fiducial_blind:
@@ -53,16 +53,15 @@ outputs:
 - id: cov_sp_v1p4p5
   type: data
   description: |
-    Processed Gaussian-only masked CosmoCov ξ_± covariance for
+    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.5` on the 1000-bin integration grid
-    ([0.5', 300'], blind A), computed against the `mask_power_spectrum`
-    footprint power spectrum. The per-version analogue of
-    [cov_integration_g](#../outputs.cov_integration_g); same
+    ([0.5', 300'], blind A).
+    The per-version analogue of
+    [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
+  - selected_config
   - cosmology_snapshot
-  - mask_power_spectrum
-  - footprint_mask_starhalo
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
@@ -72,7 +71,7 @@ outputs:
   - covariance_class
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version SP_v1.4.5 --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --mask-cls {inputs.mask_power_spectrum} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -80,16 +79,15 @@ outputs:
 - id: cov_sp_v1p4p5_leak_corr
   type: data
   description: |
-    Processed Gaussian-only masked CosmoCov ξ_± covariance for
+    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.5_leak_corr` on the 1000-bin integration grid
-    ([0.5', 300'], blind A), computed against the `mask_power_spectrum`
-    footprint power spectrum. The per-version analogue of
-    [cov_integration_g](#../outputs.cov_integration_g); same
+    ([0.5', 300'], blind A).
+    The per-version analogue of
+    [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
+  - selected_config
   - cosmology_snapshot
-  - mask_power_spectrum
-  - footprint_mask_starhalo
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
@@ -99,24 +97,23 @@ outputs:
   - covariance_class
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version SP_v1.4.5_leak_corr --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --mask-cls {inputs.mask_power_spectrum} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
   format: txt
-- id: cov_sp_v1p4p6p3
+- id: cov_fiducial_counterpart
   type: data
   description: |
-    Processed Gaussian-only masked CosmoCov ξ_± covariance for
+    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.6.3` on the 1000-bin integration grid
-    ([0.5', 300'], blind A), computed against the `mask_power_spectrum`
-    footprint power spectrum. The per-version analogue of
-    [cov_integration_g](#../outputs.cov_integration_g); same
+    ([0.5', 300'], blind A).
+    The per-version analogue of
+    [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
+  - selected_config
   - cosmology_snapshot
-  - mask_power_spectrum
-  - footprint_mask_starhalo
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
@@ -126,7 +123,7 @@ outputs:
   - covariance_class
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version SP_v1.4.6.3 --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --mask-cls {inputs.mask_power_spectrum} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.6.3)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -134,16 +131,15 @@ outputs:
 - id: cov_sp_v1p4p8
   type: data
   description: |
-    Processed Gaussian-only masked CosmoCov ξ_± covariance for
+    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.8` on the 1000-bin integration grid
-    ([0.5', 300'], blind A), computed against the `footprint_mask_starhalo`
-    footprint power spectrum. The per-version analogue of
-    [cov_integration_g](#../outputs.cov_integration_g); same
+    ([0.5', 300'], blind A).
+    The per-version analogue of
+    [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
+  - selected_config
   - cosmology_snapshot
-  - mask_power_spectrum
-  - footprint_mask_starhalo
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
@@ -153,7 +149,7 @@ outputs:
   - covariance_class
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version SP_v1.4.8 --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --mask-cls {inputs.footprint_mask_starhalo} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -161,16 +157,15 @@ outputs:
 - id: cov_sp_v1p4p8_leak_corr
   type: data
   description: |
-    Processed Gaussian-only masked CosmoCov ξ_± covariance for
+    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.8_leak_corr` on the 1000-bin integration grid
-    ([0.5', 300'], blind A), computed against the `footprint_mask_starhalo`
-    footprint power spectrum. The per-version analogue of
-    [cov_integration_g](#../outputs.cov_integration_g); same
+    ([0.5', 300'], blind A).
+    The per-version analogue of
+    [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
+  - selected_config
   - cosmology_snapshot
-  - mask_power_spectrum
-  - footprint_mask_starhalo
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
@@ -180,7 +175,7 @@ outputs:
   - covariance_class
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version SP_v1.4.8_leak_corr --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --mask-cls {inputs.footprint_mask_starhalo} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -188,16 +183,15 @@ outputs:
 - id: cov_sp_v1p4p11p3
   type: data
   description: |
-    Processed Gaussian-only masked CosmoCov ξ_± covariance for
+    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.11.3` on the 1000-bin integration grid
-    ([0.5', 300'], blind A), computed against the `mask_power_spectrum`
-    footprint power spectrum. The per-version analogue of
-    [cov_integration_g](#../outputs.cov_integration_g); same
+    ([0.5', 300'], blind A).
+    The per-version analogue of
+    [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
+  - selected_config
   - cosmology_snapshot
-  - mask_power_spectrum
-  - footprint_mask_starhalo
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
@@ -207,7 +201,7 @@ outputs:
   - covariance_class
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version SP_v1.4.11.3 --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --mask-cls {inputs.mask_power_spectrum} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -215,16 +209,15 @@ outputs:
 - id: cov_sp_v1p4p11p3_leak_corr
   type: data
   description: |
-    Processed Gaussian-only masked CosmoCov ξ_± covariance for
+    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.11.3_leak_corr` on the 1000-bin integration grid
-    ([0.5', 300'], blind A), computed against the `mask_power_spectrum`
-    footprint power spectrum. The per-version analogue of
-    [cov_integration_g](#../outputs.cov_integration_g); same
+    ([0.5', 300'], blind A).
+    The per-version analogue of
+    [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
+  - selected_config
   - cosmology_snapshot
-  - mask_power_spectrum
-  - footprint_mask_starhalo
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
@@ -234,7 +227,7 @@ outputs:
   - covariance_class
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version SP_v1.4.11.3_leak_corr --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --mask-cls {inputs.mask_power_spectrum} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -244,8 +237,9 @@ outputs:
   description: |
     The 7 scan members bundled under their
     July-canonical per-version subdirectory layout
-    `covariance_{ver}_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/{base}_processed.txt`
-    — the exact tree `cosebis_version_comparison` (`--cov-dir`) and
+    `covariance_{ver}_A_integration/{base}_processed.txt`
+    for the Gaussian-only integration covariance.
+    This is the tree `cosebis_version_comparison` (`--cov-dir`) and
     the pure E/B sweep read. Re-exported by
     [covariance.cov_sweep](#../outputs.cov_sweep); consumers untar
     it into a temp dir and pass the archive root as `--cov-dir`,
@@ -253,14 +247,17 @@ outputs:
   inputs:
   - cov_sp_v1p4p5
   - cov_sp_v1p4p5_leak_corr
-  - cov_sp_v1p4p6p3
+  - cov_fiducial_counterpart
   - cov_sp_v1p4p8
   - cov_sp_v1p4p8_leak_corr
   - cov_sp_v1p4p11p3
   - cov_sp_v1p4p11p3_leak_corr
+  decisions:
+  - fiducial_catalog
+  - leakage_correction
   recipe:
     command: |
-      python src/papers/bmodes/scripts/bundle_sweep.py --layout cov --config src/papers/bmodes/config/config.yaml --names cov_sp_v1p4p5 cov_sp_v1p4p5_leak_corr cov_sp_v1p4p6p3 cov_sp_v1p4p8 cov_sp_v1p4p8_leak_corr cov_sp_v1p4p11p3 cov_sp_v1p4p11p3_leak_corr --members {inputs.cov_sp_v1p4p5} {inputs.cov_sp_v1p4p5_leak_corr} {inputs.cov_sp_v1p4p6p3} {inputs.cov_sp_v1p4p8} {inputs.cov_sp_v1p4p8_leak_corr} {inputs.cov_sp_v1p4p11p3} {inputs.cov_sp_v1p4p11p3_leak_corr} --out-file {output}
+      python src/papers/bmodes/scripts/bundle_sweep.py --layout cov --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --leakage-correction {decisions.leakage_correction} --names cov_sp_v1p4p5 cov_sp_v1p4p5_leak_corr cov_fiducial_counterpart cov_sp_v1p4p8 cov_sp_v1p4p8_leak_corr cov_sp_v1p4p11p3 cov_sp_v1p4p11p3_leak_corr --members {inputs.cov_sp_v1p4p5} {inputs.cov_sp_v1p4p5_leak_corr} {inputs.cov_fiducial_counterpart} {inputs.cov_sp_v1p4p8} {inputs.cov_sp_v1p4p8_leak_corr} {inputs.cov_sp_v1p4p11p3} {inputs.cov_sp_v1p4p11p3_leak_corr} --out-file {output}
     resources:
       cpus: 1
       memory: 4GB

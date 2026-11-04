@@ -2,18 +2,19 @@
   "schema_version": 1,
   "output_id": "cosebis_harmonic_config",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/emit_cosebis_harmonic_config.py --config-space-evidence results/baseline/null_tests/config_space_pte_data.json --cosebis-evidence results/baseline/cosebis/cosebis_harmonic_metrics.json --cosebis-evidence-full results/baseline/cosebis/cosebis_harmonic_metrics_full.json --harmonic-version-ptes results/baseline/cosebis/cosebis_harmonic_scan/cosebis_harmonic_version_ptes.json --out-file results/baseline/cosebis_harmonic_config.csv\n",
-  "definition_version": "sha256:639273d72496287d0e14f1847c10df16cca9ff46330347460174d26e618f8fac",
+  "recipe": "python src/papers/bmodes/scripts/emit_cosebis_harmonic_config.py --config results/baseline/catalog/selected_config.yaml --config-space-evidence results/baseline/null_tests/config_space_pte_data.json --cosebis-evidence results/baseline/cosebis/cosebis_harmonic_metrics.json --cosebis-evidence-full results/baseline/cosebis/cosebis_harmonic_metrics_full.json --harmonic-version-ptes results/baseline/cosebis/cosebis_harmonic_scan/cosebis_harmonic_version_ptes.json --out-file results/baseline/cosebis_harmonic_config.csv\n",
+  "definition_version": "sha256:84cf42e7a6aa6f46199027044fc2fc154013063b9275a7b060c7eafc8e2d1d45",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:449aa286defceffb06c0edd398a7c363935d81d34791edd1ec4a06f1626e1808",
   "decisions": {},
   "input_versions": {
-    "config_space_pte_data": "sha256:81df9d17fe22c0a87e81f780356d3fa14ae8d8cd99ca90bc6ee2212ef101a790",
-    "cosebis_harmonic_modes_evidence": "sha256:95070d004a95c9c5d5d95c64b75ee0753f96f0dd7ec46a09104fa59d8bdc2ce6",
-    "cosebis_harmonic_modes_full_evidence": "sha256:2d466897293cff96f3d93e115933f53b459de015df3d997fd376a8ab0eac17dd",
-    "cosebis_harmonic_version_ptes": "sha256:1349e9bb5a68e0ed2e3a29615aac7186e85cc1fa46bab0f6e6ac0d93cee1b3db"
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "config_space_pte_data": "sha256:0af390d384c35738dfcd1964f6143ca8bf11c009b422bcf4f0c0b1226dd3f3e4",
+    "cosebis_harmonic_modes_evidence": "sha256:d7440fd26462826a759f2474cfae36b3d5f0d6d0c4ac8948a3f93d3f186db6c4",
+    "cosebis_harmonic_modes_full_evidence": "sha256:23f7d1a72f75b1e9b53dadfbada528dcc1948e7d8758da035c18e4ac2980d229",
+    "cosebis_harmonic_version_ptes": "sha256:e3b4270737c6c264668766cd09bd79ccc3f6134d5dc2a92c63b334e52e06f3e5"
   },
-  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -23,8 +24,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T11:13:01.585+00:00",
-  "finished_at": "2026-11-01T11:13:03.013+00:00",
+  "started_at": "2026-11-04T08:57:42.126+00:00",
+  "finished_at": "2026-11-04T08:57:43.306+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

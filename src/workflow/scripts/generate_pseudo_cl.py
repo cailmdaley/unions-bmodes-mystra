@@ -213,7 +213,8 @@ def _from_cli(argv=None):
         default="powspace",
         help="Ell binning mode",
     )
-    ap.add_argument("--nbins", type=int, required=True, help="Number of ell bins")
+    ap.add_argument("--nbins", type=lambda value: int(value.removeprefix("bins_")), required=True,
+                    help="Number of ell bins or harmonic_validation_binning option")
     ap.add_argument(
         "--power",
         type=float,

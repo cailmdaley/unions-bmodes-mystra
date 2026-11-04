@@ -2,8 +2,8 @@
   "schema_version": 1,
   "output_id": "fig_pte_heatmaps",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/config_space_pte_matrices.py --config src/papers/bmodes/config/config.yaml --from-evidence results/baseline/null_tests/config_space_pte_data.json --figure appendix --scale-cut-convention grid_bin_edges --pte-threshold calibrated_0p01 --out-file results/baseline/fig_pte_heatmaps.png\n",
-  "definition_version": "sha256:9e7198492d9a8587ad322e6d9b8e0fbf05e6d01b943b9df263185cc7d00c7da3",
+  "recipe": "python src/papers/bmodes/scripts/config_space_pte_matrices.py --config results/baseline/catalog/selected_config.yaml --from-evidence results/baseline/null_tests/config_space_pte_data.json --figure appendix --scale-cut-convention grid_bin_edges --pte-threshold calibrated_0p01 --out-file results/baseline/fig_pte_heatmaps.png\n",
+  "definition_version": "sha256:290101723b766fa5999801405c8e8d319a4e460ad3a837b8ad158ab5e256eba2",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:ded196e103fd37a35c35622829ede6aabe2ab1444478d6beb20451b3f5458948",
   "decisions": {
@@ -11,13 +11,14 @@
     "pte_threshold": "calibrated_0p01"
   },
   "input_versions": {
-    "config_space_pte_data": "sha256:81df9d17fe22c0a87e81f780356d3fa14ae8d8cd99ca90bc6ee2212ef101a790",
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "config_space_pte_data": "sha256:0af390d384c35738dfcd1964f6143ca8bf11c009b422bcf4f0c0b1226dd3f3e4",
     "config_space_pte_matrices_script": "sha256:79740093e14d74859b9d5522c54cf701081b0970e601a5080047e7c36ec94096",
     "print_width_script": "sha256:d1692083bf9a5226a33b7e9cc7b602f66825e21bbbad7e841d0bc8457489306a",
     "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2",
     "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
   },
-  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -27,8 +28,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T11:13:01.625+00:00",
-  "finished_at": "2026-11-01T11:13:15.275+00:00",
+  "started_at": "2026-11-04T08:56:20.931+00:00",
+  "finished_at": "2026-11-04T08:56:32.209+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

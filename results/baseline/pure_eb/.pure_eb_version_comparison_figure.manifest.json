@@ -2,21 +2,22 @@
   "schema_version": 1,
   "output_id": "pure_eb.pure_eb_version_comparison_figure",
   "universe_id": "baseline",
-  "recipe": "d=$(mktemp -d) && tar xzf results/baseline/pure_eb/pure_eb_sweep.tar.gz -C $d && python src/papers/bmodes/scripts/pure_eb_version_comparison.py --config src/papers/bmodes/config/config.yaml --results-dir $d --fiducial-version SP_v1.4.6.3_leak_corr --fiducial-pure-eb-data results/baseline/pure_eb/pure_eb_semianalytic_data.npz --scale-cut-convention grid_bin_edges --out-file results/baseline/pure_eb/pure_eb_version_comparison_figure.png\n",
-  "definition_version": "sha256:a7d242a7231748735bb7b9101c30e4ee6f8d4d10ecd12ebacbd4c9158939b64b",
+  "recipe": "d=$(mktemp -d) && tar xzf results/baseline/pure_eb/pure_eb_sweep.tar.gz -C $d && python src/papers/bmodes/scripts/pure_eb_version_comparison.py --config results/baseline/catalog/selected_config.yaml --results-dir $d --fiducial-version \"$(python src/papers/bmodes/scripts/paper_config.py --config results/baseline/catalog/selected_config.yaml --get fiducial.version)\" --fiducial-pure-eb-data results/baseline/pure_eb/pure_eb_semianalytic_data.npz --scale-cut-convention grid_bin_edges --out-file results/baseline/pure_eb/pure_eb_version_comparison_figure.png\n",
+  "definition_version": "sha256:aeb38961704dabaf44107fe70804304f9511e2784c6c6155337c4c15c29fbe6c",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:18bf08de38e2cbed210e9a68f04c3184555613134b4fe5ddfde6b478a40d6020",
   "decisions": {
     "scale_cut_convention": "grid_bin_edges"
   },
   "input_versions": {
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
     "pure_eb_semianalytic_data": "sha256:7e1374ee2882b55cec68a093330a6fbf6fbab5c50e6516f4e68844800a7f2137",
-    "pure_eb_sweep": "sha256:e1a309248b6f2711298acc3e416f234e63d052034f018973a6ad25ed9f0047b0",
+    "pure_eb_sweep": "sha256:01199964b245ad90a91494a9848898e43227e5237171422971b9bde6ee67092b",
     "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112",
     "print_width_script": "sha256:d1692083bf9a5226a33b7e9cc7b602f66825e21bbbad7e841d0bc8457489306a",
-    "pure_eb_version_comparison_script": "sha256:747b7ac6f301142dfd192e87cabf612f8ee0866b29aecd1fca6f79ddb1e5c750"
+    "pure_eb_version_comparison_script": "sha256:850603105f1eaf0fd6fb6fb0762b9999517cba6c61e6b1ecc82aca534c64cc66"
   },
-  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -26,8 +27,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T11:12:49.930+00:00",
-  "finished_at": "2026-11-01T11:13:05.837+00:00",
+  "started_at": "2026-11-04T07:49:56.388+00:00",
+  "finished_at": "2026-11-04T07:50:06.490+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

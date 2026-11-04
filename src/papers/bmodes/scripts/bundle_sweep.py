@@ -32,10 +32,8 @@ import shutil
 import tarfile
 import tempfile
 
-import yaml
-
 from sweep_versions import nonfiducial_versions
-from paper_config import load_config
+from paper_config import load_config, scan_version, select_leakage
 
 BLIND = "A"
 BINNING = "powspace"
@@ -49,10 +47,10 @@ XI_NPATCH = 1
 
 # pseudo-Cℓ: 32-bin reporting grid for every version; 96-bin fine grid only for
 # the leak-corrected versions (it exists to feed the harmonic COSEBI scan).
-CL_NBINS = (32, 96)
+CL_GRIDS = ("nbins32", "fine")
 CL_PRODUCTS = ("cl", "cl_cov")
 
-# CosmoCov integration grid (Gaussian-only, masked, blind A).
+# CosmoCov integration grid (selected class, Gaussian area-only, blind A).
 COV_GRID = dict(min_sep=0.5, max_sep=300.0, nbins=1000)
 
 # The COSEBI PTE-matrix scan has no grid axis: one gathered NPZ per version.
@@ -68,47 +66,55 @@ def munge_id(value):
     return s.strip("_")
 
 
-def _xi_map(versions):
+def _slot(ver):
+    return "fiducial_counterpart" if ver == "SP_v1.4.6.3" else munge_id(ver)
+
+
+def _xi_map(versions, config):
     out = {}
     for ver in versions:
         for grid, g in XI_GRIDS.items():
-            member = f"xi_{munge_id(ver)}_{grid}"
+            member = f"xi_{_slot(ver)}_{grid}"
+            actual = scan_version(config, ver)
             out[member] = (
-                f"{ver}_xi_minsep={g['min_sep']}_maxsep={g['max_sep']}"
+                f"{actual}_xi_minsep={g['min_sep']}_maxsep={g['max_sep']}"
                 f"_nbins={g['nbins']}_npatch={XI_NPATCH}.txt"
             )
     return out
 
 
-def _cl_map(versions):
+def _cl_map(versions, fine_nbins, config):
     out = {}
     for ver in versions:
-        for nbins in CL_NBINS:
-            if nbins == 96 and "_leak_corr" not in ver:
+        for grid in CL_GRIDS:
+            fine = grid == "fine"
+            if fine and "_leak_corr" not in ver:
                 continue  # fine grid is leak-corrected-only (harmonic COSEBI scan)
             for product in CL_PRODUCTS:
-                member = f"pseudo_{product}_{munge_id(ver)}_nbins{nbins}"
+                slot = munge_id(ver.removesuffix("_leak_corr")) if fine else _slot(ver)
+                member = f"pseudo_{product}_{slot}_{grid}"
+                actual = scan_version(config, ver, fine=fine)
+                nbins = fine_nbins if fine else 32
                 out[member] = (
-                    f"pseudo_{product}_{ver}_blind={BLIND}_{BINNING}_nbins={nbins}.fits"
+                    f"pseudo_{product}_{actual}_blind={BLIND}_{BINNING}_nbins={nbins}.fits"
                 )
     return out
 
 
-def _cov_map(versions):
+def _cov_map(versions, config):
     out = {}
     for ver in versions:
-        base = (
-            f"covariance_{ver}_{BLIND}_g_minsep={COV_GRID['min_sep']}"
-            f"_maxsep={COV_GRID['max_sep']}_nbins={COV_GRID['nbins']}_masked"
-        )
-        out[f"cov_{munge_id(ver)}"] = os.path.join(base, f"{base}_processed.txt")
+        actual = scan_version(config, ver)
+        base = f"covariance_{actual}_{BLIND}_integration"
+        out[f"cov_{_slot(ver)}"] = os.path.join(base, f"{base}_processed.txt")
     return out
 
 
-def _cosebis_ptes_map(versions):
+def _cosebis_ptes_map(versions, config):
     out = {}
     for ver in versions:
-        out[f"cosebis_ptes_{munge_id(ver)}"] = f"cosebis_ptes_{ver}_{BLIND}.npz"
+        actual = scan_version(config, ver)
+        out[f"cosebis_ptes_{_slot(ver)}"] = f"cosebis_ptes_{actual}_{BLIND}.npz"
     return out
 
 
@@ -124,10 +130,14 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--layout", required=True, choices=sorted(LAYOUTS))
     ap.add_argument("--config", required=True, help="Absolute path to bmodes config.yaml")
+    ap.add_argument("--leakage-correction", choices=["applied", "uncorrected"], default="applied")
     ap.add_argument("--names", nargs="+", required=True, help="Member output ids")
     ap.add_argument("--members", nargs="+", required=True, help="Member artifact paths")
     ap.add_argument("--out-file", required=True, help="Bundle path (lc {output})")
+    ap.add_argument("--harmonic-validation-binning", type=lambda value: int(value.removeprefix("bins_")))
     a = ap.parse_args(argv)
+    if a.layout == "cl" and a.harmonic_validation_binning is None:
+        ap.error("--layout cl requires --harmonic-validation-binning")
 
     if len(a.names) != len(a.members):
         ap.error(
@@ -135,8 +145,14 @@ def main(argv=None):
             "the same length; they come from the same expansion"
         )
 
-    config = load_config(a.config)
-    expected = LAYOUTS[a.layout](nonfiducial_versions(config))
+    # sweep_expand.py replaces gather.inputs with member IDs, so a gather
+    # cannot consume selected_config; resolve the same profile and correction.
+    config = select_leakage(load_config(a.config), a.leakage_correction)
+    # Scan IDs describe fixed roles, even when the primary catalogue is raw.
+    slot_config = dict(config, fiducial=dict(config["fiducial"], version=config["fiducial"]["version"].removesuffix("_leak_corr") + "_leak_corr"))
+    versions = nonfiducial_versions(slot_config)
+    expected = (_cl_map(versions, a.harmonic_validation_binning, config)
+                if a.layout == "cl" else LAYOUTS[a.layout](versions, config))
 
     got = dict(zip(a.names, a.members))
     unknown = sorted(set(got) - set(expected))

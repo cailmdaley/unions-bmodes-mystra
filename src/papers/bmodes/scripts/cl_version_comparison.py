@@ -30,7 +30,7 @@ from plotting_utils import (
     version_label,
 )
 from print_width import savefig_at_width
-from paper_config import load_config
+from paper_config import load_config, comparison_versions
 
 # The paper stacks Fig. 8's three version-comparison panels at 0.88\textwidth.
 STACKED_PRINT_WIDTH = 0.88 * FIG_WIDTH_FULL
@@ -93,7 +93,7 @@ def main(
     plotting_config = config["plotting"]
     version_labels = plotting_config["version_labels"]
     # Leak-corrected, non-ecut versions (matches VERSIONS_LEAK_CORR in claims.smk)
-    versions = [v for v in config["versions"] if "_leak_corr" in v and "_ecut" not in v]
+    versions = comparison_versions(config)
 
     # Which version gets the fiducial reference line in boxes
     fiducial_for_comparison = plotting_config.get(

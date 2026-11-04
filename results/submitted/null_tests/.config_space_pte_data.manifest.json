@@ -2,22 +2,23 @@
   "schema_version": 1,
   "output_id": "null_tests.config_space_pte_data",
   "universe_id": "submitted",
-  "recipe": "d_pe=$(mktemp -d) && tar xzf results/submitted/pure_eb/pure_eb_ptes.tar.gz -C $d_pe && d_cb=$(mktemp -d) && tar xzf results/submitted/cosebis/cosebis_pte_scan/cosebis_ptes_bundle.tar.gz -C $d_cb && python src/papers/bmodes/scripts/config_space_pte_matrices.py --config src/papers/bmodes/config/config.yaml --pte-intermediate-dir $d_pe --cosebis-pte-dir $d_cb --blind A --fiducial-version SP_v1.4.6.3_leak_corr --fiducial-pure-eb-pte-path results/submitted/pure_eb/pure_eb_pte_per_cut.npz --fiducial-cosebis-pte-path results/submitted/cosebis/cosebis_pte_grid/cosebis_pte_matrix.npz --emit evidence --scale-cut-convention grid_bin_edges --out-file results/submitted/null_tests/config_space_pte_data.json\n",
-  "definition_version": "sha256:ef84d80eddd2088cc22e6b61e442813103c6d291030afffae8df9984ec9a947d",
+  "recipe": "d_pe=$(mktemp -d) && tar xzf results/submitted/pure_eb/pure_eb_ptes.tar.gz -C $d_pe && d_cb=$(mktemp -d) && tar xzf results/submitted/cosebis/cosebis_pte_scan/cosebis_ptes_bundle.tar.gz -C $d_cb && python src/papers/bmodes/scripts/config_space_pte_matrices.py --config results/submitted/catalog/selected_config.yaml --pte-intermediate-dir $d_pe --cosebis-pte-dir $d_cb --blind A --fiducial-version \"$(python src/papers/bmodes/scripts/paper_config.py --config results/submitted/catalog/selected_config.yaml --get fiducial.version)\" --fiducial-pure-eb-pte-path results/submitted/pure_eb/pure_eb_pte_per_cut.npz --fiducial-cosebis-pte-path results/submitted/cosebis/cosebis_pte_grid/cosebis_pte_matrix.npz --emit evidence --scale-cut-convention grid_bin_edges --out-file results/submitted/null_tests/config_space_pte_data.json\n",
+  "definition_version": "sha256:a024d5a63a76f3884205929b8ee428298abcd9c8a865dde1f78c9848f038ee27",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:575dcb3bf1c7a58e6e4c13af3b3f35a7533e5e95df5135e2598dc8326b0bbc82",
+  "data_version": "sha256:5e0de818cd3ea1cf57055d71e088d9941cf2e3e8c558563a5e4e45109aa40e4d",
   "decisions": {
     "scale_cut_convention": "grid_bin_edges"
   },
   "input_versions": {
-    "pure_eb_ptes": "sha256:f0a8316c699872f7af3e187bb4b189f127fc6dc171cf343f0cca94237eaceff1",
-    "cosebis_ptes": "sha256:e18d9ec30c47ff67ed3510ee144b454d450ae8adf00b3aea592450e5cacd9571",
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "pure_eb_ptes": "sha256:a180da9260d07da164ced268021b31c83d05a93217c975474d94a029312b273b",
+    "cosebis_ptes": "sha256:044ca510f15da6f124f6b8fa47181d346e5f4348c658f0129016feec34b1ca7a",
     "pure_eb_pte_per_cut": "sha256:bf32f1b6481b930e6fcaa08dda65171e382a1ba2e743e589c63b4f3ee26c76e3",
     "cosebis_pte_per_cut": "sha256:ddd441675fa706030fd26863a3455e120abf87f8406e5f39e9475ecaa491bc79",
     "config_space_pte_matrices_script": "sha256:79740093e14d74859b9d5522c54cf701081b0970e601a5080047e7c36ec94096",
     "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2"
   },
-  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -27,8 +28,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T09:08:02.733+00:00",
-  "finished_at": "2026-11-01T09:08:08.707+00:00",
+  "started_at": "2026-11-04T08:58:07.235+00:00",
+  "finished_at": "2026-11-04T08:58:13.635+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

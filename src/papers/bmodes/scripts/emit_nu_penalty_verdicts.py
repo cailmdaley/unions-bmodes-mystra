@@ -77,7 +77,7 @@ def harmonic_rows(evidence):
     yield "cl_BB", "full_range", len(ell), float(evidence["pte_at_full_range"])
 
 
-def penalized_rows(config_space, harmonic, n_fid_bins):
+def penalized_rows(config_space, harmonic, n_fid_bins, uncorrected=False):
     """One row per (version × statistic × cut) with its ν−2 PTE.
 
     *config_space* / *harmonic* are the ``evidence.versions`` mappings of the
@@ -85,6 +85,8 @@ def penalized_rows(config_space, harmonic, n_fid_bins):
     """
     rows = []
     for label, version in VERSIONS:
+        if uncorrected:
+            version = version.removesuffix("_leak_corr")
         entries = list(
             config_space_rows(label, version, config_space[version], n_fid_bins)
         )
@@ -133,7 +135,8 @@ def main():
     with open(args.harmonic_space_evidence) as f:
         harmonic = json.load(f)["evidence"]["versions"]
 
-    rows = penalized_rows(config_space, harmonic, n_fid_bins)
+    rows = penalized_rows(config_space, harmonic, n_fid_bins,
+                          uncorrected=config.get("leakage_correction") == "uncorrected")
 
     with open(args.out_file, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0]))

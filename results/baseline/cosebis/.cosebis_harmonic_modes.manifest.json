@@ -2,10 +2,10 @@
   "schema_version": 1,
   "output_id": "cosebis.cosebis_harmonic_modes",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --angular-range fiducial --blind A --fiducial-version \"$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --get fiducial.version)\" --fiducial-pseudo-cl-path results/baseline/cl_bb/cl_bandpowers_fine.fits --fiducial-pseudo-cl-cov-path results/baseline/covariance/cl_cov_fine.fits --fiducial-xi-path results/baseline/two_point/xi_integration.txt --fiducial-cov-path results/baseline/covariance/cov_integration_g.txt --scale-cut-convention grid_bin_edges --out-file results/baseline/cosebis/cosebis_harmonic_modes.npz\n",
-  "definition_version": "sha256:ef6d6b5d890fd1aa53527bda44de01ee103b13f859babd86c204a9536dba7d30",
+  "recipe": "python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py --config results/baseline/catalog/selected_config.yaml --angular-range fiducial --blind A --harmonic-validation-binning bins_96 --fiducial-version \"$(python src/papers/bmodes/scripts/paper_config.py --config results/baseline/catalog/selected_config.yaml --get fiducial.version)\" --fiducial-pseudo-cl-path results/baseline/cl_bb/cl_bandpowers_fine.fits --fiducial-pseudo-cl-cov-path results/baseline/covariance/cl_cov_fine.fits --fiducial-xi-path results/baseline/two_point/xi_integration.txt --fiducial-cov-path results/baseline/covariance/cov_integration.txt --scale-cut-convention grid_bin_edges --out-file results/baseline/cosebis/cosebis_harmonic_modes.npz\n",
+  "definition_version": "sha256:6f4ef72e73ac2d5cc14f6dd106856c3528d6d47019abe85372581a37df087422",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:b7c8e9ecd6d92641e63ac8da4234888983e87710821fb54dd8ca0754514907c0",
+  "data_version": "sha256:8de8f9189b33106f41b23a79d8c4b3ca58051d7110e43b1e416814ee3615f01b",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a",
@@ -13,12 +13,13 @@
     "scale_cut_convention": "grid_bin_edges"
   },
   "input_versions": {
-    "cl_bandpowers_fine": "sha256:b27f1d2281ff9f1e521b9f87a73e132945d6a693083e3817e3a6beb62542a00b",
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "cl_bandpowers_fine": "sha256:b4dc10a0ff57c04df5780e6878e84aad01881a702e701cf1c3b56e54e398b289",
     "cl_cov_fine": "sha256:0be0418853c9f0d6769fde4f628c78b8d7ea229c608d19ff009d62c663e74dec",
-    "xi_integration": "sha256:d26445847fdd07a235460833df86c19950577b5051de2843beed73622d026a99",
-    "cov_integration_g": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052"
+    "xi_integration": "sha256:ac1981ed80625d173b650eb6343d6c2318a8afd53b67c178d0599cf512c0a7ef",
+    "cov_integration": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052"
   },
-  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -28,8 +29,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T08:01:27.222+00:00",
-  "finished_at": "2026-11-01T08:02:42.820+00:00",
+  "started_at": "2026-11-03T23:58:44.814+00:00",
+  "finished_at": "2026-11-03T23:59:55.580+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "output_id": "glass_mocks.mock_min_pte_calibration",
   "universe_id": "baseline",
-  "recipe": "python src/workflow/scripts/mock_min_pte_calibration.py --per-mock-statistics results/baseline/glass_mocks/mock_per_mock_statistics.npz --pure-eb-pte results/baseline/pure_eb/pure_eb_pte_per_cut.npz --cosebis-pte results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_matrix.npz --cl-pte results/baseline/cl_bb/cl_pte_per_cut.npz --config src/papers/bmodes/config/config.yaml --scale-cut-convention grid_bin_edges --out-file results/baseline/glass_mocks/mock_min_pte_calibration.json\n",
-  "definition_version": "sha256:39c6a1abf1c07f995808b4117bdc89bb9f2e630c594e73c31980faa839b1e105",
+  "recipe": "python src/workflow/scripts/mock_min_pte_calibration.py --per-mock-statistics results/baseline/glass_mocks/mock_per_mock_statistics.npz --pure-eb-pte results/baseline/pure_eb/pure_eb_pte_per_cut.npz --cosebis-pte results/baseline/cosebis/cosebis_pte_grid/cosebis_pte_matrix.npz --cl-pte results/baseline/cl_bb/cl_pte_per_cut.npz --config results/baseline/catalog/selected_config.yaml --scale-cut-convention grid_bin_edges --out-file results/baseline/glass_mocks/mock_min_pte_calibration.json\n",
+  "definition_version": "sha256:d34cca8cc0a26490bc7477d31b20f46f794f85ae21dd6e23267f6c5831e77591",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:e4801514036da97b9ace2269066e85db6e649c38b9340a6a030c4890828db603",
   "decisions": {
@@ -12,13 +12,14 @@
     "scale_cut_convention": "grid_bin_edges"
   },
   "input_versions": {
-    "mock_per_mock_statistics": "sha256:7268c80db3498a58fbaf93282ee4db20341ae80bd9e2947d164034f5c58babb4",
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "mock_per_mock_statistics": "sha256:08e23e1456e4279ab5664ff4916cd95e6a762c2071d3bec5c14a5fe4b5d157a7",
     "pure_eb_pte_per_cut": "sha256:3799ab57187bcce2250d56f8f370d00701e04798cfa1bb05f204c4a8fa0b5834",
     "cosebis_pte_per_cut": "sha256:ddd441675fa706030fd26863a3455e120abf87f8406e5f39e9475ecaa491bc79",
-    "cl_pte_per_cut": "sha256:6edfbd63f137c660b664f38fdb5e18daf6f08a8b220981d61146f0344626cf90",
+    "cl_pte_per_cut": "sha256:637c8df7857384463375cbebf4282d92176b39feab129b9776a8000f0fe80cbb",
     "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2"
   },
-  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -28,8 +29,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T11:12:49.954+00:00",
-  "finished_at": "2026-11-01T11:12:51.830+00:00",
+  "started_at": "2026-11-04T08:56:14.533+00:00",
+  "finished_at": "2026-11-04T08:56:15.746+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

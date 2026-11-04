@@ -32,7 +32,7 @@ PSCRIPTS=$VENDOR_ROOT/papers/bmodes/scripts
 CONFIG=""; CATCONFIG=""; XISWEEP=""; COVSWEEP=""; OUT=""; BLIND="A"; VERSIONS=""
 # No default: the pure_eb_integration_method and pure_eb_rebinning_weights
 # decisions are the source of truth.
-INTMETHOD=""; INTLIMITS=""; REBINWEIGHTS=""; COVMETHOD=""
+INTMETHOD=""; INTLIMITS=""; REBINWEIGHTS=""; COVMETHOD=""; NSAMPLES=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --config) CONFIG="$2"; shift 2;;
@@ -46,6 +46,7 @@ while [ $# -gt 0 ]; do
     --integration-limits) INTLIMITS="$2"; shift 2;;
     --rebinning-weights) REBINWEIGHTS="$2"; shift 2;;
     --covariance-method) COVMETHOD="$2"; shift 2;;
+    --n-samples) NSAMPLES="$2"; shift 2;;
     *) echo "unknown arg: $1" >&2; exit 2;;
   esac
 done
@@ -54,6 +55,7 @@ done
 [ -n "$INTLIMITS" ] || { echo "--integration-limits is required" >&2; exit 2; }
 [ -n "$REBINWEIGHTS" ] || { echo "--rebinning-weights is required" >&2; exit 2; }
 [ -n "$COVMETHOD" ] || { echo "--covariance-method is required" >&2; exit 2; }
+[ -n "$NSAMPLES" ] || { echo "--n-samples is required" >&2; exit 2; }
 
 mkdir -p "$OUT"
 
@@ -64,7 +66,7 @@ fi
 for ver in $VERSIONS; do
   xirep="$XISWEEP/${ver}_xi_minsep=1.0_maxsep=250.0_nbins=20_npatch=1.txt"
   xiint="$XISWEEP/${ver}_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt"
-  covbase="covariance_${ver}_${BLIND}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked"
+  covbase="covariance_${ver}_${BLIND}_integration"
   covint="$COVSWEEP/$covbase/${covbase}_processed.txt"
   for f in "$xirep" "$xiint" "$covint"; do
     [ -f "$f" ] || { echo "MISSING upstream input for $ver: $f" >&2; exit 1; }
@@ -77,7 +79,7 @@ for ver in $VERSIONS; do
     --integration-method "$INTMETHOD" \
     --integration-limits "$INTLIMITS" \
     --rebinning-weights "$REBINWEIGHTS" \
-    --covariance-method "$COVMETHOD" \
+    --covariance-method "$COVMETHOD" --n-samples "$NSAMPLES" \
     --out "$stage"
   mv "$stage/${ver}_${BLIND}_pure_eb_semianalytic.npz" \
      "$OUT/${ver}_${BLIND}_pure_eb_semianalytic.npz"

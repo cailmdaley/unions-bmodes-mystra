@@ -25,6 +25,8 @@ description: |
 tags: [glass, mocks, covariance, referee]
 
 inputs:
+  - id: selected_config
+    from: ../catalog.selected_config
 
   - id: glass_mock_catalogs
     type: data
@@ -63,8 +65,8 @@ inputs:
   - id: xi_reporting
     from: ../two_point.xi_reporting
 
-  - id: cov_integration_g
-    from: ../covariance.cov_integration_g
+  - id: cov_integration
+    from: ../covariance.cov_integration
 
   - id: pure_eb_semianalytic_data
     from: ../pure_eb.pure_eb_semianalytic_data
@@ -90,7 +92,7 @@ inputs:
   - id: cov_integration_mockmatched
     type: data
     description: |
-      The [cov_integration_g](#inputs.cov_integration_g) CosmoCov
+      The [cov_integration](#inputs.cov_integration) CosmoCov
       ξ_± covariance recomputed at the mocks' noise: `source_n_gal =
       5.79308 arcmin⁻²` and `sigma_e = 0.37926` (0.26817 per
       component) at the fiducial `area = 2894.0304 deg²`. It is the
@@ -352,7 +354,7 @@ outputs:
       as it does for COSEBIs. Used when
       [reference_covariance](#decisions.reference_covariance) is
       `mockmatched`.
-    inputs: [cov_integration_mockmatched, xi_reporting, xi_integration, redshift_distributions]
+    inputs: [selected_config, cov_integration_mockmatched, xi_reporting, xi_integration, redshift_distributions]
     decisions: [fiducial_catalog, fiducial_blind, mc_samples, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method]
     recipe:
       # mock_matched_pure_eb_cov.py is precompute_pure_eb_chunk + gather in one
@@ -384,13 +386,13 @@ outputs:
         --cov-integration {inputs.cov_integration_mockmatched}
         --xi-reporting {inputs.xi_reporting}
         --xi-integration {inputs.xi_integration}
-        --version SP_v1.4.6.3_leak_corr --blind A
+        --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)" --blind A
         --cat-config src/cosmo_val/cat_config.yaml
         --integration-method {decisions.pure_eb_integration_method}
         --integration-limits {decisions.pure_eb_integration_limits}
         --rebinning-weights {decisions.pure_eb_rebinning_weights}
         --covariance-method {decisions.pure_eb_covariance_method}
-        --n-samples 2000 --seed 42 --out {output}
+        --n-samples {decisions.mc_samples} --seed 42 --out {output}
       resources: { cpus: 24, memory: "60GB" }
 
   # ── The six-statistic campaign: compute once, then derive ────────────────
@@ -409,7 +411,7 @@ outputs:
       Also carries the analytic σ vectors on both ranges, the cut
       masks, and the covariance triple, scale cuts and any skipped
       realisations. Every campaign number derives from this file.
-    inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, mock_xi_fine, glass_mock_cl, xi_integration, cov_integration_g, pure_eb_semianalytic_data, cl_cov_reporting, cov_integration_mockmatched, pure_cov_mockmatched, cl_cov_mockmatched]
+    inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, mock_xi_fine, glass_mock_cl, xi_integration, cov_integration, pure_eb_semianalytic_data, cl_cov_reporting, cov_integration_mockmatched, pure_cov_mockmatched, cl_cov_mockmatched]
     decisions: [reference_covariance, mock_suite, scale_cut_convention, fiducial_catalog, fiducial_blind]
     recipe:
       # --reference-covariance picks the covariance triple; under `mockmatched`
@@ -427,7 +429,7 @@ outputs:
         --fine-ensemble {inputs.mock_xi_fine}
         --cl-dir "$(dirname "$(printf '%s\n' "{inputs.glass_mock_cl}" | head -n1)")"
         --cosebis-xi-grid {inputs.xi_integration}
-        --cosebis-cov {inputs.cov_integration_g}
+        --cosebis-cov {inputs.cov_integration}
         --pure-cov {inputs.pure_eb_semianalytic_data}
         --cl-cov {inputs.cl_cov_reporting}
         --cosebis-cov-mockmatched {inputs.cov_integration_mockmatched}
@@ -455,7 +457,7 @@ outputs:
       matrix cells and all 32 C_ℓ bands (1–250 arcmin / 8≤ℓ≤2048).
       The mock PTE distributions use the matching covariance window,
       including Hartlap-corrected pure-mode statistics.
-    inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, scale_cuts_script]
+    inputs: [selected_config, mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, scale_cuts_script]
     decisions: [reference_covariance, mock_suite, scale_cut_convention]
     recipe:
       command: >
@@ -464,7 +466,7 @@ outputs:
         --pure-eb-pte {inputs.pure_eb_pte_per_cut}
         --cosebis-pte {inputs.cosebis_pte_per_cut}
         --cl-pte {inputs.cl_pte_per_cut}
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 1, memory: "8GB" }
@@ -485,7 +487,7 @@ outputs:
       effects that largely cancel: correlations between the statistics
       raise the minimum PTE, while the slightly underestimated
       configuration-space covariance lowers it.
-    inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, mock_min_pte_calibration_script, plotting_utils_script, scale_cuts_script, paper_mplstyle]
+    inputs: [selected_config, mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, mock_min_pte_calibration_script, plotting_utils_script, scale_cuts_script, paper_mplstyle]
     decisions: [reference_covariance, mock_suite, scale_cut_convention, pte_threshold]
     recipe:
       command: >
@@ -494,7 +496,7 @@ outputs:
         --pure-eb-pte {inputs.pure_eb_pte_per_cut}
         --cosebis-pte {inputs.cosebis_pte_per_cut}
         --cl-pte {inputs.cl_pte_per_cut}
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --scale-cut-convention {decisions.scale_cut_convention}
         --pte-threshold {decisions.pte_threshold}
         --emit figure --out-file {output}
@@ -533,7 +535,7 @@ outputs:
       excluded from summaries: the COSEBI basis is too ill-conditioned
       over one reporting bin (median mock B_{n≤20} PTE 0.13 there,
       against ~0.45 on every window of two bins or more).
-    inputs: [mock_per_mock_statistics, mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration_g, pure_eb_semianalytic_data, cov_integration_mockmatched, pure_cov_mockmatched, min_pte_window_scan_script]
+    inputs: [mock_per_mock_statistics, mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration, pure_eb_semianalytic_data, cov_integration_mockmatched, pure_cov_mockmatched, min_pte_window_scan_script]
     decisions: [reference_covariance, mock_suite]
     recipe:
       # --reference-covariance selects the pair, exactly as it does for
@@ -545,7 +547,7 @@ outputs:
         --mock-xi-fine {inputs.mock_xi_fine}
         --mock-pure-eb-modes {inputs.mock_pure_eb_modes}
         --cosebis-xi-grid {inputs.xi_integration}
-        --covariance {inputs.cov_integration_g}
+        --covariance {inputs.cov_integration}
         --pure-covariance {inputs.pure_eb_semianalytic_data}
         --covariance-mockmatched {inputs.cov_integration_mockmatched}
         --pure-covariance-mockmatched {inputs.pure_cov_mockmatched}
@@ -779,14 +781,14 @@ outputs:
       sits at ≈−0.1σ in the first three bins against a ≈0.055σ error,
       a small-scale residual the cut excludes, so ξ_+^B reads PTE 0.004
       on the full range and 0.13 inside the cut.
-    inputs: [mock_per_mock_statistics, scale_cuts_script]
+    inputs: [selected_config, mock_per_mock_statistics, scale_cuts_script]
     decisions: [reference_covariance, scale_cut_convention]
     recipe:
       command: >
         python src/workflow/scripts/mock_mean_vector_plot.py
         --stats {inputs.mock_per_mock_statistics}
         --label {decisions.reference_covariance}
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --scale-cut-convention {decisions.scale_cut_convention}
         --emit stats --out-file {output}
       resources: { cpus: 1, memory: "2GB" }

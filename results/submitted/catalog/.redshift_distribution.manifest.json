@@ -2,8 +2,8 @@
   "schema_version": 1,
   "output_id": "catalog.redshift_distribution",
   "universe_id": "submitted",
-  "recipe": "python src/papers/bmodes/scripts/catalog_products.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --cat-config src/cosmo_val/cat_config.yaml --emit redshift_distribution --blind blind_a --out-file results/submitted/catalog/redshift_distribution.txt\n",
-  "definition_version": "sha256:d9b0a1bd8f1be5fbd207ba150156aec19b70bf345c751556c38b0397de0a5efe",
+  "recipe": "python src/papers/bmodes/scripts/catalog_products.py --config results/submitted/catalog/selected_config.yaml --cat-config src/cosmo_val/cat_config.yaml --emit redshift_distribution --blind blind_a --out-file results/submitted/catalog/redshift_distribution.txt\n",
+  "definition_version": "sha256:af77ac24ab268d4309da312fa1f791d4acb545b404569333d1a15250202185f5",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:0d712922bf6edc27600b4035cc236cccd3aa73fbd4f2bc426c3914b9a924cbe8",
   "decisions": {
@@ -11,9 +11,10 @@
     "fiducial_blind": "blind_a"
   },
   "input_versions": {
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
     "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da"
   },
-  "git_sha": "9f201d2234a899be9a019bba4acbdd4477452688",
+  "git_sha": "e3e85c6429bbfc19124dba4416a1bce9bf09ee86",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -23,8 +24,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-30T02:22:21.843+00:00",
-  "finished_at": "2026-10-30T02:22:24.975+00:00",
+  "started_at": "2026-11-03T19:39:54.252+00:00",
+  "finished_at": "2026-11-03T19:39:55.311+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

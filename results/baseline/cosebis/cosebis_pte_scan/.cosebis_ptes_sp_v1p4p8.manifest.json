@@ -2,21 +2,21 @@
   "schema_version": 1,
   "output_id": "cosebis.cosebis_pte_scan.cosebis_ptes_sp_v1p4p8",
   "universe_id": "baseline",
-  "recipe": "# lc runs recipes as `bash -c` with no `set -e`, so without this a failed\n# compute would exit 0 via the trailing `rm` and lc would commit a\n# truncated artifact as successfully produced.\nset -e\nx=$(mktemp -d) && tar xzf results/baseline/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/baseline/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c\n# NB: braced shell expansions cannot be used in a sweep template \u2014 the\n# expander claims that syntax. Bare $cb only.\ncb=covariance_SP_v1.4.8_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked\npython src/papers/bmodes/scripts/compute_cosebis_pte_single.py \\\n  --config src/papers/bmodes/config/config.yaml \\\n  --xi-integration $x/SP_v1.4.8_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n  --cov-integration \"$c/$cb/$cb\"_processed.txt \\\n  --version SP_v1.4.8 --blind A \\\n  --out-file results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8.npz\nrm -rf \"$x\" \"$c\"\n",
-  "definition_version": "sha256:6c1a2b34d5bd4b17572156cec73642ed932302f6d6cba11d0d7a133481dcbba8",
+  "recipe": "# lc runs recipes as `bash -c` with no `set -e`, so without this a failed\n# compute would exit 0 via the trailing `rm` and lc would commit a\n# truncated artifact as successfully produced.\nset -e\nx=$(mktemp -d) && tar xzf results/baseline/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/baseline/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c\n# NB: braced shell expansions cannot be used in a sweep template \u2014 the\n# expander claims that syntax. Bare $cb only.\nver=$(python src/papers/bmodes/scripts/paper_config.py --config results/baseline/catalog/selected_config.yaml --scan-version SP_v1.4.8)\ncb=covariance_\"$ver\"_A_integration\npython src/papers/bmodes/scripts/compute_cosebis_pte_single.py \\\n  --config results/baseline/catalog/selected_config.yaml \\\n  --xi-integration \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n  --cov-integration \"$c/$cb/$cb\"_processed.txt \\\n  --version $ver --blind A \\\n  --out-file results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8.npz\nrm -rf \"$x\" \"$c\"\n",
+  "definition_version": "sha256:de1dd004cce8fe65f4ad20759fc194c547ab9ac36b9249d6f8217b9e837c4004",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:9648e611ffcdaa7a094619ecd3918c0b1951ab00121994ab29ff44df47cf5608",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a",
-    "scale_cut_pair_grid": "production_grid",
-    "mode_subsets": "n_le_6_and_n_le_20"
+    "scale_cut_pair_grid": "production_grid"
   },
   "input_versions": {
-    "xi_sweep": "sha256:7fc08adb89612287f737c7e85bb1adb2a52f979822e3aab5b6e6b28384c19842",
-    "cov_sweep": "sha256:21ac449a96f0874a54a6c307e1eeda23e84a5912ae031783746c9d9924d9acd8"
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "xi_sweep": "sha256:a21ed886d33d8b4ff68b27fe4457161b2260053b7f391770d11db86fec85ab71",
+    "cov_sweep": "sha256:7503199d43b0381627fecea743b03f82b7e75d754847cdd03800362411eed766"
   },
-  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -26,8 +26,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T05:41:36.427+00:00",
-  "finished_at": "2026-11-01T05:46:08.510+00:00",
+  "started_at": "2026-11-04T07:45:29.439+00:00",
+  "finished_at": "2026-11-04T07:49:35.725+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

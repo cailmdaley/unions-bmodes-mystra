@@ -2,10 +2,10 @@
   "schema_version": 1,
   "output_id": "glass_mocks.mock_per_mock_statistics",
   "universe_id": "submitted",
-  "recipe": "python src/workflow/scripts/mock_campaign_analysis.py --cosebis-ensemble results/submitted/glass_mocks/mock_cosebis_modes.npz --cosebis-ensemble-full results/submitted/glass_mocks/mock_cosebis_modes_full.npz --pure-ensemble results/submitted/glass_mocks/mock_pure_eb_modes.npz --fine-ensemble results/submitted/glass_mocks/mock_xi_scan/mock_xi_fine.npz --cl-dir \"$(dirname \"$(printf '%s\\n' \"/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/cl_glass_mock_*_4096.npy\" | head -n1)\")\" --cosebis-xi-grid results/submitted/two_point/xi_integration.txt --cosebis-cov results/submitted/covariance/cov_integration_g.txt --pure-cov results/submitted/pure_eb/pure_eb_semianalytic_data.npz --cl-cov results/submitted/covariance/cl_cov_reporting.fits --cosebis-cov-mockmatched /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt --pure-cov-mockmatched results/submitted/glass_mocks/pure_cov_mockmatched.npz --cl-cov-mockmatched /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/glass_mock_v1.4.6.3_v2/pseudo_cl_cov_glass_mock_v2_00001_powspace_nbins=32.fits --reference-covariance mockmatched --scale-cut-convention grid_bin_edges --label mockmatched --emit-stats results/submitted/glass_mocks/mock_per_mock_statistics.npz\n",
-  "definition_version": "sha256:d89b6fa15265426a039a64f3d4164f63e8efe1501ee7ca02902eaf58de4523de",
+  "recipe": "python src/workflow/scripts/mock_campaign_analysis.py --cosebis-ensemble results/submitted/glass_mocks/mock_cosebis_modes.npz --cosebis-ensemble-full results/submitted/glass_mocks/mock_cosebis_modes_full.npz --pure-ensemble results/submitted/glass_mocks/mock_pure_eb_modes.npz --fine-ensemble results/submitted/glass_mocks/mock_xi_scan/mock_xi_fine.npz --cl-dir \"$(dirname \"$(printf '%s\\n' \"/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/cl_glass_mock_*_4096.npy\" | head -n1)\")\" --cosebis-xi-grid results/submitted/two_point/xi_integration.txt --cosebis-cov results/submitted/covariance/cov_integration.txt --pure-cov results/submitted/pure_eb/pure_eb_semianalytic_data.npz --cl-cov results/submitted/covariance/cl_cov_reporting.fits --cosebis-cov-mockmatched /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt --pure-cov-mockmatched results/submitted/glass_mocks/pure_cov_mockmatched.npz --cl-cov-mockmatched /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/glass_mock_v1.4.6.3_v2/pseudo_cl_cov_glass_mock_v2_00001_powspace_nbins=32.fits --reference-covariance mockmatched --scale-cut-convention grid_bin_edges --label mockmatched --emit-stats results/submitted/glass_mocks/mock_per_mock_statistics.npz\n",
+  "definition_version": "sha256:b43f32f734f5e51bc76882b4db518ff6ed1fdfd2acde3307b12d30a2054d9e5e",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:09ad203d5b0b39ef25face2ba90e9483b888068782ebb3f58a15c8e66d05920b",
+  "data_version": "sha256:1f4ba097281123c41a3bf3430bbe3305b05546223b4a2eec6fa9b86a9fac0f8b",
   "decisions": {
     "reference_covariance": "mockmatched",
     "mock_suite": "v1_4_6_3_v2",
@@ -19,15 +19,15 @@
     "mock_pure_eb_modes": "sha256:52c1f7a9b74fa6b51035dde23520502b4033047acdda8b5907d17e9b8eac056f",
     "mock_xi_fine": "sha256:a391f778064c7c4586c781b591d96a17b1ee453c16495e89c517fb13420578f2",
     "glass_mock_cl": "spelling:sha256:16549de17bf54f1265107d167a350b66c0ade3b99b6d5a100b7ccb06f5082838",
-    "xi_integration": "sha256:4b17cfb4e427aa79a84bd70e566bb7f884e1b758600a454db8109ad8733a2d15",
-    "cov_integration_g": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052",
+    "xi_integration": "sha256:e1cc380e331f17cd54d7ae9442f8b7dcb6638220cec2ebe536f351c5a7488aec",
+    "cov_integration": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052",
     "pure_eb_semianalytic_data": "sha256:30545d1677df98c92d8e794858db83a015b0c213080dee381c13ed54d7c99dbe",
     "cl_cov_reporting": "sha256:76c73b28a865f3b476270354bb2a2b2164070b203cc1d435a32bc69a96bb500f",
     "cov_integration_mockmatched": "sha256:a65ee4c8beac7c53d45db38c2aac9226628ccd921151d27227e6a15078646780",
     "pure_cov_mockmatched": "sha256:8c8313c6cc0c72bf5cfb736927c3e92188c10eb7d0107f7be7a66de35f479067",
     "cl_cov_mockmatched": "sha256:2cb0d9f56a0c917dea9bc21d7a86e0651c7878444e7d15cd1ef16d2076af592c"
   },
-  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -37,8 +37,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T10:20:55.730+00:00",
-  "finished_at": "2026-11-01T10:21:42.884+00:00",
+  "started_at": "2026-11-04T03:39:15.775+00:00",
+  "finished_at": "2026-11-04T03:40:04.715+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

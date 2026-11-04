@@ -434,7 +434,7 @@ def _parser(argv=None):
         "--cat-config", required=True, help="Path to cat_config.yaml"
     )
     parser.add_argument("--out", required=True, help="Final .npz output path")
-    parser.add_argument("--n-samples", type=int, default=2000)
+    parser.add_argument("--n-samples", type=lambda value: int(value.removeprefix("n_")), required=True)
     parser.add_argument(
         "--n-batches",
         "--n-chunks",

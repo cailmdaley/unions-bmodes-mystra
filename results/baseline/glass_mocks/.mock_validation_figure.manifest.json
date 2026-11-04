@@ -11,14 +11,14 @@
     "mock_suite": "v1_4_6_3_v2"
   },
   "input_versions": {
-    "mock_per_mock_statistics": "sha256:7268c80db3498a58fbaf93282ee4db20341ae80bd9e2947d164034f5c58babb4",
-    "mock_campaign_evidence": "sha256:d732e0a15b617bd14af3c2f095b67f42314919c28cb625bcac35a0d7d6d09f81",
+    "mock_per_mock_statistics": "sha256:08e23e1456e4279ab5664ff4916cd95e6a762c2071d3bec5c14a5fe4b5d157a7",
+    "mock_campaign_evidence": "sha256:60b95ae690fedf9920c5eaacec5abe72e1699d212c77d8598d0a15303e1ff8f5",
     "glass_mock_cl": "spelling:sha256:16549de17bf54f1265107d167a350b66c0ade3b99b6d5a100b7ccb06f5082838",
     "mock_validation_figure_script": "sha256:32465fa9eb24688c9b226b286751818a104b7365d6b169a006177e49ad66b543",
     "plotting_utils_script": "sha256:e53c7b42f75838d1d6b63327bd72e7c2a3f3d5b22b4e00e67df32a409552a0da",
     "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
   },
-  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -28,8 +28,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T11:12:49.954+00:00",
-  "finished_at": "2026-11-01T11:13:07.322+00:00",
+  "started_at": "2026-11-04T00:00:05.474+00:00",
+  "finished_at": "2026-11-04T00:00:15.321+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

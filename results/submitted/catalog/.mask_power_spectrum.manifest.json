@@ -2,17 +2,18 @@
   "schema_version": 1,
   "output_id": "catalog.mask_power_spectrum",
   "universe_id": "submitted",
-  "recipe": "python src/papers/bmodes/scripts/catalog_products.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --cat-config src/cosmo_val/cat_config.yaml --emit mask_power_spectrum --out-file results/submitted/catalog/mask_power_spectrum.txt\n",
-  "definition_version": "sha256:6f954db40dbe474a305d38d152e7cd354f32acb341955a2b15e0a1e1896a8ff0",
+  "recipe": "python src/papers/bmodes/scripts/catalog_products.py --config results/submitted/catalog/selected_config.yaml --cat-config src/cosmo_val/cat_config.yaml --emit mask_power_spectrum --out-file results/submitted/catalog/mask_power_spectrum.txt\n",
+  "definition_version": "sha256:26fdeb3416f18fed530e0b85409812d37bb95aa06f3852e90330c1a70424cf86",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:043c512476658dea60273e095e88b00e3b73559cfea394d1bda35e9548c576cb",
   "decisions": {
     "fiducial_catalog": "size_cut"
   },
   "input_versions": {
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
     "footprint_masks": "sha256:043c512476658dea60273e095e88b00e3b73559cfea394d1bda35e9548c576cb"
   },
-  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -22,8 +23,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-30T09:47:57.547+00:00",
-  "finished_at": "2026-10-30T09:47:58.972+00:00",
+  "started_at": "2026-11-04T02:18:54.082+00:00",
+  "finished_at": "2026-11-04T02:18:54.776+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

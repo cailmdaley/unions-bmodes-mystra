@@ -2,8 +2,8 @@
   "schema_version": 1,
   "output_id": "covariance.cov_scan.cov_sp_v1p4p8",
   "universe_id": "submitted",
-  "recipe": "bash src/workflow/scripts/run_cosmocov_chain.sh --version SP_v1.4.8 --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g --planck18-json results/submitted/covariance/cosmology_snapshot.json --cat-config src/cosmo_val/cat_config.yaml --cosmocov /n23data1/n06data/lgoh/scratch/UNIONS/CosmoCov/covs/cov --libgsl /lib64/libgsl.so.23.1.0 --mask-cls /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_starhalo_nside_4096_norm.txt --emit processed --out-file results/submitted/covariance/cov_scan/cov_sp_v1p4p8.txt\n",
-  "definition_version": "sha256:3b02a88f49fcec20b350af2f25d6ce96c20f9a16c833d5844677963317d763b5",
+  "recipe": "bash src/workflow/scripts/run_cosmocov_chain.sh --version \"$(python src/papers/bmodes/scripts/paper_config.py --config results/submitted/catalog/selected_config.yaml --scan-version SP_v1.4.8)\" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian gaussian_only --planck18-json results/submitted/covariance/cosmology_snapshot.json --cat-config src/cosmo_val/cat_config.yaml --cosmocov /n23data1/n06data/lgoh/scratch/UNIONS/CosmoCov/covs/cov --libgsl /lib64/libgsl.so.23.1.0 --emit processed --out-file results/submitted/covariance/cov_scan/cov_sp_v1p4p8.txt\n",
+  "definition_version": "sha256:0a155ab291c79fc25cad8f6ea866f9f8d58fef3463690341aebfb0cde8fb3f0c",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:1df0f9d9764971e6e333d0787b1bf5a261d22be8c2489330607da8a1f0733e0f",
   "decisions": {
@@ -12,14 +12,13 @@
     "covariance_class": "gaussian_only"
   },
   "input_versions": {
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
     "cosmology_snapshot": "sha256:c2a2387f4c8a208fbb1cb4e7c6fb11dbf0945b44f4d576380626c21c228c2024",
-    "mask_power_spectrum": "sha256:043c512476658dea60273e095e88b00e3b73559cfea394d1bda35e9548c576cb",
-    "footprint_mask_starhalo": "sha256:d7f35f6eaf30c7e2b4114a5045f79a7cb471c3227de31ae5fdf63eb806c6e01e",
     "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da",
     "cosmocov_binary": "sha256:5843e0a19bd81ee085fdca2165e1597c0e6c849574f3b3e1493b15162fa86312",
     "cosmocov_libgsl": "sha256:ea002b666e740f8a24caf69ef23c56b18c3b0f32a306302dee67dc6215eab7a5"
   },
-  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -29,8 +28,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T00:16:30.415+00:00",
-  "finished_at": "2026-11-01T00:17:23.820+00:00",
+  "started_at": "2026-11-04T08:54:54.264+00:00",
+  "finished_at": "2026-11-04T08:55:59.823+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

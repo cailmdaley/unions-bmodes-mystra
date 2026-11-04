@@ -29,7 +29,7 @@ STACKED_PRINT_WIDTH = 0.88 * FIG_WIDTH_FULL
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
 
 from sp_validation.b_modes import calculate_cosebis
-from paper_config import load_config
+from paper_config import load_config, comparison_versions
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -155,7 +155,7 @@ def _xi_integration(results_dir, ver):
 
 
 def _cov_integration(cov_dir, ver, blind):
-    base = f"covariance_{ver}_{blind}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked"
+    base = f"covariance_{ver}_{blind}_integration"
     return f"{cov_dir}/{base}/{base}_processed.txt"
 
 
@@ -170,7 +170,7 @@ def main(
     fiducial_cov_path=None,
 ):
     # Leak-corrected, non-ecut versions (matches VERSIONS_LEAK_CORR in claims.smk)
-    versions = [v for v in config["versions"] if "_leak_corr" in v and "_ecut" not in v]
+    versions = comparison_versions(config)
     nmodes = config["fiducial"]["nmodes"]
     plotting_config = config["plotting"]
     version_labels = plotting_config["version_labels"]

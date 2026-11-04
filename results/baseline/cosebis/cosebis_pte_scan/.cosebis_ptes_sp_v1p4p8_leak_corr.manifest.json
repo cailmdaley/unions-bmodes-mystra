@@ -2,21 +2,21 @@
   "schema_version": 1,
   "output_id": "cosebis.cosebis_pte_scan.cosebis_ptes_sp_v1p4p8_leak_corr",
   "universe_id": "baseline",
-  "recipe": "# lc runs recipes as `bash -c` with no `set -e`, so without this a failed\n# compute would exit 0 via the trailing `rm` and lc would commit a\n# truncated artifact as successfully produced.\nset -e\nx=$(mktemp -d) && tar xzf results/baseline/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/baseline/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c\n# NB: braced shell expansions cannot be used in a sweep template \u2014 the\n# expander claims that syntax. Bare $cb only.\ncb=covariance_SP_v1.4.8_leak_corr_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked\npython src/papers/bmodes/scripts/compute_cosebis_pte_single.py \\\n  --config src/papers/bmodes/config/config.yaml \\\n  --xi-integration $x/SP_v1.4.8_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n  --cov-integration \"$c/$cb/$cb\"_processed.txt \\\n  --version SP_v1.4.8_leak_corr --blind A \\\n  --out-file results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8_leak_corr.npz\nrm -rf \"$x\" \"$c\"\n",
-  "definition_version": "sha256:57d9a9d786e13260b44f10e6a5404bc8de7276ebf6f51db313b205146f816346",
+  "recipe": "# lc runs recipes as `bash -c` with no `set -e`, so without this a failed\n# compute would exit 0 via the trailing `rm` and lc would commit a\n# truncated artifact as successfully produced.\nset -e\nx=$(mktemp -d) && tar xzf results/baseline/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/baseline/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c\n# NB: braced shell expansions cannot be used in a sweep template \u2014 the\n# expander claims that syntax. Bare $cb only.\nver=$(python src/papers/bmodes/scripts/paper_config.py --config results/baseline/catalog/selected_config.yaml --scan-version SP_v1.4.8_leak_corr)\ncb=covariance_\"$ver\"_A_integration\npython src/papers/bmodes/scripts/compute_cosebis_pte_single.py \\\n  --config results/baseline/catalog/selected_config.yaml \\\n  --xi-integration \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n  --cov-integration \"$c/$cb/$cb\"_processed.txt \\\n  --version $ver --blind A \\\n  --out-file results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8_leak_corr.npz\nrm -rf \"$x\" \"$c\"\n",
+  "definition_version": "sha256:85d62ea60d6f144dff8db86633507c213b61720c68051d2f880bf03c353ce1e7",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:3b11e82f3265d24e3c957bd7f9355613dac9990e4154f5b99a914bc3c616bef9",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a",
-    "scale_cut_pair_grid": "production_grid",
-    "mode_subsets": "n_le_6_and_n_le_20"
+    "scale_cut_pair_grid": "production_grid"
   },
   "input_versions": {
-    "xi_sweep": "sha256:7fc08adb89612287f737c7e85bb1adb2a52f979822e3aab5b6e6b28384c19842",
-    "cov_sweep": "sha256:21ac449a96f0874a54a6c307e1eeda23e84a5912ae031783746c9d9924d9acd8"
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "xi_sweep": "sha256:a21ed886d33d8b4ff68b27fe4457161b2260053b7f391770d11db86fec85ab71",
+    "cov_sweep": "sha256:7503199d43b0381627fecea743b03f82b7e75d754847cdd03800362411eed766"
   },
-  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -26,8 +26,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T05:34:39.877+00:00",
-  "finished_at": "2026-11-01T05:38:57.350+00:00",
+  "started_at": "2026-11-04T07:42:12.802+00:00",
+  "finished_at": "2026-11-04T07:47:07.213+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

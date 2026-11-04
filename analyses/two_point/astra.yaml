@@ -2,6 +2,8 @@ version: "0.0.14"
 name: "Two-point correlation measurement"
 
 inputs:
+  - id: selected_config
+    from: ../catalog.selected_config
   # run_2pcf.py resolves catalogs through cat_config, including v1.4.5
   # whose target lies outside the v1.4.x family.
   - id: shapepipe_v14_catalogs
@@ -24,7 +26,7 @@ outputs:
       TreeCorr ξ_±(θ) on the reporting grid: 20 logarithmic
       bins over [1', 250'].
     format: txt
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun]
     decisions: [fiducial_catalog]
     recipe:
       # lc owns the container and the environment; the recipe is a bare python
@@ -32,7 +34,7 @@ outputs:
       # the fiducial catalog's config names (config/catalogs/<option>.yaml).
       command: >
         python src/workflow/scripts/run_2pcf.py
-        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1
+        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1
         --cat-config src/cosmo_val/cat_config.yaml
         --no-fits --out-file {output}
       resources: { cpus: 24, memory: "30GB" }
@@ -46,14 +48,14 @@ outputs:
       filters' kernels are evaluated on measurements rather than
       zero padding.
     format: txt
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun]
     decisions: [fiducial_catalog]
     recipe:
       # Same run_2pcf.py CLI as xi_reporting, integration grid: 1000 bins
       # over [0.5', 300']. See xi_reporting for the recipe-form rationale.
       command: >
         python src/workflow/scripts/run_2pcf.py
-        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)" --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1
+        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)" --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1
         --cat-config src/cosmo_val/cat_config.yaml
         --no-fits --out-file {output}
       resources: { cpus: 24, memory: "30GB" }
@@ -98,6 +100,8 @@ outputs:
     from: xi_scan.xi_sweep_bundle
 
 decisions:
+  leakage_correction:
+    from: ../leakage_correction
 
   fiducial_catalog:
     from: ../fiducial_catalog
@@ -119,6 +123,8 @@ decisions:
         description: |
           The binning of the paper and of Paper III.
       bins_40:
+        excluded: true
+        excluded_reason: "External mock reporting measurements and their matched covariance are fixed at 20 bins."
         label: "40 log bins over [1', 250']"
         description: |
           Finer reporting grid for sensitivity studies; not used

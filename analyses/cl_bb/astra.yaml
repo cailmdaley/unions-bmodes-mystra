@@ -2,6 +2,8 @@ version: "0.0.14"
 name: "Harmonic-space pseudo-Cℓ^BB and Cℓ^EB"
 
 inputs:
+  - id: selected_config
+    from: ../catalog.selected_config
   - id: redshift_distribution
     from: ../catalog.redshift_distribution
 
@@ -53,7 +55,7 @@ outputs:
       [Cℓ figure](#../outputs.fig_cl_fiducial).
     format: fits
     decisions: [fiducial_catalog, fiducial_blind]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distribution, mask_power_spectrum]
+    inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distribution, mask_power_spectrum]
     recipe:
       # lc owns the container; bare `python`, scripts read from the vendored
       # src/ tree. Fiducial version + blind A hardcoded (single-version
@@ -61,7 +63,7 @@ outputs:
       # straight to {output}.
       command: >
         python src/workflow/scripts/generate_pseudo_cl.py
-        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)"
+        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
         --cat-config src/cosmo_val/cat_config.yaml
         --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind}
         --out-file {output}
@@ -75,17 +77,17 @@ outputs:
       the [harmonic-space COSEBI
       transform](#../cosebis.decisions.harmonic_validation_binning).
     format: fits
-    decisions: [fiducial_catalog, fiducial_blind]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distribution, mask_power_spectrum]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning]
+    inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distribution, mask_power_spectrum]
     recipe:
       # Same generate_pseudo_cl.py CLI as cl_bandpowers_reporting, 96-bandpower
       # fine grid (--nbins 96). Distinct {output} file, so no cache collision
       # with the 32-bin reporting run.
       command: >
         python src/workflow/scripts/generate_pseudo_cl.py
-        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)"
+        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
         --cat-config src/cosmo_val/cat_config.yaml
-        --nside 1024 --npatch 1 --binning powspace --nbins 96 --power 0.5 --blind {decisions.fiducial_blind}
+        --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind {decisions.fiducial_blind}
         --out-file {output}
       resources: { cpus: 12, memory: "32GB" }
 
@@ -113,15 +115,15 @@ outputs:
       lensing signal.
     format: png
     decisions: [fiducial_catalog]
-    inputs: [cl_bandpowers_reporting, cl_cov_reporting, paper_mplstyle, print_width_script]
+    inputs: [selected_config, cl_bandpowers_reporting, cl_cov_reporting, paper_mplstyle, print_width_script]
     recipe:
       # cl_data_vector.py CLI renders the Cℓ data-vector figure (fiducial) from the
       # fiducial data vector and its bandpower covariance, the two declared
       # cross-output inputs; no other version is read.
       command: >
         python src/papers/bmodes/scripts/cl_data_vector.py
-        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
-        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)"
+        --config {inputs.selected_config}
+        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
         --fiducial-pseudo-cl-path {inputs.cl_bandpowers_reporting}
         --fiducial-pseudo-cl-cov-path {inputs.cl_cov_reporting}
         --out-file {output}
@@ -139,7 +141,7 @@ outputs:
       catalog passes all statistics at the fiducial scale cuts
       ([PTE table](#../outputs.pte_table_appendix)).
     format: png
-    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, paper_mplstyle, print_width_script, cl_version_comparison_script]
+    inputs: [selected_config, cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, paper_mplstyle, print_width_script, cl_version_comparison_script]
     recipe:
       # cl_version_comparison.py CLI overlays Cℓ^BB / Cℓ^EB across the 4
       # leak-corrected catalogs, writing the single PNG to {output}. Per-version
@@ -148,9 +150,9 @@ outputs:
       command: >
         d=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d &&
         python src/papers/bmodes/scripts/cl_version_comparison.py
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --results-dir $d
-        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
         --fiducial-pseudo-cl-path {inputs.cl_bandpowers_reporting}
         --fiducial-pseudo-cl-cov-path {inputs.cl_cov_reporting}
         --out-file {output}
@@ -169,7 +171,7 @@ outputs:
       [harmonic-space PTE heatmap](#../outputs.fig_cl_pte_heatmap)
       shows.
     format: npz
-    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting]
+    inputs: [selected_config, cl_sweep, cl_bandpowers_reporting, cl_cov_reporting]
     recipe:
       # harmonic_space_pte_matrices.py CLI, run in its PTE-matrix mode: the single
       # .npz of per-version Cℓ^BB PTE grids is written to {output}. The heatmap
@@ -179,9 +181,9 @@ outputs:
       command: >
         d=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d &&
         python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --results-dir $d
-        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
         --fiducial-pseudo-cl-path {inputs.cl_bandpowers_reporting}
         --fiducial-pseudo-cl-cov-path {inputs.cl_cov_reporting}
         --emit matrices
@@ -189,12 +191,17 @@ outputs:
       resources: { cpus: 2, memory: "8GB" }
 
 decisions:
+  leakage_correction:
+    from: ../leakage_correction
 
   fiducial_catalog:
     from: ../fiducial_catalog
 
   fiducial_blind:
     from: ../fiducial_blind
+
+  harmonic_validation_binning:
+    from: ../harmonic_validation_binning
 
   estimator_choice:
     label: "Pseudo-Cℓ estimator"
@@ -218,6 +225,8 @@ decisions:
           subtraction.
         insights: [wolz25_catalog_based_pseudo_cl, hivon02_master_mode_coupling_deconvolution, alonso19_namaster_unbiased_spin2_pseudo_cl, reinecke23_sht_on_arbitrary_grids]
       map_based_pseudo_cl:
+        excluded: true
+        excluded_reason: "The package's map/MC iNKA covariance path is broken, and the external mock spectra use the catalog estimator."
         label: "Map-based pseudo-Cℓ on HEALPix"
         insights: [hivon02_master_mode_coupling_deconvolution, alonso19_namaster_unbiased_spin2_pseudo_cl]
         description: |
@@ -243,16 +252,22 @@ decisions:
       bandpowers_32_powspace:
         label: "32 √ℓ-spaced over 8 ≤ ℓ ≤ 2048 (fiducial)"
       bandpowers_96_powspace:
+        excluded: true
+        excluded_reason: "Evaluated for the harmonic COSEBI transform, not the BB null test; external BB mock products have 32 bands."
         label: "96 √ℓ-spaced over 8 ≤ ℓ ≤ 2048 (COSEBI transform)"
         description: |
           Fine grid for the harmonic-space COSEBIs; not used by
           the Cℓ^BB null test.
       bandpowers_16_powspace:
+        excluded: true
+        excluded_reason: "The external BB mock spectra and covariance are fixed at 32 bands."
         label: "16 √ℓ-spaced"
         description: |
           Coarser bandpowers, departing from Paper IV's data
           vector.
       bandpowers_64_powspace:
+        excluded: true
+        excluded_reason: "The external BB mock spectra and covariance are fixed at 32 bands."
         label: "64 √ℓ-spaced"
         description: |
           Finer bandpowers, departing from Paper IV's data
@@ -275,6 +290,8 @@ decisions:
         label: "Analytic shot-noise subtraction (as in Paper IV; fiducial)"
         insights: [wolz25_catalog_based_pseudo_cl]
       mc_noise_bias:
+        excluded: true
+        excluded_reason: "The package's random-rotation iNKA covariance path is broken; no matching external mock covariance exists."
         label: "Monte-Carlo noise-bias estimator"
         description: |
           Subtracts the mean Cℓ of ellipticity-randomised
@@ -295,6 +312,8 @@ decisions:
       blind_a_for_paper:
         label: "Blind A for the reported PTEs (fiducial)"
       all_blinds_for_paper:
+        excluded: true
+        excluded_reason: "The paper reports blind A; independence is tested by null_tests.bb_covariance_blind_independence_evidence."
         label: "All three blinds in the reported PTEs"
         description: |
           Would triple the PTE table without adding B-mode

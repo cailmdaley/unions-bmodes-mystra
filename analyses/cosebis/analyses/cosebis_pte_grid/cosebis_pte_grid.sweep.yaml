@@ -42,10 +42,12 @@ description: |
 tags: [sweep, generated, cosebis]
 
 inputs:
+  - id: selected_config
+    from: ../selected_config
   - id: xi_integration
     from: ../xi_integration
-  - id: cov_integration_g
-    from: ../cov_integration_g
+  - id: cov_integration
+    from: ../cov_integration
 
 decisions:
   fiducial_catalog:
@@ -54,8 +56,6 @@ decisions:
     from: ../fiducial_blind
   scale_cut_pair_grid:
     from: ../scale_cut_pair_grid
-  mode_subsets:
-    from: ../mode_subsets
 
 matrix:
   # The i_min rows of the 21-point theta grid: pairs (i, j) exist for
@@ -79,8 +79,8 @@ template:
     with `pairs` restricted to this row and every other cell left
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
-  inputs: [xi_integration, cov_integration_g]
-  decisions: [fiducial_catalog, fiducial_blind, scale_cut_pair_grid, mode_subsets]
+  inputs: [selected_config, xi_integration, cov_integration]
+  decisions: [fiducial_catalog, fiducial_blind, scale_cut_pair_grid]
   recipe:
     # Identical to the July full-grid invocation but for `--row` and `--jobs`:
     # same config, same fiducial ξ_± and Gaussian integration covariance, so a
@@ -112,9 +112,9 @@ template:
     # reading it here is the upgrade path.
     command: >
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py
-      --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+      --config {inputs.selected_config}
       --xi-integration {inputs.xi_integration}
-      --cov-integration {inputs.cov_integration_g}
+      --cov-integration {inputs.cov_integration}
       --row ${i_min}
       --out-file {output}
     # Inert as far as lc is concerned (see above); kept as the declared intent.

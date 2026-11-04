@@ -2,21 +2,22 @@
   "schema_version": 1,
   "output_id": "pure_eb.pure_eb_ptes",
   "universe_id": "submitted",
-  "recipe": "p=$(mktemp -d) && tar xzf results/submitted/pure_eb/pure_eb_sweep.tar.gz -C $p && c=$(mktemp -d) && tar xzf results/submitted/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c && o=$(mktemp -d) && bash src/papers/bmodes/scripts/run_pure_eb_ptes_sweep.sh --config src/papers/bmodes/config/config.yaml --cat-config src/cosmo_val/cat_config.yaml --pure-eb-sweep-dir $p --cov-sweep-dir $c --out $o && tar czf results/submitted/pure_eb/pure_eb_ptes.tar.gz -C $o .\n",
-  "definition_version": "sha256:381453365ead792147823515ff17a78ad1fafc018fe83d72621b791bce8eed81",
+  "recipe": "p=$(mktemp -d) && tar xzf results/submitted/pure_eb/pure_eb_sweep.tar.gz -C $p && c=$(mktemp -d) && tar xzf results/submitted/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c && o=$(mktemp -d) && bash src/papers/bmodes/scripts/run_pure_eb_ptes_sweep.sh --config results/submitted/catalog/selected_config.yaml --cat-config src/cosmo_val/cat_config.yaml --pure-eb-sweep-dir $p --cov-sweep-dir $c --out $o && tar czf results/submitted/pure_eb/pure_eb_ptes.tar.gz -C $o .\n",
+  "definition_version": "sha256:07c0aa64fe546eb5a57c7df2c8f82a102d33af5ded5d1a7740aeb8f303a1a4a8",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:f0a8316c699872f7af3e187bb4b189f127fc6dc171cf343f0cca94237eaceff1",
+  "data_version": "sha256:a180da9260d07da164ced268021b31c83d05a93217c975474d94a029312b273b",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a"
   },
   "input_versions": {
-    "pure_eb_sweep": "sha256:4b5706593fc9a5f4123b7a474ec68334abac9db6f30bbe0190d2a5aa12e73a28",
-    "cov_sweep": "sha256:6375074d8317b8531812a39f411e7678d9dd1985e7cf698bcfd4e5c6d0f38812",
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "pure_eb_sweep": "sha256:bac3d5d1a68ba25d964ac63f267e3d70d5334e3b6175b561e37340ad5cc55948",
+    "cov_sweep": "sha256:bd948ef8d6b73924fb98a43f23cf3ba54444881ba9a45dc18636dd2210615e43",
     "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da",
     "redshift_distributions_legacy": "sha256:a499c565d8ad6fda0f305251c2a7b3669b9916e09014b533d9c54e3e6f8989f7"
   },
-  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -26,8 +27,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T09:07:38.164+00:00",
-  "finished_at": "2026-11-01T09:08:02.715+00:00",
+  "started_at": "2026-11-04T08:57:42.032+00:00",
+  "finished_at": "2026-11-04T08:58:07.217+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

@@ -206,6 +206,9 @@ inputs:
 # aggregates numerical evidence into the LaTeX numeric macros.
 # -----------------------------------------------------------------------------
 outputs:
+  - {id: selected_config, from: catalog.selected_config}
+  - {id: primary_null_test_report, from: cosebis.primary_null_test_report}
+
   # ---------------------------------------------------------------------------
   # Re-exported sub-analysis artifacts. A root recipe reaches a child artifact
   # only through an alias declared here (Output.from), which it then names in
@@ -244,7 +247,7 @@ outputs:
       range is 1–250 arcmin / 8 ≤ ℓ ≤ 2048. A row passes the null test
       when its minimum PTE is at least p_thr = 0.01; only the fiducial
       catalog at the adopted cuts passes.
-    inputs: [config_space_pte_data, harmonic_space_pte_data, generate_paper_macros_script]
+    inputs: [selected_config, config_space_pte_data, harmonic_space_pte_data, generate_paper_macros_script]
     recipe:
       # Terminal gather, third member of generate_paper_macros.py's
       # `--emit {evidence,macros,table}` family (the other two are
@@ -252,7 +255,7 @@ outputs:
       # compute: both PTE payloads are already materialised.
       command: >
         python src/papers/bmodes/scripts/generate_paper_macros.py
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --config-space-evidence {inputs.config_space_pte_data}
         --harmonic-space-evidence {inputs.harmonic_space_pte_data}
         --emit table
@@ -289,6 +292,7 @@ outputs:
       values come from
       [config_space_pte_data](#outputs.config_space_pte_data).
     inputs:
+      - selected_config
       - config_space_pte_data
       - cosebis_harmonic_modes_evidence
       - cosebis_harmonic_modes_full_evidence
@@ -300,6 +304,7 @@ outputs:
       # harmonic rows complete again.
       command: >
         python src/papers/bmodes/scripts/emit_cosebis_harmonic_config.py
+        --config {inputs.selected_config}
         --config-space-evidence {inputs.config_space_pte_data}
         --cosebis-evidence {inputs.cosebis_harmonic_modes_evidence}
         --cosebis-evidence-full {inputs.cosebis_harmonic_modes_full_evidence}
@@ -344,6 +349,7 @@ outputs:
       against the nominal 0.05 level).
     decisions: [scale_cut_convention]
     inputs:
+      - selected_config
       - config_space_pte_data
       - harmonic_space_pte_data
       - scale_cuts_script
@@ -354,7 +360,7 @@ outputs:
         python src/papers/bmodes/scripts/emit_nu_penalty_verdicts.py
         --config-space-evidence {inputs.config_space_pte_data}
         --harmonic-space-evidence {inputs.harmonic_space_pte_data}
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
 
@@ -397,6 +403,7 @@ outputs:
       acceptance region, while stellar masking contracts it.
     decisions: [scale_cut_convention, pte_threshold]
     inputs:
+      - selected_config
       - config_space_pte_data
       - config_space_pte_matrices_script
       - print_width_script
@@ -408,7 +415,7 @@ outputs:
       # sweep; it draws the 4×3 appendix composite.
       command: >
         python src/papers/bmodes/scripts/config_space_pte_matrices.py
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --from-evidence {inputs.config_space_pte_data}
         --figure appendix
         --scale-cut-convention {decisions.scale_cut_convention}
@@ -427,6 +434,7 @@ outputs:
       masked catalogs pass across nearly all multipole combinations.
     decisions: [pte_threshold]
     inputs:
+      - selected_config
       - harmonic_space_pte_data
       - harmonic_space_pte_matrices_script
       - print_width_script
@@ -438,7 +446,7 @@ outputs:
       # null_tests.harmonic_space_pte_data, so no sweep is re-run here.
       command: >
         python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --from-evidence {inputs.harmonic_space_pte_data}
         --figure appendix
         --pte-threshold {decisions.pte_threshold}
@@ -456,13 +464,14 @@ outputs:
       consistency between the two paths on GLASS simulations.
     decisions: [fiducial_catalog, scale_cut_convention]
     inputs:
+      - selected_config
       - cosebis_harmonic_modes_full
       - harmonic_config_cosebis_comparison_figure_script
     recipe:
       # Plot-only mode over the full-range modes NPZ.
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --config {inputs.selected_config}
         --angular-range full --blind A
         --figure-from-modes {inputs.cosebis_harmonic_modes_full}
         --scale-cut-convention {decisions.scale_cut_convention}
@@ -499,16 +508,22 @@ decisions:
           footprint, including the v1.4.6.3 PSF-size fix.
       initial:
         label: "Initial (v1.4.5)"
+        excluded: true
+        excluded_reason: "Compared side by side in every universe as fixed version-scan members; the scans and convergence inputs are built around v1.4.6.3."
         description: |
           The looser size cut r_h,gal/r_h,psf > 0.5; the baseline
           against which the size cut was chosen.
       masked:
         label: "Masked (v1.4.8)"
+        excluded: true
+        excluded_reason: "Compared side by side in every universe as fixed version-scan members; the scans and convergence inputs are built around v1.4.6.3."
         description: |
           Size-cut sample with bright (r < 12) and faint
           (12 < r < 18) stellar-halo masking, leaving 2517 deg².
       relaxed_flags:
         label: "Relaxed flags (v1.4.11.3)"
+        excluded: true
+        excluded_reason: "Compared side by side in every universe as fixed version-scan members; the scans and convergence inputs are built around v1.4.6.3."
         description: |
           Size-cut sample with relaxed SExtractor deblending flags,
           raising n_eff by 26% on the 2894 deg² footprint.
@@ -551,8 +566,12 @@ decisions:
         label: "Blind A (used for reported results)"
       blind_b:
         label: "Blind B (true n(z))"
+        excluded: true
+        excluded_reason: "The paper reports blind A; B-mode covariances are blind-independent, shown by null_tests.bb_covariance_blind_independence_evidence."
       blind_c:
         label: "Blind C"
+        excluded: true
+        excluded_reason: "The paper reports blind A; B-mode covariances are blind-independent, shown by null_tests.bb_covariance_blind_independence_evidence."
 
   fiducial_scale_cuts:
     label: "Scale cuts for the B-mode null tests"
@@ -574,6 +593,8 @@ decisions:
       Scale cuts are preferred to subtracting the B modes because
       the relation between E- and B-mode contamination depends on
       the physical mechanism.
+      Both ranges are computed; this selects the primary reported range in
+      [primary_null_test_report](#outputs.primary_null_test_report), without changing the reference grids.
     default: adopted
     options:
       adopted:
@@ -643,6 +664,8 @@ decisions:
         description: |
           One TreeCorr run per catalog variant.
       bins_10000:
+        excluded: true
+        excluded_reason: "Evaluated by convergence.tenk_grid_comparison; the available mock measurements and covariance use 1000 bins."
         label: "10,000 bins (convergence test)"
         description: |
           Fiducial catalog only; 22.6 h on 360 cores.
@@ -845,27 +868,49 @@ decisions:
           available to `adaptive_dqags`.
         insights: [hartlap07_correction]
 
+  harmonic_validation_binning:
+    label: "Harmonic COSEBI bandpower count"
+    tags: [cosebis, harmonic, validation]
+    rationale: |
+      The harmonic COSEBI path sums W_n(ℓ) filters against pseudo-Cℓ
+      bandpowers, so its measurement, covariance and transform must share
+      one bin count. Too few bins cannot resolve the filters' oscillations;
+      too many make mode-coupling deconvolution unstable.
+      The paper validates 96 √ℓ-spaced bins on GLASS mocks, recovering
+      configuration-space modes 1–5 to about 2%.
+      The 32 bandpowers of the [Cℓ null test](#analyses.cl_bb) do not
+      resolve the oscillations beyond n ≈ 4.
+    default: bins_96
+    options:
+      bins_96:
+        label: "96 √ℓ-linear bandpowers (fiducial)"
+      bins_128:
+        label: "128 √ℓ-linear bandpowers"
+        description: "Finer bins; the measurement and transform already support this count."
+      bins_32:
+        label: "32 √ℓ-linear bandpowers (cl_bb fiducial)"
+        excluded: true
+        excluded_reason: "Cannot resolve W_n(ℓ) beyond n ≈ 4."
+
   mc_samples:
     label: "Monte-Carlo sample count"
     tags: [covariance, method]
     rationale: |
       How many Gaussian draws of ξ± from the CosmoCov covariance the
       [Monte-Carlo pure-mode covariance](#decisions.pure_eb_covariance_method)
-      pushes through the filters (the exact construction makes
-      none). 2000 draws converge each element to ~0.1%; 1000 give
-      ~0.2%, too noisy at modes 6+; 5000 cost 2.5× for < 0.05%
-      improvement.
+      pushes through the filters (the exact construction makes none).
+      The default is 2000 draws; 1000 and 5000 test sample-count sensitivity.
+      This count governs only the pure-mode covariance, not the COSEBI
+      covariances, which are propagated linearly.
     default: n_2000
     options:
       n_2000:
         label: "2000 (fiducial)"
       n_1000:
         label: "1000"
-        excluded: true
-        excluded_reason: "0.2% per-element noise is too high at COSEBI modes 6+."
       n_5000:
         label: "5000"
-        description: "Under 0.05% improvement for 2.5× the cost."
+        description: "2.5× as many draws as the default, to test sample-count sensitivity."
 
   hartlap_correction:
     label: "Hartlap correction on the theory covariance"
@@ -883,6 +928,8 @@ decisions:
         insights: [hartlap07_correction]
       mock_based:
         label: "Hartlap factor (N - p - 2) / (N - 1)"
+        excluded: true
+        excluded_reason: "The GLASS sample covariance is a validation product, not the theory covariance used in the null tests."
         description: |
           Would apply only if the 350-mock sample covariance
           replaced CosmoCov.
@@ -902,9 +949,13 @@ decisions:
         insights: [stebbins96_scalar_perturbations_give_no_bmodes, higher_order_lensing_bmodes_negligible]
       anderson_darling:
         label: "Anderson-Darling"
+        excluded: true
+        excluded_reason: "Paper II computes χ² tails; no Anderson–Darling null statistic or calibration is implemented."
         description: "Not used; harder to interpret as a calibrated tail."
       kolmogorov_smirnov:
         label: "Kolmogorov-Smirnov"
+        excluded: true
+        excluded_reason: "Paper II computes χ² tails; no Kolmogorov–Smirnov null statistic or calibration is implemented."
         description: "Not used."
 
   pte_threshold:

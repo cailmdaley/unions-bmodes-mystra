@@ -2,25 +2,27 @@
   "schema_version": 1,
   "output_id": "pure_eb.pure_eb_sweep",
   "universe_id": "submitted",
-  "recipe": "x=$(mktemp -d) && tar xzf results/submitted/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x && c=$(mktemp -d) && tar xzf results/submitted/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c && o=$(mktemp -d) && bash src/papers/bmodes/scripts/run_pure_eb_sweep.sh --config src/papers/bmodes/config/config.yaml --cat-config src/cosmo_val/cat_config.yaml --xi-sweep-dir $x --cov-sweep-dir $c --integration-method adaptive_dqags --integration-limits reporting_extent --rebinning-weights none --covariance-method monte_carlo --out $o && tar czf results/submitted/pure_eb/pure_eb_sweep.tar.gz -C $o .\n",
-  "definition_version": "sha256:b836604c337849f6b175df59fc58b36918ba02f141e3f210374eb9bc12c1430b",
+  "recipe": "x=$(mktemp -d) && tar xzf results/submitted/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x && c=$(mktemp -d) && tar xzf results/submitted/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c && o=$(mktemp -d) && bash src/papers/bmodes/scripts/run_pure_eb_sweep.sh --config results/submitted/catalog/selected_config.yaml --cat-config src/cosmo_val/cat_config.yaml --xi-sweep-dir $x --cov-sweep-dir $c --integration-method adaptive_dqags --integration-limits reporting_extent --rebinning-weights none --covariance-method monte_carlo --n-samples n_2000 --out $o && tar czf results/submitted/pure_eb/pure_eb_sweep.tar.gz -C $o .\n",
+  "definition_version": "sha256:4c00ce0c6cfaa63770bea128255340aaf744a677167f3e449f58bc87f13af210",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:4b5706593fc9a5f4123b7a474ec68334abac9db6f30bbe0190d2a5aa12e73a28",
+  "data_version": "sha256:bac3d5d1a68ba25d964ac63f267e3d70d5334e3b6175b561e37340ad5cc55948",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a",
     "pure_eb_integration_method": "adaptive_dqags",
     "pure_eb_rebinning_weights": "none",
     "pure_eb_integration_limits": "reporting_extent",
-    "pure_eb_covariance_method": "monte_carlo"
+    "pure_eb_covariance_method": "monte_carlo",
+    "mc_samples": "n_2000"
   },
   "input_versions": {
-    "xi_sweep": "sha256:22f41b3b666ee53c2424e6c06dde0a2634a04497f7a2addfa4a501456e0305a4",
-    "cov_sweep": "sha256:6375074d8317b8531812a39f411e7678d9dd1985e7cf698bcfd4e5c6d0f38812",
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "xi_sweep": "sha256:b2187ac5f1c26542e107b6c04d48b7eda3a330db8a389a80a6a395d4a2ec164b",
+    "cov_sweep": "sha256:bd948ef8d6b73924fb98a43f23cf3ba54444881ba9a45dc18636dd2210615e43",
     "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da",
     "redshift_distributions_legacy": "sha256:a499c565d8ad6fda0f305251c2a7b3669b9916e09014b533d9c54e3e6f8989f7"
   },
-  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -30,8 +32,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T08:03:08.305+00:00",
-  "finished_at": "2026-11-01T09:07:38.112+00:00",
+  "started_at": "2026-11-04T02:56:48.658+00:00",
+  "finished_at": "2026-11-04T04:16:09.879+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

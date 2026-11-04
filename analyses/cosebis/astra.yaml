@@ -2,14 +2,24 @@ version: "0.0.14"
 name: "COSEBI B-mode amplitudes"
 
 inputs:
+  - id: primary_report_script
+    type: data
+    source: ./src/papers/bmodes/scripts/primary_null_test_report.py
+    description: Selects the reported test family and recalibrates its minimum.
+  - id: mock_min_pte_calibration
+    from: ../glass_mocks.mock_min_pte_calibration
+  - id: mock_per_mock_statistics
+    from: ../glass_mocks.mock_per_mock_statistics
+  - id: selected_config
+    from: ../catalog.selected_config
   - id: xi_integration
     from: ../two_point.xi_integration
 
   - id: xi_sweep
     from: ../two_point.xi_sweep
 
-  - id: cov_integration_g
-    from: ../covariance.cov_integration_g
+  - id: cov_integration
+    from: ../covariance.cov_integration
 
   - id: cov_sweep
     from: ../covariance.cov_sweep
@@ -36,6 +46,25 @@ inputs:
     from: ../cosebis_version_comparison_script
 
 outputs:
+  - id: primary_null_test_report
+    type: metric
+    format: json
+    description: |
+      Primary reported range and COSEBI test-family selection, with the global
+      minimum-PTE threshold recalibrated from the stored mock PTE columns.
+      The complete six-test, two-range evidence remains available for comparison.
+    inputs: [mock_min_pte_calibration, mock_per_mock_statistics, primary_report_script]
+    decisions: [fiducial_scale_cuts, mode_subsets]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/primary_null_test_report.py
+        --calibration {inputs.mock_min_pte_calibration}
+        --per-mock-statistics {inputs.mock_per_mock_statistics}
+        --fiducial-scale-cuts {decisions.fiducial_scale_cuts}
+        --mode-subsets {decisions.mode_subsets}
+        --out-file {output}
+      resources: { cpus: 1, memory: "2GB" }
+
   - id: cosebis_modes_data
     type: data
     format: npz
@@ -46,13 +75,13 @@ outputs:
       normalise B_n / σ_n in the
       [COSEBI data-vector figure](#../outputs.fig_cosebis_fiducial).
     decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention]
-    inputs: [xi_integration, cov_integration_g]
+    inputs: [selected_config, xi_integration, cov_integration]
     recipe:
       command: >
         python src/papers/bmodes/scripts/cosebis_data_vector.py
-        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --config {inputs.selected_config}
         --xi-integration {inputs.xi_integration}
-        --cov-integration {inputs.cov_integration_g}
+        --cov-integration {inputs.cov_integration}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 8, memory: "16GB" }
@@ -67,13 +96,13 @@ outputs:
       (filled circles) and over the full angular range of 1–250 arcmin
       (open diamonds). Modes n > 6 are shaded; the n ≤ 6 subset captures
       nearly all cosmological information.
-    decisions: [fiducial_catalog, fiducial_blind, mode_subsets, scale_cut_convention]
-    inputs: [cosebis_modes_data, paper_mplstyle, print_width_script]
+    decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention]
+    inputs: [selected_config, cosebis_modes_data, paper_mplstyle, print_width_script]
     recipe:
       # Plot-only pass of the same CLI.
       command: >
         python src/papers/bmodes/scripts/cosebis_data_vector.py
-        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --config {inputs.selected_config}
         --plot-from-modes {inputs.cosebis_modes_data}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
@@ -116,7 +145,7 @@ outputs:
       catalog passes all statistics at the fiducial scale cuts ([PTE
       table](#../outputs.pte_table_appendix)).
     decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention]
-    inputs: [xi_sweep, cov_sweep, xi_integration, cov_integration_g, paper_mplstyle, print_width_script, cosebis_version_comparison_script]
+    inputs: [selected_config, xi_sweep, cov_sweep, xi_integration, cov_integration, paper_mplstyle, print_width_script, cosebis_version_comparison_script]
     recipe:
       # The plotter recomputes COSEBIs per version from the unpacked xi and
       # covariance sweep bundles, found by canonical filename.
@@ -125,12 +154,12 @@ outputs:
         tar xzf {inputs.xi_sweep} -C $x &&
         tar xzf {inputs.cov_sweep} -C $c &&
         python src/papers/bmodes/scripts/cosebis_version_comparison.py
-        --config src/papers/bmodes/config/config.yaml
+        --config {inputs.selected_config}
         --results-dir $x
         --cov-dir $c
-        --fiducial-version SP_v1.4.6.3_leak_corr
+        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
         --fiducial-xi-path {inputs.xi_integration}
-        --fiducial-cov-path {inputs.cov_integration_g}
+        --fiducial-cov-path {inputs.cov_integration}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 8, memory: "16GB" }
@@ -150,17 +179,18 @@ outputs:
       PTEs are in
       [cosebis_harmonic_metrics](#outputs.cosebis_harmonic_metrics).
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
-    inputs: [cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration_g]
+    inputs: [selected_config, cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration]
     recipe:
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --config {inputs.selected_config}
         --angular-range fiducial --blind A
-        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)"
+        --harmonic-validation-binning {decisions.harmonic_validation_binning}
+        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
         --fiducial-pseudo-cl-path {inputs.cl_bandpowers_fine}
         --fiducial-pseudo-cl-cov-path {inputs.cl_cov_fine}
         --fiducial-xi-path {inputs.xi_integration}
-        --fiducial-cov-path {inputs.cov_integration_g}
+        --fiducial-cov-path {inputs.cov_integration}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 8, memory: "16GB" }
@@ -175,12 +205,12 @@ outputs:
       quoted in the
       [harmonic/configuration COSEBI table](#../outputs.cosebis_harmonic_config).
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
-    inputs: [cosebis_harmonic_modes]
+    inputs: [selected_config, cosebis_harmonic_modes]
     recipe:
       # Metrics-only pass: reads the modes NPZ back and emits the PTE/chi2 JSON.
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --config {inputs.selected_config}
         --angular-range fiducial --blind A
         --metrics-from-modes {inputs.cosebis_harmonic_modes}
         --scale-cut-convention {decisions.scale_cut_convention}
@@ -197,19 +227,20 @@ outputs:
       PTEs are in
       [cosebis_harmonic_metrics_full](#outputs.cosebis_harmonic_metrics_full).
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
-    inputs: [cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration_g]
+    inputs: [selected_config, cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration]
     recipe:
       # Same CLI as cosebis_harmonic_modes, --angular-range full instead of
       # fiducial. Identical inputs; only the flag differs.
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --config {inputs.selected_config}
         --angular-range full --blind A
-        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --get fiducial.version)"
+        --harmonic-validation-binning {decisions.harmonic_validation_binning}
+        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
         --fiducial-pseudo-cl-path {inputs.cl_bandpowers_fine}
         --fiducial-pseudo-cl-cov-path {inputs.cl_cov_fine}
         --fiducial-xi-path {inputs.xi_integration}
-        --fiducial-cov-path {inputs.cov_integration_g}
+        --fiducial-cov-path {inputs.cov_integration}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 8, memory: "16GB" }
@@ -224,12 +255,12 @@ outputs:
       [CCD-scale COSEBI pattern](#../findings.ccd_scale_cosebi_pattern)
       and the configuration-path χ².
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
-    inputs: [cosebis_harmonic_modes_full]
+    inputs: [selected_config, cosebis_harmonic_modes_full]
     recipe:
       # Metrics-only pass on the full-range modes NPZ.
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+        --config {inputs.selected_config}
         --angular-range full --blind A
         --metrics-from-modes {inputs.cosebis_harmonic_modes_full}
         --scale-cut-convention {decisions.scale_cut_convention}
@@ -247,6 +278,11 @@ outputs:
     from: cosebis_harmonic_scan.cosebis_harmonic_version_ptes
 
 decisions:
+  leakage_correction:
+    from: ../leakage_correction
+
+  fiducial_scale_cuts:
+    from: ../fiducial_scale_cuts
 
   fiducial_catalog:
     from: ../fiducial_catalog
@@ -274,6 +310,8 @@ decisions:
         label: "20 modes (fiducial)"
         insights: [asgari19a_cosebis_nmax20_for_systematics]
       n_max_15:
+        excluded: true
+        excluded_reason: "The data/mocks PTE and calibration schema implements n≤6 and n≤20, not a 15-mode test family."
         label: "15 modes"
         description: |
           Drops the high-n modes where the full-range
@@ -295,6 +333,9 @@ decisions:
       E-mode amplitude has saturated; n ≤ 20 tests the B modes over
       the full computed basis, which matters for the full-range
       oscillatory pattern that motivates the lower angular cut.
+      The selection acts in [primary_null_test_report](#outputs.primary_null_test_report),
+      recalibrating its minimum from the selected stored mock PTE columns;
+      the complete reference products and mode-vector figures retain both subsets.
       Larger subsets are unavailable because the
       [mode count](#decisions.mode_count) is 20.
     default: n_le_6_and_n_le_20
@@ -312,29 +353,7 @@ decisions:
           Drops the cosmologically informative subset.
 
   harmonic_validation_binning:
-    label: "Harmonic COSEBI bandpower count"
-    tags: [cosebis, harmonic, validation]
-    rationale: |
-      The harmonic COSEBI path sums the W_n(ℓ) filters against
-      pseudo-Cℓ bandpowers. Too few bins cannot resolve the filters'
-      oscillations at high n; too many make the mode-coupling
-      deconvolution unstable. 96 √ℓ-spaced bins were validated on
-      GLASS mocks, recovering configuration-space modes 1–5 to about
-      2%. The 32 bandpowers of the [Cℓ^BB null test](#../analyses.cl_bb)
-      cannot resolve the oscillations beyond n ≈ 4.
-    default: bins_96
-    options:
-      bins_96:
-        label: "96 √ℓ-linear bandpowers (fiducial)"
-      bins_128:
-        label: "128 √ℓ-linear bandpowers"
-        description: |
-          Finer bins; <1% gain at a less stable deconvolution.
-      bins_32:
-        label: "32 √ℓ-linear bandpowers (cl_bb fiducial)"
-        excluded: true
-        excluded_reason: |
-          Cannot resolve W_n(ℓ) beyond n ≈ 4.
+    from: ../harmonic_validation_binning
 
   scale_cut_pair_grid:
     label: "COSEBI PTE scale-cut grid"
@@ -354,6 +373,8 @@ decisions:
         description: |
           206 pairs: all 210 edge pairs minus the four unstable ones.
       single_fiducial_pair:
+        excluded: true
+        excluded_reason: "Full-range PTE reporting and mock calibration require the full-range cell absent from this grid."
         label: "Single fiducial pair only (i=9, j=16)"
         description: |
           Only the

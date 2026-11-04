@@ -2,8 +2,8 @@
   "schema_version": 1,
   "output_id": "pure_eb.pure_eb_pte_per_cut",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/calculate_pure_eb_ptes.py --version \"$(python src/papers/bmodes/scripts/paper_config.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --get fiducial.version)\" --blind A --pure-eb-data results/baseline/pure_eb/pure_eb_semianalytic_data.npz --cov-integration results/baseline/covariance/cov_integration_g.txt --npatch 1 --n-samples 2000 --out-file results/baseline/pure_eb/pure_eb_pte_per_cut.npz\n",
-  "definition_version": "sha256:6282627fadc391bb67c76ddbc7b6ef6572d6437e67334605bbb9cea4e2b0e5f9",
+  "recipe": "python src/papers/bmodes/scripts/calculate_pure_eb_ptes.py --version \"$(python src/papers/bmodes/scripts/paper_config.py --config results/baseline/catalog/selected_config.yaml --get fiducial.version)\" --blind A --pure-eb-data results/baseline/pure_eb/pure_eb_semianalytic_data.npz --cov-integration results/baseline/covariance/cov_integration.txt --npatch 1 --out-file results/baseline/pure_eb/pure_eb_pte_per_cut.npz\n",
+  "definition_version": "sha256:00dc1d24e9d9c7817cf9ebca3c1fbda580abd5c43e43de1a0e23a2c4d3943693",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:3799ab57187bcce2250d56f8f370d00701e04798cfa1bb05f204c4a8fa0b5834",
   "decisions": {
@@ -11,10 +11,11 @@
     "fiducial_blind": "blind_a"
   },
   "input_versions": {
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
     "pure_eb_semianalytic_data": "sha256:7e1374ee2882b55cec68a093330a6fbf6fbab5c50e6516f4e68844800a7f2137",
-    "cov_integration_g": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052"
+    "cov_integration": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052"
   },
-  "git_sha": "dc73ae0c847f8249fd4e7da5092f4b4f0bebfb96",
+  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -24,8 +25,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T07:58:17.877+00:00",
-  "finished_at": "2026-11-01T07:59:07.464+00:00",
+  "started_at": "2026-11-04T08:55:59.951+00:00",
+  "finished_at": "2026-11-04T08:56:14.500+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",

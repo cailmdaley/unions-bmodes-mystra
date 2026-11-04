@@ -2,8 +2,8 @@
   "schema_version": 1,
   "output_id": "fig_harmonic_config_cosebis_full",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py --config src/papers/bmodes/config/catalogs/size_cut.yaml --angular-range full --blind A --figure-from-modes results/baseline/cosebis/cosebis_harmonic_modes_full.npz --scale-cut-convention grid_bin_edges --out-file results/baseline/fig_harmonic_config_cosebis_full.png\n",
-  "definition_version": "sha256:d7feb2f850aefbd9a89671b80e791c19ccef1089c545befed5b5e1854c8e134d",
+  "recipe": "python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py --config results/baseline/catalog/selected_config.yaml --angular-range full --blind A --figure-from-modes results/baseline/cosebis/cosebis_harmonic_modes_full.npz --scale-cut-convention grid_bin_edges --out-file results/baseline/fig_harmonic_config_cosebis_full.png\n",
+  "definition_version": "sha256:724f9798617a74417e4dc54ac1b09eac71386c3892776bf82ef8cbfbbad69df4",
   "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
   "data_version": "sha256:af5fa4fc977f2d3116226d075c303f554e18651f8434fedeef83b3effc7f379a",
   "decisions": {
@@ -11,10 +11,11 @@
     "scale_cut_convention": "grid_bin_edges"
   },
   "input_versions": {
-    "cosebis_harmonic_modes_full": "sha256:b7c8e9ecd6d92641e63ac8da4234888983e87710821fb54dd8ca0754514907c0",
-    "harmonic_config_cosebis_comparison_figure_script": "sha256:e998d597e035f5faa35705c0b9e99571602c6043f4f2849d4ebc30164fd97fe1"
+    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
+    "cosebis_harmonic_modes_full": "sha256:8de8f9189b33106f41b23a79d8c4b3ca58051d7110e43b1e416814ee3615f01b",
+    "harmonic_config_cosebis_comparison_figure_script": "sha256:4e0287d61a062746465593ee91dfd6b54389d3489f6e932ccb8bbb65772ea128"
   },
-  "git_sha": "a2f02fc07f5b9e0849df8dad5819916d357f0781",
+  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -24,8 +25,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T11:12:49.929+00:00",
-  "finished_at": "2026-11-01T11:13:19.165+00:00",
+  "started_at": "2026-11-03T23:57:47.467+00:00",
+  "finished_at": "2026-11-03T23:58:12.729+00:00",
   "uv_version": "0.12.6",
   "image": {
     "tag": "lc-env-54f5826a45ef4844",
