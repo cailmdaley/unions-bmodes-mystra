@@ -5,10 +5,13 @@ shear* (A&A, accepted; arXiv [2604.03227](https://arxiv.org/abs/2604.03227)),
 specified in ASTRA and executed with `lc`.
 
 - **Read it:** https://myst-viewer.vercel.app/cailmdaley/unions-bmodes-mystra.
-  The body is the accepted paper's text. Every inline number and figure
-  resolves from this analysis's outputs. *Supporting documents → ASTRA
-  Inventory*, at the bottom, lists every input, decision, output, finding and
-  prior insight.
+  The body follows the accepted paper, with quantitative macros and generated
+  figures linked to analysis outputs. Start at **Results** for the PTE table,
+  **Catalog comparison** for the three representations, or **Conclusions** for
+  the paper's takeaways. **Supporting Documents → ASTRA Inventory** lists the
+  root analysis's inputs, decisions, outputs, findings, and prior insights;
+  output dependencies lead into the nested analyses. A figure's **Provenance**
+  control exposes its decision dependencies.
 - **Spec:** `astra.yaml` (root decisions, findings, figure outputs) and
   `analyses/<sub>/astra.yaml` for the nine sub-analyses: catalog, two_point,
   pure_eb, cosebis, cl_bb, covariance, glass_mocks, convergence, null_tests.
@@ -25,6 +28,13 @@ specified in ASTRA and executed with `lc`.
 `universes/<id>.yaml` names each decision's selection and its source of truth.
 The decisions that differ between the two universes are the referee round's
 methodological changes.
+The live report displays the accepted-paper reference comparison; it does not
+switch universes interactively.
+The `selected_config` output records the raw or leakage-corrected shear
+selection, and `primary_null_test_report` records the selected scale range and
+COSEBI subsets, recalibrated from stored mock PTEs.
+Those selections do not turn the report's complete two-range, six-test tables
+and figures into a different paper.
 
 ## Reproducing
 

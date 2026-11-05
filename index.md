@@ -9,10 +9,15 @@ At Stage-III sensitivities, cosmic shear $B$ modes unambiguously indicate system
 +++
 
 
-:::{note}
-The [resolved configuration](#outputs.selected_config) selects corrected or raw shear consistently across the reproduction.
-The [primary null-test report](#outputs.primary_null_test_report) selects the adopted or full range and the reported COSEBI subsets, recalibrating the selected test family from stored mock PTEs.
-The tables and figures below retain the complete two-range, six-test reference comparison.
+(reading-the-analysis)=
+:::{note} Reading this reproduction
+This report pairs the accepted paper with its analysis records.
+Start with the [results and PTE table](#sec:results), the [comparison across catalog versions](#sec:catalog_comparison), or the [conclusions](#sec:conclusions).
+Open the [ASTRA Inventory](#astra-inventory) to inspect inputs, decisions, outputs, and findings; a figure's **Provenance** control traces the choices behind it.
+
+The [repository guide](https://github.com/cailmdaley/unions-bmodes-mystra#readme) describes the analysis structure and the accepted and submitted universes.
+The report shows the accepted-paper reference comparison, not an interactive universe switcher.
+The tables and figures retain the complete two-range, six-test reference comparison; the repository guide explains the configurable primary-report selections.
 :::
 
 # Introduction
@@ -54,10 +59,10 @@ $n_{\mathrm{eff}}$ follows {cite:t}`heymans.etal12` and $\sigma_e$ is the per-co
 
 
 (fig:footprint_zoom)=
-
-**Figure 1.** Fiducial (top) and masked (bottom) footprints in a $2.4^\circ \times 1.2^\circ$ region, with the positions of the 40 MegaCam CCDs in one exposure outlined in red. The footprints are determined directly from the galaxy positions, for both the configuration-space and the catalog-based harmonic-space estimators. The smaller gaps are predominantly bright-star masks, while the larger ${\sim}8'$ holes in the bottom panel are stellar-halo masks.
-
-*The footprint image has no baseline lc output and is omitted.*
+:::{note} Footprint illustration
+The footprint illustration is Figure 1 of the [paper](https://arxiv.org/abs/2604.03227).
+It isn't included among this reproduction's generated outputs.
+:::
 
 
 
@@ -183,15 +188,6 @@ Two independent checks support these covariances. Paper IV validates the harmon
 (sec:mock_validation)=
 ## Validation on simulations
 
-(tab:pte_results)=
-:::{astra} outputs.pte_table_appendix
-:::
-
-$B$-mode PTE values across catalog versions at fiducial and full-range scale cuts.
-
-Fiducial scale cuts are {astra:value col=display where="macro=ebthetaXipMin"}`outputs.paper_claims`--{astra:value col=display where="macro=ebthetaXipMax"}`outputs.paper_claims` arcmin in configuration space and $300 < \ell < 1600$ in harmonic space; the full range is $1$--$250$ arcmin / $8 \leq \ell \leq 2048$. A row passes the null test when its minimum PTE is at least $p_{\mathrm{thr}} = ${astra:value col=display where="macro=mockMinPteThreshold"}`outputs.paper_claims`; only the fiducial catalog at the adopted cuts passes.
-
-
 
 No systematics are injected into the `GLASS` realizations ([section](#sec:data)), so they allow us to test directly whether our estimators generate spurious $B$ modes from a noise-dominated signal. For these comparisons we recompute the analytic covariances of [section](#sec:covariance) at the galaxy density of the realizations. Across the ensemble, the pure-mode decomposition, COSEBIs, and harmonic-space power spectra all recover $B$ modes consistent with zero (top row of [figure](#fig:mock_validation)); the mean COSEBI $B_n$ deviates from zero by at most {astra:value col=display where="macro=mockMeanBiasCosebis"}`outputs.paper_claims` $\sigma$ in any mode.
 
@@ -217,6 +213,15 @@ These tests were carried out within the blinded analysis framework shared with P
 (sec:results)=
 # Results
 
+(tab:pte_results)=
+:::{astra} outputs.pte_table_appendix
+:::
+
+$B$-mode PTE values across catalog versions at fiducial and full-range scale cuts.
+
+Fiducial scale cuts are {astra:value col=display where="macro=ebthetaXipMin"}`outputs.paper_claims`--{astra:value col=display where="macro=ebthetaXipMax"}`outputs.paper_claims` arcmin in configuration space and $300 < \ell < 1600$ in harmonic space; the full range is $1$--$250$ arcmin / $8 \leq \ell \leq 2048$.
+A row passes the null test when its minimum PTE is at least $p_{\mathrm{thr}} = ${astra:value col=display where="macro=mockMinPteThreshold"}`outputs.paper_claims`; only the fiducial catalog at the adopted cuts passes.
+
 For the fiducial catalog before scale cuts, COSEBIs fail with a $4\,\sigma$ first mode and both pure-mode correlation functions fail, while $C_\ell^{BB}$ passes but shows low-level $B$-mode structure ([table](#tab:pte_results)). At the adopted scale cuts, the fiducial catalog passes with a minimum PTE of {astra:value col=display where="macro=fiducialMinPte"}`outputs.paper_claims`; {astra:value col=display where="macro=mockPGlobal"}`outputs.paper_claims` of the systematics-free realizations have a lower $\mathrm{PTE}_{\min}$ ([figure](#fig:mock_min_pte)). We chose those cuts using the $B$-mode tests together with additional systematics checks and blinded inference-stability checks in Papers III and IV. The object-wise PSF-leakage correction (Paper I) shifts individual PTEs by at most {astra:value col=display where="macro=leakCorrMaxPteShift"}`outputs.paper_claims` across all catalog versions and statistics; no pass/fail conclusion changes. We report leakage-corrected results throughout.
 
 The low-level features that drive the full-range behavior leave different signatures in each statistic. In the pure-mode decomposition ([figure](#fig:pure_eb_decomposition)), $\xi_+^{\mathrm{B}}/\sigma$ shows a broad positive excess on the smallest angular scales that tapers toward zero by $\theta \sim 10$ arcmin, apart from a ${\sim}3\,\sigma$ outlier in the 9--12 arcmin bin, just below the fiducial lower cut. This outlier appears in all four catalog versions ([figure](#fig:pure_eb_versions)) and coincides with a jump in the total $\xi_+$, at roughly the angular size of a MegaCam CCD. The corresponding $\xi_-^{\mathrm{B}}$ is quieter on the smallest scales but remains broadly elevated from roughly 7 arcmin to the largest scales. The COSEBI data vector ([figure](#fig:cosebis_fiducial)) compresses the same structure into a smaller number of modes: on the full angular range, the first mode reaches $4\,\sigma$ and the higher modes show coherent oscillations, whose possible origins we discuss in [section](#sec:discussion); after applying the fiducial angular cuts, the first-mode excess drops below 1 $\sigma$ and the oscillatory pattern largely disappears. In harmonic space ([figure](#fig:cl_fiducial)), $C_\ell^{BB}$ shows a low-level positive offset across much of the fiducial range, with the most conspicuous outliers near $\ell \approx 125$ and $250$, and above $\ell \approx 1600$. Even so, the fiducial range $300 < \ell < 1600$ passes the null test, while $C_\ell^{EB}$ remains consistent with zero, suggesting that any $B$-mode contamination is not strongly correlated with the lensing signal.
@@ -227,19 +232,36 @@ At full range, all versions show low-order oscillatory structure consistent with
 
 [figure](#fig:pte_cl) and [figure](#fig:pte_heatmaps) map null-test performance over the full grid of scale-cut combinations. In the configuration-space maps, $\xi_+^{\mathrm{B}}$ and COSEBI failures concentrate at small $\theta_{\min}$, below the fiducial cut. For COSEBIs, whose data vector is indexed by mode number rather than angle, the PTE heatmap translates null-test performance back into angular space.
 
+(sec:catalog_comparison)=
+## Catalog comparison
+
+The following three figures compare $B$-mode data vectors across catalog versions: initial (red circles), size-cut/fiducial (gold squares), masked (teal diamonds), and relaxed-flags (purple triangles).
+Rectangles delineate each bin in the horizontal direction and span the range of values across versions in the vertical direction; horizontal lines mark the fiducial value.
+Only the size-cut catalog passes all statistics at the fiducial scale cuts ([table](#tab:pte_results)).
+
 (fig:pure_eb_versions)=
 :::{astra} outputs.fig_versions_pure_eb
 :::
+
+Pure $E$/$B$-mode correlation functions across catalog versions.
+Upper panels show $\xi_+$ and $\xi_-$ scaled by $\theta$; lower panels show $B$-mode components $\xi_\pm^{\mathrm{B}}/\sigma$.
+Shaded bands mark fiducial scale cuts.
 
 (fig:cl_versions)=
 :::{astra} outputs.fig_versions_cl
 :::
 
+Harmonic-space power spectra $C_\ell^{BB}/\sigma$ and $C_\ell^{EB}/\sigma$ across catalog versions.
+Shaded bands mark fiducial scale cuts.
+
 (fig:cosebis_versions)=
 :::{astra} outputs.fig_versions_cosebis
 :::
 
-$B$-mode data vectors across catalog versions: initial (red circles), size-cut/fiducial (gold squares), masked (teal diamonds), and relaxed-flags (purple triangles). Rectangles delineate each bin in the horizontal direction and span the range of values across versions in the vertical direction; horizontal lines mark the fiducial value. Shaded bands mark fiducial scale cuts for $\xi_\pm$ and $C_\ell$. Top: Pure $E$/$B$-mode correlation functions. Upper panels show $\xi_+$ and $\xi_-$ scaled by $\theta$; lower panels show $B$-mode components $\xi_\pm^{\mathrm{B}}/\sigma$. Middle: Harmonic-space power spectra $C_\ell^{BB}/\sigma$ and $C_\ell^{EB}/\sigma$. Bottom: COSEBI $B$-mode amplitudes $B_n/\sigma_n$ at full range (upper) and fiducial cuts (lower). Only the size-cut catalog passes all statistics at the fiducial scale cuts ([table](#tab:pte_results)).
+COSEBI $B$-mode amplitudes $B_n/\sigma_n$ across catalog versions at full range (upper) and fiducial cuts (lower).
+
+(sec:scale_cut_maps)=
+## Scale-cut maps
 
 
 
@@ -290,6 +312,7 @@ Paper V discusses a possible pipeline-specific source arising from the improper
 
 An alternative to excluding contaminated scales would be to model the $B$-mode signal as a bias and subtract it from the total measurement. However, the relationship between $E$- and $B$-mode contamination depends on the physical mechanism; {cite:t}`asgari.etal19a` showed that different systematics produce markedly different $E$/$B$ ratios, so the $B$-mode amplitude alone does not determine the $E$-mode contamination. We therefore treat $B$-modes as a diagnostic rather than a correction: scale cuts that remove $B$-mode contamination also remove any corresponding contamination of the total signal, without assuming a model for the relationship between them.
 
+(sec:conclusions)=
 # Conclusions
 
 UNIONS-3500 weak-lensing $B$ modes are consistent with zero at the adopted scale cuts across pure-mode correlation functions, COSEBIs, and harmonic-space power spectra. Without scale cuts, $\xi_+^{\mathrm{B}}$ and the COSEBIs show significant $B$ modes on small scales, whereas $\xi_-^{\mathrm{B}}$ and $C_\ell^{BB}$ show a broad, low-level excess with little scale dependence; this excess is significant in $\xi_-^{\mathrm{B}}$ on large scales and marginal at the fiducial cuts.
