@@ -178,7 +178,7 @@ site:
   # downloadable template when it does; otherwise it GETs the URL expecting JSON
   # template metadata and dies on GitHub's HTML with
   # `Unexpected token '<' ... is not valid JSON`.
-  template: https://github.com/EiffL/astra-article-theme.git
+  template: https://github.com/cailmdaley/paper-ii-article-theme/archive/bef8b388a95197d47c1d3ef357e99dd22d6dcebf.zip
   title: "UNIONS-3500 Weak Lensing II — B-mode validation"
   options:
     # Lightcone Research brand marks (mirrored from EiffL/myst_proto); the dark

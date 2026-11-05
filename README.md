@@ -36,6 +36,29 @@ COSEBI subsets, recalibrated from stored mock PTEs.
 Those selections do not turn the report's complete two-range, six-test tables
 and figures into a different paper.
 
+## Presentation checks
+
+The report pins a scoped [article theme](https://github.com/cailmdaley/paper-ii-article-theme)
+that renders record links, inherited decision provenance, and excluded-option reasons.
+Its source is on [Cail's astra-theme fork](https://github.com/cailmdaley/astra-theme/tree/cail/paper-ii-dialog-polish);
+it doesn't require a shared Lightcone theme release.
+The `astra-output--no-caption` class suppresses generated captions where the
+report supplies its own caption, keeping the numerical value bindings intact.
+
+Run these checks from the project root without installing the scientific stack:
+
+```bash
+uv run --no-project --with pyyaml python tools/check_prose_only.py <base-revision>
+uv run --no-project --with pyyaml python tools/check_links.py
+uv run --no-project python tools/check_report_links.py
+uv run --no-project python tools/test_report_links.py
+myst build
+uv run --no-project python tools/check_report_build.py
+```
+
+The build check verifies that every authored `astra:value` resolves in the built
+report, including values in handwritten captions.
+
 ## Reproducing
 
 `lc status` shows what state each output is in. `lc materialize <cluster>`

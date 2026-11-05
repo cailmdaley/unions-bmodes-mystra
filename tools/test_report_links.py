@@ -2,6 +2,7 @@
 import unittest
 
 from check_report_links import broken_links
+from check_report_build import check
 
 
 class ReportLinksTest(unittest.TestCase):
@@ -22,6 +23,20 @@ $$ (eq:transform)
             broken_links("[output](#outputs.selected_config) [missing](#sec:missing)"),
             ["outputs.selected_config", "sec:missing"],
         )
+
+
+class ReportBuildTest(unittest.TestCase):
+    def test_bound_value_survives_build(self):
+        source = '{astra:value col=display where="macro=x"}`outputs.paper_claims`'
+        ast = {"type": "span", "data": {"astra": {"kind": "value"}}}
+        self.assertEqual(check(source, ast), [])
+
+    def test_caption_role_left_unresolved_fails(self):
+        source = '{astra:value col=display where="macro=x"}`outputs.paper_claims`'
+        ast = {"type": "mystRole", "name": "astra:value"}
+        self.assertEqual(check(source, ast), [
+            "bound values: 0 resolved, 1 authored", "unresolved ASTRA roles: 1"
+        ])
 
 
 if __name__ == "__main__":
