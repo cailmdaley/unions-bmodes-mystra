@@ -29,7 +29,6 @@ decisions:
   pure_eb_covariance_method: exact_linear
   harmonic_validation_binning: bins_96
   mc_samples: n_2000
-  hartlap_correction: none
   pte_definition: chi2_tail
   fiducial_cosmology: planck18
 

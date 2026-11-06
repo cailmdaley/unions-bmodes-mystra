@@ -149,7 +149,7 @@ narrative:
     interval [0.05, 0.95]; the [chi-squared
     definition](#decisions.pte_definition) is the standard tail
     probability. The
-    [theory-covariance Hartlap correction](#decisions.hartlap_correction)
+    [pure-mode covariance method](#decisions.pure_eb_covariance_method)
     is `none` for COSEBIs and Cℓ^BB because their inputs are
     semi-analytical CosmoCov and iNKA matrices; the
     [pure-mode χ² stage](#pure_eb.decisions.hartlap_application)
@@ -365,8 +365,8 @@ narrative:
     bandpower covariance from the
     [covariance sub-analysis](#../analyses.covariance), which
     is theory-derived (no Hartlap correction needed, paralleling
-    the [root hartlap_correction decision
-    ](#../decisions.hartlap_correction)) and validated by Paper
+    the [root pure_eb_covariance_method decision
+    ](#../decisions.pure_eb_covariance_method)) and validated by Paper
     IV against 10,000 Gaussian simulations. The
     [PTE-per-(ℓ_min, ℓ_max)
     matrix](#outputs.cl_pte_per_cut) drives the
@@ -825,7 +825,7 @@ narrative:
     pure-mode covariance is a sample-derived estimator (paper
     §3.4). This is the operationally meaningful Hartlap
     application in this paper — the
-    [root hartlap_correction decision](#../decisions.hartlap_correction)
+    [root pure_eb_covariance_method decision](#../decisions.pure_eb_covariance_method)
     refers to the CosmoCov input matrix itself, which is
     theory-derived and does not need correction; the MC
     output covariance does. The

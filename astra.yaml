@@ -912,28 +912,6 @@ decisions:
         label: "5000"
         description: "2.5× as many draws as the default, to test sample-count sensitivity."
 
-  hartlap_correction:
-    label: "Hartlap correction on the theory covariance"
-    tags: [covariance, statistics]
-    rationale: |
-      The Hartlap (2007) factor corrects the bias of an inverse
-      covariance estimated from a finite ensemble. CosmoCov is a
-      semi-analytical covariance, so the COSEBI and Cℓ^BB χ² use
-      it uncorrected. Whether a pure-mode χ² carries the factor is
-      set by [pure_eb_covariance_method](#decisions.pure_eb_covariance_method).
-    default: none
-    options:
-      none:
-        label: "None (fiducial)"
-        insights: [hartlap07_correction]
-      mock_based:
-        label: "Hartlap factor (N - p - 2) / (N - 1)"
-        excluded: true
-        excluded_reason: "The GLASS sample covariance is a validation product, not the theory covariance used in the null tests."
-        description: |
-          Would apply only if the 350-mock sample covariance
-          replaced CosmoCov.
-
   pte_definition:
     label: "PTE statistical convention"
     tags: [statistics, reporting]

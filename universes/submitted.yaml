@@ -42,7 +42,6 @@ decisions:
   harmonic_validation_binning: bins_96
   mc_samples: n_2000
   # CosmoCov is theory; no Hartlap correction applied
-  hartlap_correction: none
   # workflow/scripts/calculate_pure_eb_ptes.py: scipy.stats.chi2.sf
   pte_definition: chi2_tail
   # conventional 2σ band; affects table colouring
