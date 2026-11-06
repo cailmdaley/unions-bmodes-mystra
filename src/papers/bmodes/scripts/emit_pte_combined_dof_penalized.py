@@ -19,10 +19,8 @@ definition shared with the PTE matrices and the mock calibration.
 
 import argparse
 import json
-import os
 
 import numpy as np
-import yaml
 from scipy import stats
 
 from scale_cuts import (
@@ -30,7 +28,7 @@ from scale_cuts import (
     resolve_fiducial_bin_window,
     resolve_fiducial_scale_cuts,
 )
-from paper_config import load_config
+from decision_values import REPORTING_BINNING
 
 # The two scale-cut boundaries are the "fitted" parameters.
 N_FITTED_BOUNDARIES = 2
@@ -43,14 +41,13 @@ def main():
         required=True,
         help="<version>_A_pure_eb_ptes.npz with theta + pte_combined grid",
     )
-    p.add_argument("--config", required=True, help="bmodes config.yaml")
+    p.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
     add_scale_cut_convention_argument(p)
     p.add_argument("--out-file", required=True, help="output metric JSON path")
     args = p.parse_args()
 
-    config = load_config(args.config)
-    cut_arcmin = resolve_fiducial_scale_cuts(config, args.scale_cut_convention)
-    s, e = resolve_fiducial_bin_window(config, args.scale_cut_convention)
+    cut_arcmin = resolve_fiducial_scale_cuts(args.reporting_binning, args.scale_cut_convention)
+    s, e = resolve_fiducial_bin_window(args.reporting_binning, args.scale_cut_convention)
 
     d = np.load(args.pte_per_cut_npz)
     nbins = (e + 1) - s

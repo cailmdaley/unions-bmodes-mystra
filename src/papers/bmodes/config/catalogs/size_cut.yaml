@@ -1,3 +1,0 @@
-# Paper II fiducial: ShapePipe v1.4.6.3 (PSFEx), size cut, leak-corrected.
-# The base config is written for this catalog, so nothing is overridden.
-base: ../config.yaml

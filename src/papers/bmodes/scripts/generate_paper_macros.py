@@ -13,7 +13,8 @@ from datetime import datetime
 from pathlib import Path
 
 from plotting_utils import resolve_pte_threshold
-from paper_config import load_config
+from catalog_versions import VERSIONS, add_catalog_arguments, catalogs_from
+from decision_values import REPORTING_BINNING
 
 
 # Version number to word mapping for TeX-safe macro names
@@ -96,7 +97,7 @@ def generate_macros(
     harmonic_config_fiducial_path: Path = None,
     harmonic_config_full_path: Path = None,
     scale_cut_convention: str = "rounded_arcmin",
-    config_path: Path = None,
+    reporting=None,
     pte_threshold: float = None,
     mock_campaign_evidence_path: Path = None,
     mock_scale_cut_scan_path: Path = None,
@@ -111,7 +112,7 @@ def generate_macros(
     """Generate LaTeX macros from evidence files.
 
     Macro names are kept simple. The spec (bmodes_paper.md)
-    determines which values go into the paper. Fiducial version from config.
+    determines which values go into the paper. The fiducial version comes from the catalog decisions.
 
     ``config_pte_path`` / ``harmonic_pte_path`` override the
     ``claims_dir/<spec_id>/evidence.json`` location for the two PTE-matrix
@@ -167,14 +168,10 @@ def generate_macros(
     # The paper reports rounded arcmin values even when the selected
     # convention resolves to reporting-grid edges. Resolve the decision here,
     # rather than duplicating its values in the macro generator.
-    if config_path is not None:
+    if reporting is not None:
         from scale_cuts import resolve_fiducial_scale_cuts
-        import yaml
 
-        paper_config = load_config(config_path)
-        theta_min, theta_max = resolve_fiducial_scale_cuts(
-            paper_config, scale_cut_convention
-        )
+        theta_min, theta_max = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
         macros.append("% resolved fiducial pure-mode scale cut")
         macros.append(
             f"\\newcommand{{\\ebthetaXipMin}}{{\\num{{{round(theta_min):.0f}}}}}"
@@ -469,14 +466,11 @@ def generate_macros(
     # boundaries treated as fitted), fiducial catalogue at the fiducial cuts:
     # the same computation as the nu_penalty_verdicts table, on the same two
     # PTE payloads.
-    if config_path is not None and config_pte_path.exists() and harmonic_pte_path.exists():
-        import yaml
+    if reporting is not None and config_pte_path.exists() and harmonic_pte_path.exists():
         from emit_nu_penalty_verdicts import penalized_rows
         from scale_cuts import resolve_fiducial_bin_window
 
-        first_bin, last_bin = resolve_fiducial_bin_window(
-            load_config(config_path), scale_cut_convention
-        )
+        first_bin, last_bin = resolve_fiducial_bin_window(reporting, scale_cut_convention)
         with open(config_pte_path) as f:
             config_space_versions = json.load(f)["evidence"]["versions"]
         with open(harmonic_pte_path) as f:
@@ -680,15 +674,12 @@ def generate_macros(
         and cov_reporting_ng_path is not None
         and cov_reporting_g_path.exists()
         and cov_reporting_ng_path.exists()
-        and config_path is not None
+        and reporting is not None
     ):
         import numpy as np
-        import yaml
         from scale_cuts import resolve_fiducial_bin_window
 
-        first_bin, last_bin = resolve_fiducial_bin_window(
-            load_config(config_path), scale_cut_convention
-        )
+        first_bin, last_bin = resolve_fiducial_bin_window(reporting, scale_cut_convention)
         frac = 1 - np.diag(np.loadtxt(cov_reporting_g_path)) / np.diag(
             np.loadtxt(cov_reporting_ng_path)
         )
@@ -948,54 +939,6 @@ def generate_evidence(
     print(f"  → {output_path}")
 
 
-def _from_snakemake(smk):
-    # When run via snakemake
-    tapestry_dir = Path(smk.params.tapestry_dir)
-    config = smk.config
-    fiducial_version = config["fiducial"]["version"]
-    versions = config["versions"]
-    version_labels = config["plotting"]["version_labels"]
-
-    # Separate macro file from PTE tables and evidence
-    # Only claims_macros.tex gets macro content; PTE tables generated separately
-    macro_file = [Path(p) for p in smk.output if p.endswith("claims_macros.tex")]
-    evidence_outputs = [Path(p) for p in smk.output if p.endswith("evidence.json")]
-
-    print(f"Generating macros from {tapestry_dir}")
-    generate_macros(tapestry_dir, macro_file, fiducial_version)
-
-    # Generate the PTE table (separate file, not macro content)
-    if macro_file:
-        paper_dir = macro_file[0].parent
-        print(f"Generating PTE table to {paper_dir}")
-        generate_pte_table_csv(
-            paper_dir / "pte_table_appendix.csv",
-            fiducial_version,
-            versions,
-            version_labels,
-            tapestry_dir / "config_space_pte_matrices" / "evidence.json",
-            tapestry_dir / "harmonic_space_pte_matrices" / "evidence.json",
-        )
-
-    # Generate evidence.json if requested
-    # Dependencies derived from snakemake inputs (rules.X.output declarations)
-    rule_inputs = smk.input.keys()
-    input_deps = [
-        k for k in rule_inputs if k.endswith("_evidence") or k == "covariance_evidence"
-    ]
-    depends_on = [d.replace("_evidence", "") for d in input_deps]
-
-    for evidence_path in evidence_outputs:
-        spec_id = evidence_path.parent.name  # e.g., xi_cosmology_paper
-        generate_evidence(
-            spec_id=spec_id,
-            spec_path=f"workflow/config/{spec_id}.md",
-            depends_on=depends_on,
-            claims_dir=tapestry_dir,
-            output_path=evidence_path,
-        )
-
-
 def _optional_path(value):
     return Path(value) if value else None
 
@@ -1003,7 +946,6 @@ def _optional_path(value):
 def _from_cli(argv=None):
     import argparse
 
-    import yaml
 
     ap = argparse.ArgumentParser(
         description=(
@@ -1012,7 +954,8 @@ def _from_cli(argv=None):
             "Terminal gather for the B-modes paper."
         )
     )
-    ap.add_argument("--config", required=True, help="Absolute path to config.yaml")
+    add_catalog_arguments(ap)
+    ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__)
     ap.add_argument(
         "--config-space-evidence",
         required=True,
@@ -1121,10 +1064,10 @@ def _from_cli(argv=None):
     )
     a = ap.parse_args(argv)
 
-    config = load_config(a.config)
-    fiducial_version = config["fiducial"]["version"]
-    versions = config["versions"]
-    version_labels = config["plotting"]["version_labels"]
+    catalogs = catalogs_from(a)
+    fiducial_version = catalogs.fiducial
+    versions = VERSIONS
+    version_labels = catalogs.labels
 
     out_file = Path(a.out_file)
     # A sentinel keeps the claims_dir-relative `.exists()` guards falsy when no
@@ -1172,7 +1115,7 @@ def _from_cli(argv=None):
             cov_reporting_g_path=_optional_path(a.cov_reporting_g),
             cov_reporting_ng_path=_optional_path(a.cov_reporting_ng),
             scale_cut_convention=a.scale_cut_convention,
-            config_path=Path(a.config),
+            reporting=a.reporting_binning,
             pte_threshold=a.pte_threshold,
         )
     elif a.emit == "table":
@@ -1198,11 +1141,4 @@ def _from_cli(argv=None):
 
 
 if __name__ == "__main__":
-    # A membership test, not a caught NameError: the exception form leaves
-    # every CLI-path traceback prefixed with "During handling of the above
-    # exception" and a NameError that is not the failure, which reads as
-    # the bug and is not one.
-    if "snakemake" in globals():
-        _from_snakemake(snakemake)  # noqa: F821
-    else:
-        _from_cli()
+    _from_cli()

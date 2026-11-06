@@ -10,8 +10,6 @@ inputs:
     from: ../glass_mocks.mock_min_pte_calibration
   - id: mock_per_mock_statistics
     from: ../glass_mocks.mock_per_mock_statistics
-  - id: selected_config
-    from: ../catalog.selected_config
   - id: xi_integration
     from: ../two_point.xi_integration
 
@@ -68,12 +66,12 @@ outputs:
       cuts, with the mode covariance T^T C_ξ T and the σ_n that
       normalise B_n / σ_n in the
       [COSEBI data-vector figure](#../outputs.fig_cosebis_fiducial).
-    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, pte_definition]
-    inputs: [selected_config, xi_integration, cov_integration]
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, pte_definition, leakage_correction, reporting_binning, integration_grid]
+    inputs: [xi_integration, cov_integration]
     recipe:
       command: >
         python src/papers/bmodes/scripts/cosebis_data_vector.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
         --xi-integration {inputs.xi_integration}
         --cov-integration {inputs.cov_integration}
         --scale-cut-convention {decisions.scale_cut_convention}
@@ -91,12 +89,11 @@ outputs:
       (open diamonds). Modes n > 6 are shaded; the n ≤ 6 subset captures
       nearly all cosmological information.
     decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention]
-    inputs: [selected_config, cosebis_modes_data]
+    inputs: [cosebis_modes_data]
     recipe:
       # Plot-only pass of the same CLI.
       command: >
         python src/papers/bmodes/scripts/cosebis_data_vector.py
-        --config {inputs.selected_config}
         --plot-from-modes {inputs.cosebis_modes_data}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
@@ -138,8 +135,8 @@ outputs:
       full range (upper) and fiducial cuts (lower). Only the size-cut
       catalog passes all statistics at the fiducial scale cuts ([PTE
       table](#../outputs.pte_table_appendix)).
-    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, pte_definition]
-    inputs: [selected_config, xi_sweep, cov_sweep, xi_integration, cov_integration, cosebis_version_comparison_script]
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, pte_definition, leakage_correction, reporting_binning, integration_grid]
+    inputs: [xi_sweep, cov_sweep, xi_integration, cov_integration, cosebis_version_comparison_script]
     recipe:
       # The plotter recomputes COSEBIs per version from the unpacked xi and
       # covariance sweep bundles, found by canonical filename.
@@ -148,10 +145,10 @@ outputs:
         tar xzf {inputs.xi_sweep} -C $x &&
         tar xzf {inputs.cov_sweep} -C $c &&
         python src/papers/bmodes/scripts/cosebis_version_comparison.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
         --results-dir $x
         --cov-dir $c
-        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --fiducial-xi-path {inputs.xi_integration}
         --fiducial-cov-path {inputs.cov_integration}
         --scale-cut-convention {decisions.scale_cut_convention}
@@ -172,15 +169,15 @@ outputs:
       [harmonic/configuration cross-check figure](#../outputs.fig_harmonic_config_cosebis_full);
       PTEs are in
       [cosebis_harmonic_metrics](#outputs.cosebis_harmonic_metrics).
-    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition]
-    inputs: [selected_config, cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition, leakage_correction, reporting_binning, integration_grid, mode_count]
+    inputs: [cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration]
     recipe:
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config {inputs.selected_config}
-        --angular-range fiducial --blind A
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
+        --angular-range fiducial --blind {decisions.fiducial_blind}
         --harmonic-validation-binning {decisions.harmonic_validation_binning}
-        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --fiducial-pseudo-cl-path {inputs.cl_bandpowers_fine}
         --fiducial-pseudo-cl-cov-path {inputs.cl_cov_fine}
         --fiducial-xi-path {inputs.xi_integration}
@@ -199,13 +196,12 @@ outputs:
       quoted in the
       [harmonic/configuration COSEBI table](#../outputs.cosebis_harmonic_config).
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
-    inputs: [selected_config, cosebis_harmonic_modes]
+    inputs: [cosebis_harmonic_modes]
     recipe:
       # Metrics-only pass: reads the modes NPZ back and emits the PTE/chi2 JSON.
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config {inputs.selected_config}
-        --angular-range fiducial --blind A
+        --angular-range fiducial
         --metrics-from-modes {inputs.cosebis_harmonic_modes}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
@@ -220,17 +216,17 @@ outputs:
       [full-range cross-check figure](#../outputs.fig_harmonic_config_cosebis_full);
       PTEs are in
       [cosebis_harmonic_metrics_full](#outputs.cosebis_harmonic_metrics_full).
-    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition]
-    inputs: [selected_config, cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition, leakage_correction, reporting_binning, integration_grid, mode_count]
+    inputs: [cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration]
     recipe:
       # Same CLI as cosebis_harmonic_modes, --angular-range full instead of
       # fiducial. Identical inputs; only the flag differs.
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config {inputs.selected_config}
-        --angular-range full --blind A
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
+        --angular-range full --blind {decisions.fiducial_blind}
         --harmonic-validation-binning {decisions.harmonic_validation_binning}
-        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --fiducial-pseudo-cl-path {inputs.cl_bandpowers_fine}
         --fiducial-pseudo-cl-cov-path {inputs.cl_cov_fine}
         --fiducial-xi-path {inputs.xi_integration}
@@ -249,13 +245,12 @@ outputs:
       [CCD-scale COSEBI pattern](#../findings.ccd_scale_cosebi_pattern)
       and the configuration-path χ².
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
-    inputs: [selected_config, cosebis_harmonic_modes_full]
+    inputs: [cosebis_harmonic_modes_full]
     recipe:
       # Metrics-only pass on the full-range modes NPZ.
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config {inputs.selected_config}
-        --angular-range full --blind A
+        --angular-range full
         --metrics-from-modes {inputs.cosebis_harmonic_modes_full}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
@@ -347,6 +342,10 @@ decisions:
           Only the
           [adopted 12'–83' fiducial cut](#../decisions.fiducial_scale_cuts);
           no scale-cut sensitivity.
+  integration_grid:
+    from: ../integration_grid
+  reporting_binning:
+    from: ../reporting_binning
 
 analyses:
 

@@ -30,7 +30,8 @@ from plotting_utils import (
     version_label,
 )
 from print_width import savefig_at_width
-from paper_config import load_config, comparison_versions
+from catalog_versions import add_catalog_arguments, catalogs_from
+from decision_values import FIDUCIAL_ELL_CUT
 
 # The paper stacks Fig. 8's three version-comparison panels at 0.88\textwidth.
 STACKED_PRINT_WIDTH = 0.88 * FIG_WIDTH_FULL
@@ -78,7 +79,7 @@ def _resolve_pseudo_cl_paths(
 
 
 def main(
-    config,
+    catalogs,
     results_dir,
     out_dir=None,
     fiducial_version=None,
@@ -87,19 +88,14 @@ def main(
     out_file=None,
 ):
     # Scale cuts (Guerrini et al. fiducial ell range)
-    ell_min_cut = int(config["cl"]["fiducial_ell_min"])
-    ell_max_cut = int(config["cl"]["fiducial_ell_max"])
+    ell_min_cut, ell_max_cut = FIDUCIAL_ELL_CUT["adopted"]
 
-    plotting_config = config["plotting"]
-    version_labels = plotting_config["version_labels"]
+    version_labels = catalogs.labels
     # Leak-corrected, non-ecut versions (matches VERSIONS_LEAK_CORR in claims.smk)
-    versions = comparison_versions(config)
+    versions = catalogs.comparison
 
     # Which version gets the fiducial reference line in boxes
-    fiducial_for_comparison = plotting_config.get(
-        "fiducial_for_comparison", config["fiducial"]["version"]
-    )
-    box_style = plotting_config.get("version_box", {})
+    fiducial_for_comparison = catalogs.fiducial
 
     # Load data for all versions
     datasets = []
@@ -175,7 +171,7 @@ def main(
                 "marker": marker,
                 "fillstyle": fillstyle,
                 "alpha": get_version_alpha(
-                    version, fiducial_for_comparison, plotting_config
+                    version, fiducial_for_comparison
                 ),
                 "ell": ell,
                 "cl_bb": cl_bb,
@@ -224,7 +220,6 @@ def main(
         fiducial_idx=fiducial_idx,
         jitter_fraction=jitter_fraction,
         n_versions=len(datasets),
-        box_style=box_style,
     )
     draw_normalized_boxes_ell_scale(
         ax_eb,
@@ -235,7 +230,6 @@ def main(
         fiducial_idx=fiducial_idx,
         jitter_fraction=jitter_fraction,
         n_versions=len(datasets),
-        box_style=box_style,
     )
 
     legend_handles = []
@@ -381,14 +375,11 @@ def main(
 
 
 def _from_cli(argv=None):
-    import yaml
 
     ap = argparse.ArgumentParser(
         description="Harmonic-space Cl^BB/Cl^EB version-comparison figure (4 leak-corrected catalogs)."
     )
-    ap.add_argument(
-        "--config", required=True, help="Absolute path to bmodes config.yaml"
-    )
+    add_catalog_arguments(ap)
     ap.add_argument(
         "--results-dir",
         required=True,
@@ -428,9 +419,8 @@ def _from_cli(argv=None):
     a = ap.parse_args(argv)
     if not (a.out or a.out_file):
         ap.error("one of --out-file or --out is required")
-    config = load_config(a.config)
     main(
-        config,
+        catalogs_from(a),
         a.results_dir,
         a.out,
         fiducial_version=a.fiducial_version,

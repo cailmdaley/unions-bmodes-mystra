@@ -20,8 +20,8 @@ $$ (eq:transform)
 
     def test_missing_sections_and_raw_record_fragments_fail(self):
         self.assertEqual(
-            broken_links("[output](#outputs.selected_config) [missing](#sec:missing)"),
-            ["outputs.selected_config", "sec:missing"],
+            broken_links("[output](#outputs.pte_table_appendix) [missing](#sec:missing)"),
+            ["outputs.pte_table_appendix", "sec:missing"],
         )
 
 

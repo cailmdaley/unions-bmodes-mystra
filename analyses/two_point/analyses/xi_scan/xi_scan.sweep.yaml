@@ -17,8 +17,6 @@ description: |
 tags: [sweep, generated, two_point]
 
 inputs:
-  - id: selected_config
-    from: ../selected_config
   # Each member opens its own version's catalog through cat_config.
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
@@ -68,8 +66,8 @@ template:
     text dump. The per-version analogue of
     [xi_${grid}](#../outputs.xi_${grid}); same `run_2pcf.py`
     invocation, different `--ver`.
-  inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun]
-  decisions: [fiducial_catalog, patch_count, "${grid_decision}"]
+  inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+  decisions: [fiducial_catalog, patch_count, "${grid_decision}", leakage_correction]
   recipe:
     # The per-version unit of work: exactly the run_2pcf.py CLI the fiducial
     # xi_reporting / xi_integration recipes call, with --ver swept. The July
@@ -77,7 +75,7 @@ template:
     # schedules the members itself.
     command: >
       python src/workflow/scripts/run_2pcf.py
-      --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version ${version})" --min-sep ${min_sep} --max-sep ${max_sep} --nbins ${nbins} --npatch 1
+      --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version ${version})" --min-sep ${min_sep} --max-sep ${max_sep} --nbins ${nbins} --npatch 1
       --cat-config src/cosmo_val/cat_config.yaml
       --no-fits --out-file {output}
     resources: { cpus: 24, memory: "30GB" }
@@ -98,7 +96,7 @@ gather:
   recipe:
     command: >
       python src/papers/bmodes/scripts/bundle_sweep.py
-      --layout xi --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+      --layout xi --fiducial-catalog {decisions.fiducial_catalog}
       --leakage-correction {decisions.leakage_correction}
       --names ${members}
       --members ${member_refs}

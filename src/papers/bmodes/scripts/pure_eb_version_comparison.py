@@ -27,7 +27,8 @@ from print_width import savefig_at_width
 # The paper stacks Fig. 8's three version-comparison panels at 0.88\textwidth.
 STACKED_PRINT_WIDTH = 0.88 * FIG_WIDTH_FULL
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
-from paper_config import load_config, comparison_versions
+from catalog_versions import add_catalog_arguments, catalogs_from
+from decision_values import FIDUCIAL_BLIND, REPORTING_BINNING
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -40,7 +41,7 @@ def _extract_sigma(covariance, block_index, block_size):
 
 
 def _create_version_comparison_figure(
-    datasets, scale_cuts, fiducial_version, x_offset_factors=None, box_style=None
+    datasets, scale_cuts, fiducial_version, x_offset_factors=None
 ):
     """Create figure comparing total and B-mode correlations across versions.
 
@@ -59,8 +60,6 @@ def _create_version_comparison_figure(
     x_offset_factors : list, optional
         Multiplicative offsets for each version (for log scale). Defaults to
         [0.88, 0.96, 1.04, 1.12] for tighter spacing.
-    box_style : dict, optional
-        Styling for version boxes. See _draw_version_boxes for keys.
     """
     if x_offset_factors is None:
         x_offset_factors = [0.92, 0.97, 1.03, 1.08]
@@ -116,7 +115,6 @@ def _create_version_comparison_figure(
             y_norm_key=f"{mode_key}_scaled",
             fiducial_idx=fiducial_idx,
             x_offset_range=x_offset_range,
-            box_style=box_style,
         )
 
         for i, data in enumerate(datasets):
@@ -178,7 +176,6 @@ def _create_version_comparison_figure(
             y_norm_key=f"{mode_key}_normalized",
             fiducial_idx=fiducial_idx,
             x_offset_range=x_offset_range,
-            box_style=box_style,
         )
 
         for i, data in enumerate(datasets):
@@ -251,21 +248,21 @@ def _pure_eb_npz(results_dir, ver, blind):
 
 
 def main(
-    config,
+    catalogs,
+    blind,
+    reporting,
     results_dir,
     out_file,
     scale_cut_convention,
     fiducial_version=None,
     fiducial_pure_eb_data=None,
 ):
-    plotting_config = config["plotting"]
-    version_labels = plotting_config["version_labels"]
+    version_labels = catalogs.labels
     # Leak-corrected, non-ecut versions (matches VERSIONS_LEAK_CORR in claims.smk)
-    versions = comparison_versions(config)
-    blind = config["fiducial"]["blind"]
+    versions = catalogs.comparison
 
     # Fiducial version whose NPZ may be overridden with an explicit lc path
-    fiducial_version = fiducial_version or config["fiducial"]["version"]
+    fiducial_version = fiducial_version or catalogs.fiducial
 
     # Per-version pure E/B NPZ paths reconstructed from the results dir, with an
     # explicit-path override for the fiducial version when provided.
@@ -277,24 +274,15 @@ def main(
     ]
 
     # Which version gets the fiducial reference line in boxes
-    fiducial_for_comparison = plotting_config.get(
-        "fiducial_for_comparison", fiducial_version
-    )
+    fiducial_for_comparison = catalogs.fiducial
 
     # Tighter x-offsets for pure E/B (log scale, many bins)
     x_offsets = [-0.06, -0.02, 0.02, 0.06]
     x_offset_factors = [1.0 + offset for offset in x_offsets]
 
-    # Box styling from config
-    box_style = plotting_config.get("version_box", {})
-
     # Scale cuts
-    fiducial_xip_scale_cut = resolve_fiducial_scale_cuts(
-        config, scale_cut_convention, config_key="fiducial_xip_scale_cut"
-    )
-    fiducial_xim_scale_cut = resolve_fiducial_scale_cuts(
-        config, scale_cut_convention, config_key="fiducial_xim_scale_cut"
-    )
+    fiducial_xip_scale_cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
+    fiducial_xim_scale_cut = fiducial_xip_scale_cut
 
     scale_cuts = {
         "full": (1.0, 250.0),
@@ -383,7 +371,7 @@ def main(
                 "marker": marker,
                 "fillstyle": fillstyle,
                 "alpha": get_version_alpha(
-                    version, fiducial_for_comparison, plotting_config
+                    version, fiducial_for_comparison
                 ),
                 "theta": theta,
                 # Total correlation functions
@@ -418,7 +406,6 @@ def main(
         scale_cuts,
         fiducial_for_comparison,
         x_offset_factors=x_offset_factors,
-        box_style=box_style,
     )
 
     savefig_at_width(fig, out_file, STACKED_PRINT_WIDTH, dpi=300)
@@ -428,14 +415,13 @@ def main(
 
 
 def _from_cli(argv=None):
-    import yaml
 
     ap = argparse.ArgumentParser(
         description="Pure E/B ξ±^B version-comparison figure (4 leak-corrected catalogs)."
     )
-    ap.add_argument(
-        "--config", required=True, help="Absolute path to bmodes config.yaml"
-    )
+    add_catalog_arguments(ap)
+    ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__, required=True)
+    ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
     ap.add_argument(
         "--results-dir",
         required=True,
@@ -449,7 +435,7 @@ def _from_cli(argv=None):
         "--fiducial-version",
         default=None,
         help="Version whose NPZ may be overridden by --fiducial-pure-eb-data "
-        "(default: config['fiducial']['version'])",
+        "(default: the fiducial version)",
     )
     ap.add_argument(
         "--fiducial-pure-eb-data",
@@ -459,9 +445,10 @@ def _from_cli(argv=None):
     )
     add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
-    config = load_config(a.config)
     main(
-        config,
+        catalogs_from(a),
+        a.blind,
+        a.reporting_binning,
         a.results_dir,
         a.out_file,
         a.scale_cut_convention,

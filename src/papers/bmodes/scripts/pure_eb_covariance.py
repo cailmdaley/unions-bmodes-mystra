@@ -15,7 +15,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 from plotting_utils import FIG_WIDTH_SINGLE, PAPER_MPLSTYLE
-from paper_config import load_config
+from catalog_versions import add_catalog_arguments, catalogs_from
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -76,8 +76,7 @@ def _cov_to_corr(covariance):
     return correlation
 
 
-def main(config, pure_eb_path, out_file):
-    version = config["fiducial"]["version"]
+def main(version, pure_eb_path, out_file):
 
     # Load precomputed pure E/B data
     dataset = np.load(pure_eb_path)
@@ -180,14 +179,11 @@ def main(config, pure_eb_path, out_file):
 
 
 def _from_cli(argv=None):
-    import yaml
 
     ap = argparse.ArgumentParser(
         description="Pure E/B 6-block covariance correlation-matrix paper figure (fiducial catalog)."
     )
-    ap.add_argument(
-        "--config", required=True, help="Absolute path to bmodes config.yaml"
-    )
+    add_catalog_arguments(ap)
     ap.add_argument(
         "--pure-eb-data",
         required=True,
@@ -198,8 +194,7 @@ def _from_cli(argv=None):
         "--out-file", required=True, help="Output PNG path (lc {output})"
     )
     a = ap.parse_args(argv)
-    config = load_config(a.config)
-    main(config, a.pure_eb_data, a.out_file)
+    main(catalogs_from(a).fiducial, a.pure_eb_data, a.out_file)
 
 
 if __name__ == "__main__":

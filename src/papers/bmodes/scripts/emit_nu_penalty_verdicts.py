@@ -33,12 +33,11 @@ import json
 import sys
 
 import numpy as np
-import yaml
 from scipy import stats
 
 from plotting_utils import ell_bin_index
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_bin_window
-from paper_config import load_config
+from decision_values import REPORTING_BINNING
 
 N_FITTED_BOUNDARIES = 2
 PASS_THRESHOLD = 0.05
@@ -121,13 +120,13 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--config-space-evidence", required=True)
     p.add_argument("--harmonic-space-evidence", required=True)
-    p.add_argument("--config", required=True, help="bmodes config.yaml")
+    p.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
+    p.add_argument("--leakage-correction", required=True, choices=["applied", "uncorrected"])
     add_scale_cut_convention_argument(p)
     p.add_argument("--out-file", required=True)
     args = p.parse_args()
 
-    config = load_config(args.config)
-    first_bin, last_bin = resolve_fiducial_bin_window(config, args.scale_cut_convention)
+    first_bin, last_bin = resolve_fiducial_bin_window(args.reporting_binning, args.scale_cut_convention)
     n_fid_bins = last_bin + 1 - first_bin
 
     with open(args.config_space_evidence) as f:
@@ -136,7 +135,7 @@ def main():
         harmonic = json.load(f)["evidence"]["versions"]
 
     rows = penalized_rows(config_space, harmonic, n_fid_bins,
-                          uncorrected=config.get("leakage_correction") == "uncorrected")
+                          uncorrected=args.leakage_correction == "uncorrected")
 
     with open(args.out_file, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0]))

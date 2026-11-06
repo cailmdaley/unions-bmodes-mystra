@@ -1,8 +1,8 @@
 """Configuration-space PTE matrix composites for B-modes paper.
 
 Produces 3-panel composites (xi+^B, xi-^B, COSEBIS) for:
-- Results: fiducial version (from config.fiducial.version)
-- Appendix: all versions (from config.versions with labels from config.plotting.version_labels)
+- Results: fiducial version
+- Appendix: all versions, labelled by catalog_versions
 
 Each composite has shared axes and a single colorbar.
 
@@ -19,12 +19,14 @@ theta_max) PTE matrices, not just the adopted-cut scalars — and both composite
 then render from that payload without recomputing anything:
 
     python config_space_pte_matrices.py \
-        --config /path/to/config.yaml \
+        --fiducial-catalog size_cut --leakage-correction applied \
+        --reporting-binning bins_20 \
         --pte-intermediate-dir /abs/.../pure_eb_ptes \
         --cosebis-pte-dir /abs/.../cosebis_ptes \
-        --blind A --emit evidence --out-file evidence.json
+        --blind blind_a --emit evidence --out-file evidence.json
 
-    python config_space_pte_matrices.py --config /path/to/config.yaml \
+    python config_space_pte_matrices.py --fiducial-catalog size_cut \
+        --leakage-correction applied --reporting-binning bins_20 \
         --from-evidence evidence.json --figure {fiducial,appendix} \
         --out-file figure.png
 
@@ -40,7 +42,6 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
-import yaml
 from matplotlib.patches import Rectangle
 from plotting_utils import (
     FIG_WIDTH_FULL,
@@ -56,7 +57,8 @@ from scale_cuts import (
     resolve_fiducial_bin_window,
     resolve_fiducial_scale_cuts,
 )
-from paper_config import load_config
+from catalog_versions import VERSIONS, add_catalog_arguments, catalogs_from
+from decision_values import FIDUCIAL_BLIND, REPORTING_BINNING
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -119,7 +121,7 @@ def _cosebis_matrix_from_npz(npz_path, nmodes):
 
 
 def load_cosebis_pte_matrix(
-    pte_files, version, config, nmodes=6, cosebis_npz_override=None
+    pte_files, version, reporting, nmodes=6, cosebis_npz_override=None
 ):
     """Load COSEBIS PTE values from JSON files into matrix.
 
@@ -131,8 +133,8 @@ def load_cosebis_pte_matrix(
         Paths to PTE JSON files for fiducial blind.
     version : str
         Version to filter for.
-    config : dict
-        Workflow config with fiducial.min_sep, max_sep, nbins.
+    reporting : decision_values.Grid
+        The reporting grid.
     nmodes : int
         Number of COSEBIS modes (6 or 20).
 
@@ -146,8 +148,7 @@ def load_cosebis_pte_matrix(
     if cosebis_npz_override is not None:
         return _cosebis_matrix_from_npz(cosebis_npz_override, nmodes)
 
-    fid = config["fiducial"]
-    theta_grid = np.geomspace(fid["min_sep"], fid["max_sep"], fid["nbins"] + 1)
+    theta_grid = np.geomspace(reporting.min_sep, reporting.max_sep, reporting.nbins + 1)
     n_theta = len(theta_grid)
     # Initialize with nan for cells without data
     pte_matrix = np.full((n_theta, n_theta), np.nan)
@@ -223,7 +224,7 @@ def load_pure_eb_pte_matrices(pte_files, version, override_path=None):
 
 
 def _load_version_pte_data(
-    pure_eb_pte_files, cosebis_pte_files, version, config, fiducial_overrides=None
+    pure_eb_pte_files, cosebis_pte_files, version, reporting, fiducial_overrides=None
 ):
     """Load all PTE matrices for a single version.
 
@@ -239,14 +240,14 @@ def _load_version_pte_data(
     pte_cosebis, theta_cosebis = load_cosebis_pte_matrix(
         cosebis_pte_files,
         version,
-        config,
+        reporting,
         nmodes=6,
         cosebis_npz_override=cosebis_override,
     )
     pte_cosebis_20, _ = load_cosebis_pte_matrix(
         cosebis_pte_files,
         version,
-        config,
+        reporting,
         nmodes=20,
         cosebis_npz_override=cosebis_override,
     )
@@ -477,7 +478,7 @@ def create_3panel_composite(
     xip_window,
     xim_window,
     cosebis_fid,
-    config,
+    reporting,
     fiducial_overrides=None,
     matrices_by_version=None,
     full_range_by_version=None,
@@ -497,8 +498,8 @@ def create_3panel_composite(
         Fiducial scale cuts for xi+ and xi- (arcmin).
     cosebis_fid : tuple
         Fiducial scale cuts for COSEBIS (arcmin).
-    config : dict
-        Workflow config with fiducial parameters.
+    reporting : decision_values.Grid
+        The reporting grid.
 
     Returns
     -------
@@ -531,7 +532,7 @@ def create_3panel_composite(
         matrices = matrices_by_version[version]
     else:
         matrices = _load_version_pte_data(
-            pure_eb_pte_files, cosebis_pte_files, version, config, fiducial_overrides
+            pure_eb_pte_files, cosebis_pte_files, version, reporting, fiducial_overrides
         )
     pte_xip_B = matrices["pte_xip_B"]
     pte_xim_B = matrices["pte_xim_B"]
@@ -635,7 +636,7 @@ def create_9panel_composite(
     xim_window,
     cosebis_fid,
     version_labels,
-    config,
+    reporting,
     fiducial_overrides=None,
     matrices_by_version=None,
     full_range_by_version=None,
@@ -656,9 +657,9 @@ def create_9panel_composite(
     cosebis_fid : tuple
         Fiducial scale cuts for COSEBIS (arcmin).
     version_labels : dict
-        Mapping from version string to display label (from config.plotting.version_labels).
-    config : dict
-        Workflow config with fiducial parameters.
+        Mapping from version string to display label (from catalog_versions).
+    reporting : decision_values.Grid
+        The reporting grid.
 
     Returns
     -------
@@ -699,7 +700,7 @@ def create_9panel_composite(
                 pure_eb_pte_files,
                 cosebis_pte_files,
                 version,
-                config,
+                reporting,
                 fiducial_overrides,
             )
         pte_xip_B = matrices["pte_xip_B"]
@@ -815,7 +816,7 @@ def create_9panel_composite(
     return fig, all_stats, all_full_range_ptes
 
 
-def _fiducial_cuts(config, scale_cut_convention):
+def _fiducial_cuts(reporting, scale_cut_convention):
     """Fiducial scale cuts: (xip, xim, cosebis) arcmin pairs.
 
     These are the cuts in arcmin, for the evidence payload and the axis
@@ -823,30 +824,18 @@ def _fiducial_cuts(config, scale_cut_convention):
     by ``resolve_fiducial_bin_window`` — never by matching against bin means;
     see that function for the bug this separation fixes.
     """
-    xip_fid = resolve_fiducial_scale_cuts(
-        config, scale_cut_convention, config_key="fiducial_xip_scale_cut"
-    )
-    xim_fid = resolve_fiducial_scale_cuts(
-        config, scale_cut_convention, config_key="fiducial_xim_scale_cut"
-    )
-    cosebis_fid = resolve_fiducial_scale_cuts(config, scale_cut_convention)
-    return xip_fid, xim_fid, cosebis_fid
+    cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
+    return cut, cut, cut
 
 
-def _pure_eb_windows(config, scale_cut_convention):
+def _pure_eb_windows(reporting, scale_cut_convention):
     """(xip, xim) fiducial bin windows into the pure-E/B PTE matrices.
 
     Both are (first_bin, last_bin), 0-based and inclusive, resolved from the
     reporting-grid bin *edges*; see ``resolve_fiducial_bin_window``.
     """
-    return (
-        resolve_fiducial_bin_window(
-            config, scale_cut_convention, config_key="fiducial_xip_scale_cut"
-        ),
-        resolve_fiducial_bin_window(
-            config, scale_cut_convention, config_key="fiducial_xim_scale_cut"
-        ),
-    )
+    window = resolve_fiducial_bin_window(reporting, scale_cut_convention)
+    return window, window
 
 
 def _stats_at_cuts(matrices, xip_window, xim_window, cosebis_fid):
@@ -868,7 +857,8 @@ def _stats_at_cuts(matrices, xip_window, xim_window, cosebis_fid):
 
 
 def gather_all_versions(
-    config,
+    catalogs,
+    reporting,
     pure_eb_pte_files,
     cosebis_pte_files,
     scale_cut_convention,
@@ -882,10 +872,10 @@ def gather_all_versions(
         Keyed by version. Versions whose inputs are missing are skipped with a
         warning; a failure on the fiducial version is fatal.
     """
-    versions = [v for v in config["versions"] if "_ecut" not in v]
-    fiducial_version = config["fiducial"]["version"]
-    _, _, cosebis_fid = _fiducial_cuts(config, scale_cut_convention)
-    xip_window, xim_window = _pure_eb_windows(config, scale_cut_convention)
+    versions = [v for v in VERSIONS if "_ecut" not in v]
+    fiducial_version = catalogs.fiducial
+    _, _, cosebis_fid = _fiducial_cuts(reporting, scale_cut_convention)
+    xip_window, xim_window = _pure_eb_windows(reporting, scale_cut_convention)
 
     matrices_by_version = {}
     all_stats = {}
@@ -896,7 +886,7 @@ def gather_all_versions(
                 pure_eb_pte_files,
                 cosebis_pte_files,
                 version,
-                config,
+                reporting,
                 fiducial_overrides,
             )
             stats = _stats_at_cuts(matrices, xip_window, xim_window, cosebis_fid)
@@ -961,7 +951,8 @@ def _matrices_from_json(payload):
 
 
 def build_evidence(
-    config,
+    catalogs,
+    reporting,
     matrices_by_version,
     all_stats,
     all_full_range_ptes,
@@ -970,8 +961,8 @@ def build_evidence(
     outputs=None,
 ):
     """Assemble the evidence payload, including the full per-version matrices."""
-    fiducial_version = config["fiducial"]["version"]
-    xip_fid, xim_fid, cosebis_fid = _fiducial_cuts(config, scale_cut_convention)
+    fiducial_version = catalogs.fiducial
+    xip_fid, xim_fid, cosebis_fid = _fiducial_cuts(reporting, scale_cut_convention)
 
     evidence_data = {
         "spec_id": "config_space_pte_matrices",
@@ -1024,7 +1015,8 @@ def build_evidence(
 
 
 def render_figure(
-    config,
+    catalogs,
+    reporting,
     matrices_by_version,
     all_full_range_ptes,
     scale_cut_convention,
@@ -1032,10 +1024,10 @@ def render_figure(
     pte_threshold=0.05,
 ):
     """Render the fiducial 1×3 or the appendix N×3 composite from matrices."""
-    fiducial_version = config["fiducial"]["version"]
-    xip_window, xim_window = _pure_eb_windows(config, scale_cut_convention)
-    _, _, cosebis_fid = _fiducial_cuts(config, scale_cut_convention)
-    version_labels = config["plotting"]["version_labels"]
+    fiducial_version = catalogs.fiducial
+    xip_window, xim_window = _pure_eb_windows(reporting, scale_cut_convention)
+    _, _, cosebis_fid = _fiducial_cuts(reporting, scale_cut_convention)
+    version_labels = catalogs.labels
 
     if which == "fiducial":
         fig, _, _ = create_3panel_composite(
@@ -1045,7 +1037,7 @@ def render_figure(
             xip_window=xip_window,
             xim_window=xim_window,
             cosebis_fid=cosebis_fid,
-            config=config,
+            reporting=reporting,
             matrices_by_version=matrices_by_version,
             full_range_by_version=all_full_range_ptes,
             pte_threshold=pte_threshold,
@@ -1054,7 +1046,7 @@ def render_figure(
 
     paper_versions = [
         v
-        for v in config["versions"]
+        for v in VERSIONS
         if "_ecut" not in v and v in version_labels and v in matrices_by_version
     ]
     fig, _, _ = create_9panel_composite(
@@ -1065,7 +1057,7 @@ def render_figure(
         xim_window=xim_window,
         cosebis_fid=cosebis_fid,
         version_labels=version_labels,
-        config=config,
+        reporting=reporting,
         matrices_by_version=matrices_by_version,
         full_range_by_version=all_full_range_ptes,
         pte_threshold=pte_threshold,
@@ -1074,7 +1066,8 @@ def render_figure(
 
 
 def render_from_evidence(
-    config,
+    catalogs,
+    reporting,
     evidence_path,
     out_file,
     scale_cut_convention,
@@ -1106,7 +1099,8 @@ def render_from_evidence(
         )
 
     fig = render_figure(
-        config,
+        catalogs,
+        reporting,
         matrices_by_version,
         full_range_by_version,
         scale_cut_convention,
@@ -1124,7 +1118,8 @@ def render_from_evidence(
 
 
 def main(
-    config,
+    catalogs,
+    reporting,
     pure_eb_pte_files,
     cosebis_pte_files,
     scale_cut_convention,
@@ -1138,7 +1133,8 @@ def main(
 ):
     print("\n--- Loading PTE matrices for all versions ---", flush=True)
     matrices_by_version, all_stats, all_full_range_ptes = gather_all_versions(
-        config,
+        catalogs,
+        reporting,
         pure_eb_pte_files,
         cosebis_pte_files,
         scale_cut_convention,
@@ -1148,7 +1144,8 @@ def main(
     # Single-file modes (lc): compute once, write exactly the requested artifact.
     if emit == "evidence":
         evidence_data = build_evidence(
-            config,
+            catalogs,
+            reporting,
             matrices_by_version,
             all_stats,
             all_full_range_ptes,
@@ -1161,7 +1158,8 @@ def main(
         return
     if emit == "figure":
         fig = render_figure(
-            config,
+            catalogs,
+            reporting,
             matrices_by_version,
             all_full_range_ptes,
             scale_cut_convention,
@@ -1186,7 +1184,7 @@ def main(
 
     print("\n--- Creating 1x3 composite for fiducial version ---", flush=True)
     fig_fid = render_figure(
-        config, matrices_by_version, all_full_range_ptes, scale_cut_convention,
+        catalogs, reporting, matrices_by_version, all_full_range_ptes, scale_cut_convention,
         "fiducial", pte_threshold=pte_threshold
     )
     fig_fid.savefig(
@@ -1201,7 +1199,7 @@ def main(
 
     print("\n--- Creating Nx3 composite for all versions ---", flush=True)
     fig = render_figure(
-        config, matrices_by_version, all_full_range_ptes, scale_cut_convention,
+        catalogs, reporting, matrices_by_version, all_full_range_ptes, scale_cut_convention,
         "appendix", pte_threshold=pte_threshold
     )
     fig.savefig(
@@ -1213,7 +1211,8 @@ def main(
     plt.close(fig)
 
     evidence_data = build_evidence(
-        config,
+        catalogs,
+        reporting,
         matrices_by_version,
         all_stats,
         all_full_range_ptes,
@@ -1229,42 +1228,19 @@ def main(
     print(f"\nSaved evidence to {evidence_path}")
 
 
-def _versions_config_space(config):
-    """Reproduce VERSIONS_CONFIG_SPACE_PTES from the Snakemake claims.smk:
-    leak-corrected (non-ecut) versions plus their uncorrected counterparts."""
-    leak_corr = [
-        v for v in config["versions"] if "_leak_corr" in v and "_ecut" not in v
-    ]
+def _versions_config_space():
+    """Leak-corrected (non-ecut) versions plus their uncorrected counterparts."""
+    leak_corr = [v for v in VERSIONS if "_leak_corr" in v and "_ecut" not in v]
     uncorrected = [v.replace("_leak_corr", "") for v in leak_corr]
     return leak_corr + uncorrected
-
-
-def _from_snakemake(smk):
-    pure_eb_pte_files = smk.input["pure_eb_pte"]
-    if isinstance(pure_eb_pte_files, str):
-        pure_eb_pte_files = [pure_eb_pte_files]
-    else:
-        pure_eb_pte_files = list(pure_eb_pte_files)
-    cosebis_pte_files = list(smk.input["cosebis_pte_files"])
-    spec_paths = smk.input["specs"]
-    main(
-        config=smk.config,
-        pure_eb_pte_files=pure_eb_pte_files,
-        cosebis_pte_files=cosebis_pte_files,
-        output_dir=Path(smk.output["evidence"]).parent,
-        scale_cut_convention=smk.params.scale_cut_convention,
-        spec_path=spec_paths[0],
-        pte_threshold=resolve_pte_threshold(
-            getattr(smk.params, "pte_threshold", "nominal_0p05")
-        ),
-    )
 
 
 def _from_cli(argv=None):
     ap = argparse.ArgumentParser(
         description="Configuration-space PTE matrix composites for the B-modes paper."
     )
-    ap.add_argument("--config", required=True, help="Absolute path to config.yaml")
+    add_catalog_arguments(ap)
+    ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
     ap.add_argument(
         "--pte-intermediate-dir",
         default=None,
@@ -1278,7 +1254,7 @@ def _from_cli(argv=None):
         "cosebis_ptes_{version}_{blind}.npz per version (auto-detected, preferred). "
         "Old tree fallback: {version}/{blind}/pte_{i:03d}_{j:03d}.json scatter.",
     )
-    ap.add_argument("--blind", default="A", help="Fiducial blind (paper: A)")
+    ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__)
     ap.add_argument(
         "--out",
         default=None,
@@ -1345,9 +1321,9 @@ def _from_cli(argv=None):
         )
 
     if a.from_evidence:
-        config = load_config(a.config)
         render_from_evidence(
-            config,
+            catalogs_from(a),
+            a.reporting_binning,
             a.from_evidence,
             a.out_file,
             a.scale_cut_convention,
@@ -1362,9 +1338,7 @@ def _from_cli(argv=None):
         ap.error(
             "--fiducial-version is required when a fiducial override path is given"
         )
-    config = load_config(a.config)
-
-    versions = _versions_config_space(config)
+    versions = _versions_config_space()
     pure_eb_pte_files = [
         os.path.join(a.pte_intermediate_dir, f"{v}_{a.blind}_pure_eb_ptes.npz")
         for v in versions
@@ -1399,7 +1373,8 @@ def _from_cli(argv=None):
         }
 
     main(
-        config=config,
+        catalogs=catalogs_from(a),
+        reporting=a.reporting_binning,
         pure_eb_pte_files=pure_eb_pte_files,
         cosebis_pte_files=cosebis_pte_files,
         scale_cut_convention=a.scale_cut_convention,
@@ -1413,11 +1388,4 @@ def _from_cli(argv=None):
 
 
 if __name__ == "__main__":
-    # A membership test, not a caught NameError: the exception form leaves
-    # every CLI-path traceback prefixed with "During handling of the above
-    # exception" and a NameError that is not the failure, which reads as
-    # the bug and is not one.
-    if "snakemake" in globals():
-        _from_snakemake(snakemake)  # noqa: F821
-    else:
-        _from_cli()
+    _from_cli()

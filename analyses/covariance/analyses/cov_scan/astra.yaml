@@ -30,8 +30,6 @@ tags:
 - generated
 - covariance
 inputs:
-- id: selected_config
-  from: ../selected_config
 - id: cosmology_snapshot
   from: ../../covariance.cosmology_snapshot
 - id: redshift_distributions
@@ -64,7 +62,6 @@ outputs:
     [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
-  - selected_config
   - cosmology_snapshot
   - redshift_distributions
   - cosmocov_binary
@@ -75,9 +72,10 @@ outputs:
   - covariance_class
   - covariance_engine
   - integration_grid
+  - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -92,7 +90,6 @@ outputs:
     [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
-  - selected_config
   - cosmology_snapshot
   - redshift_distributions
   - cosmocov_binary
@@ -103,9 +100,10 @@ outputs:
   - covariance_class
   - covariance_engine
   - integration_grid
+  - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -120,7 +118,6 @@ outputs:
     [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
-  - selected_config
   - cosmology_snapshot
   - redshift_distributions
   - cosmocov_binary
@@ -131,9 +128,10 @@ outputs:
   - covariance_class
   - covariance_engine
   - integration_grid
+  - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.6.3)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.6.3)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -148,7 +146,6 @@ outputs:
     [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
-  - selected_config
   - cosmology_snapshot
   - redshift_distributions
   - cosmocov_binary
@@ -159,9 +156,10 @@ outputs:
   - covariance_class
   - covariance_engine
   - integration_grid
+  - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -176,7 +174,6 @@ outputs:
     [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
-  - selected_config
   - cosmology_snapshot
   - redshift_distributions
   - cosmocov_binary
@@ -187,9 +184,10 @@ outputs:
   - covariance_class
   - covariance_engine
   - integration_grid
+  - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -204,7 +202,6 @@ outputs:
     [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
-  - selected_config
   - cosmology_snapshot
   - redshift_distributions
   - cosmocov_binary
@@ -215,9 +212,10 @@ outputs:
   - covariance_class
   - covariance_engine
   - integration_grid
+  - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -232,7 +230,6 @@ outputs:
     [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
   inputs:
-  - selected_config
   - cosmology_snapshot
   - redshift_distributions
   - cosmocov_binary
@@ -243,9 +240,10 @@ outputs:
   - covariance_class
   - covariance_engine
   - integration_grid
+  - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -275,7 +273,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      python src/papers/bmodes/scripts/bundle_sweep.py --layout cov --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --leakage-correction {decisions.leakage_correction} --names cov_sp_v1p4p5 cov_sp_v1p4p5_leak_corr cov_fiducial_counterpart cov_sp_v1p4p8 cov_sp_v1p4p8_leak_corr cov_sp_v1p4p11p3 cov_sp_v1p4p11p3_leak_corr --members {inputs.cov_sp_v1p4p5} {inputs.cov_sp_v1p4p5_leak_corr} {inputs.cov_fiducial_counterpart} {inputs.cov_sp_v1p4p8} {inputs.cov_sp_v1p4p8_leak_corr} {inputs.cov_sp_v1p4p11p3} {inputs.cov_sp_v1p4p11p3_leak_corr} --out-file {output}
+      python src/papers/bmodes/scripts/bundle_sweep.py --layout cov --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --names cov_sp_v1p4p5 cov_sp_v1p4p5_leak_corr cov_fiducial_counterpart cov_sp_v1p4p8 cov_sp_v1p4p8_leak_corr cov_sp_v1p4p11p3 cov_sp_v1p4p11p3_leak_corr --members {inputs.cov_sp_v1p4p5} {inputs.cov_sp_v1p4p5_leak_corr} {inputs.cov_fiducial_counterpart} {inputs.cov_sp_v1p4p8} {inputs.cov_sp_v1p4p8_leak_corr} {inputs.cov_sp_v1p4p11p3} {inputs.cov_sp_v1p4p11p3_leak_corr} --out-file {output}
     resources:
       cpus: 1
       memory: 4GB

@@ -484,6 +484,8 @@ SP_v1.4.6.3:
   ls: dotted
   marker: ^
   mask: /home/guerrini/sp_validation/cosmo_inference/data/mask/mask_map_footprint_nside_4096.fits
+  # Footprint mask power spectrum (nside 4096, apodised, normalised) that CosmoCov reads.
+  mask_cls: /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_nside_4096_norm.txt
   cov_th:
     A: 2894.0303815287743
     n_e: 4.957279270321334

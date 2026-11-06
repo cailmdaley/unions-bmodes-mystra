@@ -2,8 +2,6 @@ version: "0.0.14"
 name: "B-mode null tests, PTE matrices, and blind-independence checks"
 
 inputs:
-  - id: selected_config
-    from: ../catalog.selected_config
 
   - id: paper_claims_script
     type: data
@@ -122,9 +120,8 @@ outputs:
       [adopted 12'–83' cut](#../decisions.fiducial_scale_cuts).
       Feeds the config-space columns of the per-version PTE table
       and the configuration-space PTE heatmaps.
-    decisions: [scale_cut_convention, scale_cut_pair_grid_alignment]
+    decisions: [scale_cut_convention, scale_cut_pair_grid_alignment, fiducial_catalog, leakage_correction, reporting_binning, fiducial_blind]
     inputs:
-      - selected_config
       - pure_eb_ptes
       - cosebis_ptes
       - pure_eb_pte_per_cut
@@ -140,11 +137,11 @@ outputs:
         d_pe=$(mktemp -d) && tar xzf {inputs.pure_eb_ptes} -C $d_pe &&
         d_cb=$(mktemp -d) && tar xzf {inputs.cosebis_ptes} -C $d_cb &&
         python src/papers/bmodes/scripts/config_space_pte_matrices.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning}
         --pte-intermediate-dir $d_pe
         --cosebis-pte-dir $d_cb
-        --blind A
-        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
+        --blind {decisions.fiducial_blind}
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --fiducial-pure-eb-pte-path {inputs.pure_eb_pte_per_cut}
         --fiducial-cosebis-pte-path {inputs.cosebis_pte_per_cut}
         --emit evidence
@@ -163,11 +160,10 @@ outputs:
       Feeds the harmonic column of the per-version PTE table and
       the Cℓ^BB PTE heatmap.
     inputs:
-      - selected_config
       - cl_sweep
       - cl_bandpowers_reporting
       - cl_cov_reporting
-    decisions: [cl_pte_blind_strategy, pte_definition]
+    decisions: [cl_pte_blind_strategy, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
     recipe:
       # harmonic_space_pte_matrices.py, evidence-only mode. The 7-version sweep
       # lives INSIDE the script and reads per-version pseudo_cl_* /
@@ -175,9 +171,9 @@ outputs:
       command: >
         d_cl=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d_cl &&
         python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --blind {decisions.fiducial_blind}
         --results-dir $d_cl
-        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --fiducial-pseudo-cl-path {inputs.cl_bandpowers_reporting}
         --fiducial-pseudo-cl-cov-path {inputs.cl_cov_reporting}
         --emit evidence
@@ -235,9 +231,8 @@ outputs:
         and over the fiducial window (`\ngFractionDiagonal{All,Fiducial}`)
         from [cov_reporting_g](#inputs.cov_reporting_g) and
         [cov_reporting_ng](#inputs.cov_reporting_ng).
-    decisions: [scale_cut_convention, pte_threshold]
+    decisions: [scale_cut_convention, pte_threshold, fiducial_catalog, leakage_correction, reporting_binning]
     inputs:
-      - selected_config
       - config_space_pte_data
       - harmonic_space_pte_data
       - mock_min_pte_calibration
@@ -256,7 +251,7 @@ outputs:
     recipe:
       command: >
         python src/papers/bmodes/scripts/generate_paper_macros.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning}
         --config-space-evidence {inputs.config_space_pte_data}
         --harmonic-space-evidence {inputs.harmonic_space_pte_data}
         --mock-min-pte-calibration {inputs.mock_min_pte_calibration}
@@ -287,9 +282,8 @@ outputs:
       the check. Supports the [blind-A fiducial
       choice](#../decisions.fiducial_blind); it does not enter the
       headline figures.
-    decisions: [bb_blind_check_version]
+    decisions: [bb_blind_check_version, reporting_binning, integration_grid, mode_count, mc_samples]
     inputs:
-      - selected_config
       - blind_check_pure_eb
       - blind_check_harmonic_cov
       - blind_check_cosmocov
@@ -298,7 +292,7 @@ outputs:
     recipe:
       command: >
         python src/papers/bmodes/scripts/bb_covariance_blind_independence.py
-        --config {inputs.selected_config}
+        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --mc-samples {decisions.mc_samples}
         --version {decisions.bb_blind_check_version}
         --pure-eb-template '{inputs.blind_check_pure_eb}'
         --harmonic-template '{inputs.blind_check_harmonic_cov}'
@@ -377,3 +371,17 @@ decisions:
         description: |
           A separate θ-grid per statistic, which would prevent
           comparing the adopted-cut cell across panels.
+  fiducial_blind:
+    from: ../fiducial_blind
+  fiducial_catalog:
+    from: ../fiducial_catalog
+  integration_grid:
+    from: ../integration_grid
+  leakage_correction:
+    from: ../leakage_correction
+  mc_samples:
+    from: ../mc_samples
+  mode_count:
+    from: ../mode_count
+  reporting_binning:
+    from: ../reporting_binning

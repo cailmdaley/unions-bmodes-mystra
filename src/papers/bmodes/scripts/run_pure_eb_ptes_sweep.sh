@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Pure E/B PTE-matrix sweep over non-fiducial versions (Design B, Tier-2).
 #
-# Loops the non-fiducial version list (resolved via sweep_versions.py) and runs
+# Loops the non-fiducial version list (from catalog_versions.py --nonfiducial) and runs
 # calculate_pure_eb_ptes.py once per version — the same χ² PTE-matrix compute the
 # fiducial pure_eb_pte_per_cut recipe calls. Each version's gathered semi-analytic
 # NPZ is read from the pure_eb_sweep output dir and its Gaussian integration
@@ -13,10 +13,10 @@
 # versions; each version is fast (206-pair grid, ~seconds).
 #
 # Usage:
-#   run_pure_eb_ptes_sweep.sh --config <config.yaml> --cat-config <cat_config.yaml> \
+#   run_pure_eb_ptes_sweep.sh --cat-config <cat_config.yaml> \
 #     --pure-eb-sweep-dir <pure_eb/.../pure_eb_sweep> \
 #     --cov-sweep-dir <covariance/.../cov_sweep> \
-#     --out <output_dir> [--blind A] [--versions "v1 v2 ..."]
+#     --out <output_dir> --blind A --versions "v1 v2 ..."
 set -euo pipefail
 
 # WSCRIPTS/PSCRIPTS are this project's vendored scripts; the sp_validation
@@ -25,10 +25,9 @@ VENDOR_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 WSCRIPTS=$VENDOR_ROOT/workflow/scripts
 PSCRIPTS=$VENDOR_ROOT/papers/bmodes/scripts
 
-CONFIG=""; CATCONFIG=""; PUREEBSWEEP=""; COVSWEEP=""; OUT=""; BLIND="A"; VERSIONS=""
+CATCONFIG=""; PUREEBSWEEP=""; COVSWEEP=""; OUT=""; BLIND=""; VERSIONS=""
 while [ $# -gt 0 ]; do
   case "$1" in
-    --config) CONFIG="$2"; shift 2;;
     --cat-config) CATCONFIG="$2"; shift 2;;
     --pure-eb-sweep-dir) PUREEBSWEEP="$2"; shift 2;;
     --cov-sweep-dir) COVSWEEP="$2"; shift 2;;
@@ -39,11 +38,9 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-mkdir -p "$OUT"
+[ -n "$VERSIONS" ] || { echo "--versions is required" >&2; exit 2; }
 
-if [ -z "$VERSIONS" ]; then
-  VERSIONS=$(python "$PSCRIPTS/sweep_versions.py" --config "$CONFIG")
-fi
+mkdir -p "$OUT"
 
 for ver in $VERSIONS; do
   pureeb="$PUREEBSWEEP/${ver}_${BLIND}_pure_eb_semianalytic.npz"

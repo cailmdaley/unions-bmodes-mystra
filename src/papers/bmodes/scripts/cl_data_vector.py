@@ -31,7 +31,8 @@ from plotting_utils import (
     iter_version_figures,
 )
 from print_width import savefig_at_width
-from paper_config import load_config
+from catalog_versions import add_catalog_arguments, catalogs_from
+from decision_values import FIDUCIAL_ELL_CUT
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -188,7 +189,7 @@ def _resolve_pseudo_cl_paths(
 
 
 def main(
-    config,
+    catalogs,
     results_dir,
     out_dir=None,
     fiducial_version=None,
@@ -196,10 +197,9 @@ def main(
     fiducial_pseudo_cl_cov_path=None,
     out_file=None,
 ):
-    version = config["fiducial"]["version"]
-    version_labels = config["plotting"]["version_labels"]
-    ell_min_cut = int(config["cl"]["fiducial_ell_min"])
-    ell_max_cut = int(config["cl"]["fiducial_ell_max"])
+    version = catalogs.fiducial
+    version_labels = catalogs.labels
+    ell_min_cut, ell_max_cut = FIDUCIAL_ELL_CUT["adopted"]
 
     if out_file is not None:
         # lc one-file mode: only the fiducial paper figure (Fig. 4), 300 dpi PNG.
@@ -336,14 +336,11 @@ def main(
 
 
 def _from_cli(argv=None):
-    import yaml
 
     ap = argparse.ArgumentParser(
         description="Harmonic-space Cl^BB/Cl^EB data vector figures (paper Fig 4 + 9-figure set)."
     )
-    ap.add_argument(
-        "--config", required=True, help="Absolute path to bmodes config.yaml"
-    )
+    add_catalog_arguments(ap)
     ap.add_argument(
         "--results-dir",
         default=None,
@@ -387,9 +384,8 @@ def _from_cli(argv=None):
     a = ap.parse_args(argv)
     if not (a.out or a.out_file):
         ap.error("one of --out-file or --out is required")
-    config = load_config(a.config)
     main(
-        config,
+        catalogs_from(a),
         a.results_dir,
         a.out,
         fiducial_version=a.fiducial_version,

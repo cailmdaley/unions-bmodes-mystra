@@ -27,8 +27,6 @@ description: |
 tags: [glass, mocks, covariance, referee]
 
 inputs:
-  - id: selected_config
-    from: ../catalog.selected_config
 
   - id: glass_mock_catalogs
     type: data
@@ -354,8 +352,8 @@ outputs:
       as it does for COSEBIs. Used when
       [reference_covariance](#decisions.reference_covariance) is
       `mockmatched`.
-    inputs: [selected_config, cov_integration_mockmatched, xi_reporting, xi_integration, redshift_distributions]
-    decisions: [fiducial_catalog, fiducial_blind, mc_samples, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, decomposition_method]
+    inputs: [cov_integration_mockmatched, xi_reporting, xi_integration, redshift_distributions]
+    decisions: [fiducial_catalog, fiducial_blind, mc_samples, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, decomposition_method, leakage_correction]
     recipe:
       # mock_matched_pure_eb_cov.py is precompute_pure_eb_chunk + gather in one
       # deterministic invocation, on the twin's own partition: 20 batches x 100
@@ -386,13 +384,13 @@ outputs:
         --cov-integration {inputs.cov_integration_mockmatched}
         --xi-reporting {inputs.xi_reporting}
         --xi-integration {inputs.xi_integration}
-        --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)" --blind A
+        --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind "$(python src/workflow/scripts/decision_values.py fiducial_blind {decisions.fiducial_blind})"
         --cat-config src/cosmo_val/cat_config.yaml
         --integration-method {decisions.pure_eb_integration_method}
         --integration-limits {decisions.pure_eb_integration_limits}
         --rebinning-weights {decisions.pure_eb_rebinning_weights}
         --covariance-method {decisions.pure_eb_covariance_method}
-        --n-samples {decisions.mc_samples} --seed 42 --out {output}
+        --n-samples "$(python src/workflow/scripts/decision_values.py mc_samples {decisions.mc_samples})" --seed 42 --out {output}
       resources: { cpus: 24, memory: "60GB" }
 
   # ── The six-statistic campaign: compute once, then derive ────────────────
@@ -457,8 +455,8 @@ outputs:
       matrix cells and all 32 C_ℓ bands (1–250 arcmin / 8≤ℓ≤2048).
       The mock PTE distributions use the matching covariance window,
       including Hartlap-corrected pure-mode statistics.
-    inputs: [selected_config, mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, scale_cuts_script]
-    decisions: [reference_covariance, mock_suite, scale_cut_convention]
+    inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, scale_cuts_script]
+    decisions: [reference_covariance, mock_suite, scale_cut_convention, reporting_binning]
     recipe:
       command: >
         python src/workflow/scripts/mock_min_pte_calibration.py
@@ -466,7 +464,7 @@ outputs:
         --pure-eb-pte {inputs.pure_eb_pte_per_cut}
         --cosebis-pte {inputs.cosebis_pte_per_cut}
         --cl-pte {inputs.cl_pte_per_cut}
-        --config {inputs.selected_config}
+        --reporting-binning {decisions.reporting_binning}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 1, memory: "8GB" }
@@ -487,8 +485,8 @@ outputs:
       effects that largely cancel: correlations between the statistics
       raise the minimum PTE, while the slightly underestimated
       configuration-space covariance lowers it.
-    inputs: [selected_config, mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, mock_min_pte_calibration_script, plotting_utils_script, scale_cuts_script]
-    decisions: [reference_covariance, mock_suite, scale_cut_convention, pte_threshold]
+    inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, mock_min_pte_calibration_script, plotting_utils_script, scale_cuts_script]
+    decisions: [reference_covariance, mock_suite, scale_cut_convention, pte_threshold, reporting_binning]
     recipe:
       command: >
         python src/workflow/scripts/mock_min_pte_calibration.py
@@ -496,7 +494,7 @@ outputs:
         --pure-eb-pte {inputs.pure_eb_pte_per_cut}
         --cosebis-pte {inputs.cosebis_pte_per_cut}
         --cl-pte {inputs.cl_pte_per_cut}
-        --config {inputs.selected_config}
+        --reporting-binning {decisions.reporting_binning}
         --scale-cut-convention {decisions.scale_cut_convention}
         --pte-threshold {decisions.pte_threshold}
         --emit figure --out-file {output}
@@ -781,14 +779,14 @@ outputs:
       sits at ≈−0.1σ in the first three bins against a ≈0.055σ error,
       a small-scale residual the cut excludes, so ξ_+^B reads PTE 0.004
       on the full range and 0.13 inside the cut.
-    inputs: [selected_config, mock_per_mock_statistics, scale_cuts_script]
-    decisions: [reference_covariance, scale_cut_convention, pte_definition]
+    inputs: [mock_per_mock_statistics, scale_cuts_script]
+    decisions: [reference_covariance, scale_cut_convention, pte_definition, reporting_binning]
     recipe:
       command: >
         python src/workflow/scripts/mock_mean_vector_plot.py
         --stats {inputs.mock_per_mock_statistics}
         --label {decisions.reference_covariance}
-        --config {inputs.selected_config}
+        --reporting-binning {decisions.reporting_binning}
         --scale-cut-convention {decisions.scale_cut_convention}
         --emit stats --out-file {output}
       resources: { cpus: 1, memory: "2GB" }
@@ -985,6 +983,8 @@ decisions:
           6.0905 arcmin⁻² on a smaller sky). It is the suite the
           submitted mock description rests on; v2 sits far closer to
           the catalog's count.
+  leakage_correction:
+    from: ../leakage_correction
 
 prior_insights:
 

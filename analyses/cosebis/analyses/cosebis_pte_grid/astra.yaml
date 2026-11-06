@@ -51,8 +51,6 @@ tags:
 - generated
 - cosebis
 inputs:
-- id: selected_config
-  from: ../selected_config
 - id: xi_integration
   from: ../xi_integration
 - id: cov_integration
@@ -66,6 +64,14 @@ decisions:
     from: ../fiducial_blind
   scale_cut_pair_grid:
     from: ../scale_cut_pair_grid
+  integration_grid:
+    from: ../integration_grid
+  leakage_correction:
+    from: ../leakage_correction
+  mode_count:
+    from: ../mode_count
+  reporting_binning:
+    from: ../reporting_binning
 outputs:
 - id: cosebis_pte_row_00
   type: data
@@ -79,7 +85,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -87,9 +92,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 00 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 00 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -106,7 +115,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -114,9 +122,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 01 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 01 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -133,7 +145,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -141,9 +152,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 02 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 02 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -160,7 +175,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -168,9 +182,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 03 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 03 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -187,7 +205,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -195,9 +212,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 04 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 04 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -214,7 +235,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -222,9 +242,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 05 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 05 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -241,7 +265,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -249,9 +272,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 06 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 06 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -268,7 +295,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -276,9 +302,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 07 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 07 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -295,7 +325,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -303,9 +332,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 08 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 08 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -322,7 +355,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -330,9 +362,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 09 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 09 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -349,7 +385,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -357,9 +392,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 10 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 10 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -376,7 +415,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -384,9 +422,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 11 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 11 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -403,7 +445,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -411,9 +452,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 12 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 12 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -430,7 +475,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -438,9 +482,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 13 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 13 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -457,7 +505,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -465,9 +512,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 14 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 14 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -484,7 +535,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -492,9 +542,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 15 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 15 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -511,7 +565,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -519,9 +572,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 16 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 16 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -538,7 +595,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -546,9 +602,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 17 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 17 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -565,7 +625,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -573,9 +632,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 18 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 18 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB
@@ -592,7 +655,6 @@ outputs:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs:
-  - selected_config
   - xi_integration
   - cov_integration
   decisions:
@@ -600,9 +662,13 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
-      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 19 --out-file {output}
+      python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 19 --out-file {output}
     resources:
       cpus: 1
       memory: 16GB

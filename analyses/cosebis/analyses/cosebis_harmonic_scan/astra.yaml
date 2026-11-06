@@ -33,8 +33,6 @@ tags:
 - generated
 - cosebis
 inputs:
-- id: selected_config
-  from: ../selected_config
 - id: xi_sweep
   from: ../xi_sweep
 - id: cov_sweep
@@ -50,6 +48,16 @@ decisions:
     from: ../harmonic_validation_binning
   scale_cut_convention:
     from: ../scale_cut_convention
+  fiducial_catalog:
+    from: ../fiducial_catalog
+  integration_grid:
+    from: ../integration_grid
+  leakage_correction:
+    from: ../leakage_correction
+  mode_count:
+    from: ../mode_count
+  reporting_binning:
+    from: ../reporting_binning
 outputs:
 - id: harmonic_modes_sp_v1p4p5
   type: data
@@ -62,7 +70,6 @@ outputs:
     B-mode PTEs are consumed (through the gather) — the paper
     figure is rendered from the fiducial NPZ.
   inputs:
-  - selected_config
   - xi_sweep
   - cov_sweep
   - cl_sweep
@@ -71,6 +78,11 @@ outputs:
   - harmonic_validation_binning
   - scale_cut_convention
   - pte_definition
+  - fiducial_catalog
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -82,12 +94,12 @@ outputs:
       l=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $l
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr --fine-grid)
+      ver=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr --fine-grid)
       cb=covariance_"$ver"_A_integration
-      nb=$(printf '%s' {decisions.harmonic_validation_binning} | tr -cd '0-9')
+      nb=$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})
       python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py \
-        --config {inputs.selected_config} \
-        --blind A \
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
+        --blind {decisions.fiducial_blind} \
         --fiducial-version $ver \
         --harmonic-validation-binning {decisions.harmonic_validation_binning} \
         --fiducial-pseudo-cl-path "$l/pseudo_cl_$ver"_blind=A_powspace_nbins=$nb.fits \
@@ -112,7 +124,6 @@ outputs:
     B-mode PTEs are consumed (through the gather) — the paper
     figure is rendered from the fiducial NPZ.
   inputs:
-  - selected_config
   - xi_sweep
   - cov_sweep
   - cl_sweep
@@ -121,6 +132,11 @@ outputs:
   - harmonic_validation_binning
   - scale_cut_convention
   - pte_definition
+  - fiducial_catalog
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -132,12 +148,12 @@ outputs:
       l=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $l
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr --fine-grid)
+      ver=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr --fine-grid)
       cb=covariance_"$ver"_A_integration
-      nb=$(printf '%s' {decisions.harmonic_validation_binning} | tr -cd '0-9')
+      nb=$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})
       python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py \
-        --config {inputs.selected_config} \
-        --blind A \
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
+        --blind {decisions.fiducial_blind} \
         --fiducial-version $ver \
         --harmonic-validation-binning {decisions.harmonic_validation_binning} \
         --fiducial-pseudo-cl-path "$l/pseudo_cl_$ver"_blind=A_powspace_nbins=$nb.fits \
@@ -162,7 +178,6 @@ outputs:
     B-mode PTEs are consumed (through the gather) — the paper
     figure is rendered from the fiducial NPZ.
   inputs:
-  - selected_config
   - xi_sweep
   - cov_sweep
   - cl_sweep
@@ -171,6 +186,11 @@ outputs:
   - harmonic_validation_binning
   - scale_cut_convention
   - pte_definition
+  - fiducial_catalog
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -182,12 +202,12 @@ outputs:
       l=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $l
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr --fine-grid)
+      ver=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr --fine-grid)
       cb=covariance_"$ver"_A_integration
-      nb=$(printf '%s' {decisions.harmonic_validation_binning} | tr -cd '0-9')
+      nb=$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})
       python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py \
-        --config {inputs.selected_config} \
-        --blind A \
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
+        --blind {decisions.fiducial_blind} \
         --fiducial-version $ver \
         --harmonic-validation-binning {decisions.harmonic_validation_binning} \
         --fiducial-pseudo-cl-path "$l/pseudo_cl_$ver"_blind=A_powspace_nbins=$nb.fits \

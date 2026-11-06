@@ -12,7 +12,7 @@ so the gather must reassemble exactly the July filenames.
 lc names a member artifact ``results/<universe>/<output_id>.<format>``, which
 carries no version/grid information, so this script re-derives the
 member-id → canonical-filename map from the same matrix the ``.sweep.yaml``
-declares (version list from :mod:`sweep_versions`, grids/bins/products
+declares (version list from :mod:`catalog_versions`, grids/bins/products
 hard-coded per layout below) and applies the astra-sweep identifier munging
 rule to match ``--names`` against it. Lookup is by name, not by position, and
 an unmatched member id or a missing expected member is a hard error — so a
@@ -20,7 +20,7 @@ matrix change that this file does not track fails loudly instead of silently
 bundling the wrong thing.
 
     python bundle_sweep.py --layout xi \
-        --config .../config.yaml \
+        --fiducial-catalog size_cut --leakage-correction applied \
         --names <member_id>... --members <member_path>... \
         --out-file <path.tar.gz>
 """
@@ -32,8 +32,8 @@ import shutil
 import tarfile
 import tempfile
 
-from sweep_versions import nonfiducial_versions
-from paper_config import load_config, scan_version, select_leakage
+from catalog_versions import add_catalog_arguments, catalogs_from
+from decision_values import HARMONIC_VALIDATION_BINNING
 
 BLIND = "A"
 BINNING = "powspace"
@@ -70,12 +70,12 @@ def _slot(ver):
     return "fiducial_counterpart" if ver == "SP_v1.4.6.3" else munge_id(ver)
 
 
-def _xi_map(versions, config):
+def _xi_map(versions, catalogs):
     out = {}
     for ver in versions:
         for grid, g in XI_GRIDS.items():
             member = f"xi_{_slot(ver)}_{grid}"
-            actual = scan_version(config, ver)
+            actual = catalogs.scan_version(ver)
             out[member] = (
                 f"{actual}_xi_minsep={g['min_sep']}_maxsep={g['max_sep']}"
                 f"_nbins={g['nbins']}_npatch={XI_NPATCH}.txt"
@@ -83,7 +83,7 @@ def _xi_map(versions, config):
     return out
 
 
-def _cl_map(versions, fine_nbins, config):
+def _cl_map(versions, fine_nbins, catalogs):
     out = {}
     for ver in versions:
         for grid in CL_GRIDS:
@@ -93,7 +93,7 @@ def _cl_map(versions, fine_nbins, config):
             for product in CL_PRODUCTS:
                 slot = munge_id(ver.removesuffix("_leak_corr")) if fine else _slot(ver)
                 member = f"pseudo_{product}_{slot}_{grid}"
-                actual = scan_version(config, ver, fine=fine)
+                actual = catalogs.scan_version(ver, fine=fine)
                 nbins = fine_nbins if fine else 32
                 out[member] = (
                     f"pseudo_{product}_{actual}_blind={BLIND}_{BINNING}_nbins={nbins}.fits"
@@ -101,19 +101,19 @@ def _cl_map(versions, fine_nbins, config):
     return out
 
 
-def _cov_map(versions, config):
+def _cov_map(versions, catalogs):
     out = {}
     for ver in versions:
-        actual = scan_version(config, ver)
+        actual = catalogs.scan_version(ver)
         base = f"covariance_{actual}_{BLIND}_integration"
         out[f"cov_{_slot(ver)}"] = os.path.join(base, f"{base}_processed.txt")
     return out
 
 
-def _cosebis_ptes_map(versions, config):
+def _cosebis_ptes_map(versions, catalogs):
     out = {}
     for ver in versions:
-        actual = scan_version(config, ver)
+        actual = catalogs.scan_version(ver)
         out[f"cosebis_ptes_{_slot(ver)}"] = f"cosebis_ptes_{actual}_{BLIND}.npz"
     return out
 
@@ -129,12 +129,11 @@ LAYOUTS = {
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--layout", required=True, choices=sorted(LAYOUTS))
-    ap.add_argument("--config", required=True, help="Absolute path to bmodes config.yaml")
-    ap.add_argument("--leakage-correction", choices=["applied", "uncorrected"], default="applied")
+    add_catalog_arguments(ap)
     ap.add_argument("--names", nargs="+", required=True, help="Member output ids")
     ap.add_argument("--members", nargs="+", required=True, help="Member artifact paths")
     ap.add_argument("--out-file", required=True, help="Bundle path (lc {output})")
-    ap.add_argument("--harmonic-validation-binning", type=lambda value: int(value.removeprefix("bins_")))
+    ap.add_argument("--harmonic-validation-binning", type=HARMONIC_VALIDATION_BINNING.__getitem__)
     a = ap.parse_args(argv)
     if a.layout == "cl" and a.harmonic_validation_binning is None:
         ap.error("--layout cl requires --harmonic-validation-binning")
@@ -145,14 +144,11 @@ def main(argv=None):
             "the same length; they come from the same expansion"
         )
 
-    # sweep_expand.py replaces gather.inputs with member IDs, so a gather
-    # cannot consume selected_config; resolve the same profile and correction.
-    config = select_leakage(load_config(a.config), a.leakage_correction)
+    catalogs = catalogs_from(a)
     # Scan IDs describe fixed roles, even when the primary catalogue is raw.
-    slot_config = dict(config, fiducial=dict(config["fiducial"], version=config["fiducial"]["version"].removesuffix("_leak_corr") + "_leak_corr"))
-    versions = nonfiducial_versions(slot_config)
-    expected = (_cl_map(versions, a.harmonic_validation_binning, config)
-                if a.layout == "cl" else LAYOUTS[a.layout](versions, config))
+    versions = catalogs.scan_slots
+    expected = (_cl_map(versions, a.harmonic_validation_binning, catalogs)
+                if a.layout == "cl" else LAYOUTS[a.layout](versions, catalogs))
 
     got = dict(zip(a.names, a.members))
     unknown = sorted(set(got) - set(expected))

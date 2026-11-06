@@ -2,8 +2,6 @@ version: "0.0.14"
 name: "Semi-analytical covariances"
 
 inputs:
-  - id: selected_config
-    from: ../catalog.selected_config
   - id: mask_power_spectrum
     from: ../catalog.mask_power_spectrum
 
@@ -63,14 +61,14 @@ outputs:
       pair-count correction, so no unused spectrum is passed here.
       Together they give the non-Gaussian share of the ξ_±
       diagonal variance quoted in the paper.
-    decisions: [fiducial_catalog, fiducial_blind, covariance_engine, reporting_binning]
-    inputs: [selected_config, cosmology_snapshot, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
+    decisions: [fiducial_catalog, fiducial_blind, covariance_engine, reporting_binning, leakage_correction]
+    inputs: [cosmology_snapshot, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
     format: txt
     recipe:
       # Compute just G: the NG diagnostic does not change this extract.
       command: >
         bash src/workflow/scripts/run_cosmocov_chain.sh
-        --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)" --blind {decisions.fiducial_blind}
+        --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind}
         --min-sep 1.0 --max-sep 250.0 --nbins 20 --gaussian g
         --planck18-json {inputs.cosmology_snapshot}
         --cat-config src/cosmo_val/cat_config.yaml
@@ -93,8 +91,8 @@ outputs:
       It sets the non-Gaussian share of the diagonal variance
       quoted in the paper but does not enter the PTEs, which use
       the [selected integration covariance](#decisions.covariance_class).
-    decisions: [fiducial_catalog, fiducial_blind, mask_application, covariance_engine, reporting_binning]
-    inputs: [selected_config, cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
+    decisions: [fiducial_catalog, fiducial_blind, mask_application, covariance_engine, reporting_binning, leakage_correction]
+    inputs: [cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
     format: txt
     recipe:
       # Primary reporting-grid CosmoCov run (20 bins, ng=1, masked). Emits the
@@ -104,7 +102,7 @@ outputs:
       # product from the same chain via --emit.
       command: >
         bash src/workflow/scripts/run_cosmocov_chain.sh
-        --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)" --blind {decisions.fiducial_blind}
+        --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind}
         --min-sep 1.0 --max-sep 250.0 --nbins 20 --gaussian ng
         --mask-application {decisions.mask_application}
         --planck18-json {inputs.cosmology_snapshot}
@@ -127,8 +125,8 @@ outputs:
       COSEBI covariances derive from it by a linear transform;
       pure-mode covariances use a linear transform or
       [MC realisations](#../decisions.mc_samples).
-    decisions: [fiducial_catalog, fiducial_blind, covariance_class, covariance_engine, integration_grid]
-    inputs: [selected_config, cosmology_snapshot, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
+    decisions: [fiducial_catalog, fiducial_blind, covariance_class, covariance_engine, integration_grid, leakage_correction]
+    inputs: [cosmology_snapshot, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
     format: txt
     recipe:
       # Full CosmoCov chain (generate .ini from the cosmology snapshot +
@@ -137,7 +135,7 @@ outputs:
       # that pure_eb and COSEBI propagation consume.
       command: >
         bash src/workflow/scripts/run_cosmocov_chain.sh
-        --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)" --blind {decisions.fiducial_blind}
+        --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind}
         --min-sep 0.5 --max-sep 300.0 --nbins 1000
         --gaussian {decisions.covariance_class}
         --planck18-json {inputs.cosmology_snapshot}
@@ -156,8 +154,8 @@ outputs:
       32-bandpower √ℓ-spaced grid of
       [cl_bb's data vector](#../analyses.cl_bb) — the covariance
       Paper IV uses for its BB / EB null tests.
-    decisions: [fiducial_catalog, fiducial_blind, bandpower_binning, noise_bias_correction]
-    inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script]
+    decisions: [fiducial_catalog, fiducial_blind, bandpower_binning, noise_bias_correction, leakage_correction]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script]
     format: fits
     recipe:
       # generate_pseudo_cl_cov.py CLI: NaMaster iNKA Gaussian bandpower
@@ -166,7 +164,7 @@ outputs:
       # (byte-identical to the cosmology snapshot).
       command: >
         python src/workflow/scripts/generate_pseudo_cl_cov.py
-        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
+        --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --cat-config src/cosmo_val/cat_config.yaml
         --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind}
         --out-file {output}
@@ -181,17 +179,17 @@ outputs:
       for the harmonic-space COSEBI transform. The other three
       leak-corrected catalogs' counterparts come from the
       [cl_scan sweep](#../cl_bb.analyses.cl_scan).
-    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, noise_bias_correction]
-    inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, noise_bias_correction, leakage_correction]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script]
     format: fits
     recipe:
       # Same generate_pseudo_cl_cov.py CLI as cl_cov_reporting, 96-bin fine
       # grid. Distinct {output} file, so no cache collision with the 32-bin run.
       command: >
         python src/workflow/scripts/generate_pseudo_cl_cov.py
-        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
+        --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --cat-config src/cosmo_val/cat_config.yaml
-        --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind {decisions.fiducial_blind}
+        --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind}
         --out-file {output}
       resources: { cpus: 12, memory: "32GB" }
 

@@ -21,8 +21,6 @@ description: |
 tags: [sweep, generated, covariance]
 
 inputs:
-  - id: selected_config
-    from: ../selected_config
   - id: cosmology_snapshot
     from: ../../covariance.cosmology_snapshot
   # The chain's two host reads that no `{inputs...}` used to name: the CosmoCov
@@ -74,8 +72,8 @@ template:
     The per-version analogue of
     [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
-  inputs: [selected_config, cosmology_snapshot, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
-  decisions: [fiducial_catalog, fiducial_blind, covariance_class, covariance_engine, integration_grid]
+  inputs: [cosmology_snapshot, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
+  decisions: [fiducial_catalog, fiducial_blind, covariance_class, covariance_engine, integration_grid, leakage_correction]
   recipe:
     # The per-version unit of work: one run_cosmocov_chain.sh chain, exactly as
     # the fiducial cov_integration recipe calls it. CosmoCov scratch (.ini,
@@ -83,7 +81,7 @@ template:
     # only the processed matrix reaches {output}.
     command: >
       bash src/workflow/scripts/run_cosmocov_chain.sh
-      --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version ${version})" --blind A
+      --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version ${version})" --blind {decisions.fiducial_blind}
       --min-sep 0.5 --max-sep 300.0 --nbins 1000
       --gaussian {decisions.covariance_class}
       --planck18-json {inputs.cosmology_snapshot}
@@ -111,7 +109,7 @@ gather:
   recipe:
     command: >
       python src/papers/bmodes/scripts/bundle_sweep.py
-      --layout cov --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+      --layout cov --fiducial-catalog {decisions.fiducial_catalog}
       --leakage-correction {decisions.leakage_correction}
       --names ${members}
       --members ${member_refs}

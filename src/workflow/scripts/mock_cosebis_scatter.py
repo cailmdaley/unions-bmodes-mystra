@@ -23,8 +23,8 @@ import mock_scatter_pool
 # the reporting grid geomspace(1', 250', 21) — what the published pipeline cut
 # at; `rounded_arcmin` is what the paper text prints.  Kept in step with
 # `COSEBI_THETA_BY_CONVENTION` in mock_campaign_analysis.py and with
-# papers/bmodes/scripts/scale_cuts.py, which resolves the same choice from
-# config.yaml for the paper-facing scripts.
+# papers/bmodes/scripts/scale_cuts.py, which resolves the same choice from the
+# reporting_binning decision for the paper-facing scripts.
 _REPORTING_EDGES = np.geomspace(1.0, 250.0, 21)
 THETA_BY_CONVENTION = {
     "grid_bin_edges": (float(_REPORTING_EDGES[9]), float(_REPORTING_EDGES[16])),

@@ -42,8 +42,6 @@ description: |
 tags: [sweep, generated, cosebis]
 
 inputs:
-  - id: selected_config
-    from: ../selected_config
   - id: xi_integration
     from: ../xi_integration
   - id: cov_integration
@@ -58,6 +56,14 @@ decisions:
     from: ../fiducial_blind
   scale_cut_pair_grid:
     from: ../scale_cut_pair_grid
+  integration_grid:
+    from: ../integration_grid
+  leakage_correction:
+    from: ../leakage_correction
+  mode_count:
+    from: ../mode_count
+  reporting_binning:
+    from: ../reporting_binning
 
 matrix:
   # The i_min rows of the 21-point theta grid: pairs (i, j) exist for
@@ -81,8 +87,8 @@ template:
     with `pairs` restricted to this row and every other cell left
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
-  inputs: [selected_config, xi_integration, cov_integration]
-  decisions: [fiducial_catalog, fiducial_blind, scale_cut_pair_grid, pte_definition]
+  inputs: [xi_integration, cov_integration]
+  decisions: [fiducial_catalog, fiducial_blind, scale_cut_pair_grid, pte_definition, leakage_correction, reporting_binning, integration_grid, mode_count]
   recipe:
     # Identical to the July full-grid invocation but for `--row` and `--jobs`:
     # same config, same fiducial ξ_± and Gaussian integration covariance, so a
@@ -114,7 +120,7 @@ template:
     # reading it here is the upgrade path.
     command: >
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py
-      --config {inputs.selected_config}
+      --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
       --xi-integration {inputs.xi_integration}
       --cov-integration {inputs.cov_integration}
       --row ${i_min}

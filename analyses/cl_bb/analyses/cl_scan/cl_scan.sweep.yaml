@@ -23,8 +23,6 @@ description: |
 tags: [sweep, generated, cl_bb]
 
 inputs:
-  - id: selected_config
-    from: ../selected_config
   # The raw n(z) trees. generate_pseudo_cl_cov.py follows cat_config's
   # per-version `redshift_path` at runtime, and lc binds only declared inputs,
   # so the cl_cov members need both trees the config names: the SOM tree for
@@ -69,7 +67,7 @@ matrix:
     - SP_v1.4.11.3_leak_corr
   slot: [SP_v1.4.5, SP_v1.4.5_leak_corr, fiducial_counterpart, SP_v1.4.8, SP_v1.4.8_leak_corr, SP_v1.4.11.3, SP_v1.4.11.3_leak_corr, SP_v1.4.5, SP_v1.4.8, SP_v1.4.11.3]
   grid: [nbins32, nbins32, nbins32, nbins32, nbins32, nbins32, nbins32, fine, fine, fine]
-  nbins: ['32', '32', '32', '32', '32', '32', '32', '{decisions.harmonic_validation_binning}', '{decisions.harmonic_validation_binning}', '{decisions.harmonic_validation_binning}']
+  nbins: ['32', '32', '32', '32', '32', '32', '32', '"$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})"', '"$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})"', '"$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})"']
   grid_decision: [bandpower_binning, bandpower_binning, bandpower_binning, bandpower_binning, bandpower_binning, bandpower_binning, bandpower_binning, harmonic_validation_binning, harmonic_validation_binning, harmonic_validation_binning]
   product: [cl, cl_cov]
   # Only the bandpower measurement reads the estimator: calculate_pseudo_cl_eb_cov
@@ -94,8 +92,8 @@ template:
     blind A (nside 1024, npatch 1). The per-version analogue of
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_${product}.py` invocation, different `--ver`.
-  inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, redshift_distributions_legacy]
-  decisions: [fiducial_catalog, fiducial_blind, noise_bias_correction, "${grid_decision}", "${product_decision}"]
+  inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, redshift_distributions_legacy]
+  decisions: [fiducial_catalog, fiducial_blind, noise_bias_correction, "${grid_decision}", "${product_decision}", leakage_correction]
   recipe:
     # The per-version unit of work. generate_pseudo_cl.py and
     # generate_pseudo_cl_cov.py take an identical flag family, so one template
@@ -104,9 +102,9 @@ template:
     # the gather does the canonical naming.
     command: >
       python src/workflow/scripts/generate_pseudo_${product}.py
-      --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version ${version} $(if [ ${grid} = fine ]; then printf -- '--fine-grid'; fi))"
+      --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version ${version} $(if [ ${grid} = fine ]; then printf -- '--fine-grid'; fi))"
       --cat-config src/cosmo_val/cat_config.yaml
-      --nside 1024 --npatch 1 --binning powspace --nbins ${nbins} --power 0.5 --blind A
+      --nside 1024 --npatch 1 --binning powspace --nbins ${nbins} --power 0.5 --blind {decisions.fiducial_blind}
       --out-file {output}
     resources: { cpus: 12, memory: "${mem}" }
 
@@ -127,7 +125,7 @@ gather:
   recipe:
     command: >
       python src/papers/bmodes/scripts/bundle_sweep.py
-      --layout cl --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
+      --layout cl --fiducial-catalog {decisions.fiducial_catalog}
       --leakage-correction {decisions.leakage_correction}
       --harmonic-validation-binning {decisions.harmonic_validation_binning}
       --names ${members}

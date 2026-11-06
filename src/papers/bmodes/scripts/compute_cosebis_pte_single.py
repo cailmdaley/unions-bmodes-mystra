@@ -49,7 +49,7 @@ import tqdm  # noqa: E402
 from plotting_utils import compute_chi2_pte  # noqa: E402
 
 from sp_validation.b_modes import calculate_cosebis  # noqa: E402
-from paper_config import load_config
+from decision_values import FIDUCIAL_BLIND, INTEGRATION_GRID, MODE_COUNT, REPORTING_BINNING
 
 
 def _pte_scale_cut_pairs(row=None):
@@ -135,28 +135,23 @@ def _worker(task):
 
 
 def main(
-    config,
     xi_integration,
     cov_integration,
     out_file,
-    version=None,
-    blind=None,
+    version,
+    blind,
+    nmodes,
+    integration,
+    reporting,
     row=None,
     jobs=None,
 ):
     t_start = time.time()
-    fid = config["fiducial"]
     # Version/blind tag only the output filename + provenance record; the theta
-    # grid, nmodes and per-pair COSEBI compute are version-independent (they read
-    # from config["fiducial"]), so a sweep call over a non-fiducial catalog stays
-    # bit-identical to the fiducial call save for the xi/cov inputs and the tag.
-    version = version if version is not None else fid["version"]
-    blind = blind if blind is not None else fid["blind"]
-    nmodes = int(fid["nmodes"])  # 20 for full computation
-
-    min_sep_int = fid["min_sep_int"]
-    max_sep_int = fid["max_sep_int"]
-    nbins_int = fid["nbins_int"]
+    # grid, nmodes and per-pair COSEBI compute are version-independent, so a
+    # sweep call over a non-fiducial catalog stays bit-identical to the fiducial
+    # call save for the xi/cov inputs and the tag.
+    min_sep_int, max_sep_int, nbins_int = integration
 
     gg = treecorr.GGCorrelation(
         min_sep=min_sep_int, max_sep=max_sep_int, nbins=nbins_int, sep_units="arcmin"
@@ -164,8 +159,8 @@ def main(
     gg.read(xi_integration)
 
     # Reporting theta grid (nbins+1 = 21 edges): geomspace(1', 250', 21)
-    theta_grid = np.geomspace(fid["min_sep"], fid["max_sep"], fid["nbins"] + 1)
-    n_grid = fid["nbins"] + 1
+    theta_grid = np.geomspace(reporting.min_sep, reporting.max_sep, reporting.nbins + 1)
+    n_grid = reporting.nbins + 1
 
     # row is None for the whole grid; the cosebis_pte_grid sweep passes one
     # i_min per member and merge_cosebis_pte_rows.py reassembles the full NPZ.
@@ -270,14 +265,14 @@ def main(
 
 
 def _from_cli(argv=None):
-    import yaml
 
     ap = argparse.ArgumentParser(
         description="Gathered COSEBI B-mode PTE matrix over the scale-cut pair grid (fiducial version + blind)."
     )
-    ap.add_argument(
-        "--config", required=True, help="Absolute path to bmodes config.yaml"
-    )
+    ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__, required=True)
+    ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
+    ap.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__, required=True)
+    ap.add_argument("--mode-count", type=MODE_COUNT.__getitem__, required=True)
     ap.add_argument(
         "--xi-integration",
         required=True,
@@ -293,17 +288,7 @@ def _from_cli(argv=None):
         required=True,
         help="Output file (lc {output}): the single gathered PTE-matrix NPZ",
     )
-    ap.add_argument(
-        "--version",
-        default=None,
-        help="Catalog version tag (default: config.fiducial.version). Overridden "
-        "by the version sweep to name the non-fiducial output NPZ.",
-    )
-    ap.add_argument(
-        "--blind",
-        default=None,
-        help="Blind tag (default: config.fiducial.blind)",
-    )
+    ap.add_argument("--version", required=True, help="Catalog version tag")
     ap.add_argument(
         "--row",
         type=int,
@@ -324,14 +309,15 @@ def _from_cli(argv=None):
         "declaration for the arithmetic.",
     )
     a = ap.parse_args(argv)
-    config = load_config(a.config)
     main(
-        config,
         a.xi_integration,
         a.cov_integration,
         a.out_file,
-        version=a.version,
-        blind=a.blind,
+        a.version,
+        a.blind,
+        a.mode_count,
+        a.integration_grid,
+        a.reporting_binning,
         row=a.row,
         jobs=a.jobs,
     )

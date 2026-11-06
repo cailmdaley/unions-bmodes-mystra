@@ -192,7 +192,6 @@ inputs:
 # aggregates numerical evidence into the LaTeX numeric macros.
 # -----------------------------------------------------------------------------
 outputs:
-  - {id: selected_config, from: catalog.selected_config}
   - {id: primary_null_test_report, from: cosebis.primary_null_test_report}
 
   # ---------------------------------------------------------------------------
@@ -235,7 +234,8 @@ outputs:
       range is 1–250 arcmin / 8 ≤ ℓ ≤ 2048. A row passes the null test
       when its minimum PTE is at least p_thr = 0.01; only the fiducial
       catalog at the adopted cuts passes.
-    inputs: [selected_config, config_space_pte_data, harmonic_space_pte_data, generate_paper_macros_script]
+    inputs: [config_space_pte_data, harmonic_space_pte_data, generate_paper_macros_script]
+    decisions: [fiducial_catalog, leakage_correction]
     recipe:
       # Terminal gather, third member of generate_paper_macros.py's
       # `--emit {evidence,macros,table}` family (the other two are
@@ -243,7 +243,7 @@ outputs:
       # compute: both PTE payloads are already materialised.
       command: >
         python src/papers/bmodes/scripts/generate_paper_macros.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction}
         --config-space-evidence {inputs.config_space_pte_data}
         --harmonic-space-evidence {inputs.harmonic_space_pte_data}
         --emit table
@@ -280,11 +280,11 @@ outputs:
       values come from
       [config_space_pte_data](#outputs.config_space_pte_data).
     inputs:
-      - selected_config
       - config_space_pte_data
       - cosebis_harmonic_modes_evidence
       - cosebis_harmonic_modes_full_evidence
       - cosebis_harmonic_version_ptes
+    decisions: [leakage_correction]
     recipe:
       # The fiducial version's harmonic PTEs come from the two per-version
       # metrics outputs; the other three leak-corrected versions come from the
@@ -292,7 +292,7 @@ outputs:
       # harmonic rows complete again.
       command: >
         python src/papers/bmodes/scripts/emit_cosebis_harmonic_config.py
-        --config {inputs.selected_config}
+        --leakage-correction {decisions.leakage_correction}
         --config-space-evidence {inputs.config_space_pte_data}
         --cosebis-evidence {inputs.cosebis_harmonic_modes_evidence}
         --cosebis-evidence-full {inputs.cosebis_harmonic_modes_full_evidence}
@@ -335,9 +335,8 @@ outputs:
       `nu_penalized`, `chi2`, `pte`, `pte_penalized`, `pte_decrease`,
       `passes`, `passes_penalized`, `verdict_change` (the last three
       against the nominal 0.05 level).
-    decisions: [scale_cut_convention, pte_definition]
+    decisions: [scale_cut_convention, pte_definition, reporting_binning, leakage_correction]
     inputs:
-      - selected_config
       - config_space_pte_data
       - harmonic_space_pte_data
       - scale_cuts_script
@@ -348,7 +347,7 @@ outputs:
         python src/papers/bmodes/scripts/emit_nu_penalty_verdicts.py
         --config-space-evidence {inputs.config_space_pte_data}
         --harmonic-space-evidence {inputs.harmonic_space_pte_data}
-        --config {inputs.selected_config}
+        --reporting-binning {decisions.reporting_binning} --leakage-correction {decisions.leakage_correction}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
 
@@ -389,9 +388,8 @@ outputs:
       consistency with zero. Black squares mark the adopted cuts (12–83
       arcmin). The size cut (fiducial versus initial) expands the
       acceptance region, while stellar masking contracts it.
-    decisions: [scale_cut_convention, pte_threshold]
+    decisions: [scale_cut_convention, pte_threshold, fiducial_catalog, leakage_correction, reporting_binning]
     inputs:
-      - selected_config
       - config_space_pte_data
       - config_space_pte_matrices_script
       - scale_cuts_script
@@ -401,7 +399,7 @@ outputs:
       # sweep; it draws the 4×3 appendix composite.
       command: >
         python src/papers/bmodes/scripts/config_space_pte_matrices.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning}
         --from-evidence {inputs.config_space_pte_data}
         --figure appendix
         --scale-cut-convention {decisions.scale_cut_convention}
@@ -418,9 +416,8 @@ outputs:
       consistency with zero. The initial and relaxed-flags catalogs show
       widespread failures across multipole ranges; the fiducial and
       masked catalogs pass across nearly all multipole combinations.
-    decisions: [pte_threshold]
+    decisions: [pte_threshold, fiducial_catalog, leakage_correction]
     inputs:
-      - selected_config
       - harmonic_space_pte_data
       - harmonic_space_pte_matrices_script
     recipe:
@@ -430,7 +427,7 @@ outputs:
       # null_tests.harmonic_space_pte_data, so no sweep is re-run here.
       command: >
         python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction}
         --from-evidence {inputs.harmonic_space_pte_data}
         --figure appendix
         --pte-threshold {decisions.pte_threshold}
@@ -448,15 +445,13 @@ outputs:
       consistency between the two paths on GLASS simulations.
     decisions: [fiducial_catalog, scale_cut_convention]
     inputs:
-      - selected_config
       - cosebis_harmonic_modes_full
       - harmonic_config_cosebis_comparison_figure_script
     recipe:
       # Plot-only mode over the full-range modes NPZ.
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --config {inputs.selected_config}
-        --angular-range full --blind A
+        --angular-range full
         --figure-from-modes {inputs.cosebis_harmonic_modes_full}
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}

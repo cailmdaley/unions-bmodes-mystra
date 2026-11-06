@@ -15,12 +15,11 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 import treecorr
-import yaml
 from astropy.io import fits
 from plotting_utils import PAPER_MPLSTYLE
 
 from sp_validation.b_modes import calculate_cosebis
-from paper_config import load_config
+from decision_values import INTEGRATION_GRID, MC_SAMPLES, MODE_COUNT, REPORTING_BINNING
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -383,7 +382,8 @@ def make_figure(
 
 
 def main(
-    config,
+    integration,
+    n_samples,
     pure_eb_paths,
     harmonic_paths,
     xi_integration_path,
@@ -400,8 +400,6 @@ def main(
     keyed by blind (A/B/C). All paths are absolute; the per-blind mock-version
     covariances are read directly, so the check is self-contained.
     """
-    version = config["fiducial"]["mock_version"]
-
     # Load pure E/B covariances for all blinds
     pure_eb_data = {}
     for blind in BLINDS:
@@ -414,10 +412,7 @@ def main(
     for blind in BLINDS:
         harmonic_data[blind] = load_harmonic_diagonals(harmonic_paths[blind])
 
-    # Integration binning parameters from config
-    min_sep_int = config["fiducial"]["min_sep_int"]
-    max_sep_int = config["fiducial"]["max_sep_int"]
-    nbins_int = config["fiducial"]["nbins_int"]
+    min_sep_int, max_sep_int, nbins_int = integration
 
     cosebis_data = {}
     for blind in BLINDS:
@@ -464,7 +459,6 @@ def main(
             )
 
     # Generate figure
-    n_samples = config["covariance"]["n_samples"]
     make_figure(
         theta,
         ell_eff,
@@ -532,30 +526,14 @@ def main(
     print("    Note: MC sampling noise causes BB to vary similarly to EE")
 
 
-def _from_snakemake(smk):
-    config = smk.config
-    pure_eb_paths = {b: smk.input[f"pure_eb_{b}"] for b in BLINDS}
-    harmonic_paths = {b: smk.input[f"harmonic_{b}"] for b in BLINDS}
-    cov_integration_paths = {b: smk.input[f"cov_integration_{b}"] for b in BLINDS}
-    main(
-        config=config,
-        pure_eb_paths=pure_eb_paths,
-        harmonic_paths=harmonic_paths,
-        xi_integration_path=smk.input.xi_integration,
-        cov_integration_paths=cov_integration_paths,
-        pseudo_cl_path=smk.input.pseudo_cl,
-        nmodes=smk.params.nmodes,
-        theta_min=smk.params.theta_min,
-        theta_max=smk.params.theta_max,
-        figure_path=smk.output.figure,
-    )
-
-
 def _from_cli(argv=None):
     ap = argparse.ArgumentParser(
         description="BB-covariance blind-independence cross-check (mock version)."
     )
-    ap.add_argument("--config", required=True, help="Absolute path to config.yaml")
+    ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
+    ap.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__, required=True)
+    ap.add_argument("--mode-count", type=MODE_COUNT.__getitem__, required=True)
+    ap.add_argument("--mc-samples", type=MC_SAMPLES.__getitem__, required=True)
     versions = {
         "mock_version_v146": "SP_v1.4.6_leak_corr",
         "fiducial_version_v1463": "SP_v1.4.6.3_leak_corr",
@@ -569,10 +547,7 @@ def _from_cli(argv=None):
     ap.add_argument("--out-file", required=True, help="Output PNG path (lc {output})")
     a = ap.parse_args(argv)
 
-    config = load_config(a.config)
-
     version = versions[a.version]
-    fid = config["fiducial"]
     pure_eb_paths = {b: a.pure_eb_template.format(version=version, blind=b) for b in BLINDS}
     harmonic_paths = {b: a.harmonic_template.format(version=version, blind=b) for b in BLINDS}
     cov_integration_paths = {
@@ -582,25 +557,19 @@ def _from_cli(argv=None):
     pseudo_cl_path = a.pseudo_cl_template.format(version=version)
 
     main(
-        config=config,
+        integration=a.integration_grid,
+        n_samples=a.mc_samples,
         pure_eb_paths=pure_eb_paths,
         harmonic_paths=harmonic_paths,
         xi_integration_path=xi_integration_path,
         cov_integration_paths=cov_integration_paths,
         pseudo_cl_path=pseudo_cl_path,
-        nmodes=fid["nmodes"],
-        theta_min=config["cosebis"]["theta_min"],
-        theta_max=config["cosebis"]["theta_max"],
+        nmodes=a.mode_count,
+        theta_min=a.reporting_binning.min_sep,
+        theta_max=a.reporting_binning.max_sep,
         figure_path=a.out_file,
     )
 
 
 if __name__ == "__main__":
-    # A membership test, not a caught NameError: the exception form leaves
-    # every CLI-path traceback prefixed with "During handling of the above
-    # exception" and a NameError that is not the failure, which reads as
-    # the bug and is not one.
-    if "snakemake" in globals():
-        _from_snakemake(snakemake)  # noqa: F821
-    else:
-        _from_cli()
+    _from_cli()

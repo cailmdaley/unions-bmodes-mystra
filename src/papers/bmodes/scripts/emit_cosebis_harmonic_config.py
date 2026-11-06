@@ -27,10 +27,7 @@ import argparse
 import csv
 import json
 import math
-from datetime import datetime, timezone
-from pathlib import Path
 
-from paper_config import load_config
 
 
 def _sig3(x):
@@ -69,7 +66,7 @@ def main():
             "non-fiducial leak-corrected versions' harmonic rows."
         ),
     )
-    parser.add_argument("--config", required=True)
+    parser.add_argument("--leakage-correction", required=True, choices=["applied", "uncorrected"])
     parser.add_argument("--out-file", required=True, help="output CSV path")
     args = parser.parse_args()
 
@@ -84,7 +81,7 @@ def main():
     harmonic_full_evidence = _payload(args.cosebis_evidence_full)
 
     slugs = _VERSION_SLUGS
-    if load_config(args.config).get("leakage_correction") == "uncorrected":
+    if args.leakage_correction == "uncorrected":
         slugs = {k.removesuffix("_leak_corr"): v for k, v in slugs.items()}
     config_versions = config_evidence.get("versions", {})
     harmonic_fid_ptes = harmonic_fid_evidence.get("harmonic_b_mode_ptes", {})

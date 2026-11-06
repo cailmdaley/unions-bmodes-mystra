@@ -26,7 +26,7 @@
 #   plot         correlation-structure QA figure    (300-dpi PNG)
 #
 # Usage:
-#   run_cosmocov_chain.sh --version SP_v1.4.6.3_leak_corr --blind A \
+#   run_cosmocov_chain.sh --version SP_v1.4.6.3_leak_corr --blind blind_a \
 #     --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g \
 #     --planck18-json <cosmology_snapshot.json> \
 #     --cat-config <cat_config.yaml> --mask-cls <mask_cls...norm.txt> \
@@ -40,7 +40,7 @@ VENDOR_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 COSMOCOV=/n23data1/n06data/lgoh/scratch/UNIONS/CosmoCov/covs/cov
 LIBGSL=/lib64/libgsl.so.23.1.0
 
-VERSION=""; BLIND="A"; MINSEP=""; MAXSEP=""; NBINS=""; GAUSSIAN=""
+VERSION=""; BLIND=""; MINSEP=""; MAXSEP=""; NBINS=""; GAUSSIAN=""
 # A supplied spectrum applies to SSC unless explicitly disabled.
 PLANCK18=""; CATCONFIG=""; MASKCLS=""; MASKAPPLICATION="masked"; NZ=""; EMIT=""; OUTFILE=""
 while [ $# -gt 0 ]; do

@@ -19,6 +19,7 @@ from plotting_utils import (
     compute_chi2_pte,
     draw_normalized_boxes_linear_scale,
     find_fiducial_index,
+    X_OFFSETS,
     get_version_alpha,
     version_label,
 )
@@ -29,7 +30,8 @@ STACKED_PRINT_WIDTH = 0.88 * FIG_WIDTH_FULL
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
 
 from sp_validation.b_modes import calculate_cosebis
-from paper_config import load_config, comparison_versions
+from catalog_versions import add_catalog_arguments, catalogs_from
+from decision_values import FIDUCIAL_BLIND, INTEGRATION_GRID, MODE_COUNT, REPORTING_BINNING
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -41,8 +43,6 @@ def _create_stacked_bmode_figure(
     scale_cuts,
     fiducial_idx,
     y_limits=None,
-    x_offsets=None,
-    box_style=None,
 ):
     """Create a vertically stacked B-mode COSEBIS comparison figure.
 
@@ -51,16 +51,8 @@ def _create_stacked_bmode_figure(
     For each mode, a box spans the range of all versions' error bars,
     with a line marking the fiducial version's value.
 
-    Parameters
-    ----------
-    x_offsets : array-like, optional
-        Additive offsets for each version. Default: [-0.12, -0.04, 0.04, 0.12]
-    box_style : dict, optional
-        Styling for version boxes.
     """
-    if x_offsets is None:
-        x_offsets = np.array([-0.20, -0.07, 0.07, 0.20])
-    x_offsets = np.array(x_offsets)
+    x_offsets = np.array(X_OFFSETS)
 
     fig, axes = plt.subplots(
         2, 1, figsize=(FIG_WIDTH_FULL, FIG_WIDTH_FULL * 0.385), sharex=True
@@ -86,7 +78,6 @@ def _create_stacked_bmode_figure(
             y_norm_key="Bn_normalized",
             fiducial_idx=fiducial_idx,
             x_offsets=x_offsets,
-            box_style=box_style,
         )
 
         for i, data in enumerate(datasets):
@@ -160,7 +151,11 @@ def _cov_integration(cov_dir, ver, blind):
 
 
 def main(
-    config,
+    catalogs,
+    blind,
+    nmodes,
+    integration,
+    reporting,
     results_dir,
     cov_dir,
     out_file,
@@ -170,14 +165,11 @@ def main(
     fiducial_cov_path=None,
 ):
     # Leak-corrected, non-ecut versions (matches VERSIONS_LEAK_CORR in claims.smk)
-    versions = comparison_versions(config)
-    nmodes = config["fiducial"]["nmodes"]
-    plotting_config = config["plotting"]
-    version_labels = plotting_config["version_labels"]
-    blind = config["fiducial"]["blind"]
+    versions = catalogs.comparison
+    version_labels = catalogs.labels
 
     # Fiducial version whose inputs may be overridden with explicit lc paths
-    fiducial_version = fiducial_version or config["fiducial"]["version"]
+    fiducial_version = fiducial_version or catalogs.fiducial
 
     # Per-version integration-grid xi and Gaussian covariance (canonical trees),
     # with explicit-path overrides for the fiducial version when provided.
@@ -195,28 +187,17 @@ def main(
     ]
 
     # Which version gets the fiducial reference line in boxes
-    fiducial_for_comparison = plotting_config.get(
-        "fiducial_for_comparison", config["fiducial"]["version"]
-    )
+    fiducial_for_comparison = catalogs.fiducial
 
-    # Plotting config
-    x_offsets = plotting_config.get("x_offsets", [-0.12, -0.04, 0.04, 0.12])
-    box_style = plotting_config.get("version_box", {})
-
-    fiducial_scale_cut = resolve_fiducial_scale_cuts(config, scale_cut_convention)
-    full_scale_cut = (
-        float(config["cosebis"]["theta_min"]),
-        float(config["cosebis"]["theta_max"]),
-    )
+    fiducial_scale_cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
+    full_scale_cut = (reporting.min_sep, reporting.max_sep)
 
     scale_cuts = {
         "fiducial": fiducial_scale_cut,
         "full": full_scale_cut,
     }
 
-    min_sep_int = float(config["fiducial"]["min_sep_int"])
-    max_sep_int = float(config["fiducial"]["max_sep_int"])
-    nbins_int = int(config["fiducial"]["nbins_int"])
+    min_sep_int, max_sep_int, nbins_int = integration
 
     # Color/marker assignment: pair by parent version if ecut versions present
     has_ecut = any("_ecut" in v for v in versions)
@@ -288,7 +269,7 @@ def main(
                     "marker": marker,
                     "fillstyle": fillstyle,
                     "alpha": get_version_alpha(
-                        version, fiducial_for_comparison, plotting_config
+                        version, fiducial_for_comparison
                     ),
                     "Bn_normalized": Bn / sigma_B,
                 }
@@ -318,8 +299,6 @@ def main(
         scale_cuts,
         fiducial_idx,
         y_limits,
-        x_offsets=x_offsets,
-        box_style=box_style,
     )
 
     savefig_at_width(fig, out_file, STACKED_PRINT_WIDTH, dpi=300)
@@ -328,14 +307,15 @@ def main(
 
 
 def _from_cli(argv=None):
-    import yaml
 
     ap = argparse.ArgumentParser(
         description="COSEBI B-mode version-comparison figure (4 leak-corrected catalogs)."
     )
-    ap.add_argument(
-        "--config", required=True, help="Absolute path to bmodes config.yaml"
-    )
+    add_catalog_arguments(ap)
+    ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__, required=True)
+    ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
+    ap.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__, required=True)
+    ap.add_argument("--mode-count", type=MODE_COUNT.__getitem__, required=True)
     ap.add_argument(
         "--results-dir",
         required=True,
@@ -355,7 +335,7 @@ def _from_cli(argv=None):
         "--fiducial-version",
         default=None,
         help="Version whose xi/cov inputs may be overridden by --fiducial-xi-path "
-        "and --fiducial-cov-path (default: config['fiducial']['version'])",
+        "and --fiducial-cov-path (default: the fiducial version)",
     )
     ap.add_argument(
         "--fiducial-xi-path",
@@ -371,9 +351,12 @@ def _from_cli(argv=None):
     )
     add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
-    config = load_config(a.config)
     main(
-        config,
+        catalogs_from(a),
+        a.blind,
+        a.mode_count,
+        a.integration_grid,
+        a.reporting_binning,
         a.results_dir,
         a.cov_dir,
         a.out_file,

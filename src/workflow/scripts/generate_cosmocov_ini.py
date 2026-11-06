@@ -10,7 +10,7 @@ passed explicitly (empty string for the unmasked variant).
 The emitted ``.ini`` is byte-compatible with the paper's covariance_ini rule.
 
     python generate_cosmocov_ini.py \
-        --version SP_v1.4.6.3_leak_corr --blind A \
+        --version SP_v1.4.6.3_leak_corr --blind blind_a \
         --planck18-json <cosmology_snapshot>/planck18.json \
         --cat-config <cosmo_val/cat_config.yaml> \
         --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g \
@@ -24,6 +24,8 @@ import os
 import re
 
 import yaml
+
+from decision_values import FIDUCIAL_BLIND
 
 
 def build_redshift_path(version, blind):
@@ -99,12 +101,7 @@ ll : false
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--version", required=True)
-    ap.add_argument(
-        "--blind",
-        type=lambda s: s.removeprefix("blind_").upper(),
-        default="A",
-        help="A/B/C, or the fiducial_blind option (blind_a/blind_b/blind_c)",
-    )
+    ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__, required=True)
     ap.add_argument("--planck18-json", required=True)
     ap.add_argument("--cat-config", required=True)
     ap.add_argument("--min-sep", required=True, help="tmin arcmin (string, e.g. 0.5)")

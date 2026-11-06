@@ -22,7 +22,6 @@ import matplotlib.transforms as mtransforms
 import numpy as np
 import seaborn as sns
 import treecorr
-import yaml
 from astropy.io import fits
 from cosmo_numba.B_modes.cosebis import COSEBIS
 from plotting_utils import (
@@ -37,7 +36,16 @@ from plotting_utils import (
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
 
 from sp_validation.b_modes import calculate_cosebis
-from paper_config import load_config
+from catalog_versions import VERSIONS, catalogs_from
+from decision_values import (
+    FIDUCIAL_BLIND,
+    FIDUCIAL_CATALOG,
+    HARMONIC_VALIDATION_BINNING,
+    INTEGRATION_GRID,
+    MODE_COUNT,
+    PATCH_COUNT,
+    REPORTING_BINNING,
+)
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -138,14 +146,12 @@ def _compute_harmonic_cosebis(
     return ce_harm, cb_harm, cov_harmonic
 
 
-def _compute_config_cosebis(xi_path, cov_path, nmodes, scale_cut, config):
+def _compute_config_cosebis(xi_path, cov_path, nmodes, scale_cut, integration):
     """Compute COSEBIS from fine-binned xi_pm for a single scale cut.
 
     Returns (En, Bn, cov).
     """
-    min_sep_int = float(config["fiducial"]["min_sep_int"])
-    max_sep_int = float(config["fiducial"]["max_sep_int"])
-    nbins_int = int(config["fiducial"]["nbins_int"])
+    min_sep_int, max_sep_int, nbins_int = integration
 
     gg = treecorr.GGCorrelation(
         min_sep=min_sep_int,
@@ -524,7 +530,11 @@ def _make_version_comparison_figure(
 
 
 def main(
-    config,
+    catalogs,
+    nmodes,
+    cosebis_nbins,
+    integration,
+    reporting,
     inputs,
     scale_cut,
     output_dir,
@@ -539,20 +549,15 @@ def main(
     (all absolute paths) plus ``specs``. All artifacts land under ``output_dir``;
     ``paper_figure_name`` (when set) is the combined 2×2 paper PDF filename.
     """
-    nmodes = int(config["fiducial"]["nmodes"])
-    version_labels_map = config["plotting"].get("version_labels", {})
+    version_labels_map = catalogs.labels
 
-    fiducial_version = config["fiducial"]["version"]
+    fiducial_version = catalogs.fiducial
     scale_cut = tuple(scale_cut)
 
-    cosebis_nbins = int(config["cl"].get("cosebis_nbins", 32))
-    reliable_mode_max = _RELIABLE_MODE_MAX_BY_NBINS.get(
-        cosebis_nbins,
-        8 if cosebis_nbins >= 64 else 6,
-    )
+    reliable_mode_max = _reliable_mode_max(cosebis_nbins)
     print(f"Using {cosebis_nbins}-bin pseudo-Cl, reliable modes 1-{reliable_mode_max}")
 
-    versions_leak_corr = [v for v in config["versions"] if "_leak_corr" in v]
+    versions_leak_corr = [v for v in VERSIONS if "_leak_corr" in v]
 
     # Build input path lookups from the inputs dict
     pseudo_cl_paths = {
@@ -601,7 +606,7 @@ def main(
             cov_paths[cov_key],
             nmodes,
             scale_cut,
-            config,
+            integration,
         )
 
         # Harmonic-space
@@ -638,8 +643,8 @@ def main(
         # For the paper figure, produce a combined 2x2 (both scale cuts)
         if fig_spec["is_paper_figure"] and paper_figure_name:
             # Compute the other scale cut for the combined figure
-            scale_cut_full, scale_cut_fid = _scale_cuts_from_config(
-                config, scale_cut_convention
+            scale_cut_full, scale_cut_fid = _scale_cuts(
+                reporting, scale_cut_convention
             )
             # Determine which is "this" and which is "other"
             if scale_cut == scale_cut_full:
@@ -653,7 +658,7 @@ def main(
                 cov_paths[cov_key],
                 nmodes,
                 other_cut,
-                config,
+                integration,
             )
             ce_h_other, cb_h_other, cov_h_other = _compute_harmonic_cosebis(
                 pseudo_cl_paths[pseudo_cl_key],
@@ -813,26 +818,25 @@ def main(
     print(f"Saved evidence to {evidence_path}")
 
 
-def _scale_cuts_from_config(config, scale_cut_convention):
+def _scale_cuts(reporting, scale_cut_convention):
     """(full, fiducial) scale cuts, as used for the combined paper figure."""
-    full = (
-        float(config["cosebis"]["theta_min"]),
-        float(config["cosebis"]["theta_max"]),
-    )
-    fiducial = resolve_fiducial_scale_cuts(config, scale_cut_convention)
+    full = (reporting.min_sep, reporting.max_sep)
+    fiducial = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
     return full, fiducial
 
 
-def _reliable_mode_max(config):
-    cosebis_nbins = int(config["cl"].get("cosebis_nbins", 32))
-    return cosebis_nbins, _RELIABLE_MODE_MAX_BY_NBINS.get(
+def _reliable_mode_max(cosebis_nbins):
+    return _RELIABLE_MODE_MAX_BY_NBINS.get(
         cosebis_nbins,
         8 if cosebis_nbins >= 64 else 6,
     )
 
 
 def _compute_modes_npz(
-    config,
+    nmodes,
+    cosebis_nbins,
+    integration,
+    reporting,
     version,
     pseudo_cl_path,
     pseudo_cov_path,
@@ -843,10 +847,9 @@ def _compute_modes_npz(
 ):
     """Compute the harmonic- and config-space COSEBIs at both scale cuts for one
     version and write exactly one NPZ to ``out_file``."""
-    nmodes = int(config["fiducial"]["nmodes"])
-    cosebis_nbins, reliable_mode_max = _reliable_mode_max(config)
-    scale_cut_full, scale_cut_fid = _scale_cuts_from_config(
-        config, scale_cut_convention
+    reliable_mode_max = _reliable_mode_max(cosebis_nbins)
+    scale_cut_full, scale_cut_fid = _scale_cuts(
+        reporting, scale_cut_convention
     )
 
     payload = {
@@ -861,7 +864,7 @@ def _compute_modes_npz(
     for name, cut in (("full", scale_cut_full), ("fiducial", scale_cut_fid)):
         print(f"Computing {name} scale cut {cut} for {version}...")
         ce_cfg, cb_cfg, cov_cfg = _compute_config_cosebis(
-            xi_path, cov_path, nmodes, cut, config
+            xi_path, cov_path, nmodes, cut, integration
         )
         ce_h, cb_h, cov_h = _compute_harmonic_cosebis(
             pseudo_cl_path, pseudo_cov_path, nmodes, cut[0], cut[1]
@@ -959,11 +962,11 @@ def _figure_from_modes(modes, out_file):
     print(f"Saved figure to {out_file}")
 
 
-def _versions_all_for_plots(config):
+def _versions_all_for_plots():
     """Reproduce VERSIONS_ALL_FOR_PLOTS: leak-corrected (non-ecut) versions plus
     their uncorrected counterparts."""
     leak_corr = [
-        v for v in config["versions"] if "_leak_corr" in v and "_ecut" not in v
+        v for v in VERSIONS if "_leak_corr" in v and "_ecut" not in v
     ]
     uncorrected = [v.replace("_leak_corr", "") for v in leak_corr]
     return leak_corr + uncorrected
@@ -976,33 +979,21 @@ def _cov_integration_path(cov_dir, version, blind, min_sep, max_sep, nbins):
     return os.path.join(cov_dir, base, f"{base}_processed.txt")
 
 
-def _angular_ranges(config, scale_cut_convention):
+def _angular_ranges(reporting, scale_cut_convention):
     """Reproduce claims.smk _COSEBIS_ANGULAR_RANGES."""
-    full, fiducial = _scale_cuts_from_config(config, scale_cut_convention)
+    full, fiducial = _scale_cuts(reporting, scale_cut_convention)
     return {"full": full, "fiducial": fiducial}
-
-
-def _from_snakemake(smk):
-    main(
-        config=smk.config,
-        inputs=dict(smk.input.items()),
-        scale_cut=tuple(smk.params.scale_cut),
-        output_dir=Path(smk.output["evidence"]).parent,
-        scale_cut_convention=smk.params.scale_cut_convention,
-        paper_figure_name=(
-            Path(smk.output["paper_figure"]).name
-            if "paper_figure" in smk.output.keys()
-            else None
-        ),
-        spec_path=smk.input["specs"][0],
-    )
 
 
 def _from_cli(argv=None):
     ap = argparse.ArgumentParser(
         description="Harmonic vs config-space COSEBI cross-check (paper Figure 8)."
     )
-    ap.add_argument("--config", required=True, help="Absolute path to config.yaml")
+    ap.add_argument("--fiducial-catalog", choices=FIDUCIAL_CATALOG)
+    ap.add_argument("--leakage-correction", choices=["applied", "uncorrected"])
+    ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__)
+    ap.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__)
+    ap.add_argument("--mode-count", type=MODE_COUNT.__getitem__)
     ap.add_argument(
         "--angular-range",
         choices=["full", "fiducial"],
@@ -1019,9 +1010,8 @@ def _from_cli(argv=None):
         default=None,
         help="COSMO_INFERENCE data/covariance dir (Gaussian integration covariances)",
     )
-    ap.add_argument(
-        "--blind", default="A", help="Blind for pseudo-Cl / covariance (paper: A)"
-    )
+    ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__)
+    ap.add_argument("--patch-count", type=PATCH_COUNT.__getitem__, help="Names xi files under --cosmo-val-dir")
     ap.add_argument("--out", default=None, help="Output directory (legacy sweep mode)")
     ap.add_argument(
         "--out-file",
@@ -1096,12 +1086,8 @@ def _from_cli(argv=None):
         ),
     )
     add_scale_cut_convention_argument(ap)
-    ap.add_argument("--harmonic-validation-binning", type=lambda value: int(value.removeprefix("bins_")))
+    ap.add_argument("--harmonic-validation-binning", type=HARMONIC_VALIDATION_BINNING.__getitem__)
     a = ap.parse_args(argv)
-
-    config = load_config(a.config)
-    if a.harmonic_validation_binning is not None:
-        config["cl"]["cosebis_nbins"] = a.harmonic_validation_binning
 
     # --- Render modes: read a modes NPZ, recompute nothing, write one file. ---
     if a.metrics_from_modes or a.figure_from_modes:
@@ -1116,18 +1102,21 @@ def _from_cli(argv=None):
             _figure_from_modes(modes, a.out_file)
         return
 
-    fid = config["fiducial"]
-    cosebis_nbins = int(config["cl"].get("cosebis_nbins", 96))
-    min_sep_int, max_sep_int, nbins_int = (
-        fid["min_sep_int"],
-        fid["max_sep_int"],
-        fid["nbins_int"],
-    )
-    npatch = fid["npatch"]
+    required = ("fiducial_catalog", "leakage_correction", "harmonic_validation_binning",
+                "mode_count", "integration_grid", "reporting_binning", "blind")
+    missing = [f"--{r.replace('_', '-')}" for r in required if getattr(a, r) is None]
+    if missing:
+        ap.error(f"compute passes need {', '.join(missing)}")
+    if a.cosmo_val_dir and a.patch_count is None:
+        ap.error("--cosmo-val-dir needs --patch-count")
+    catalogs = catalogs_from(a)
+    cosebis_nbins = a.harmonic_validation_binning
+    min_sep_int, max_sep_int, nbins_int = a.integration_grid
+    npatch = a.patch_count
 
     # --- Compute pass: one version, both scale cuts, one NPZ at --out-file. ---
     if a.out_file:
-        version = a.fiducial_version or fid["version"]
+        version = a.fiducial_version or catalogs.fiducial
         pseudo_cl_path = a.fiducial_pseudo_cl_path or (
             os.path.join(
                 a.cosmo_val_dir,
@@ -1177,7 +1166,10 @@ def _from_cli(argv=None):
                 + " (or --cosmo-val-dir / --covariance-dir to derive them)"
             )
         _compute_modes_npz(
-            config,
+            a.mode_count,
+            cosebis_nbins,
+            a.integration_grid,
+            a.reporting_binning,
             version,
             pseudo_cl_path,
             pseudo_cov_path,
@@ -1191,7 +1183,7 @@ def _from_cli(argv=None):
     if not a.out:
         ap.error("one of --out-file, --out, or a --*-from-modes mode is required")
 
-    versions = _versions_all_for_plots(config)
+    versions = _versions_all_for_plots()
     inputs = {"specs": ["papers/bmodes/config/harmonic_config_cosebis_comparison.md"]}
     for ver in versions:
         is_fiducial = ver == a.fiducial_version
@@ -1229,10 +1221,14 @@ def _from_cli(argv=None):
             )
         )
 
-    scale_cut = _angular_ranges(config, a.scale_cut_convention)[a.angular_range]
+    scale_cut = _angular_ranges(a.reporting_binning, a.scale_cut_convention)[a.angular_range]
 
     main(
-        config=config,
+        catalogs=catalogs,
+        nmodes=a.mode_count,
+        cosebis_nbins=cosebis_nbins,
+        integration=a.integration_grid,
+        reporting=a.reporting_binning,
         inputs=inputs,
         scale_cut=scale_cut,
         output_dir=a.out,
@@ -1243,11 +1239,4 @@ def _from_cli(argv=None):
 
 
 if __name__ == "__main__":
-    # A membership test, not a caught NameError: the exception form leaves
-    # every CLI-path traceback prefixed with "During handling of the above
-    # exception" and a NameError that is not the failure, which reads as
-    # the bug and is not one.
-    if "snakemake" in globals():
-        _from_snakemake(snakemake)  # noqa: F821
-    else:
-        _from_cli()
+    _from_cli()

@@ -23,7 +23,7 @@ description: |
   compute the fiducial
   [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut) runs
   (`compute_cosebis_pte_single.py`, version-independent theta grid
-  and nmodes read from `config["fiducial"]`), differing only in
+  and nmodes set by the decisions), differing only in
   the ξ_±/covariance it reads and the version tag it stamps. The
   gather rebuilds the canonical `cosebis_ptes_{ver}_{blind}.npz`
   `tar.gz` that
@@ -36,8 +36,6 @@ tags:
 - generated
 - cosebis
 inputs:
-- id: selected_config
-  from: ../selected_config
 - id: xi_sweep
   from: ../xi_sweep
 - id: cov_sweep
@@ -53,6 +51,12 @@ decisions:
     from: ../fiducial_blind
   scale_cut_pair_grid:
     from: ../scale_cut_pair_grid
+  integration_grid:
+    from: ../integration_grid
+  mode_count:
+    from: ../mode_count
+  reporting_binning:
+    from: ../reporting_binning
 outputs:
 - id: cosebis_ptes_sp_v1p4p5
   type: data
@@ -65,7 +69,6 @@ outputs:
     same `compute_cosebis_pte_single.py` invocation, different
     `--version` and a different pair of upstream files.
   inputs:
-  - selected_config
   - xi_sweep
   - cov_sweep
   decisions:
@@ -73,6 +76,10 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -83,13 +90,13 @@ outputs:
       c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5)
+      ver=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5)
       cb=covariance_"$ver"_A_integration
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py \
-        --config {inputs.selected_config} \
+        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
         --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --cov-integration "$c/$cb/$cb"_processed.txt \
-        --version $ver --blind A \
+        --version $ver --blind {decisions.fiducial_blind} \
         --out-file {output}
       rm -rf "$x" "$c"
     resources:
@@ -107,7 +114,6 @@ outputs:
     same `compute_cosebis_pte_single.py` invocation, different
     `--version` and a different pair of upstream files.
   inputs:
-  - selected_config
   - xi_sweep
   - cov_sweep
   decisions:
@@ -115,6 +121,10 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -125,13 +135,13 @@ outputs:
       c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr)
+      ver=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr)
       cb=covariance_"$ver"_A_integration
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py \
-        --config {inputs.selected_config} \
+        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
         --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --cov-integration "$c/$cb/$cb"_processed.txt \
-        --version $ver --blind A \
+        --version $ver --blind {decisions.fiducial_blind} \
         --out-file {output}
       rm -rf "$x" "$c"
     resources:
@@ -149,7 +159,6 @@ outputs:
     same `compute_cosebis_pte_single.py` invocation, different
     `--version` and a different pair of upstream files.
   inputs:
-  - selected_config
   - xi_sweep
   - cov_sweep
   decisions:
@@ -157,6 +166,10 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -167,13 +180,13 @@ outputs:
       c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.6.3)
+      ver=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.6.3)
       cb=covariance_"$ver"_A_integration
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py \
-        --config {inputs.selected_config} \
+        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
         --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --cov-integration "$c/$cb/$cb"_processed.txt \
-        --version $ver --blind A \
+        --version $ver --blind {decisions.fiducial_blind} \
         --out-file {output}
       rm -rf "$x" "$c"
     resources:
@@ -191,7 +204,6 @@ outputs:
     same `compute_cosebis_pte_single.py` invocation, different
     `--version` and a different pair of upstream files.
   inputs:
-  - selected_config
   - xi_sweep
   - cov_sweep
   decisions:
@@ -199,6 +211,10 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -209,13 +225,13 @@ outputs:
       c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8)
+      ver=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8)
       cb=covariance_"$ver"_A_integration
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py \
-        --config {inputs.selected_config} \
+        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
         --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --cov-integration "$c/$cb/$cb"_processed.txt \
-        --version $ver --blind A \
+        --version $ver --blind {decisions.fiducial_blind} \
         --out-file {output}
       rm -rf "$x" "$c"
     resources:
@@ -233,7 +249,6 @@ outputs:
     same `compute_cosebis_pte_single.py` invocation, different
     `--version` and a different pair of upstream files.
   inputs:
-  - selected_config
   - xi_sweep
   - cov_sweep
   decisions:
@@ -241,6 +256,10 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -251,13 +270,13 @@ outputs:
       c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr)
+      ver=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr)
       cb=covariance_"$ver"_A_integration
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py \
-        --config {inputs.selected_config} \
+        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
         --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --cov-integration "$c/$cb/$cb"_processed.txt \
-        --version $ver --blind A \
+        --version $ver --blind {decisions.fiducial_blind} \
         --out-file {output}
       rm -rf "$x" "$c"
     resources:
@@ -275,7 +294,6 @@ outputs:
     same `compute_cosebis_pte_single.py` invocation, different
     `--version` and a different pair of upstream files.
   inputs:
-  - selected_config
   - xi_sweep
   - cov_sweep
   decisions:
@@ -283,6 +301,10 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -293,13 +315,13 @@ outputs:
       c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3)
+      ver=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3)
       cb=covariance_"$ver"_A_integration
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py \
-        --config {inputs.selected_config} \
+        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
         --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --cov-integration "$c/$cb/$cb"_processed.txt \
-        --version $ver --blind A \
+        --version $ver --blind {decisions.fiducial_blind} \
         --out-file {output}
       rm -rf "$x" "$c"
     resources:
@@ -317,7 +339,6 @@ outputs:
     same `compute_cosebis_pte_single.py` invocation, different
     `--version` and a different pair of upstream files.
   inputs:
-  - selected_config
   - xi_sweep
   - cov_sweep
   decisions:
@@ -325,6 +346,10 @@ outputs:
   - fiducial_blind
   - scale_cut_pair_grid
   - pte_definition
+  - leakage_correction
+  - reporting_binning
+  - integration_grid
+  - mode_count
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -335,13 +360,13 @@ outputs:
       c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr)
+      ver=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr)
       cb=covariance_"$ver"_A_integration
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py \
-        --config {inputs.selected_config} \
+        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
         --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --cov-integration "$c/$cb/$cb"_processed.txt \
-        --version $ver --blind A \
+        --version $ver --blind {decisions.fiducial_blind} \
         --out-file {output}
       rm -rf "$x" "$c"
     resources:
@@ -376,7 +401,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      python src/papers/bmodes/scripts/bundle_sweep.py --layout cosebis_ptes --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --leakage-correction {decisions.leakage_correction} --names cosebis_ptes_sp_v1p4p5 cosebis_ptes_sp_v1p4p5_leak_corr cosebis_ptes_fiducial_counterpart cosebis_ptes_sp_v1p4p8 cosebis_ptes_sp_v1p4p8_leak_corr cosebis_ptes_sp_v1p4p11p3 cosebis_ptes_sp_v1p4p11p3_leak_corr --members {inputs.cosebis_ptes_sp_v1p4p5} {inputs.cosebis_ptes_sp_v1p4p5_leak_corr} {inputs.cosebis_ptes_fiducial_counterpart} {inputs.cosebis_ptes_sp_v1p4p8} {inputs.cosebis_ptes_sp_v1p4p8_leak_corr} {inputs.cosebis_ptes_sp_v1p4p11p3} {inputs.cosebis_ptes_sp_v1p4p11p3_leak_corr} --out-file {output}
+      python src/papers/bmodes/scripts/bundle_sweep.py --layout cosebis_ptes --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --names cosebis_ptes_sp_v1p4p5 cosebis_ptes_sp_v1p4p5_leak_corr cosebis_ptes_fiducial_counterpart cosebis_ptes_sp_v1p4p8 cosebis_ptes_sp_v1p4p8_leak_corr cosebis_ptes_sp_v1p4p11p3 cosebis_ptes_sp_v1p4p11p3_leak_corr --members {inputs.cosebis_ptes_sp_v1p4p5} {inputs.cosebis_ptes_sp_v1p4p5_leak_corr} {inputs.cosebis_ptes_fiducial_counterpart} {inputs.cosebis_ptes_sp_v1p4p8} {inputs.cosebis_ptes_sp_v1p4p8_leak_corr} {inputs.cosebis_ptes_sp_v1p4p11p3} {inputs.cosebis_ptes_sp_v1p4p11p3_leak_corr} --out-file {output}
     resources:
       cpus: 1
       memory: 4GB

@@ -2,7 +2,7 @@
 
 Produces:
 - Results: single-panel fiducial Cl^BB PTE matrix
-- Appendix: N-panel composite for all versions from config.versions
+- Appendix: N-panel composite for all versions from the catalog roster
 
 Uses fiducial blind covariance only (blind independence validated elsewhere).
 """
@@ -28,7 +28,8 @@ from plotting_utils import (
     resolve_pte_threshold,
 )
 from print_width import savefig_at_width
-from paper_config import load_config
+from catalog_versions import VERSIONS, add_catalog_arguments, catalogs_from
+from decision_values import FIDUCIAL_BLIND, FIDUCIAL_ELL_CUT
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -371,19 +372,17 @@ def _matrix_from_json(rows):
 
 
 def compute_all(
-    config,
+    catalogs,
+    fiducial_blind,
     results_dir,
     fiducial_version_override=None,
     fiducial_pseudo_cl_path=None,
     fiducial_pseudo_cl_cov_path=None,
 ):
     """Run the per-version PTE sweep; return (matrices, ells, stats) dicts."""
-    versions = [v for v in config["versions"] if "_ecut" not in v]
-    fiducial_blind = config["fiducial"]["blind"]
+    versions = [v for v in VERSIONS if "_ecut" not in v]
 
-    # Fiducial ell cuts from config
-    fiducial_ell_min = config["cl"]["fiducial_ell_min"]
-    fiducial_ell_max = config["cl"]["fiducial_ell_max"]
+    fiducial_ell_min, fiducial_ell_max = FIDUCIAL_ELL_CUT["adopted"]
 
     # Per-version pseudo-Cl / covariance files (canonical COSMO_VAL tree, blind A).
     # Mirrors _pseudo_cl_path(ver) / _pseudo_cl_cov_path(ver, blind) in claims.smk.
@@ -441,12 +440,10 @@ def compute_all(
     return all_matrices, all_ells, all_stats
 
 
-def emit_matrices(config, all_matrices, all_ells, out_file):
+def emit_matrices(catalogs, fiducial_blind, all_matrices, all_ells, out_file):
     """Write the per-version Cl^BB PTE grid NPZ to exactly `out_file`."""
-    fiducial_version = config["fiducial"]["version"]
-    fiducial_blind = config["fiducial"]["blind"]
-    fiducial_ell_min = config["cl"]["fiducial_ell_min"]
-    fiducial_ell_max = config["cl"]["fiducial_ell_max"]
+    fiducial_version = catalogs.fiducial
+    fiducial_ell_min, fiducial_ell_max = FIDUCIAL_ELL_CUT["adopted"]
 
     npz_payload = {
         "versions": np.array(list(all_matrices.keys())),
@@ -463,16 +460,14 @@ def emit_matrices(config, all_matrices, all_ells, out_file):
     print(f"Saved PTE matrices to {out_file}")
 
 
-def emit_evidence(config, all_matrices, all_ells, all_stats, out_file):
+def emit_evidence(catalogs, fiducial_blind, all_matrices, all_ells, all_stats, out_file):
     """Write the evidence JSON, carrying the FULL per-version PTE grids.
 
     The grids (and their ell axes) are in the payload so that the fiducial and
     appendix figures can be rendered from this file alone, recomputing nothing.
     """
-    fiducial_version = config["fiducial"]["version"]
-    fiducial_blind = config["fiducial"]["blind"]
-    fiducial_ell_min = config["cl"]["fiducial_ell_min"]
-    fiducial_ell_max = config["cl"]["fiducial_ell_max"]
+    fiducial_version = catalogs.fiducial
+    fiducial_ell_min, fiducial_ell_max = FIDUCIAL_ELL_CUT["adopted"]
 
     evidence_data = {
         "spec_id": "harmonic_space_pte_matrices",
@@ -519,14 +514,14 @@ def _figure_payload_from_evidence(evidence_path):
 
 
 def render_figure(
-    config, all_matrices, all_ells, which, out_file, meta=None, pte_threshold=0.05
+    catalogs, all_matrices, all_ells, which, out_file, meta=None, pte_threshold=0.05
 ):
     """Render the fiducial single panel or the appendix composite to `out_file`."""
     meta = meta or {}
-    fiducial_version = meta.get("fiducial_version", config["fiducial"]["version"])
-    fiducial_ell_min = meta.get("fiducial_ell_min", config["cl"]["fiducial_ell_min"])
-    fiducial_ell_max = meta.get("fiducial_ell_max", config["cl"]["fiducial_ell_max"])
-    version_labels = config["plotting"]["version_labels"]
+    fiducial_version = meta.get("fiducial_version", catalogs.fiducial)
+    fiducial_ell_min = meta.get("fiducial_ell_min", FIDUCIAL_ELL_CUT["adopted"][0])
+    fiducial_ell_max = meta.get("fiducial_ell_max", FIDUCIAL_ELL_CUT["adopted"][1])
+    version_labels = catalogs.labels
 
     # Compute fiducial ell indices per version using bin edges
     version_fid_indices = {
@@ -552,7 +547,7 @@ def render_figure(
     else:
         # Appendix N-panel composite (paper versions only, no ecut variants)
         appendix_versions = [
-            v for v in config["versions"] if v in all_matrices and v in version_labels
+            v for v in VERSIONS if v in all_matrices and v in version_labels
         ]
         if len(appendix_versions) < 2:
             raise SystemExit(
@@ -578,7 +573,6 @@ def render_figure(
 
 
 def _from_cli(argv=None):
-    import yaml
 
     ap = argparse.ArgumentParser(
         description=(
@@ -588,9 +582,8 @@ def _from_cli(argv=None):
             "or appendix composite with --from-evidence --figure --out-file."
         )
     )
-    ap.add_argument(
-        "--config", required=True, help="Absolute path to bmodes config.yaml"
-    )
+    add_catalog_arguments(ap)
+    ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__)
     ap.add_argument(
         "--results-dir",
         default=None,
@@ -642,12 +635,12 @@ def _from_cli(argv=None):
         "(overrides pattern reconstruction for --fiducial-version)",
     )
     a = ap.parse_args(argv)
-    config = load_config(a.config)
+    catalogs = catalogs_from(a)
 
     if a.from_evidence:
         all_matrices, all_ells, meta = _figure_payload_from_evidence(a.from_evidence)
         render_figure(
-            config,
+            catalogs,
             all_matrices,
             all_ells,
             a.figure,
@@ -663,7 +656,8 @@ def _from_cli(argv=None):
         ap.error("--results-dir is required for --emit")
 
     all_matrices, all_ells, all_stats = compute_all(
-        config,
+        catalogs,
+        a.blind,
         a.results_dir,
         fiducial_version_override=a.fiducial_version,
         fiducial_pseudo_cl_path=a.fiducial_pseudo_cl_path,
@@ -671,12 +665,12 @@ def _from_cli(argv=None):
     )
 
     if a.emit == "matrices":
-        emit_matrices(config, all_matrices, all_ells, a.out_file)
+        emit_matrices(catalogs, a.blind, all_matrices, all_ells, a.out_file)
     elif a.emit == "evidence":
-        emit_evidence(config, all_matrices, all_ells, all_stats, a.out_file)
+        emit_evidence(catalogs, a.blind, all_matrices, all_ells, all_stats, a.out_file)
     else:
         render_figure(
-            config,
+            catalogs,
             all_matrices,
             all_ells,
             a.figure,

@@ -2,11 +2,12 @@
 
 Fiducial catalog only: pure E/B/ambiguous decomposition of ξ± with B-modes
 consistent with zero at the fiducial scale cuts. Writes a single
-300-dpi PNG (fiducial blind, config.fiducial.blind).
+300-dpi PNG (fiducial blind).
 
 CLI:
     python pure_eb_data_vector.py \
-        --config config.yaml \
+        --fiducial-catalog size_cut --leakage-correction applied \
+        --blind blind_a --reporting-binning bins_20 \
         --pure-eb-data <version>_<blind>_pure_eb_semianalytic.npz \
         --reporting-cov <cov_reporting_ng>/covariance_processed.txt \
         --out-file <figure.png>
@@ -28,7 +29,8 @@ from plotting_utils import (
 )
 from pure_mode_covariance import hartlap_samples
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
-from paper_config import load_config
+from catalog_versions import add_catalog_arguments, catalogs_from
+from decision_values import FIDUCIAL_BLIND, REPORTING_BINNING
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -223,15 +225,9 @@ def _create_pure_eb_figure(
     return fig
 
 
-def main(config, pure_eb_path, cov_path, out_file, scale_cut_convention):
-    blind = config["fiducial"]["blind"]
-    version = config["fiducial"]["version"]
-    fiducial_xip_scale_cut = resolve_fiducial_scale_cuts(
-        config, scale_cut_convention, config_key="fiducial_xip_scale_cut"
-    )
-    fiducial_xim_scale_cut = resolve_fiducial_scale_cuts(
-        config, scale_cut_convention, config_key="fiducial_xim_scale_cut"
-    )
+def main(version, blind, reporting, pure_eb_path, cov_path, out_file, scale_cut_convention):
+    fiducial_xip_scale_cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
+    fiducial_xim_scale_cut = fiducial_xip_scale_cut
 
     out_file = Path(out_file)
 
@@ -305,14 +301,13 @@ def main(config, pure_eb_path, cov_path, out_file, scale_cut_convention):
 
 
 def _from_cli(argv=None):
-    import yaml
 
     ap = argparse.ArgumentParser(
         description="Pure E/B ξ± data-vector paper figure (fiducial catalog)."
     )
-    ap.add_argument(
-        "--config", required=True, help="Absolute path to bmodes config.yaml"
-    )
+    add_catalog_arguments(ap)
+    ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__, required=True)
+    ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
     ap.add_argument(
         "--pure-eb-data",
         required=True,
@@ -330,8 +325,8 @@ def _from_cli(argv=None):
     )
     add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
-    config = load_config(a.config)
-    main(config, a.pure_eb_data, a.reporting_cov, a.out_file, a.scale_cut_convention)
+    main(catalogs_from(a).fiducial, a.blind, a.reporting_binning, a.pure_eb_data,
+         a.reporting_cov, a.out_file, a.scale_cut_convention)
 
 
 if __name__ == "__main__":

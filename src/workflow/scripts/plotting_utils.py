@@ -82,12 +82,14 @@ ERRORBAR_DEFAULTS = {
     "elinewidth": 0.8,
 }
 
-# Default version box styling
-VERSION_BOX_DEFAULTS = {
-    "edge_color": "black",
-    "edge_linewidth": 1.8,
+# Version-comparison figures.
+X_OFFSETS = [-0.132, -0.044, 0.044, 0.132]
+VERSION_ALPHA = {"fiducial": 1.0, "comparison": 1.0}
+VERSION_BOX = {
+    "edge_color": "0.3",
+    "edge_linewidth": 0.7,
     "fiducial_line_color": "black",
-    "fiducial_line_width": 2.0,
+    "fiducial_line_width": 1.0,
 }
 
 
@@ -330,7 +332,7 @@ mscale.register_scale(SquareRootScale)
 
 
 def version_label(version, version_labels):
-    """Get human-readable label for version from config.
+    """Get the human-readable label for a version.
 
     Parameters
     ----------
@@ -369,7 +371,7 @@ def find_fiducial_index(datasets, fiducial_version, key="version"):
     return next((i for i, d in enumerate(datasets) if d[key] == fiducial_version), 0)
 
 
-def get_version_alpha(version, fiducial_version, plotting_config):
+def get_version_alpha(version, fiducial_version):
     """Get alpha value for version based on whether it's fiducial.
 
     Parameters
@@ -378,48 +380,13 @@ def get_version_alpha(version, fiducial_version, plotting_config):
         Version string.
     fiducial_version : str
         Fiducial version string for comparison.
-    plotting_config : dict
-        Plotting configuration with 'version_alpha' key containing
-        'fiducial' and 'comparison' values.
 
     Returns
     -------
     float
-        Alpha value (1.0 for fiducial, 0.5 for others by default).
+        Alpha value from ``VERSION_ALPHA``.
     """
-    version_alpha = plotting_config.get("version_alpha", {})
-    if version == fiducial_version:
-        return version_alpha.get("fiducial", 1.0)
-    return version_alpha.get("comparison", 0.5)
-
-
-def get_box_style(box_style=None):
-    """Get version box styling with defaults.
-
-    Parameters
-    ----------
-    box_style : dict, optional
-        User-provided style overrides.
-
-    Returns
-    -------
-    dict
-        Style dict with keys: edge_color, edge_linewidth,
-        fiducial_line_color, fiducial_line_width.
-    """
-    style = box_style or {}
-    return {
-        "edge_color": style.get("edge_color", VERSION_BOX_DEFAULTS["edge_color"]),
-        "edge_linewidth": style.get(
-            "edge_linewidth", VERSION_BOX_DEFAULTS["edge_linewidth"]
-        ),
-        "fiducial_line_color": style.get(
-            "fiducial_line_color", VERSION_BOX_DEFAULTS["fiducial_line_color"]
-        ),
-        "fiducial_line_width": style.get(
-            "fiducial_line_width", VERSION_BOX_DEFAULTS["fiducial_line_width"]
-        ),
-    }
+    return VERSION_ALPHA["fiducial" if version == fiducial_version else "comparison"]
 
 
 def draw_normalized_version_box(ax, x_left, x_right, y_vals, fiducial_val, style):
@@ -439,7 +406,7 @@ def draw_normalized_version_box(ax, x_left, x_right, y_vals, fiducial_val, style
     fiducial_val : float
         Fiducial version's y value for the reference line.
     style : dict
-        Styling dict from get_box_style().
+        Styling dict, ``VERSION_BOX``.
     """
     y_vals = np.asarray(y_vals)
     box_bottom = y_vals.min()
@@ -467,7 +434,7 @@ def draw_normalized_version_box(ax, x_left, x_right, y_vals, fiducial_val, style
 
 
 def draw_normalized_boxes_log_scale(
-    ax, x_centers, datasets, y_norm_key, fiducial_idx, x_offset_range, box_style=None
+    ax, x_centers, datasets, y_norm_key, fiducial_idx, x_offset_range
 ):
     """Draw version boxes for log-scale x-axis (e.g., theta).
 
@@ -489,10 +456,8 @@ def draw_normalized_boxes_log_scale(
     x_offset_range : tuple
         (min, max) multiplicative offsets for data points. Box covers
         this range plus 10% padding.
-    box_style : dict, optional
-        Style overrides for boxes.
     """
-    style = get_box_style(box_style)
+    style = VERSION_BOX
     offset_min, offset_max = x_offset_range
     padding = 0.25 * (offset_max - offset_min)
     box_left_factor = offset_min - padding
@@ -508,7 +473,7 @@ def draw_normalized_boxes_log_scale(
 
 
 def draw_normalized_boxes_linear_scale(
-    ax, x_centers, datasets, y_norm_key, fiducial_idx, x_offsets, box_style=None
+    ax, x_centers, datasets, y_norm_key, fiducial_idx, x_offsets
 ):
     """Draw version boxes for linear-scale x-axis (e.g., COSEBIS modes).
 
@@ -530,10 +495,8 @@ def draw_normalized_boxes_linear_scale(
     x_offsets : array-like
         Array of x-offsets used for jittering data points. Box width covers
         this range plus 25% padding.
-    box_style : dict, optional
-        Style overrides for boxes.
     """
-    style = get_box_style(box_style)
+    style = VERSION_BOX
     x_offsets = np.asarray(x_offsets)
     box_half_width = np.max(np.abs(x_offsets)) * 1.7
 
@@ -555,7 +518,6 @@ def draw_normalized_boxes_ell_scale(
     fiducial_idx,
     jitter_fraction,
     n_versions,
-    box_style=None,
 ):
     """Draw version boxes for ell-space plots with variable bin widths.
 
@@ -580,10 +542,8 @@ def draw_normalized_boxes_ell_scale(
         Jitter fraction used for offsetting data points.
     n_versions : int
         Number of versions being plotted.
-    box_style : dict, optional
-        Style overrides for boxes.
     """
-    style = get_box_style(box_style)
+    style = VERSION_BOX
     # Max jitter is ((n-1)/2) * jitter_fraction; add 15% padding
     box_half_width_factor = ((n_versions - 1) / 2) * jitter_fraction * 1.4
 

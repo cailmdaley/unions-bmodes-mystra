@@ -30,8 +30,8 @@ The decisions that differ between the two universes are the referee round's
 methodological changes.
 The live report displays the accepted-paper reference comparison; it does not
 switch universes interactively.
-The `selected_config` output records the raw or leakage-corrected shear
-selection, and `primary_null_test_report` records the selected scale range and
+The `leakage_correction` decision selects the raw or leakage-corrected shear
+catalog, and `primary_null_test_report` records the selected scale range and
 COSEBI subsets, recalibrated from stored mock PTEs.
 Those selections do not turn the report's complete two-range, six-test tables
 and figures into a different paper.

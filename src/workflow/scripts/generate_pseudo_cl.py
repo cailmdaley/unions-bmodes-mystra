@@ -37,6 +37,7 @@ import tempfile
 
 from astropy.io import fits
 
+from decision_values import FIDUCIAL_BLIND
 from sp_validation.cosmo_val import CosmologyValidation
 
 
@@ -213,21 +214,15 @@ def _from_cli(argv=None):
         default="powspace",
         help="Ell binning mode",
     )
-    ap.add_argument("--nbins", type=lambda value: int(value.removeprefix("bins_")), required=True,
-                    help="Number of ell bins or harmonic_validation_binning option")
+    ap.add_argument("--nbins", type=int, required=True,
+                    help="Number of ell bins")
     ap.add_argument(
         "--power",
         type=float,
         default=0.5,
         help="Power for powspace binning (0.5 = sqrt spacing)",
     )
-    ap.add_argument(
-        "--blind",
-        type=lambda s: s.removeprefix("blind_").upper(),
-        choices=["A", "B", "C"],
-        default=None,
-        help="Blind identifier: A/B/C, or the fiducial_blind option (blind_a/blind_b/blind_c)",
-    )
+    ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__)
     ap.add_argument(
         "--cosmo-json",
         default=None,

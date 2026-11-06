@@ -26,7 +26,8 @@ from print_width import savefig_at_width
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
 
 from sp_validation.b_modes import calculate_cosebis
-from paper_config import load_config
+from catalog_versions import catalogs_from
+from decision_values import FIDUCIAL_CATALOG, INTEGRATION_GRID, MODE_COUNT, REPORTING_BINNING
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -154,24 +155,18 @@ def _plot_from_modes(modes_npz, out_file):
     print(f"Saved figure to {out_file}")
 
 
-def main(config, xi_integration, cov_integration, out_file, scale_cut_convention):
-    version = config["fiducial"]["version"]
-    nmodes = config["fiducial"]["nmodes"]
+def main(version, nmodes, integration, reporting, xi_integration, cov_integration, out_file,
+         scale_cut_convention):
 
-    fiducial_scale_cut = resolve_fiducial_scale_cuts(config, scale_cut_convention)
-    full_scale_cut = (
-        float(config["cosebis"]["theta_min"]),
-        float(config["cosebis"]["theta_max"]),
-    )
+    fiducial_scale_cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
+    full_scale_cut = (reporting.min_sep, reporting.max_sep)
 
     scale_cuts = {
         "fiducial": fiducial_scale_cut,
         "full": full_scale_cut,
     }
 
-    min_sep_int = float(config["fiducial"]["min_sep_int"])
-    max_sep_int = float(config["fiducial"]["max_sep_int"])
-    nbins_int = int(config["fiducial"]["nbins_int"])
+    min_sep_int, max_sep_int, nbins_int = integration
 
     # Load the fiducial fine-binned 2PCF once (integration grid)
     gg = treecorr.GGCorrelation(
@@ -214,14 +209,15 @@ def main(config, xi_integration, cov_integration, out_file, scale_cut_convention
 
 
 def _from_cli(argv=None):
-    import yaml
 
     ap = argparse.ArgumentParser(
         description="COSEBI E_n/B_n data vector (NPZ) + paper figure for the fiducial catalog."
     )
-    ap.add_argument(
-        "--config", required=True, help="Absolute path to bmodes config.yaml"
-    )
+    ap.add_argument("--fiducial-catalog", choices=FIDUCIAL_CATALOG)
+    ap.add_argument("--leakage-correction", choices=["applied", "uncorrected"])
+    ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__)
+    ap.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__)
+    ap.add_argument("--mode-count", type=MODE_COUNT.__getitem__)
     ap.add_argument(
         "--xi-integration",
         help="Fiducial fine-binned (1000-bin) TreeCorr xi_pm .txt dump",
@@ -244,12 +240,13 @@ def _from_cli(argv=None):
     if a.plot_from_modes:
         _plot_from_modes(a.plot_from_modes, a.out_file)
         return
-    if not (a.xi_integration and a.cov_integration):
-        ap.error("--xi-integration and --cov-integration are required "
-                 "unless --plot-from-modes is given")
-    config = load_config(a.config)
-    main(config, a.xi_integration, a.cov_integration, a.out_file,
-         a.scale_cut_convention)
+    required = ("xi_integration", "cov_integration", "fiducial_catalog", "leakage_correction",
+                "reporting_binning", "integration_grid", "mode_count")
+    missing = [f"--{r.replace('_', '-')}" for r in required if getattr(a, r) is None]
+    if missing:
+        ap.error(f"compute mode needs {', '.join(missing)}")
+    main(catalogs_from(a).fiducial, a.mode_count, a.integration_grid, a.reporting_binning,
+         a.xi_integration, a.cov_integration, a.out_file, a.scale_cut_convention)
 
 
 if __name__ == "__main__":

@@ -24,8 +24,6 @@ description: |
 tags: [sweep, generated, cosebis]
 
 inputs:
-  - id: selected_config
-    from: ../selected_config
   - id: xi_sweep
     from: ../xi_sweep
   - id: cov_sweep
@@ -42,6 +40,16 @@ decisions:
     from: ../harmonic_validation_binning
   scale_cut_convention:
     from: ../scale_cut_convention
+  fiducial_catalog:
+    from: ../fiducial_catalog
+  integration_grid:
+    from: ../integration_grid
+  leakage_correction:
+    from: ../leakage_correction
+  mode_count:
+    from: ../mode_count
+  reporting_binning:
+    from: ../reporting_binning
 
 matrix:
   version:
@@ -65,8 +73,8 @@ template:
     same compute pass, different `--fiducial-version`. Only its
     B-mode PTEs are consumed (through the gather) — the paper
     figure is rendered from the fiducial NPZ.
-  inputs: [selected_config, xi_sweep, cov_sweep, cl_sweep]
-  decisions: [fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition]
+  inputs: [xi_sweep, cov_sweep, cl_sweep]
+  decisions: [fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition, fiducial_catalog, leakage_correction, reporting_binning, integration_grid, mode_count]
   recipe:
     # The three version-sweep bundles are untarred into temp dirs and this
     # version's four inputs picked out by canonical filename — the sweep
@@ -82,12 +90,12 @@ template:
       l=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $l
       # NB: braced shell expansions cannot be used in a sweep template — the
       # expander claims that syntax. Bare $cb only.
-      ver=$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version ${version} --fine-grid)
+      ver=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version ${version} --fine-grid)
       cb=covariance_"$ver"_A_integration
-      nb=$(printf '%s' {decisions.harmonic_validation_binning} | tr -cd '0-9')
+      nb=$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})
       python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py \
-        --config {inputs.selected_config} \
-        --blind A \
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
+        --blind {decisions.fiducial_blind} \
         --fiducial-version $ver \
         --harmonic-validation-binning {decisions.harmonic_validation_binning} \
         --fiducial-pseudo-cl-path "$l/pseudo_cl_$ver"_blind=A_powspace_nbins=$nb.fits \

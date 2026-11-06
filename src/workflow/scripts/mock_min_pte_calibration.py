@@ -11,7 +11,6 @@ from pathlib import Path
 from statistics import NormalDist
 
 import numpy as np
-import yaml
 
 # The two script trees are separate sys.path roots; the fiducial window is
 # resolved by the paper-facing helper rather than restated here, so this
@@ -19,6 +18,7 @@ import yaml
 sys.path.insert(
     0, str(Path(__file__).resolve().parents[2] / "papers" / "bmodes" / "scripts")
 )
+from decision_values import REPORTING_BINNING  # noqa: E402
 from scale_cuts import (  # noqa: E402
     add_scale_cut_convention_argument,
     resolve_fiducial_bin_window,
@@ -36,7 +36,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--pure-eb-pte", type=Path)
     parser.add_argument("--cosebis-pte", type=Path)
     parser.add_argument("--cl-pte", type=Path)
-    parser.add_argument("--config", required=True, help="bmodes config.yaml")
+    parser.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
     add_scale_cut_convention_argument(parser)
     parser.add_argument(
         "--observed-ptes", help="Optional JSON mapping statistic name to PTE override"
@@ -309,15 +309,10 @@ def main() -> None:
         if not np.all(np.isfinite(values)) or np.any((values < 0.0) | (values > 1.0)):
             raise ValueError(f"{name} values must be finite and lie in [0, 1]")
 
-    with open(args.config) as stream:
-        config = yaml.safe_load(stream)
-    window = resolve_fiducial_bin_window(config, args.scale_cut_convention)
-    cut_arcmin = resolve_fiducial_scale_cuts(config, args.scale_cut_convention)
+    window = resolve_fiducial_bin_window(args.reporting_binning, args.scale_cut_convention)
+    cut_arcmin = resolve_fiducial_scale_cuts(args.reporting_binning, args.scale_cut_convention)
     full_window = (0, 19)
-    full_cut_arcmin = (
-        float(config["cosebis"]["theta_min"]),
-        float(config["cosebis"]["theta_max"]),
-    )
+    full_cut_arcmin = args.reporting_binning[:2]
 
     if args.observed_ptes is None:
         observed_ptes = _observed_ptes_from_artifacts(args, stat_names, window)

@@ -32,8 +32,6 @@ tags:
 - generated
 - cl_bb
 inputs:
-- id: selected_config
-  from: ../selected_config
 - id: redshift_distributions
   from: ../redshift_distributions
 - id: redshift_distributions_legacy
@@ -67,7 +65,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -78,9 +75,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - estimator_choice
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -94,7 +92,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -105,9 +102,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - noise_bias_correction
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -121,7 +119,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -132,9 +129,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - estimator_choice
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -148,7 +146,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -159,9 +156,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - noise_bias_correction
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -175,7 +173,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -186,9 +183,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - estimator_choice
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.6.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.6.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -202,7 +200,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -213,9 +210,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - noise_bias_correction
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.6.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.6.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -229,7 +227,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -240,9 +237,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - estimator_choice
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -256,7 +254,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -267,9 +264,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - noise_bias_correction
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -283,7 +281,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -294,9 +291,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - estimator_choice
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -310,7 +308,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -321,9 +318,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - noise_bias_correction
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -337,7 +335,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -348,9 +345,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - estimator_choice
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -364,7 +362,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -375,9 +372,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - noise_bias_correction
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -391,7 +389,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -402,9 +399,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - estimator_choice
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -418,7 +416,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -429,9 +426,10 @@ outputs:
   - noise_bias_correction
   - bandpower_binning
   - noise_bias_correction
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -445,7 +443,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -456,9 +453,10 @@ outputs:
   - noise_bias_correction
   - harmonic_validation_binning
   - estimator_choice
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -472,7 +470,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -483,9 +480,10 @@ outputs:
   - noise_bias_correction
   - harmonic_validation_binning
   - noise_bias_correction
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -499,7 +497,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -510,9 +507,10 @@ outputs:
   - noise_bias_correction
   - harmonic_validation_binning
   - estimator_choice
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -526,7 +524,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -537,9 +534,10 @@ outputs:
   - noise_bias_correction
   - harmonic_validation_binning
   - noise_bias_correction
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -553,7 +551,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -564,9 +561,10 @@ outputs:
   - noise_bias_correction
   - harmonic_validation_binning
   - estimator_choice
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -580,7 +578,6 @@ outputs:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
-  - selected_config
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -591,9 +588,10 @@ outputs:
   - noise_bias_correction
   - harmonic_validation_binning
   - noise_bias_correction
+  - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -636,7 +634,7 @@ outputs:
   - harmonic_validation_binning
   recipe:
     command: |
-      python src/papers/bmodes/scripts/bundle_sweep.py --layout cl --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml --leakage-correction {decisions.leakage_correction} --harmonic-validation-binning {decisions.harmonic_validation_binning} --names pseudo_cl_sp_v1p4p5_nbins32 pseudo_cl_cov_sp_v1p4p5_nbins32 pseudo_cl_sp_v1p4p5_leak_corr_nbins32 pseudo_cl_cov_sp_v1p4p5_leak_corr_nbins32 pseudo_cl_fiducial_counterpart_nbins32 pseudo_cl_cov_fiducial_counterpart_nbins32 pseudo_cl_sp_v1p4p8_nbins32 pseudo_cl_cov_sp_v1p4p8_nbins32 pseudo_cl_sp_v1p4p8_leak_corr_nbins32 pseudo_cl_cov_sp_v1p4p8_leak_corr_nbins32 pseudo_cl_sp_v1p4p11p3_nbins32 pseudo_cl_cov_sp_v1p4p11p3_nbins32 pseudo_cl_sp_v1p4p11p3_leak_corr_nbins32 pseudo_cl_cov_sp_v1p4p11p3_leak_corr_nbins32 pseudo_cl_sp_v1p4p5_fine pseudo_cl_cov_sp_v1p4p5_fine pseudo_cl_sp_v1p4p8_fine pseudo_cl_cov_sp_v1p4p8_fine pseudo_cl_sp_v1p4p11p3_fine pseudo_cl_cov_sp_v1p4p11p3_fine --members {inputs.pseudo_cl_sp_v1p4p5_nbins32} {inputs.pseudo_cl_cov_sp_v1p4p5_nbins32} {inputs.pseudo_cl_sp_v1p4p5_leak_corr_nbins32} {inputs.pseudo_cl_cov_sp_v1p4p5_leak_corr_nbins32} {inputs.pseudo_cl_fiducial_counterpart_nbins32} {inputs.pseudo_cl_cov_fiducial_counterpart_nbins32} {inputs.pseudo_cl_sp_v1p4p8_nbins32} {inputs.pseudo_cl_cov_sp_v1p4p8_nbins32} {inputs.pseudo_cl_sp_v1p4p8_leak_corr_nbins32} {inputs.pseudo_cl_cov_sp_v1p4p8_leak_corr_nbins32} {inputs.pseudo_cl_sp_v1p4p11p3_nbins32} {inputs.pseudo_cl_cov_sp_v1p4p11p3_nbins32} {inputs.pseudo_cl_sp_v1p4p11p3_leak_corr_nbins32} {inputs.pseudo_cl_cov_sp_v1p4p11p3_leak_corr_nbins32} {inputs.pseudo_cl_sp_v1p4p5_fine} {inputs.pseudo_cl_cov_sp_v1p4p5_fine} {inputs.pseudo_cl_sp_v1p4p8_fine} {inputs.pseudo_cl_cov_sp_v1p4p8_fine} {inputs.pseudo_cl_sp_v1p4p11p3_fine} {inputs.pseudo_cl_cov_sp_v1p4p11p3_fine} --out-file {output}
+      python src/papers/bmodes/scripts/bundle_sweep.py --layout cl --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --harmonic-validation-binning {decisions.harmonic_validation_binning} --names pseudo_cl_sp_v1p4p5_nbins32 pseudo_cl_cov_sp_v1p4p5_nbins32 pseudo_cl_sp_v1p4p5_leak_corr_nbins32 pseudo_cl_cov_sp_v1p4p5_leak_corr_nbins32 pseudo_cl_fiducial_counterpart_nbins32 pseudo_cl_cov_fiducial_counterpart_nbins32 pseudo_cl_sp_v1p4p8_nbins32 pseudo_cl_cov_sp_v1p4p8_nbins32 pseudo_cl_sp_v1p4p8_leak_corr_nbins32 pseudo_cl_cov_sp_v1p4p8_leak_corr_nbins32 pseudo_cl_sp_v1p4p11p3_nbins32 pseudo_cl_cov_sp_v1p4p11p3_nbins32 pseudo_cl_sp_v1p4p11p3_leak_corr_nbins32 pseudo_cl_cov_sp_v1p4p11p3_leak_corr_nbins32 pseudo_cl_sp_v1p4p5_fine pseudo_cl_cov_sp_v1p4p5_fine pseudo_cl_sp_v1p4p8_fine pseudo_cl_cov_sp_v1p4p8_fine pseudo_cl_sp_v1p4p11p3_fine pseudo_cl_cov_sp_v1p4p11p3_fine --members {inputs.pseudo_cl_sp_v1p4p5_nbins32} {inputs.pseudo_cl_cov_sp_v1p4p5_nbins32} {inputs.pseudo_cl_sp_v1p4p5_leak_corr_nbins32} {inputs.pseudo_cl_cov_sp_v1p4p5_leak_corr_nbins32} {inputs.pseudo_cl_fiducial_counterpart_nbins32} {inputs.pseudo_cl_cov_fiducial_counterpart_nbins32} {inputs.pseudo_cl_sp_v1p4p8_nbins32} {inputs.pseudo_cl_cov_sp_v1p4p8_nbins32} {inputs.pseudo_cl_sp_v1p4p8_leak_corr_nbins32} {inputs.pseudo_cl_cov_sp_v1p4p8_leak_corr_nbins32} {inputs.pseudo_cl_sp_v1p4p11p3_nbins32} {inputs.pseudo_cl_cov_sp_v1p4p11p3_nbins32} {inputs.pseudo_cl_sp_v1p4p11p3_leak_corr_nbins32} {inputs.pseudo_cl_cov_sp_v1p4p11p3_leak_corr_nbins32} {inputs.pseudo_cl_sp_v1p4p5_fine} {inputs.pseudo_cl_cov_sp_v1p4p5_fine} {inputs.pseudo_cl_sp_v1p4p8_fine} {inputs.pseudo_cl_cov_sp_v1p4p8_fine} {inputs.pseudo_cl_sp_v1p4p11p3_fine} {inputs.pseudo_cl_cov_sp_v1p4p11p3_fine} --out-file {output}
     resources:
       cpus: 1
       memory: 4GB

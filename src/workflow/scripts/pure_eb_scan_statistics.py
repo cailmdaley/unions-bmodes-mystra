@@ -42,7 +42,6 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
-import yaml
 from scipy import stats
 
 from mock_campaign_analysis import (
@@ -60,6 +59,7 @@ sys.path.insert(
 )
 from calculate_pure_eb_ptes import calculate_ptes  # noqa: E402
 from gather_pure_eb_chunks import _load_xi, data_vector  # noqa: E402
+from decision_values import REPORTING_BINNING  # noqa: E402
 from scale_cuts import resolve_fiducial_bin_window  # noqa: E402
 from pure_eb_scan_variants import (  # noqa: E402
     ADOPTED,
@@ -231,7 +231,7 @@ def main() -> None:
         choices=tuple(PURE_THETA_BY_CONVENTION),
         default="grid_bin_edges",
     )
-    parser.add_argument("--config", required=True, help="bmodes config.yaml")
+    parser.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
     parser.add_argument("--npatch", type=int, default=1)
     parser.add_argument(
         "--xi-reporting",
@@ -255,12 +255,10 @@ def main() -> None:
     add_variants_argument(parser)
     args = parser.parse_args()
 
-    with open(args.config) as stream:
-        bmodes_config = yaml.safe_load(stream)
     # One definition of the fiducial window, shared with the paper's PTE
     # matrices; see scale_cuts.resolve_fiducial_bin_window.
     window_min_bin, window_max_bin = resolve_fiducial_bin_window(
-        bmodes_config, args.scale_cut_convention
+        args.reporting_binning, args.scale_cut_convention
     )
     # _load_pure_covariance masks with mock_campaign_analysis's module-level
     # theta cut, so the convention has to be bound before the first call.

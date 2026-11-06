@@ -3,12 +3,11 @@
 The paper's fiducial configuration-space cut exists in two forms that disagree
 at the third digit. The published pipeline cut at *edges* of the 21-bin
 reporting grid ``geomspace(1', 250', 21)`` — indices 9 and 16, i.e.
-(11.997…, 82.861…) — while the paper text and ``config.yaml`` round those to
-[12, 83]. ``scale_cut_convention`` in the ASTRA spec selects between them; this
+(11.997…, 82.861…) — while the paper text rounds those to [12, 83]. ``scale_cut_convention`` in the ASTRA spec selects between them; this
 module is the single place the choice is resolved.
 
 Applies to θ cuts only: the harmonic ℓ cut (300–1600) has no grid/rounding
-ambiguity.
+ambiguity. Functions take the reporting grid as a ``decision_values.Grid``.
 """
 
 import numpy as np
@@ -19,39 +18,30 @@ CONVENTIONS = ("grid_bin_edges", "rounded_arcmin")
 # for the fiducial cut.
 FIDUCIAL_EDGE_INDICES = (9, 16)
 
+# The rounded cut as the paper prints it, for ξ+, ξ− and the COSEBIs alike.
+ROUNDED_ARCMIN = (12, 83)
 
-def reporting_grid_edges(config):
+
+def reporting_grid_edges(grid):
     """Bin edges of the reporting grid, ``geomspace(1', 250', nbins + 1)``."""
-    fid = config["fiducial"]
-    return np.geomspace(
-        float(fid["min_sep"]), float(fid["max_sep"]), int(fid["nbins"]) + 1
-    )
+    return np.geomspace(grid.min_sep, grid.max_sep, grid.nbins + 1)
 
 
-def resolve_fiducial_scale_cuts(config, convention, config_key=None):
+def resolve_fiducial_scale_cuts(grid, convention):
     """(theta_min, theta_max) of the fiducial cut, in arcmin.
 
     Parameters
     ----------
-    config : dict
-        Parsed bmodes ``config.yaml``.
+    grid : decision_values.Grid
+        The reporting grid.
     convention : {'grid_bin_edges', 'rounded_arcmin'}
         See module docstring.
-    config_key : str, optional
-        Under ``rounded_arcmin``, read the pair from this key of the
-        ``fiducial`` block (e.g. ``fiducial_xip_scale_cut``) instead of the
-        default ``fiducial_min_scale`` / ``fiducial_max_scale`` scalars.
-        Ignored under ``grid_bin_edges``, which is a property of the grid.
     """
     if convention == "grid_bin_edges":
-        edges = reporting_grid_edges(config)
+        edges = reporting_grid_edges(grid)
         lo, hi = (edges[i] for i in FIDUCIAL_EDGE_INDICES)
     elif convention == "rounded_arcmin":
-        fid = config["fiducial"]
-        if config_key is None:
-            lo, hi = fid["fiducial_min_scale"], fid["fiducial_max_scale"]
-        else:
-            lo, hi = fid[config_key]
+        lo, hi = ROUNDED_ARCMIN
     else:
         raise ValueError(
             f"unknown scale-cut convention {convention!r}; expected one of {CONVENTIONS}"
@@ -72,7 +62,7 @@ def add_scale_cut_convention_argument(parser):
         help=(
             "How the fiducial theta cut is defined: 'grid_bin_edges' uses edges "
             "9/16 of the geomspace(1, 250, 21) reporting grid (what the published "
-            "pipeline computed); 'rounded_arcmin' uses the rounded config values "
+            "pipeline computed); 'rounded_arcmin' uses the rounded values "
             "([12, 83]) as printed in the paper text."
         ),
     )
@@ -85,11 +75,11 @@ def add_scale_cut_convention_argument(parser):
 BIN_EDGE_RTOL = 1e-2
 
 
-def resolve_fiducial_bin_window(config, convention, config_key=None):
+def resolve_fiducial_bin_window(grid, convention):
     """(first_bin, last_bin) of the fiducial cut: 0-based, inclusive.
 
     The reporting bins whose *edges* both lie inside the resolved
-    (theta_min, theta_max), against ``reporting_grid_edges(config)``. Under
+    (theta_min, theta_max), against ``reporting_grid_edges(grid)``. Under
     either convention the 12--83 arcmin cut resolves to bins (9, 15) — seven
     bins, spanning edges 9 through 16 of ``geomspace(1', 250', 21)``.
 
@@ -103,8 +93,8 @@ def resolve_fiducial_bin_window(config, convention, config_key=None):
     pure-mode PTE (xi+^B, xi-^B, xi_tot^B) was computed on that wider window,
     and the dof-penalised combined PTE inherited nu = 2*8 = 16 instead of 14.
     """
-    theta_min, theta_max = resolve_fiducial_scale_cuts(config, convention, config_key)
-    edges = reporting_grid_edges(config)
+    theta_min, theta_max = resolve_fiducial_scale_cuts(grid, convention)
+    edges = reporting_grid_edges(grid)
     left, right = edges[:-1], edges[1:]
     inside = (left >= theta_min * (1.0 - BIN_EDGE_RTOL)) & (
         right <= theta_max * (1.0 + BIN_EDGE_RTOL)

@@ -25,13 +25,13 @@ from pathlib import Path
 
 import matplotlib
 import numpy as np
-import yaml
 
 # The two script trees are separate sys.path roots; the fiducial window is
 # resolved by the paper-facing helper rather than restated here.
 sys.path.insert(
     0, str(Path(__file__).resolve().parents[2] / "papers" / "bmodes" / "scripts")
 )
+from decision_values import REPORTING_BINNING  # noqa: E402
 from scale_cuts import (  # noqa: E402
     add_scale_cut_convention_argument,
     resolve_fiducial_bin_window,
@@ -103,20 +103,18 @@ def main() -> None:
     parser.add_argument("--emit", choices=("figure", "stats"), required=True)
     parser.add_argument("--out-file", required=True)
     parser.add_argument("--label", default=None)
-    parser.add_argument("--config", required=True, help="bmodes config.yaml")
+    parser.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
     add_scale_cut_convention_argument(parser)
     args = parser.parse_args()
 
-    with open(args.config) as stream:
-        config = yaml.safe_load(stream)
     # The pure-mode statistics are quoted on two ranges, and the file says
     # which is which: the full 20-bin reporting grid, and the fiducial window
     # the null test is actually claimed on. They differ materially — the
     # mocks carry a small mean B residual at the smallest scales, which the
     # cut excludes — so an unlabelled single number invites the two to be
     # read against each other.
-    window = resolve_fiducial_bin_window(config, args.scale_cut_convention)
-    window_arcmin = resolve_fiducial_scale_cuts(config, args.scale_cut_convention)
+    window = resolve_fiducial_bin_window(args.reporting_binning, args.scale_cut_convention)
+    window_arcmin = resolve_fiducial_scale_cuts(args.reporting_binning, args.scale_cut_convention)
 
     data = np.load(args.stats, allow_pickle=False)
     provenance = json.loads(str(data["provenance"]))

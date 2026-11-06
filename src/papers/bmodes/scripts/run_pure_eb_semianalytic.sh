@@ -63,7 +63,7 @@ while [ $# -gt 0 ]; do
     --out) OUT="$2"; shift 2;;
     --out-file) OUTFILE="$2"; shift 2;;
     --n-chunks) NCHUNKS="$2"; shift 2;;
-    --n-samples) NSAMPLES="${2#n_}"; shift 2;;
+    --n-samples) NSAMPLES="$2"; shift 2;;
     --nproc) NPROC="$2"; shift 2;;
     --min-sep) MINSEP="$2"; shift 2;;
     --max-sep) MAXSEP="$2"; shift 2;;

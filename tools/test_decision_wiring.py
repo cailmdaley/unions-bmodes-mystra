@@ -4,7 +4,6 @@ These use small synthetic arrays and process stubs, not the GLASS ensemble.
 The real-recipe default-output comparison is tools/prove_decision_identity.py.
 """
 
-import copy
 import json
 import io
 import zlib
@@ -22,11 +21,12 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "src/papers/bmodes/scripts"), str(ROOT / "src/workflow/scripts")]
 
 import bundle_sweep
+from catalog_versions import VERSIONS, Catalogs
 import compute_cosebis_pte_single as pairs
+from decision_values import MC_SAMPLES
 import generate_pseudo_cl as cl
 import generate_pseudo_cl_cov as cl_cov
 import merge_cosebis_pte_rows as merge
-import paper_config
 import primary_null_test_report as reporting
 import prove_decision_identity as identity
 
@@ -60,9 +60,9 @@ class DecisionWiringTests(unittest.TestCase):
 
     def test_harmonic_count_changes_bundle_names_not_member_ids(self):
         versions = ["SP_v1.4.5", "SP_v1.4.5_leak_corr"]
-        config = paper_config.load_config(ROOT / "src/papers/bmodes/config/catalogs/size_cut.yaml")
-        default = bundle_sweep._cl_map(versions, 96, config)
-        alternative = bundle_sweep._cl_map(versions, 128, config)
+        catalogs = Catalogs("size_cut", "applied")
+        default = bundle_sweep._cl_map(versions, 96, catalogs)
+        alternative = bundle_sweep._cl_map(versions, 128, catalogs)
         self.assertEqual(set(default), set(alternative))
         for key in default:
             self.assertEqual(alternative[key], default[key].replace("nbins=96", "nbins=128"))
@@ -78,7 +78,7 @@ class DecisionWiringTests(unittest.TestCase):
                 cl_cov.generate_pseudo_cl_cov("test", tmp, "unused", nbins=128)
                 cv.return_value.calculate_pseudo_cl_eb_cov.assert_called_once()
 
-    def test_option_id_parses_as_harmonic_bin_count(self):
+    def test_bin_count_reaches_the_measurement(self):
         with tempfile.TemporaryDirectory() as tmp:
             output = str(Path(tmp) / "cl.fits")
             def fake_generate(**kwargs):
@@ -87,30 +87,29 @@ class DecisionWiringTests(unittest.TestCase):
                 path.write_bytes(b"fixture")
                 return str(path)
             with patch.object(cl, "generate_pseudo_cl", side_effect=fake_generate):
-                cl._from_cli(["--ver", "test", "--cat-config", "unused", "--nbins", "bins_128",
+                cl._from_cli(["--ver", "test", "--cat-config", "unused", "--nbins", "128",
                               "--out-file", output])
             self.assertEqual(Path(output).read_bytes(), b"fixture")
 
     def test_leakage_selects_primary_and_complete_scan_twins(self):
-        original = paper_config.load_config(ROOT / "src/papers/bmodes/config/catalogs/size_cut.yaml")
-        self.assertEqual(paper_config.select_leakage(copy.deepcopy(original), "applied"), original)
-        raw = paper_config.select_leakage(copy.deepcopy(original), "uncorrected")
-        self.assertEqual(raw["fiducial"]["version"], "SP_v1.4.6.3")
-        self.assertEqual(paper_config.comparison_versions(raw),
-                         [v.removesuffix("_leak_corr") for v in paper_config.comparison_versions(original)])
-        slots = bundle_sweep.nonfiducial_versions(original)
-        for config in (original, raw):
-            actual = [paper_config.scan_version(config, v) for v in slots]
-            self.assertEqual(set(actual + [config["fiducial"]["version"]]),
-                             {v for v in original["versions"] if "_ecut" not in v})
-            for mapping in (bundle_sweep._xi_map(slots, config), bundle_sweep._cov_map(slots, config),
-                            bundle_sweep._cosebis_ptes_map(slots, config), bundle_sweep._cl_map(slots, 128, config)):
+        original = Catalogs("size_cut", "applied")
+        raw = Catalogs("size_cut", "uncorrected")
+        self.assertEqual(raw.fiducial, "SP_v1.4.6.3")
+        self.assertEqual(raw.comparison, [v.removesuffix("_leak_corr") for v in original.comparison])
+        self.assertEqual(raw.labels, {k.removesuffix("_leak_corr"): v for k, v in original.labels.items()})
+        slots = original.nonfiducial
+        self.assertEqual(raw.scan_slots, slots)
+        for catalogs in (original, raw):
+            actual = [catalogs.scan_version(v) for v in slots]
+            self.assertEqual(set(actual + [catalogs.fiducial]), {v for v in VERSIONS if "_ecut" not in v})
+            for mapping in (bundle_sweep._xi_map(slots, catalogs), bundle_sweep._cov_map(slots, catalogs),
+                            bundle_sweep._cosebis_ptes_map(slots, catalogs), bundle_sweep._cl_map(slots, 128, catalogs)):
                 self.assertEqual(len(set(mapping.values())), len(mapping))
-            fine = bundle_sweep._cl_map(slots, 128, config)
+            fine = bundle_sweep._cl_map(slots, 128, catalogs)
             for name, path in fine.items():
                 if name.endswith("_fine"):
-                    self.assertEqual("_leak_corr" in path, config is original)
-        self.assertEqual(paper_config.scan_version(raw, "SP_v1.4.6.3"), "SP_v1.4.6.3_leak_corr")
+                    self.assertEqual("_leak_corr" in path, catalogs is original)
+        self.assertEqual(raw.scan_version("SP_v1.4.6.3"), "SP_v1.4.6.3_leak_corr")
 
     def test_selected_family_is_recalibrated_from_selected_columns(self):
         names = ["B_n<=6", "B_n<=20", "xi+^B", "xi-^B", "xi_tot^B", "C_ell^BB"]
@@ -237,14 +236,14 @@ else:
 ''')
             python.chmod(0o755)
             env = dict(os.environ, PATH=f"{tmp}:{os.environ['PATH']}")
-            for option, expected in [("n_1000", 1000), ("n_2000", 2000), ("n_5000", 5000)]:
+            for option, expected in MC_SAMPLES.items():
                 output = tmp / f"{option}.npz"
                 subprocess.run(["bash", str(ROOT / "src/papers/bmodes/scripts/run_pure_eb_semianalytic.sh"),
                                 "--version", "test", "--blind", "A", "--cat-config", "unused",
                                 "--xi-reporting", "unused", "--xi-integration", "unused",
                                 "--cov-integration", "unused", "--integration-method", "adaptive_dqags",
                                 "--integration-limits", "reporting_extent", "--rebinning-weights", "none",
-                                "--covariance-method", "monte_carlo", "--n-samples", option,
+                                "--covariance-method", "monte_carlo", "--n-samples", str(expected),
                                 "--n-chunks", "2", "--nproc", "2", "--out-file", str(output)],
                                check=True, env=env)
                 self.assertEqual(json.loads(output.read_text()), [expected, expected])
@@ -271,7 +270,7 @@ pathlib.Path(f"cov_tmp_ssss_{pm}_cov_Ntheta{ini['ntheta']}_Ntomo1_{i}").write_te
                 for treatment in [None, "masked", "unmasked"]:
                     output = tmp / f"{cls}_{treatment}.txt"
                     subprocess.run(["bash", str(ROOT / "src/workflow/scripts/run_cosmocov_chain.sh"),
-                                    "--version", "test", "--blind", "A", "--min-sep", "1",
+                                    "--version", "test", "--blind", "blind_a", "--min-sep", "1",
                                     "--max-sep", "250", "--nbins", "3", "--gaussian", cls,
                                     *(["--mask-application", treatment] if treatment else []),
                                     "--mask-cls", str(mask),

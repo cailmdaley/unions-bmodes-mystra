@@ -2,8 +2,6 @@ version: "0.0.14"
 name: "Harmonic-space pseudo-Cℓ^BB and Cℓ^EB"
 
 inputs:
-  - id: selected_config
-    from: ../catalog.selected_config
 
   - id: cl_cov_reporting
     from: ../covariance.cl_cov_reporting
@@ -41,8 +39,8 @@ outputs:
       They are the data vector of the
       [Cℓ figure](#../outputs.fig_cl_fiducial).
     format: fits
-    decisions: [fiducial_catalog, fiducial_blind, estimator_choice, bandpower_binning, noise_bias_correction]
-    inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    decisions: [fiducial_catalog, fiducial_blind, estimator_choice, bandpower_binning, noise_bias_correction, leakage_correction]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
     recipe:
       # lc owns the container; bare `python`, scripts read from the vendored
       # src/ tree. Fiducial version + blind A hardcoded (single-version
@@ -50,7 +48,7 @@ outputs:
       # straight to {output}.
       command: >
         python src/workflow/scripts/generate_pseudo_cl.py
-        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
+        --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --cat-config src/cosmo_val/cat_config.yaml
         --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind}
         --out-file {output}
@@ -64,17 +62,17 @@ outputs:
       the [harmonic-space COSEBI
       transform](#../cosebis.decisions.harmonic_validation_binning).
     format: fits
-    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, estimator_choice, noise_bias_correction]
-    inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, estimator_choice, noise_bias_correction, leakage_correction]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
     recipe:
       # Same generate_pseudo_cl.py CLI as cl_bandpowers_reporting, 96-bandpower
       # fine grid (--nbins 96). Distinct {output} file, so no cache collision
       # with the 32-bin reporting run.
       command: >
         python src/workflow/scripts/generate_pseudo_cl.py
-        --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
+        --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --cat-config src/cosmo_val/cat_config.yaml
-        --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind {decisions.fiducial_blind}
+        --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind}
         --out-file {output}
       resources: { cpus: 12, memory: "32GB" }
 
@@ -101,16 +99,16 @@ outputs:
       B-mode contamination is not strongly correlated with the
       lensing signal.
     format: png
-    decisions: [fiducial_catalog, pte_definition]
-    inputs: [selected_config, cl_bandpowers_reporting, cl_cov_reporting]
+    decisions: [fiducial_catalog, pte_definition, leakage_correction]
+    inputs: [cl_bandpowers_reporting, cl_cov_reporting]
     recipe:
       # cl_data_vector.py CLI renders the Cℓ data-vector figure (fiducial) from the
       # fiducial data vector and its bandpower covariance, the two declared
       # cross-output inputs; no other version is read.
       command: >
         python src/papers/bmodes/scripts/cl_data_vector.py
-        --config {inputs.selected_config}
-        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction}
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --fiducial-pseudo-cl-path {inputs.cl_bandpowers_reporting}
         --fiducial-pseudo-cl-cov-path {inputs.cl_cov_reporting}
         --out-file {output}
@@ -128,8 +126,8 @@ outputs:
       catalog passes all statistics at the fiducial scale cuts
       ([PTE table](#../outputs.pte_table_appendix)).
     format: png
-    inputs: [selected_config, cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, cl_version_comparison_script]
-    decisions: [pte_definition]
+    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, cl_version_comparison_script]
+    decisions: [pte_definition, fiducial_catalog, leakage_correction]
     recipe:
       # cl_version_comparison.py CLI overlays Cℓ^BB / Cℓ^EB across the 4
       # leak-corrected catalogs, writing the single PNG to {output}. Per-version
@@ -138,9 +136,9 @@ outputs:
       command: >
         d=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d &&
         python src/papers/bmodes/scripts/cl_version_comparison.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction}
         --results-dir $d
-        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --fiducial-pseudo-cl-path {inputs.cl_bandpowers_reporting}
         --fiducial-pseudo-cl-cov-path {inputs.cl_cov_reporting}
         --out-file {output}
@@ -159,8 +157,8 @@ outputs:
       [harmonic-space PTE heatmap](#../outputs.fig_cl_pte_heatmap)
       shows.
     format: npz
-    inputs: [selected_config, cl_sweep, cl_bandpowers_reporting, cl_cov_reporting]
-    decisions: [cl_pte_blind_strategy, pte_definition]
+    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting]
+    decisions: [cl_pte_blind_strategy, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
     recipe:
       # harmonic_space_pte_matrices.py CLI, run in its PTE-matrix mode: the single
       # .npz of per-version Cℓ^BB PTE grids is written to {output}. The heatmap
@@ -170,9 +168,9 @@ outputs:
       command: >
         d=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d &&
         python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --blind {decisions.fiducial_blind}
         --results-dir $d
-        --fiducial-version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --get fiducial.version)"
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --fiducial-pseudo-cl-path {inputs.cl_bandpowers_reporting}
         --fiducial-pseudo-cl-cov-path {inputs.cl_cov_reporting}
         --emit matrices

@@ -24,7 +24,7 @@ from plotting_utils import (
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
 
 from sp_validation.b_modes import calculate_cosebis, scale_cut_to_bins
-from paper_config import load_config
+from decision_values import INTEGRATION_GRID, MODE_COUNT, REPORTING_BINNING
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -80,22 +80,15 @@ def _compute_Bn_only(gg, nmodes, scale_cut):
     return En, Bn
 
 
-def main(config, xi_1k_path, xi_10k_path, cov_1k_path, out_file,
+def main(nmodes, integration, reporting, xi_1k_path, xi_10k_path, cov_1k_path, out_file,
          scale_cut_convention):
-    nmodes = config["fiducial"]["nmodes"]
-
     # Scale cuts
-    fiducial_scale_cut = resolve_fiducial_scale_cuts(config, scale_cut_convention)
-    full_scale_cut = (
-        float(config["cosebis"]["theta_min"]),
-        float(config["cosebis"]["theta_max"]),
-    )
+    fiducial_scale_cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
+    full_scale_cut = (reporting.min_sep, reporting.max_sep)
     scale_cuts = {"fiducial": fiducial_scale_cut, "full": full_scale_cut}
 
     # Integration parameters
-    min_sep_int = float(config["fiducial"]["min_sep_int"])
-    max_sep_int = float(config["fiducial"]["max_sep_int"])
-    nbins_1k = int(config["fiducial"]["nbins_int"])
+    min_sep_int, max_sep_int, nbins_1k = integration
     nbins_10k = 10_000
 
     # Load both ξ± grids
@@ -254,14 +247,13 @@ def main(config, xi_1k_path, xi_10k_path, cov_1k_path, out_file,
 
 
 def _from_cli(argv=None):
-    import yaml
 
     ap = argparse.ArgumentParser(
         description="COSEBI angular-binning convergence (1,000 vs 10,000-bin xi_pm) figure."
     )
-    ap.add_argument(
-        "--config", required=True, help="Absolute path to bmodes config.yaml"
-    )
+    ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
+    ap.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__, required=True)
+    ap.add_argument("--mode-count", type=MODE_COUNT.__getitem__, required=True)
     ap.add_argument(
         "--xi-1k",
         required=True,
@@ -284,8 +276,8 @@ def _from_cli(argv=None):
     )
     add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
-    config = load_config(a.config)
-    main(config, a.xi_1k, a.xi_10k, a.cov_1k, a.out_file, a.scale_cut_convention)
+    main(a.mode_count, a.integration_grid, a.reporting_binning, a.xi_1k, a.xi_10k,
+         a.cov_1k, a.out_file, a.scale_cut_convention)
 
 
 if __name__ == "__main__":

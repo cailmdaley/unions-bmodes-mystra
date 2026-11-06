@@ -53,7 +53,8 @@ from scale_cuts import (
     resolve_fiducial_bin_window,
     resolve_fiducial_scale_cuts,
 )
-from paper_config import load_config
+from catalog_versions import catalogs_from
+from decision_values import FIDUCIAL_CATALOG, INTEGRATION_GRID, MODE_COUNT, REPORTING_BINNING
 
 #: Pure-mode blocks, in the order the 6-block MC covariance stacks them.
 EB_KEYS = ("xip_E", "xim_E", "xip_B", "xim_B", "xip_amb", "xim_amb")
@@ -163,7 +164,10 @@ def _cosebis_Bn(gg_fine, nmodes, scale_cut, match_interval=None):
 
 
 def compute(
-    config,
+    version,
+    nmodes,
+    integration,
+    reporting,
     *,
     xi_reporting,
     xi_1k,
@@ -176,16 +180,9 @@ def compute(
     rebinning_weights,
     integration_limits,
 ):
-    fid = config["fiducial"]
-    min_sep, max_sep, nbins = (
-        float(fid["min_sep"]),
-        float(fid["max_sep"]),
-        int(fid["nbins"]),
-    )
-    min_sep_int, max_sep_int = float(fid["min_sep_int"]), float(fid["max_sep_int"])
-    nbins_1k = int(fid["nbins_int"])
-    nbins_10k = 10_000
-    nmodes = int(fid["nmodes"])
+    min_sep, max_sep, nbins = reporting
+    min_sep_int, max_sep_int, nbins_1k = integration
+    nbins_10k = INTEGRATION_GRID["bins_10000"].nbins
 
     gg = _load_xi(xi_reporting, nbins)
     gg_1k = _fine_grid(xi_1k, nbins_1k, min_sep_int, max_sep_int)
@@ -193,7 +190,7 @@ def compute(
 
     payload = {
         "meta": {
-            "version": fid["version"],
+            "version": version,
             "nbins_reporting": nbins,
             "nbins_fine": {"coarse": nbins_1k, "fine": nbins_10k},
             "fine_extent_arcmin": [min_sep_int, max_sep_int],
@@ -212,7 +209,7 @@ def compute(
     }
 
     # ---- grid sanity -------------------------------------------------------
-    reporting_edges = reporting_grid_edges(config)
+    reporting_edges = reporting_grid_edges(reporting)
     npairs_1k, nodes_1k = _npairs_per_reporting_bin(gg_1k, reporting_edges)
     npairs_10k, nodes_10k = _npairs_per_reporting_bin(gg_10k, reporting_edges)
     with np.errstate(divide="ignore", invalid="ignore"):
@@ -245,7 +242,7 @@ def compute(
             "fine_bins_straddling_each_reporting_edge": counts,
             "straddling_bin_npairs_fraction_of_its_reporting_bin": fracs,
         }
-    first_bin, last_bin = resolve_fiducial_bin_window(config, scale_cut_convention)
+    first_bin, last_bin = resolve_fiducial_bin_window(reporting, scale_cut_convention)
     payload["grid_checks"] = {
         "reporting_edges_arcmin": reporting_edges.tolist(),
         "fiducial_window_bins_inclusive": [int(first_bin), int(last_bin)],
@@ -358,10 +355,10 @@ def compute(
     # ---- COSEBIs -----------------------------------------------------------
     cos_base = np.load(cosebis_baseline, allow_pickle=True)
     scale_cuts = {
-        "fiducial": resolve_fiducial_scale_cuts(config, scale_cut_convention),
+        "fiducial": resolve_fiducial_scale_cuts(reporting, scale_cut_convention),
         "full": (
-            float(config["cosebis"]["theta_min"]),
-            float(config["cosebis"]["theta_max"]),
+            reporting.min_sep,
+            reporting.max_sep,
         ),
     }
     cosebis_payload = {}
@@ -651,10 +648,13 @@ def render(json_path, out_file):
 
 
 def _from_cli(argv=None):
-    import yaml
 
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--config")
+    ap.add_argument("--fiducial-catalog", choices=FIDUCIAL_CATALOG)
+    ap.add_argument("--leakage-correction", choices=["applied", "uncorrected"])
+    ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__)
+    ap.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__)
+    ap.add_argument("--mode-count", type=MODE_COUNT.__getitem__)
     ap.add_argument("--xi-reporting")
     ap.add_argument("--xi-1k", help="1,000-bin integration-grid TreeCorr dump")
     ap.add_argument("--xi-10k", help="10,000-bin integration-grid TreeCorr dump")
@@ -678,14 +678,17 @@ def _from_cli(argv=None):
     if a.plot_from_json:
         render(a.plot_from_json, a.out_file)
         return
-    required = ("config", "xi_reporting", "xi_1k", "xi_10k", "pure_eb_baseline",
+    required = ("fiducial_catalog", "leakage_correction", "reporting_binning", "integration_grid",
+                "mode_count", "xi_reporting", "xi_1k", "xi_10k", "pure_eb_baseline",
                 "cosebis_baseline")
     missing = [f"--{r.replace('_', '-')}" for r in required if not getattr(a, r)]
     if missing:
         ap.error(f"compute mode needs {', '.join(missing)}")
-    config = load_config(a.config)
     compute(
-        config,
+        catalogs_from(a).fiducial,
+        a.mode_count,
+        a.integration_grid,
+        a.reporting_binning,
         xi_reporting=a.xi_reporting,
         xi_1k=a.xi_1k,
         xi_10k=a.xi_10k,

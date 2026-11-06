@@ -80,7 +80,7 @@ outputs:
       10,000), and the effective COSEBI interval each grid's
       bin selection produces. The fiducial window is bins (9, 15)
       on both grids.
-    decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, mode_count, decomposition_method, pte_definition]
+    decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, mode_count, decomposition_method, pte_definition, leakage_correction, reporting_binning, integration_grid]
     inputs:
       [xi_reporting, xi_integration, xi_integration_convergence,
        pure_eb_semianalytic_data, cosebis_modes_data,
@@ -92,7 +92,7 @@ outputs:
       # pole. Both fit in the resources below.
       command: >
         python src/papers/bmodes/scripts/tenk_grid_convergence.py
-        --config src/papers/bmodes/config/config.yaml
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
         --xi-reporting {inputs.xi_reporting}
         --xi-1k {inputs.xi_integration}
         --xi-10k {inputs.xi_integration_convergence}
@@ -134,6 +134,10 @@ decisions:
 
   mode_count:
     from: ../mode_count
+  integration_grid:
+    from: ../integration_grid
+  reporting_binning:
+    from: ../reporting_binning
 
 findings:
 

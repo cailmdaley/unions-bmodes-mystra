@@ -2,19 +2,6 @@ version: "0.0.14"
 name: "Catalog preparation"
 
 inputs:
-  - id: config_defaults
-    type: data
-    source: ./src/papers/bmodes/config/config.yaml
-    description: Shared numerical configuration, resolved before recipe execution.
-  - id: config_profiles
-    type: data
-    source: ./src/papers/bmodes/config/catalogs
-    description: Catalogue-specific configuration overlays.
-  - id: config_selector_script
-    type: data
-    source: ./src/papers/bmodes/scripts/paper_config.py
-    description: Resolves catalogue inheritance and leakage selection.
-
   - id: redshift_distributions
     from: ../redshift_distributions
 
@@ -22,21 +9,6 @@ inputs:
     from: ../footprint_masks
 
 outputs:
-  - id: selected_config
-    type: data
-    format: yaml
-    description: |
-      Resolved analysis configuration for the selected catalogue and leakage correction.
-      Both raw and corrected variants remain available in the comparison scans.
-    decisions: [fiducial_catalog, leakage_correction]
-    inputs: [config_defaults, config_profiles, config_selector_script]
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/paper_config.py
-        --config src/papers/bmodes/config/catalogs/{decisions.fiducial_catalog}.yaml
-        --leakage-correction {decisions.leakage_correction}
-        --out-file {output}
-
   - id: redshift_distribution
     type: data
     description: |
@@ -45,14 +17,14 @@ outputs:
       version share one n(z): the correction acts on ellipticities,
       not photometry.
     format: txt
-    inputs: [selected_config, redshift_distributions]
+    inputs: [redshift_distributions]
     decisions: [fiducial_catalog, fiducial_blind]
     recipe:
       # Copy the n(z) cat_config names for the fiducial catalog, switched to
       # the selected blind.
       command: >
         python src/papers/bmodes/scripts/catalog_products.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog}
         --cat-config src/cosmo_val/cat_config.yaml
         --emit redshift_distribution --blind {decisions.fiducial_blind} --out-file {output}
       resources: { cpus: 1, memory: "2GB" }
@@ -67,16 +39,16 @@ outputs:
       v1.4.8.
     format: txt
     decisions: [fiducial_catalog]
-    inputs: [selected_config, footprint_masks]
+    inputs: [footprint_masks]
     recipe:
-      # Copy the footprint mask power spectrum the fiducial catalog's config
-      # names (`fiducial.mask_cls`; nside 4096, apodised + normalised), which
+      # Copy the footprint mask power spectrum the fiducial catalog's
+      # cat_config entry names (`mask_cls`; nside 4096, apodised + normalised), which
       # the covariance sub-analysis feeds CosmoCov. Every catalog's footprint
       # is declared so it is visible in the sandbox; the star-halo variant
       # (same directory as the standard one) applies only to v1.4.8.
       command: >
         python src/papers/bmodes/scripts/catalog_products.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog}
         --cat-config src/cosmo_val/cat_config.yaml
         --emit mask_power_spectrum --out-file {output}
       resources: { cpus: 8, memory: "2GB" }
@@ -90,7 +62,6 @@ outputs:
       catalog: 2894 deg², n_eff = 4.957 arcmin⁻², σ_e = 0.378
       (≈ 0.27 per component).
     format: json
-    inputs: [selected_config]
     decisions: [fiducial_catalog]
     recipe:
       # The fiducial catalog's cov_th block (A / n_e / sigma_e, exactly as
@@ -98,7 +69,7 @@ outputs:
       # sigma_e_combined.
       command: >
         python src/papers/bmodes/scripts/catalog_products.py
-        --config {inputs.selected_config}
+        --fiducial-catalog {decisions.fiducial_catalog}
         --cat-config src/cosmo_val/cat_config.yaml
         --emit survey_properties --out-file {output}
       resources: { cpus: 1, memory: "2GB" }
