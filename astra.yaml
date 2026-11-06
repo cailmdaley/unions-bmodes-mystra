@@ -75,8 +75,7 @@ inputs:
     description: |
       The host's GSL shared library (`libgsl.so.23`), which
       [the CosmoCov binary](#inputs.cosmocov_binary) links against
-      and the analysis container does not ship. A runtime
-      dependency, not a scientific input.
+      and the analysis container does not ship.
     source: "/lib64/libgsl.so.23.1.0"
 
   - id: footprint_masks
@@ -137,12 +136,6 @@ inputs:
       The pseudo-Cℓ covariance wrapper; it applies the selected
       blind's n(z) to the theory spectra.
     source: "./src/workflow/scripts/generate_pseudo_cl_cov.py"
-
-  - id: paper_mplstyle
-    type: data
-    description: |
-      The publication matplotlib style (fonts, sizes, LaTeX text).
-    source: "./src/workflow/matplotlib_config/paper.mplstyle"
 
   - id: config_space_pte_matrices_script
     type: data
@@ -402,7 +395,6 @@ outputs:
       - config_space_pte_data
       - config_space_pte_matrices_script
       - scale_cuts_script
-      - paper_mplstyle
     recipe:
       # Pure render: the per-version PTE grids are already in the evidence
       # payload written by null_tests.config_space_pte_data, so this re-runs no
@@ -431,7 +423,6 @@ outputs:
       - selected_config
       - harmonic_space_pte_data
       - harmonic_space_pte_matrices_script
-      - paper_mplstyle
     recipe:
       # Pure render, the appendix twin of
       # null_tests.harmonic_space_pte_evidence: the (ℓ_min, ℓ_max) PTE grids for

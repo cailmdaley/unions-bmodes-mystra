@@ -154,14 +154,15 @@ inputs:
   - id: scale_cuts_script
     from: ../scale_cuts_script
 
-  - id: paper_mplstyle
-    from: ../paper_mplstyle
-
   - id: plotting_utils_script
     type: data
     description: |
-      The shared plotting module (style, A&A column widths, colours,
-      mark spec) every figure here draws from.
+      The shared figure module (style, A&A column widths, colours,
+      mark spec) every figure here draws from. It also holds the
+      null-test χ²/PTE with its Hartlap factor, the √ℓ bandpower
+      edges and ℓ-window masks, and the PTE-threshold resolver; the
+      compute passes import these without declaring it, so editing
+      them restales only these figures.
     source: "./src/workflow/scripts/plotting_utils.py"
 
   - id: min_pte_window_scan_script
@@ -179,8 +180,7 @@ inputs:
     description: |
       The campaign script, which computes
       [mock_per_mock_statistics](#outputs.mock_per_mock_statistics)
-      and renders the σ-ratio and PTE-uniformity figures; an input
-      to the figures only.
+      and renders the σ-ratio figure; an input to that figure only.
     source: "./src/workflow/scripts/mock_campaign_analysis.py"
 
   - id: mock_min_pte_calibration_script
@@ -194,9 +194,7 @@ inputs:
     type: data
     description: |
       The composer behind
-      [mock_validation_figure](#outputs.mock_validation_figure)
-      and its fiducial-cuts companion (the same script under
-      `--range`).
+      [mock_validation_figure](#outputs.mock_validation_figure).
     source: "./src/workflow/scripts/mock_validation_figure.py"
 
   - id: mock_xi_input_theory_script
@@ -489,7 +487,7 @@ outputs:
       effects that largely cancel: correlations between the statistics
       raise the minimum PTE, while the slightly underestimated
       configuration-space covariance lowers it.
-    inputs: [selected_config, mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, mock_min_pte_calibration_script, plotting_utils_script, scale_cuts_script, paper_mplstyle]
+    inputs: [selected_config, mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, mock_min_pte_calibration_script, plotting_utils_script, scale_cuts_script]
     decisions: [reference_covariance, mock_suite, scale_cut_convention, pte_threshold]
     recipe:
       command: >
@@ -604,7 +602,7 @@ outputs:
       `reference_covariance: mockmatched` it tests the analytic
       covariance amplitude; under `fiducial` it shows the effect of
       the galaxy-count mismatch.
-    inputs: [mock_per_mock_statistics, mock_campaign_analysis_script, plotting_utils_script, paper_mplstyle]
+    inputs: [mock_per_mock_statistics, mock_campaign_analysis_script, plotting_utils_script]
     decisions: [reference_covariance]
     recipe:
       command: >
@@ -640,7 +638,7 @@ outputs:
       [glass_mock_cl](#inputs.glass_mock_cl), since
       [mock_per_mock_statistics](#outputs.mock_per_mock_statistics)
       stores only the in-cut bands.
-    inputs: [mock_per_mock_statistics, mock_campaign_evidence, glass_mock_cl, mock_validation_figure_script, plotting_utils_script, paper_mplstyle]
+    inputs: [mock_per_mock_statistics, mock_campaign_evidence, glass_mock_cl, mock_validation_figure_script, plotting_utils_script]
     decisions: [reference_covariance, mock_suite]
     recipe:
       command: >

@@ -4,23 +4,16 @@ name: "Harmonic-space pseudo-Cℓ^BB and Cℓ^EB"
 inputs:
   - id: selected_config
     from: ../catalog.selected_config
-  - id: redshift_distribution
-    from: ../catalog.redshift_distribution
-
-  - id: mask_power_spectrum
-    from: ../catalog.mask_power_spectrum
 
   - id: cl_cov_reporting
     from: ../covariance.cl_cov_reporting
 
   - id: redshift_distributions
     from: ../redshift_distributions
-    # The raw n(z) tree, as distinct from `redshift_distribution` above (the
-    # catalog unit's single fiducial copy). `generate_pseudo_cl_cov.py` reads
-    # whatever `redshift_path` cat_config gives for its `--ver`, so the
+    # The raw n(z) tree. `generate_pseudo_cl_cov.py` reads whatever
+    # `redshift_path` cat_config gives for its `--ver`, so the
     # [cl_scan sweep](#analyses.cl_scan)'s covariance members need the tree
-    # itself bound, not one file out of it. Same reason as the covariance
-    # unit's alias of the same name.
+    # itself bound. Same reason as the covariance unit's alias of the same name.
 
   - id: redshift_distributions_legacy
     from: ../redshift_distributions_legacy
@@ -33,9 +26,6 @@ inputs:
   - id: shapepipe_v145_rerun
     from: ../shapepipe_v145_rerun
     # cat_config sends both v1.4.5 variants outside the v1.4.x family.
-
-  - id: paper_mplstyle
-    from: ../paper_mplstyle
 
   - id: cl_version_comparison_script
     from: ../cl_version_comparison_script
@@ -52,7 +42,7 @@ outputs:
       [Cℓ figure](#../outputs.fig_cl_fiducial).
     format: fits
     decisions: [fiducial_catalog, fiducial_blind, estimator_choice, bandpower_binning, noise_bias_correction]
-    inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distribution, mask_power_spectrum]
+    inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun]
     recipe:
       # lc owns the container; bare `python`, scripts read from the vendored
       # src/ tree. Fiducial version + blind A hardcoded (single-version
@@ -75,7 +65,7 @@ outputs:
       transform](#../cosebis.decisions.harmonic_validation_binning).
     format: fits
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, estimator_choice, noise_bias_correction]
-    inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distribution, mask_power_spectrum]
+    inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun]
     recipe:
       # Same generate_pseudo_cl.py CLI as cl_bandpowers_reporting, 96-bandpower
       # fine grid (--nbins 96). Distinct {output} file, so no cache collision
@@ -112,7 +102,7 @@ outputs:
       lensing signal.
     format: png
     decisions: [fiducial_catalog, pte_definition]
-    inputs: [selected_config, cl_bandpowers_reporting, cl_cov_reporting, paper_mplstyle]
+    inputs: [selected_config, cl_bandpowers_reporting, cl_cov_reporting]
     recipe:
       # cl_data_vector.py CLI renders the Cℓ data-vector figure (fiducial) from the
       # fiducial data vector and its bandpower covariance, the two declared
@@ -138,7 +128,7 @@ outputs:
       catalog passes all statistics at the fiducial scale cuts
       ([PTE table](#../outputs.pte_table_appendix)).
     format: png
-    inputs: [selected_config, cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, paper_mplstyle, cl_version_comparison_script]
+    inputs: [selected_config, cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, cl_version_comparison_script]
     decisions: [pte_definition]
     recipe:
       # cl_version_comparison.py CLI overlays Cℓ^BB / Cℓ^EB across the 4

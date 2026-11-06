@@ -34,10 +34,6 @@ tags:
 inputs:
 - id: selected_config
   from: ../selected_config
-- id: redshift_distribution
-  from: ../redshift_distribution
-- id: mask_power_spectrum
-  from: ../mask_power_spectrum
 - id: redshift_distributions
   from: ../redshift_distributions
 - id: redshift_distributions_legacy
@@ -72,8 +68,6 @@ outputs:
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -101,8 +95,6 @@ outputs:
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -130,8 +122,6 @@ outputs:
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -159,8 +149,6 @@ outputs:
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -188,8 +176,6 @@ outputs:
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -217,8 +203,6 @@ outputs:
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -246,8 +230,6 @@ outputs:
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -275,8 +257,6 @@ outputs:
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -304,8 +284,6 @@ outputs:
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -333,8 +311,6 @@ outputs:
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -362,8 +338,6 @@ outputs:
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -391,8 +365,6 @@ outputs:
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -420,8 +392,6 @@ outputs:
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -449,8 +419,6 @@ outputs:
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -478,8 +446,6 @@ outputs:
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -507,8 +473,6 @@ outputs:
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -536,8 +500,6 @@ outputs:
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -565,8 +527,6 @@ outputs:
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -594,8 +554,6 @@ outputs:
     `generate_pseudo_cl.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions
@@ -623,8 +581,6 @@ outputs:
     `generate_pseudo_cl_cov.py` invocation, different `--ver`.
   inputs:
   - selected_config
-  - redshift_distribution
-  - mask_power_spectrum
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
   - redshift_distributions

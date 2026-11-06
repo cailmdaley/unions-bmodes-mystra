@@ -25,10 +25,6 @@ tags: [sweep, generated, cl_bb]
 inputs:
   - id: selected_config
     from: ../selected_config
-  - id: redshift_distribution
-    from: ../redshift_distribution
-  - id: mask_power_spectrum
-    from: ../mask_power_spectrum
   # The raw n(z) trees. generate_pseudo_cl_cov.py follows cat_config's
   # per-version `redshift_path` at runtime, and lc binds only declared inputs,
   # so the cl_cov members need both trees the config names: the SOM tree for
@@ -98,7 +94,7 @@ template:
     blind A (nside 1024, npatch 1). The per-version analogue of
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_${product}.py` invocation, different `--ver`.
-  inputs: [selected_config, redshift_distribution, mask_power_spectrum, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, redshift_distributions_legacy]
+  inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, redshift_distributions_legacy]
   decisions: [fiducial_catalog, fiducial_blind, noise_bias_correction, "${grid_decision}", "${product_decision}"]
   recipe:
     # The per-version unit of work. generate_pseudo_cl.py and

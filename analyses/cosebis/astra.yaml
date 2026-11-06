@@ -36,9 +36,6 @@ inputs:
   - id: cl_sweep
     from: ../cl_bb.cl_sweep
 
-  - id: paper_mplstyle
-    from: ../paper_mplstyle
-
   - id: cosebis_version_comparison_script
     from: ../cosebis_version_comparison_script
 
@@ -94,7 +91,7 @@ outputs:
       (open diamonds). Modes n > 6 are shaded; the n ≤ 6 subset captures
       nearly all cosmological information.
     decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention]
-    inputs: [selected_config, cosebis_modes_data, paper_mplstyle]
+    inputs: [selected_config, cosebis_modes_data]
     recipe:
       # Plot-only pass of the same CLI.
       command: >
@@ -142,7 +139,7 @@ outputs:
       catalog passes all statistics at the fiducial scale cuts ([PTE
       table](#../outputs.pte_table_appendix)).
     decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, pte_definition]
-    inputs: [selected_config, xi_sweep, cov_sweep, xi_integration, cov_integration, paper_mplstyle, cosebis_version_comparison_script]
+    inputs: [selected_config, xi_sweep, cov_sweep, xi_integration, cov_integration, cosebis_version_comparison_script]
     recipe:
       # The plotter recomputes COSEBIs per version from the unpacked xi and
       # covariance sweep bundles, found by canonical filename.

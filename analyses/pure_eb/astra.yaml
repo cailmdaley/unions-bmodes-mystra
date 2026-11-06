@@ -35,9 +35,6 @@ inputs:
   - id: redshift_distributions_legacy
     from: ../redshift_distributions_legacy
 
-  - id: paper_mplstyle
-    from: ../paper_mplstyle
-
   - id: pure_eb_version_comparison_script
     from: ../pure_eb_version_comparison_script
 
@@ -91,7 +88,7 @@ outputs:
       scale cuts.
     format: png
     decisions: [fiducial_catalog, scale_cut_convention, pte_definition]
-    inputs: [selected_config, pure_eb_semianalytic_data, cov_reporting_ng, paper_mplstyle]
+    inputs: [selected_config, pure_eb_semianalytic_data, cov_reporting_ng]
     recipe:
       # pure_eb_data_vector.py: pure E/B data-vector figure, fiducial only. Reads the
       # semianalytic NPZ and the reporting-grid masked ng CosmoCov ξ±
@@ -114,7 +111,7 @@ outputs:
       arise from integral coupling in the pure-mode filters.
     format: png
     decisions: [fiducial_catalog]
-    inputs: [selected_config, pure_eb_semianalytic_data, paper_mplstyle]
+    inputs: [selected_config, pure_eb_semianalytic_data]
     recipe:
       # pure_eb_covariance.py: pure E/B covariance figure, fiducial only. Reads the
       # semianalytic NPZ; renders one 300-dpi PNG of the 6-block correlation
@@ -138,7 +135,7 @@ outputs:
       scale cuts ([PTE table](#../outputs.pte_table_appendix)).
     format: png
     decisions: [scale_cut_convention, pte_definition]
-    inputs: [selected_config, pure_eb_semianalytic_data, pure_eb_sweep, paper_mplstyle, pure_eb_version_comparison_script]
+    inputs: [selected_config, pure_eb_semianalytic_data, pure_eb_sweep, pure_eb_version_comparison_script]
     recipe:
       # pure_eb_version_comparison.py: pure-mode row of the version-comparison stack. The
       # non-fiducial versions come from the pure_eb_sweep tarball (unpacked to a
