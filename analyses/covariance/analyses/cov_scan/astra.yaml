@@ -14,8 +14,8 @@ name: CosmoCov integration-grid catalog-version scan
 description: |
   Integration-grid 1000-bin Gaussian-only, area-only CosmoCov ξ_±
   covariance across catalog versions: the seven variants other than
-  the selected primary catalog (at baseline, three leak-corrected and
-  four uncorrected), the version-swept analogue of
+  the selected primary catalog (in the fiducial analysis, three
+  leak-corrected and four uncorrected), the version-swept analogue of
   [cov_integration](#../outputs.cov_integration). A version enters
   through its survey area, n_eff, σ_e and n(z); the masked catalog
   covers 2517 deg² rather than 2894 deg². The leakage correction

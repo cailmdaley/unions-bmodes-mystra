@@ -56,7 +56,7 @@ outputs:
       The same bandpowers on the √ℓ-spaced grid of the
       [harmonic-space COSEBI
       transform](#../cosebis.decisions.harmonic_validation_binning),
-      96 bandpowers at baseline, fine enough to resolve the
+      96 bandpowers in the fiducial analysis, fine enough to resolve the
       oscillations of its W_n(ℓ) filters.
     format: fits
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, estimator_choice, noise_bias_correction, leakage_correction]

@@ -135,18 +135,14 @@ findings:
           exact: '"pte": 0.8420537855782536'
 
   cosebis_verdicts_stable_at_1000_bins:
-    label: "COSEBI verdicts stable at 1,000 bins"
+    label: "COSEBI B_n and their significance stable on a 10,000-bin grid"
     claim: |
-      The COSEBI B-mode null-test verdicts are stable to the
-      integration grid: refining from 1,000 to 10,000 bins, with each
-      grid on its own bin selection, moves the n ≤ 6 modes by at most
-      0.64 σ and leaves every PTE verdict unchanged, while individual
-      higher modes (n ≥ 10) shift by up to 1.37 σ.
+      Repeating the COSEBI calculation on a 10,000-bin grid for the
+      fiducial catalog finds the B_n amplitudes and their significance
+      to be stable: with each grid on its own bin selection, the n ≤ 6
+      modes move by at most 0.64 σ and no PTE verdict changes, while
+      individual higher modes (n ≥ 10) shift by up to 1.37 σ.
     notes: |
-      The paper states this as: "we repeat the calculation on a
-      10 000-bin grid for the fiducial catalog and find the B_n
-      amplitudes and their significance to be stable."
-
       n ≤ 6 shifts are at most 0.56 σ at the fiducial cuts and
       0.64 σ over the full range. PTEs: fiducial n ≤ 6 0.777 → 0.715,
       n ≤ 20 0.943 → 0.748; full range n ≤ 6 1.37×10⁻⁵ → 1.55×10⁻⁵,

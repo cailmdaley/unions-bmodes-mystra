@@ -9,8 +9,8 @@ version: "0.0.14"
 name: "UNIONS-3500 B-mode Validation"
 description: |
   B-mode null tests of the UNIONS-3500 ShapePipe v1.4 shear catalogs (Daley et
-  al. 2026, accepted by A&A). Pure-mode correlation functions, COSEBIs and
-  harmonic-space power spectra, with covariances validated on GLASS mocks, fix
+  al. 2026). Pure-mode correlation functions, COSEBIs and harmonic-space power
+  spectra, with covariances validated on GLASS mocks, fix
   the fiducial catalog and scale cuts for the UNIONS cosmology papers.
 
 # -----------------------------------------------------------------------------
@@ -371,8 +371,8 @@ decisions:
         excluded: true
         excluded_reason: "Reported beside the fiducial catalog in every version comparison rather than selected: it fails the null tests at the adopted cuts, and the GLASS mock validation and 10,000-bin convergence run exist only for v1.4.6.3."
         description: |
-          The looser size cut r_h,gal/r_h,psf > 0.5; the baseline
-          against which the size cut was chosen.
+          The looser size cut r_h,gal/r_h,psf > 0.5, the reference
+          the size cut is tested against.
       masked:
         label: "Masked (v1.4.8)"
         excluded: true
@@ -422,7 +422,7 @@ decisions:
     default: blind_a
     options:
       blind_a:
-        label: "Blind A (used for reported results)"
+        label: "Blind A"
       blind_b:
         label: "Blind B"
         excluded: true
@@ -551,20 +551,20 @@ decisions:
       The Schneider (2022) transform, as implemented in
       `cosmo_numba`, lays a degree-5 local interpolant through the
       integrand samples, so it is meant to be a fixed linear map on
-      ξ_±. The submitted pipeline integrates that interpolant with
-      QUADPACK's adaptive `dqags`, whose subdivision depends on the
-      sampled values. The map is then weakly non-linear: on noisy
-      input the quadrature error correlates with the noise and
-      rectifies into a spurious signal, the ≈ −0.6 σ mean ξ_+^B
+      ξ_±. How the interpolant is integrated decides whether it is.
+      QUADPACK's `dqags` subdivides adaptively, and the subdivision
+      depends on the sampled values, so the map is weakly non-linear:
+      on noisy input the quadrature error correlates with the noise
+      and rectifies into a spurious signal, the ≈ −0.6 σ mean ξ_+^B
       residual at θ < 3' on the GLASS mocks.
 
       Integrating the same interpolant with fixed Gauss-Legendre
       quadrature cell by cell makes the transform exactly linear,
       `out = M · [ξ_+ ; ξ_-]`, with `M` set by the grid and kernels
       alone. It agrees with a brute-force integration to
-      ≤ 3 × 10⁻¹⁵ of max|ξ|. On Monte Carlo noise draws run for
-      the referee response, outside this analysis's outputs, the
-      small-θ ξ_+^B bias falls from −25.7 σ_MC under `dqags` to
+      ≤ 3 × 10⁻¹⁵ of max|ξ|. On Monte Carlo noise draws outside this
+      analysis's outputs, the small-θ ξ_+^B bias falls from
+      −25.7 σ_MC under `dqags` to
       −0.9 σ_MC, a residual proportional to the injected noise and
       so finite-draw error. `dqags` is itself the inaccurate side,
       up to 15.6% wrong on V_- at 1000 integration bins, worsening
@@ -575,12 +575,12 @@ decisions:
       ξ_-^B bin 0 by ×3.3, ξ_-^amb by ×17 at all scales, ξ_+^B bin 0
       by ×1.13. This decision therefore forks the data vectors, the
       mock scatter and the covariance together. The fixed operator
-      is adopted; `adaptive_dqags` is the submitted paper's choice
-      (the `submitted` universe).
+      is preferred because it is accurate and, being linear, cannot
+      rectify noise.
     default: fixed_operator
     options:
       adaptive_dqags:
-        label: "Adaptive dqags (submitted)"
+        label: "Adaptive dqags"
         description: |
           `cosmo_numba`'s `get_pure_EB_modes` with tolerances
           epsabs = epsrel = 1e-10, evaluated pointwise at the 20
@@ -588,7 +588,7 @@ decisions:
           rectifies noise into a spurious small-θ B mode and
           inflates propagated covariances.
       fixed_operator:
-        label: "Fixed-quadrature operator M (adopted)"
+        label: "Fixed-quadrature operator M"
         description: |
           The same interpolant and kernels integrated with a
           16-node Gauss-Legendre rule per grid cell, assembled once
@@ -634,12 +634,12 @@ decisions:
       Appendix A). The unweighted mean is a different, mildly
       noisier estimator that is neither the measured correlation
       function nor the bin average of theory. Pair-count weighting
-      is adopted. The submitted pipeline evaluates pointwise and
-      does no rebinning (`none`).
+      is adopted. A transform evaluated pointwise does no rebinning
+      (`none`).
     default: npairs
     options:
       npairs:
-        label: "Pair-count weighted (adopted)"
+        label: "Pair-count weighted"
         description: |
           Each fine node is weighted by its TreeCorr pair count, so
           the averaged local term is exactly the reporting-bin
@@ -670,9 +670,9 @@ decisions:
       plateau: the data vector keeps moving, non-monotonically,
       driven entirely by ξ_-^B (ξ_+^B stays null at 0.72–0.91),
       while σ shifts by ≤ 5.6% (ξ_+) and ≤ 1.3% (ξ_-). The combined
-      pure-mode p-value spans 0.018–0.064 across that scan, run for the
-      referee response and not an output here, so the
-      scan measures an operator systematic of ~±0.02 on p rather
+      pure-mode p-value spans 0.018–0.064 across that scan, which is
+      not an output here, so the scan measures an operator systematic
+      of ~±0.02 on p rather
       than singling out a window (the scan used a separate Monte
       Carlo covariance, whose p-values differ from the reported
       ones by 0.01–0.02).
@@ -689,17 +689,17 @@ decisions:
     default: fine_grid_extent
     options:
       fine_grid_extent:
-        label: "Fine-grid extent, 0.5'–300' (adopted)"
+        label: "Fine-grid extent, 0.5'–300'"
         description: |
           Averaged geometry: fine-grid nodes from the 0.5' grid
           floor to 300' (the mock grid's native 500' upper edge is
           capped at 300'); support below 1' keeps the edge rows
           determined.
       reporting_extent:
-        label: "Reporting-grid extent, 1'–250' (submitted)"
+        label: "Reporting-grid extent, 1'–250'"
         description: |
-          Pointwise only: the reporting limits [1', 250'], as in
-          the submitted paper's `adaptive_dqags` chain.
+          Pointwise only: the reporting limits [1', 250'], which the
+          `adaptive_dqags` chain integrates over.
 
   pure_eb_covariance_method:
     label: "Pure-mode covariance construction"
@@ -711,7 +711,7 @@ decisions:
       CosmoCov covariance. The two options are two ways of
       evaluating that matrix.
 
-      The submitted Monte Carlo pushes 2000 Gaussian draws of ξ_±
+      The Monte Carlo pushes 2000 Gaussian draws of ξ_±
       through the transform and applies the Hartlap factor at χ²
       time. It equals M Ĉ_ξ Mᵀ with Ĉ_ξ the draws' sample covariance
       (reproduced to 1e-15), so it differs from the exact matrix only
@@ -725,18 +725,18 @@ decisions:
       under the same covariance. It also shows that the
       data/mock-matched B variance ratio is a constant 1.353 across
       ξ^B bins, as expected for a shape-noise B-mode covariance; the
-      MC's per-bin 1.23–1.43 spread was noise. It requires a linear
-      operator, so the `adaptive_dqags` chain stays Monte Carlo.
+      MC's per-bin 1.23–1.43 spread is noise. It requires a linear
+      operator, so `adaptive_dqags` can only use the Monte Carlo.
     default: exact_linear
     options:
       exact_linear:
-        label: "Exact M C_ξ Mᵀ (adopted)"
+        label: "Exact M C_ξ Mᵀ"
         description: |
           M from the averaged transform applied to the 2000 fine-grid
           unit vectors; C_ξ is the CosmoCov covariance (data) or its
           mock-matched twin. No Hartlap factor.
       monte_carlo:
-        label: "Monte Carlo, Hartlap-corrected (submitted)"
+        label: "Monte Carlo, Hartlap-corrected"
         description: |
           Sample covariance of [2000 draws](#decisions.mc_samples)
           from C_ξ through the same transform, with the Hartlap
@@ -774,10 +774,10 @@ decisions:
     rationale: |
       How many Gaussian draws of ξ± from the CosmoCov covariance the
       [Monte-Carlo pure-mode covariance](#decisions.pure_eb_covariance_method)
-      pushes through the filters. The adopted exact construction makes
-      no draws, so this count matters only under `monte_carlo`, as in
-      the `submitted` universe. The default is 2000 draws; 1000 and 5000
-      test sample-count sensitivity. It does not touch the COSEBI
+      pushes through the filters. The exact construction makes no
+      draws, so this count matters only under `monte_carlo`. The
+      default is 2000 draws; 1000 and 5000 test sample-count
+      sensitivity. It does not touch the COSEBI
       covariances, which are propagated linearly.
     default: n_2000
     options:
@@ -847,10 +847,10 @@ decisions:
     default: calibrated_0p01
     options:
       nominal_0p05:
-        label: "0.05 per statistic (submitted)"
-        description: "Each of the six statistics tested against 0.05, as in the submitted paper."
+        label: "0.05 per statistic"
+        description: "Each of the six statistics tested against 0.05. The minimum over the six skews low, so a clean sample fails at least one more than 5% of the time."
       calibrated_0p01:
-        label: "0.01 on the minimum PTE (adopted)"
+        label: "0.01 on the minimum PTE"
         insights: [asgari19a_bmode_verdict_depends_on_statistic, jefferson25_estimators_disagree_on_same_data]
         description: |
           Conservative rounding of the 350-mock minimum-PTE

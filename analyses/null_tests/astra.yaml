@@ -319,10 +319,10 @@ decisions:
           Per-blind covariances on the fiducial leak-corrected
           catalog, matching the adopted mock suite.
       mock_version_v146:
-        label: "Earlier mock version v1.4.6"
+        label: "Mock version v1.4.6"
         description: |
-          Per-blind covariances at v1.4.6, the version of the
-          earlier GLASS mock delivery.
+          Per-blind covariances at v1.4.6, the catalog version of
+          the excluded GLASS mock suite.
         excluded: true
         excluded_reason: |
           v1.4.6 is not one of the paper's four catalog versions, and

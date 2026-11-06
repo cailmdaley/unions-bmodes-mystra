@@ -543,7 +543,7 @@ outputs:
       [reference_covariance](#decisions.reference_covariance). `B`
       weights each fine bin by a uniform field's pair density
       (θ_r² − θ_l²), approximating TreeCorr's pair-weighted binning; the
-      unweighted `pointwise` operator of the submitted pure-mode chain
+      unweighted `pointwise` operator of the `adaptive_dqags` chain
       is written alongside as `cov_pointwise`, and the two σ agree to
       1.3% at worst.
     inputs: [cov_integration_mockmatched, mock_xi_reporting]
@@ -863,14 +863,13 @@ decisions:
           computed mock C_ℓ^BB covariance
           ([cl_cov_mockmatched](#inputs.cl_cov_mockmatched)).
       v1_4_6:
-        label: "v1.4.6 suite (submitted)"
+        label: "v1.4.6 suite"
         excluded: true
         excluded_reason: |
           35 078 729 galaxies per realisation on a 1600.33 deg² mask
           that is not the data's footprint (the generator's default
-          6.0905 arcmin⁻² on a smaller sky). It is the suite the
-          submitted mock description rests on; v2 sits far closer to
-          the catalog's count.
+          6.0905 arcmin⁻² on a smaller sky); the v1.4.6.3_v2 suite
+          sits far closer to the catalog's count.
   leakage_correction:
     from: ../leakage_correction
 
@@ -1078,7 +1077,7 @@ findings:
         artifact: mock_min_pte_calibration
         quote:
           exact: '"threshold_one_sided": 0.005773478384709811'
-    scope: "v1.4.6.3_v2 suite, mock-matched reference covariances, adopted scale cuts, baseline estimator."
+    scope: "v1.4.6.3_v2 suite, mock-matched reference covariances, adopted scale cuts, adopted estimators."
 
   mocks_are_over_constraining:
     id: mocks_are_over_constraining

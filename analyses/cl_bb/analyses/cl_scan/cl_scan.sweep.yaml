@@ -4,8 +4,8 @@ name: "Pseudo-Cℓ catalog-version scan"
 description: |
   Pseudo-Cℓ bandpowers and their NaMaster iNKA Gaussian covariance,
   √ℓ-spaced at blind A, across catalog versions: the seven variants
-  other than the selected primary catalog (at baseline, three
-  leak-corrected and four uncorrected). All seven use the 32-bandpower
+  other than the selected primary catalog (in the fiducial analysis,
+  three leak-corrected and four uncorrected). All seven use the 32-bandpower
   reporting grid; the initial, masked and relaxed-flags catalogs on the
   primary leakage branch also use the finer grid of the
   [harmonic COSEBI scan](#../../cosebis.analyses.cosebis_harmonic_scan).

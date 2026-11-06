@@ -148,7 +148,7 @@ outputs:
     type: data
     description: |
       As [cl_cov_reporting](#outputs.cl_cov_reporting), on the
-      √ℓ-spaced fine grid (96 bandpowers at baseline) of
+      √ℓ-spaced fine grid (96 bandpowers in the fiducial analysis) of
       [cl_bb.cl_bandpowers_fine](#../cl_bb.outputs.cl_bandpowers_fine),
       for the harmonic-space COSEBI transform. The other three
       leak-corrected catalogs' counterparts come from the

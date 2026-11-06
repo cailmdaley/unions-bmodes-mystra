@@ -25,6 +25,10 @@ belongs to Papers III and IV.
   paper's hedges.
 - The spec describes the science. Inputs are data and analysis products, never
   code. Prose says what is true now, with no history or tooling talk.
+- Each decision reads as a timeless account of a scientific choice: the
+  rationale says what is at stake and why the default is preferred, each option
+  says what it does on its own terms, and a label names the method. Version talk
+  belongs in `universes/` alone.
 - A decision with several non-excluded options must reach the code it governs.
   A decision with one is a documented fixed choice. Excluded options carry a
   reason a scientist would accept.
