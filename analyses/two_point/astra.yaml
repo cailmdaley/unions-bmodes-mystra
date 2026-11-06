@@ -49,7 +49,7 @@ outputs:
       zero padding.
     format: txt
     inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun]
-    decisions: [fiducial_catalog]
+    decisions: [fiducial_catalog, integration_grid]
     recipe:
       # Same run_2pcf.py CLI as xi_reporting, integration grid: 1000 bins
       # over [0.5', 300']. See xi_reporting for the recipe-form rationale.
@@ -105,6 +105,9 @@ decisions:
 
   fiducial_catalog:
     from: ../fiducial_catalog
+
+  integration_grid:
+    from: ../integration_grid
 
   reporting_binning:
     label: "Reporting-grid angular binning"

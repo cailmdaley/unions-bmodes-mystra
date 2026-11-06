@@ -45,6 +45,7 @@ outputs:
       w_0, w_a, plus derived Ω_v) as JSON, used to write every
       CosmoCov `.ini`.
     format: json
+    decisions: [fiducial_cosmology]
     recipe:
       # Dump the PLANCK18 snapshot (+ derived Omega_v) straight to {output}.
       # Source of truth remains sp_validation.cosmology.PLANCK18.
@@ -204,6 +205,8 @@ outputs:
     from: cov_scan.cov_sweep_bundle
 
 decisions:
+  fiducial_cosmology:
+    from: ../fiducial_cosmology
   leakage_correction:
     from: ../leakage_correction
 
