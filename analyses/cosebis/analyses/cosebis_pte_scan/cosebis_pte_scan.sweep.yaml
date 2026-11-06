@@ -32,6 +32,15 @@ inputs:
   - id: cov_sweep
     from: ../cov_sweep
 
+  - id: numerics_script
+    from: ../numerics_script
+
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
 decisions:
   pte_definition:
     from: ../pte_definition
@@ -75,7 +84,7 @@ template:
     [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut);
     same `compute_cosebis_pte_single.py` invocation, different
     `--version` and a different pair of upstream files.
-  inputs: [xi_sweep, cov_sweep]
+  inputs: [xi_sweep, cov_sweep, numerics_script, decision_values_script, catalog_versions_script]
   decisions: [fiducial_catalog, fiducial_blind, scale_cut_pair_grid, pte_definition, leakage_correction, reporting_binning, integration_grid, mode_count]
   recipe:
     # The two version-sweep bundles are untarred into temp dirs and this
@@ -122,6 +131,7 @@ gather:
     [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut) and
     reaches the heatmap through
     `--fiducial-cosebis-pte-path`.
+  inputs: [decision_values_script, catalog_versions_script]
   decisions: [fiducial_catalog, leakage_correction]
   recipe:
     command: >

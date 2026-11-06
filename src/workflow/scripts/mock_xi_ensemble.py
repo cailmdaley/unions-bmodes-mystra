@@ -20,6 +20,8 @@ from pathlib import Path
 import numpy as np
 import treecorr
 
+from decision_values import INTEGRATION_GRID
+
 _ID_RE = re.compile(r"_(\d{5})(?:[_.]|$)")
 _BLOCKS = ("meanr", "xip", "xim", "npairs", "weight")
 
@@ -78,9 +80,9 @@ def stack(members, *, min_sep, max_sep, nbins):
 def _parser(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--members", nargs="+", required=True)
-    parser.add_argument("--min-sep", type=float, required=True)
-    parser.add_argument("--max-sep", type=float, required=True)
-    parser.add_argument("--nbins", type=int, required=True)
+    parser.add_argument(
+        "--integration-grid", type=INTEGRATION_GRID.__getitem__, required=True
+    )
     parser.add_argument("--out-file", required=True)
     return parser.parse_args(argv)
 
@@ -89,16 +91,16 @@ def main(argv=None):
     args = _parser(argv)
     ensemble = stack(
         args.members,
-        min_sep=args.min_sep,
-        max_sep=args.max_sep,
-        nbins=args.nbins,
+        min_sep=args.integration_grid.min_sep,
+        max_sep=args.integration_grid.max_sep,
+        nbins=args.integration_grid.nbins,
     )
     out_path = Path(args.out_file)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     np.savez(out_path, **ensemble)
     print(
         f"Saved {out_path}: {len(ensemble['mock_ids'])} realisations "
-        f"x {args.nbins} bins",
+        f"x {args.integration_grid.nbins} bins",
         flush=True,
     )
 

@@ -11,12 +11,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import treecorr
+from numerics import compute_chi2_pte
 from plotting_utils import (
     ERRORBAR_DEFAULTS,
     FIG_WIDTH_FULL,
     MARKER_STYLES,
     PAPER_MPLSTYLE,
-    compute_chi2_pte,
     draw_normalized_boxes_linear_scale,
     find_fiducial_index,
     X_OFFSETS,

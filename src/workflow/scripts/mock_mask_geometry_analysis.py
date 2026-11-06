@@ -43,24 +43,10 @@ sys.path.insert(
 )
 from pure_mode_covariance import hartlap_samples  # noqa: E402
 
-try:
-    from plotting_utils import PAPER_MPLSTYLE, compute_chi2_pte
-except ImportError:  # pragma: no cover - only used in unusually small images
-    PAPER_MPLSTYLE = None
+from numerics import compute_chi2_pte  # noqa: E402
+from plotting_utils import PAPER_MPLSTYLE  # noqa: E402
 
-    def compute_chi2_pte(data, covariance, n_samples=None):
-        chi2 = float(data @ np.linalg.solve(covariance, data))
-        dof = len(data)
-        if n_samples is not None:
-            chi2 *= (n_samples - dof - 2) / (n_samples - 1)
-        return chi2, float(stats.chi2.sf(chi2, dof)), dof
-
-
-try:
-    if PAPER_MPLSTYLE:
-        plt.style.use(PAPER_MPLSTYLE)
-except OSError as exc:  # pragma: no cover - depends on checkout relocation
-    print(f"Could not load paper matplotlib style ({exc}); using matplotlib defaults")
+plt.style.use(PAPER_MPLSTYLE)
 
 
 # Block order of the stored 120x120 pure-EB covariance, matching the six arrays

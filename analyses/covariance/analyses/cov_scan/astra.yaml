@@ -38,6 +38,10 @@ inputs:
   from: ../cosmocov_binary
 - id: cosmocov_libgsl
   from: ../cosmocov_libgsl
+- id: decision_values_script
+  from: ../decision_values_script
+- id: catalog_versions_script
+  from: ../catalog_versions_script
 decisions:
   integration_grid:
     from: ../integration_grid
@@ -66,6 +70,8 @@ outputs:
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -94,6 +100,8 @@ outputs:
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -122,6 +130,8 @@ outputs:
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -150,6 +160,8 @@ outputs:
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -178,6 +190,8 @@ outputs:
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -206,6 +220,8 @@ outputs:
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -234,6 +250,8 @@ outputs:
   - redshift_distributions
   - cosmocov_binary
   - cosmocov_libgsl
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -268,6 +286,8 @@ outputs:
   - cov_sp_v1p4p8_leak_corr
   - cov_sp_v1p4p11p3
   - cov_sp_v1p4p11p3_leak_corr
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - leakage_correction

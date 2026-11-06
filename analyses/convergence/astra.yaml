@@ -48,6 +48,21 @@ inputs:
       before comparing.
     source: "./src/papers/bmodes/scripts/tenk_grid_convergence.py"
 
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
+  - id: pure_mode_covariance_script
+    from: ../pure_mode_covariance_script
+
+  - id: pure_eb_transform_script
+    from: ../pure_eb_transform_script
+
+  - id: gather_pure_eb_chunks_script
+    from: ../gather_pure_eb_chunks_script
+
 outputs:
   - id: tenk_grid_comparison
     when: [leakage_correction.applied]
@@ -84,7 +99,9 @@ outputs:
     inputs:
       [xi_reporting, xi_integration, xi_integration_convergence,
        pure_eb_semianalytic_data, cosebis_modes_data,
-       scale_cuts_script, tenk_grid_convergence_script]
+       scale_cuts_script, tenk_grid_convergence_script,
+       decision_values_script, catalog_versions_script, pure_mode_covariance_script,
+       pure_eb_transform_script, gather_pure_eb_chunks_script]
     recipe:
       # Compute mode. The 10,000-bin operator is a 6-block
       # (~8.6k eval rows x 20k columns) matrix built once and applied as a

@@ -8,6 +8,9 @@ inputs:
   - id: footprint_masks
     from: ../footprint_masks
 
+  - id: decision_values_script
+    from: ../decision_values_script
+
 outputs:
   - id: redshift_distribution
     type: data
@@ -17,7 +20,7 @@ outputs:
       version share one n(z): the correction acts on ellipticities,
       not photometry.
     format: txt
-    inputs: [redshift_distributions]
+    inputs: [redshift_distributions, decision_values_script]
     decisions: [fiducial_catalog, fiducial_blind]
     recipe:
       # Copy the n(z) cat_config names for the fiducial catalog, switched to
@@ -39,7 +42,7 @@ outputs:
       v1.4.8.
     format: txt
     decisions: [fiducial_catalog]
-    inputs: [footprint_masks]
+    inputs: [footprint_masks, decision_values_script]
     recipe:
       # Copy the footprint mask power spectrum the fiducial catalog's
       # cat_config entry names (`mask_cls`; nside 4096, apodised + normalised), which
@@ -62,6 +65,7 @@ outputs:
       catalog: 2894 deg², n_eff = 4.957 arcmin⁻², σ_e = 0.378
       (≈ 0.27 per component).
     format: json
+    inputs: [decision_values_script]
     decisions: [fiducial_catalog]
     recipe:
       # The fiducial catalog's cov_th block (A / n_e / sigma_e, exactly as

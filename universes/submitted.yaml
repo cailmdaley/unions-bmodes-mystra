@@ -8,23 +8,23 @@ description: |
   Source-of-truth pointers per selection are inline below.
 
 decisions:
-  # workflow/config/config.yaml: fiducial.version = SP_v1.4.6.3_leak_corr
+  # The submitted fiducial catalog: SP_v1.4.6.3_leak_corr
   fiducial_catalog: size_cut
   # all four `versions:` carry `_leak_corr`; uncorrected used only
   # for cross-checks
   leakage_correction: applied
-  # workflow/config/config.yaml: fiducial.blind = A
+  # The submitted fiducial blind: A
   fiducial_blind: blind_a
-  # workflow/config/config.yaml: fiducial.fiducial_xip_scale_cut = [12, 83],
-  # cl.fiducial_ell_min/max = 300/1600
+  # The submitted cuts: ξ_+ θ in [12, 83] arcmin, ℓ in [300, 1600]
   fiducial_scale_cuts: adopted
   # workflow/rules/claims.smk _COSEBIS_ANGULAR_RANGES: the submitted pipeline
   # cut at (250**(9/20), 250**(16/20)) = edges 9/16 of geomspace(1, 250, 21),
   # not at the rounded [12, 83] the paper text prints
   scale_cut_convention: grid_bin_edges
-  # The submitted paper used the nominal per-statistic threshold.
+  # Each statistic tested against the nominal 0.05, as submitted. The threshold
+  # sets the PTE heatmap colour scale and the quoted threshold macro.
   pte_threshold: nominal_0p05
-  # workflow/config/config.yaml: fiducial.nbins_int = 1000
+  # The submitted integration grid: 1000 bins
   integration_grid: bins_1000
   # cosmo_numba get_pure_EB_modes -> interp_quad -> QUADPACK dqags: what the
   # submitted data vectors, covariance and PTEs were computed with
@@ -44,7 +44,6 @@ decisions:
   # CosmoCov is theory; no Hartlap correction applied
   # workflow/scripts/calculate_pure_eb_ptes.py: scipy.stats.chi2.sf
   pte_definition: chi2_tail
-  # conventional 2σ band; affects table colouring
   # sp_validation.cosmology.PLANCK18
   fiducial_cosmology: planck18
   bandpower_binning: bandpowers_32_powspace

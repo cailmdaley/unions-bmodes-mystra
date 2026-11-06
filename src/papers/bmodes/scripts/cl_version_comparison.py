@@ -17,14 +17,13 @@ import numpy as np
 import plotting_utils  # noqa: F401
 import seaborn as sns
 from astropy.io import fits
+from numerics import compute_chi2_pte, ell_bin_mask
 from plotting_utils import (
     ERRORBAR_DEFAULTS,
     FIG_WIDTH_FULL,
     MARKER_STYLES,
     PAPER_MPLSTYLE,
-    compute_chi2_pte,
     draw_normalized_boxes_ell_scale,
-    ell_bin_mask,
     find_fiducial_index,
     get_version_alpha,
     version_label,

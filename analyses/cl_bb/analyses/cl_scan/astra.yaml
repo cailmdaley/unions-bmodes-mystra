@@ -40,6 +40,10 @@ inputs:
   from: ../shapepipe_v14_catalogs
 - id: shapepipe_v145_rerun
   from: ../shapepipe_v145_rerun
+- id: decision_values_script
+  from: ../decision_values_script
+- id: catalog_versions_script
+  from: ../catalog_versions_script
 decisions:
   noise_bias_correction:
     from: ../noise_bias_correction
@@ -69,6 +73,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -96,6 +102,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -123,6 +131,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -150,6 +160,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -177,6 +189,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -204,6 +218,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -231,6 +247,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -258,6 +276,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -285,6 +305,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -312,6 +334,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -339,6 +363,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -366,6 +392,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -393,6 +421,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -420,6 +450,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -447,6 +479,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -474,6 +508,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -501,6 +537,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -528,6 +566,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -555,6 +595,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -582,6 +624,8 @@ outputs:
   - shapepipe_v145_rerun
   - redshift_distributions
   - redshift_distributions_legacy
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -628,6 +672,8 @@ outputs:
   - pseudo_cl_cov_sp_v1p4p8_fine
   - pseudo_cl_sp_v1p4p11p3_fine
   - pseudo_cl_cov_sp_v1p4p11p3_fine
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - leakage_correction

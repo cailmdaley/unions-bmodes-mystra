@@ -30,6 +30,10 @@ inputs:
   from: ../shapepipe_v14_catalogs
 - id: shapepipe_v145_rerun
   from: ../shapepipe_v145_rerun
+- id: decision_values_script
+  from: ../decision_values_script
+- id: catalog_versions_script
+  from: ../catalog_versions_script
 decisions:
   integration_grid:
     from: ../integration_grid
@@ -54,6 +58,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -78,6 +84,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -102,6 +110,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -126,6 +136,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -150,6 +162,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -174,6 +188,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -198,6 +214,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -222,6 +240,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -246,6 +266,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -270,6 +292,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -294,6 +318,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -318,6 +344,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -342,6 +370,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -366,6 +396,8 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -403,6 +435,8 @@ outputs:
   - xi_sp_v1p4p11p3_integration
   - xi_sp_v1p4p11p3_leak_corr_reporting
   - xi_sp_v1p4p11p3_leak_corr_integration
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - leakage_correction

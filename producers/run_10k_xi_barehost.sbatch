@@ -69,7 +69,6 @@ echo "[tenk_xi] host mpiexec: $(which mpiexec)"; mpiexec --version | head -1
 # NO PYTHONPATH -> run_2pcf_highres uses its standalone cat_config resolver.
 mpiexec --map-by ppr:${PPN}:node -n ${NTASKS} \
   "$PY" "$SCRIPT" \
-  --config     $WT/papers/bmodes/config/config.yaml \
   --cat-config $WT/cosmo_val/cat_config.yaml \
   --version    SP_v1.4.6.3_leak_corr \
   --nbins      ${NBINS} --npatch ${NPATCH} \

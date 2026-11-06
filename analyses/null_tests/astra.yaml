@@ -97,6 +97,18 @@ inputs:
   - id: cov_reporting_ng
     from: ../covariance.cov_reporting_ng
 
+  - id: numerics_script
+    from: ../numerics_script
+
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
+  - id: emit_nu_penalty_verdicts_script
+    from: ../emit_nu_penalty_verdicts_script
+
 outputs:
   - id: paper_claims
     type: table
@@ -128,6 +140,9 @@ outputs:
       - cosebis_pte_per_cut
       - config_space_pte_matrices_script
       - scale_cuts_script
+      - numerics_script
+      - decision_values_script
+      - catalog_versions_script
     recipe:
       # config_space_pte_matrices.py, evidence-only mode. The 7-version
       # (leak-corrected + uncorrected) sweep lives INSIDE the script; the swept
@@ -163,6 +178,9 @@ outputs:
       - cl_sweep
       - cl_bandpowers_reporting
       - cl_cov_reporting
+      - numerics_script
+      - decision_values_script
+      - catalog_versions_script
     decisions: [cl_pte_blind_strategy, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
     recipe:
       # harmonic_space_pte_matrices.py, evidence-only mode. The 7-version sweep
@@ -248,6 +266,11 @@ outputs:
       - cov_reporting_g
       - cov_reporting_ng
       - generate_paper_macros_script
+      - numerics_script
+      - decision_values_script
+      - scale_cuts_script
+      - catalog_versions_script
+      - emit_nu_penalty_verdicts_script
     recipe:
       command: >
         python src/papers/bmodes/scripts/generate_paper_macros.py
@@ -289,6 +312,7 @@ outputs:
       - blind_check_cosmocov
       - blind_check_xi
       - blind_check_pseudo_cl
+      - decision_values_script
     recipe:
       command: >
         python src/papers/bmodes/scripts/bb_covariance_blind_independence.py

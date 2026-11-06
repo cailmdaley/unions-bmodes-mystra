@@ -34,6 +34,12 @@ inputs:
     # `generate_cosmocov_ini.py` (which writes an n(z) path under
     # `/n17data/sguerrini/UNIONS/WL/nz/` into the `.ini`) read files inside it.
 
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
 outputs:
   - id: cosmology_snapshot
     type: data
@@ -62,7 +68,7 @@ outputs:
       Together they give the non-Gaussian share of the ξ_±
       diagonal variance quoted in the paper.
     decisions: [fiducial_catalog, fiducial_blind, covariance_engine, reporting_binning, leakage_correction]
-    inputs: [cosmology_snapshot, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
+    inputs: [cosmology_snapshot, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl, decision_values_script, catalog_versions_script]
     format: txt
     recipe:
       # Compute just G: the NG diagnostic does not change this extract.
@@ -92,7 +98,7 @@ outputs:
       quoted in the paper but does not enter the PTEs, which use
       the [selected integration covariance](#decisions.covariance_class).
     decisions: [fiducial_catalog, fiducial_blind, mask_application, covariance_engine, reporting_binning, leakage_correction]
-    inputs: [cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
+    inputs: [cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl, decision_values_script, catalog_versions_script]
     format: txt
     recipe:
       # Primary reporting-grid CosmoCov run (20 bins, ng=1, masked). Emits the
@@ -126,7 +132,7 @@ outputs:
       pure-mode covariances use a linear transform or
       [MC realisations](#../decisions.mc_samples).
     decisions: [fiducial_catalog, fiducial_blind, covariance_class, covariance_engine, integration_grid, leakage_correction]
-    inputs: [cosmology_snapshot, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
+    inputs: [cosmology_snapshot, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl, decision_values_script, catalog_versions_script]
     format: txt
     recipe:
       # Full CosmoCov chain (generate .ini from the cosmology snapshot +
@@ -155,7 +161,7 @@ outputs:
       [cl_bb's data vector](#../analyses.cl_bb) — the covariance
       Paper IV uses for its BB / EB null tests.
     decisions: [fiducial_catalog, fiducial_blind, bandpower_binning, noise_bias_correction, leakage_correction]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script, decision_values_script, catalog_versions_script]
     format: fits
     recipe:
       # generate_pseudo_cl_cov.py CLI: NaMaster iNKA Gaussian bandpower
@@ -180,7 +186,7 @@ outputs:
       leak-corrected catalogs' counterparts come from the
       [cl_scan sweep](#../cl_bb.analyses.cl_scan).
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, noise_bias_correction, leakage_correction]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script, decision_values_script, catalog_versions_script]
     format: fits
     recipe:
       # Same generate_pseudo_cl_cov.py CLI as cl_cov_reporting, 96-bin fine

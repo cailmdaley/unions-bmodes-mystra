@@ -37,6 +37,12 @@ inputs:
   - id: shapepipe_v145_rerun
     from: ../shapepipe_v145_rerun
 
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
 decisions:
   noise_bias_correction:
     from: ../noise_bias_correction
@@ -92,7 +98,7 @@ template:
     blind A (nside 1024, npatch 1). The per-version analogue of
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_${product}.py` invocation, different `--ver`.
-  inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, redshift_distributions_legacy]
+  inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, redshift_distributions_legacy, decision_values_script, catalog_versions_script]
   decisions: [fiducial_catalog, fiducial_blind, noise_bias_correction, "${grid_decision}", "${product_decision}", leakage_correction]
   recipe:
     # The per-version unit of work. generate_pseudo_cl.py and
@@ -121,6 +127,7 @@ gather:
     [cl_bb.cl_sweep](#../outputs.cl_sweep); consumers untar it into
     a temp dir and pass that as `--results-dir`, unchanged from the
     July contract.
+  inputs: [decision_values_script, catalog_versions_script]
   decisions: [fiducial_catalog, leakage_correction, harmonic_validation_binning]
   recipe:
     command: >

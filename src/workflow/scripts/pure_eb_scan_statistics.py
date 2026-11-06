@@ -49,7 +49,7 @@ from mock_campaign_analysis import (
     _apply_scale_cut_convention,
     _load_pure_covariance,
 )
-from plotting_utils import compute_chi2_pte
+from numerics import compute_chi2_pte
 
 # The two script trees are separate sys.path roots; the data-side PTE
 # calculation lives with the paper-facing scripts and is shared rather than

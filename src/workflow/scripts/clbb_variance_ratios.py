@@ -29,7 +29,7 @@ import numpy as np
 from astropy.io import fits
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from plotting_utils import ell_bin_mask, get_powspace_bin_edges  # noqa: E402
+from numerics import ell_bin_mask, get_powspace_bin_edges  # noqa: E402
 
 ELL_MIN = 300.0
 ELL_MAX = 1600.0

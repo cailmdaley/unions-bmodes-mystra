@@ -152,17 +152,6 @@ inputs:
   - id: scale_cuts_script
     from: ../scale_cuts_script
 
-  - id: plotting_utils_script
-    type: data
-    description: |
-      The shared figure module (style, A&A column widths, colours,
-      mark spec) every figure here draws from. It also holds the
-      null-test χ²/PTE with its Hartlap factor, the √ℓ bandpower
-      edges and ℓ-window masks, and the PTE-threshold resolver; the
-      compute passes import these without declaring it, so editing
-      them restales only these figures.
-    source: "./src/workflow/scripts/plotting_utils.py"
-
   - id: min_pte_window_scan_script
     type: data
     description: |
@@ -182,11 +171,7 @@ inputs:
     source: "./src/workflow/scripts/mock_campaign_analysis.py"
 
   - id: mock_min_pte_calibration_script
-    type: data
-    description: |
-      The min-PTE script, which both calibrates and renders; an
-      input to the figure only.
-    source: "./src/workflow/scripts/mock_min_pte_calibration.py"
+    from: ../mock_min_pte_calibration_script
 
   - id: mock_validation_figure_script
     type: data
@@ -230,6 +215,21 @@ inputs:
       ratio.
     source: "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/glass_mock_v1.4.6.3_v2/clbb_cov_work/footprint_4096.log"
 
+  - id: numerics_script
+    from: ../numerics_script
+
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
+  - id: pure_mode_covariance_script
+    from: ../pure_mode_covariance_script
+
+  - id: pure_eb_transform_script
+    from: ../pure_eb_transform_script
+
 outputs:
 
   # ── Scatter: the per-realisation data vectors ────────────────────────────
@@ -250,7 +250,7 @@ outputs:
       The suite's stored 20-bin reporting-grid ξ_± vectors, stacked
       into the same ensemble layout as
       [mock_xi_fine](#outputs.mock_xi_fine).
-    inputs: [glass_mock_xi_reporting]
+    inputs: [glass_mock_xi_reporting, decision_values_script]
     decisions: [mock_suite, reporting_binning]
     recipe:
       command: >
@@ -313,7 +313,7 @@ outputs:
       integration grid from [mock_xi_fine](#outputs.mock_xi_fine),
       truncated at 300' to match the fiducial CosmoCov integration
       grid.
-    inputs: [mock_xi_fine, mock_xi_reporting]
+    inputs: [mock_xi_fine, mock_xi_reporting, pure_eb_transform_script]
     decisions: [mock_suite, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, decomposition_method]
     recipe:
       command: >
@@ -352,8 +352,8 @@ outputs:
       as it does for COSEBIs. Used when
       [reference_covariance](#decisions.reference_covariance) is
       `mockmatched`.
-    inputs: [cov_integration_mockmatched, xi_reporting, xi_integration, redshift_distributions]
-    decisions: [fiducial_catalog, fiducial_blind, mc_samples, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, decomposition_method, leakage_correction]
+    inputs: [cov_integration_mockmatched, xi_reporting, xi_integration, redshift_distributions, decision_values_script, catalog_versions_script, pure_mode_covariance_script, pure_eb_transform_script]
+    decisions: [fiducial_catalog, fiducial_blind, mc_samples, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, decomposition_method, leakage_correction, integration_grid]
     recipe:
       # mock_matched_pure_eb_cov.py is precompute_pure_eb_chunk + gather in one
       # deterministic invocation, on the twin's own partition: 20 batches x 100
@@ -409,8 +409,8 @@ outputs:
       Also carries the analytic σ vectors on both ranges, the cut
       masks, and the covariance triple, scale cuts and any skipped
       realisations. Every campaign number derives from this file.
-    inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, mock_xi_fine, glass_mock_cl, xi_integration, cov_integration, pure_eb_semianalytic_data, cl_cov_reporting, cov_integration_mockmatched, pure_cov_mockmatched, cl_cov_mockmatched]
-    decisions: [reference_covariance, mock_suite, scale_cut_convention, fiducial_catalog, fiducial_blind, pte_definition]
+    inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, mock_xi_fine, glass_mock_cl, xi_integration, cov_integration, pure_eb_semianalytic_data, cl_cov_reporting, cov_integration_mockmatched, pure_cov_mockmatched, cl_cov_mockmatched, numerics_script, pure_mode_covariance_script]
+    decisions: [reference_covariance, mock_suite, scale_cut_convention, fiducial_catalog, fiducial_blind, pte_definition, integration_grid]
     recipe:
       # --reference-covariance picks the covariance triple; under `mockmatched`
       # the C_l^BB reference is the directly computed mock covariance rather
@@ -455,7 +455,7 @@ outputs:
       matrix cells and all 32 C_ℓ bands (1–250 arcmin / 8≤ℓ≤2048).
       The mock PTE distributions use the matching covariance window,
       including Hartlap-corrected pure-mode statistics.
-    inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, scale_cuts_script]
+    inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, scale_cuts_script, numerics_script, decision_values_script]
     decisions: [reference_covariance, mock_suite, scale_cut_convention, reporting_binning]
     recipe:
       command: >
@@ -485,7 +485,7 @@ outputs:
       effects that largely cancel: correlations between the statistics
       raise the minimum PTE, while the slightly underestimated
       configuration-space covariance lowers it.
-    inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, mock_min_pte_calibration_script, plotting_utils_script, scale_cuts_script]
+    inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut, mock_min_pte_calibration_script, scale_cuts_script, numerics_script, decision_values_script]
     decisions: [reference_covariance, mock_suite, scale_cut_convention, pte_threshold, reporting_binning]
     recipe:
       command: >
@@ -533,8 +533,8 @@ outputs:
       excluded from summaries: the COSEBI basis is too ill-conditioned
       over one reporting bin (median mock B_{n≤20} PTE 0.13 there,
       against ~0.45 on every window of two bins or more).
-    inputs: [mock_per_mock_statistics, mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration, pure_eb_semianalytic_data, cov_integration_mockmatched, pure_cov_mockmatched, min_pte_window_scan_script]
-    decisions: [reference_covariance, mock_suite, pte_definition]
+    inputs: [mock_per_mock_statistics, mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration, pure_eb_semianalytic_data, cov_integration_mockmatched, pure_cov_mockmatched, min_pte_window_scan_script, pure_mode_covariance_script]
+    decisions: [reference_covariance, mock_suite, pte_definition, integration_grid]
     recipe:
       # --reference-covariance selects the pair, exactly as it does for
       # mock_per_mock_statistics. There is no C_l member: the harmonic PTEs
@@ -582,7 +582,7 @@ outputs:
       on both the full range and the fiducial cut, so only the χ²
       statistics depend on the
       [adopted scale cuts](#../decisions.fiducial_scale_cuts).
-    inputs: [mock_per_mock_statistics]
+    inputs: [mock_per_mock_statistics, numerics_script, pure_mode_covariance_script]
     recipe:
       command: >
         python src/workflow/scripts/mock_campaign_analysis.py
@@ -600,7 +600,7 @@ outputs:
       `reference_covariance: mockmatched` it tests the analytic
       covariance amplitude; under `fiducial` it shows the effect of
       the galaxy-count mismatch.
-    inputs: [mock_per_mock_statistics, mock_campaign_analysis_script, plotting_utils_script]
+    inputs: [mock_per_mock_statistics, mock_campaign_analysis_script, numerics_script, pure_mode_covariance_script]
     decisions: [reference_covariance]
     recipe:
       command: >
@@ -636,7 +636,7 @@ outputs:
       [glass_mock_cl](#inputs.glass_mock_cl), since
       [mock_per_mock_statistics](#outputs.mock_per_mock_statistics)
       stores only the in-cut bands.
-    inputs: [mock_per_mock_statistics, mock_campaign_evidence, glass_mock_cl, mock_validation_figure_script, plotting_utils_script]
+    inputs: [mock_per_mock_statistics, mock_campaign_evidence, glass_mock_cl, mock_validation_figure_script]
     decisions: [reference_covariance, mock_suite]
     recipe:
       command: >
@@ -664,7 +664,7 @@ outputs:
       alongside as `cov_pointwise`, and the two σ agree to 1.3% at
       worst.
     inputs: [cov_integration_mockmatched, mock_xi_reporting, mock_xi_reporting_cov_script]
-    decisions: [mock_suite, reference_covariance]
+    decisions: [mock_suite, reference_covariance, integration_grid]
     recipe:
       command: >
         python src/workflow/scripts/mock_xi_reporting_cov_mockmatched.py
@@ -723,7 +723,7 @@ outputs:
       1′) is reproduced bin for bin by band-limiting the theory at
       ℓ = 4096, the simulation's resolution, wholly outside the
       fiducial cut.
-    inputs: [mock_xi_reporting, mock_xi_input_theory, mock_xi_reporting_cov_mockmatched, mock_xi_validation_script, plotting_utils_script]
+    inputs: [mock_xi_reporting, mock_xi_input_theory, mock_xi_reporting_cov_mockmatched, mock_xi_validation_script]
     decisions: [mock_suite, reference_covariance]
     recipe:
       command: >
@@ -779,7 +779,7 @@ outputs:
       sits at ≈−0.1σ in the first three bins against a ≈0.055σ error,
       a small-scale residual the cut excludes, so ξ_+^B reads PTE 0.004
       on the full range and 0.13 inside the cut.
-    inputs: [mock_per_mock_statistics, scale_cuts_script]
+    inputs: [mock_per_mock_statistics, scale_cuts_script, decision_values_script]
     decisions: [reference_covariance, scale_cut_convention, pte_definition, reporting_binning]
     recipe:
       command: >
@@ -841,7 +841,7 @@ outputs:
       Mean, median and per-band values. Independent of
       [reference_covariance](#decisions.reference_covariance), which it
       motivates.
-    inputs: [cl_cov_mockmatched, cl_cov_reporting, glass_mock_cl]
+    inputs: [cl_cov_mockmatched, cl_cov_reporting, glass_mock_cl, numerics_script]
     decisions: [mock_suite, fiducial_catalog, fiducial_blind]
     recipe:
       # Both covariances are read as their COVAR_BB_BB block; the l cut is
@@ -856,6 +856,8 @@ outputs:
       resources: { cpus: 1, memory: "4GB" }
 
 decisions:
+  integration_grid:
+    from: ../integration_grid
   pte_definition:
     from: ../pte_definition
   decomposition_method:

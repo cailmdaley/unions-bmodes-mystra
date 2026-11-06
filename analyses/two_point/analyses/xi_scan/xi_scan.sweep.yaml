@@ -23,6 +23,12 @@ inputs:
   - id: shapepipe_v145_rerun
     from: ../shapepipe_v145_rerun
 
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
 decisions:
   integration_grid:
     from: ../integration_grid
@@ -66,7 +72,7 @@ template:
     text dump. The per-version analogue of
     [xi_${grid}](#../outputs.xi_${grid}); same `run_2pcf.py`
     invocation, different `--ver`.
-  inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+  inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, decision_values_script, catalog_versions_script]
   decisions: [fiducial_catalog, patch_count, "${grid_decision}", leakage_correction]
   recipe:
     # The per-version unit of work: exactly the run_2pcf.py CLI the fiducial
@@ -92,6 +98,7 @@ gather:
     E/B sweep (`--xi-sweep-dir`) reconstruct. Re-exported by
     [two_point.xi_sweep](#../outputs.xi_sweep); consumers untar it
     into a temp dir, unchanged from the July contract.
+  inputs: [decision_values_script, catalog_versions_script]
   decisions: [fiducial_catalog, leakage_correction]
   recipe:
     command: >

@@ -36,6 +36,24 @@ inputs:
   - id: pure_eb_version_comparison_script
     from: ../pure_eb_version_comparison_script
 
+  - id: numerics_script
+    from: ../numerics_script
+
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: scale_cuts_script
+    from: ../scale_cuts_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
+  - id: pure_mode_covariance_script
+    from: ../pure_mode_covariance_script
+
+  - id: pure_eb_transform_script
+    from: ../pure_eb_transform_script
+
 outputs:
   - id: pure_eb_semianalytic_data
     type: data
@@ -51,7 +69,7 @@ outputs:
       uses its B-mode block.
     format: npz
     decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples, decomposition_method, leakage_correction]
-    inputs: [xi_reporting, xi_integration, cov_integration, redshift_distributions]
+    inputs: [xi_reporting, xi_integration, cov_integration, redshift_distributions, decision_values_script, catalog_versions_script, pure_mode_covariance_script, pure_eb_transform_script]
     recipe:
       # run_pure_eb_semianalytic.sh: under monte_carlo it runs the 20 MC chunks
       # in parallel (each a fresh process, deterministic seed 42+chunk_id) then
@@ -86,7 +104,7 @@ outputs:
       scale cuts.
     format: png
     decisions: [fiducial_catalog, scale_cut_convention, pte_definition, leakage_correction, fiducial_blind, reporting_binning]
-    inputs: [pure_eb_semianalytic_data, cov_reporting_ng]
+    inputs: [pure_eb_semianalytic_data, cov_reporting_ng, numerics_script, decision_values_script, scale_cuts_script, catalog_versions_script, pure_mode_covariance_script]
     recipe:
       # pure_eb_data_vector.py: pure E/B data-vector figure, fiducial only. Reads the
       # semianalytic NPZ and the reporting-grid masked ng CosmoCov ξ±
@@ -109,7 +127,7 @@ outputs:
       arise from integral coupling in the pure-mode filters.
     format: png
     decisions: [fiducial_catalog, leakage_correction]
-    inputs: [pure_eb_semianalytic_data]
+    inputs: [pure_eb_semianalytic_data, decision_values_script, catalog_versions_script]
     recipe:
       # pure_eb_covariance.py: pure E/B covariance figure, fiducial only. Reads the
       # semianalytic NPZ; renders one 300-dpi PNG of the 6-block correlation
@@ -133,7 +151,7 @@ outputs:
       scale cuts ([PTE table](#../outputs.pte_table_appendix)).
     format: png
     decisions: [scale_cut_convention, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind, reporting_binning]
-    inputs: [pure_eb_semianalytic_data, pure_eb_sweep, pure_eb_version_comparison_script]
+    inputs: [pure_eb_semianalytic_data, pure_eb_sweep, pure_eb_version_comparison_script, numerics_script, decision_values_script, scale_cuts_script, catalog_versions_script]
     recipe:
       # pure_eb_version_comparison.py: pure-mode row of the version-comparison stack. The
       # non-fiducial versions come from the pure_eb_sweep tarball (unpacked to a
@@ -161,7 +179,7 @@ outputs:
       covariance is a Monte Carlo estimate and none when it is exact.
     format: npz
     decisions: [fiducial_catalog, fiducial_blind, pte_blind_strategy, pte_definition, leakage_correction]
-    inputs: [pure_eb_semianalytic_data, cov_integration]
+    inputs: [pure_eb_semianalytic_data, cov_integration, decision_values_script, catalog_versions_script, pure_mode_covariance_script]
     recipe:
       # calculate_pure_eb_ptes.py reads the gathered semianalytic npz +
       # integration cov, evaluates the ξ_+^B/ξ_-^B/ξ_tot^B χ² PTE matrices over
@@ -191,7 +209,7 @@ outputs:
       [version comparison](#outputs.pure_eb_version_comparison_figure).
     format: tar.gz
     decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples, decomposition_method, leakage_correction]
-    inputs: [xi_sweep, cov_sweep, redshift_distributions, redshift_distributions_legacy]
+    inputs: [xi_sweep, cov_sweep, redshift_distributions, redshift_distributions_legacy, decision_values_script, catalog_versions_script, pure_mode_covariance_script, pure_eb_transform_script]
     recipe:
       # run_pure_eb_sweep.sh loops the non-fiducial version list (catalog_versions.py)
       # and calls run_pure_eb_semianalytic.sh once per version, reading per-version
@@ -233,7 +251,7 @@ outputs:
       heatmaps](#../outputs.fig_pte_heatmaps).
     format: tar.gz
     decisions: [fiducial_catalog, fiducial_blind, pte_blind_strategy, pte_definition, leakage_correction]
-    inputs: [pure_eb_sweep, cov_sweep, redshift_distributions, redshift_distributions_legacy]
+    inputs: [pure_eb_sweep, cov_sweep, redshift_distributions, redshift_distributions_legacy, decision_values_script, catalog_versions_script, pure_mode_covariance_script]
     recipe:
       # run_pure_eb_ptes_sweep.sh loops the non-fiducial version list
       # (catalog_versions.py) and calls calculate_pure_eb_ptes.py once per version,

@@ -18,6 +18,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
+from numerics import compute_chi2_pte
 from plotting_utils import (
     COLOR_AMB,
     COLOR_B,
@@ -25,7 +26,6 @@ from plotting_utils import (
     COLOR_TOTAL,
     FIG_WIDTH_FULL,
     PAPER_MPLSTYLE,
-    compute_chi2_pte,
 )
 from pure_mode_covariance import hartlap_samples
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts

@@ -31,6 +31,21 @@ inputs:
   - id: cl_sweep
     from: ../cl_sweep
 
+  - id: numerics_script
+    from: ../numerics_script
+
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: scale_cuts_script
+    from: ../scale_cuts_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
+  - id: harmonic_config_cosebis_comparison_figure_script
+    from: ../harmonic_config_cosebis_comparison_figure_script
+
 decisions:
   pte_definition:
     from: ../pte_definition
@@ -73,7 +88,7 @@ template:
     same compute pass, different `--fiducial-version`. Only its
     B-mode PTEs are consumed (through the gather) — the paper
     figure is rendered from the fiducial NPZ.
-  inputs: [xi_sweep, cov_sweep, cl_sweep]
+  inputs: [xi_sweep, cov_sweep, cl_sweep, numerics_script, decision_values_script, scale_cuts_script, catalog_versions_script]
   decisions: [fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition, fiducial_catalog, leakage_correction, reporting_binning, integration_grid, mode_count]
   recipe:
     # The three version-sweep bundles are untarred into temp dirs and this
@@ -125,6 +140,7 @@ gather:
     and its full-range twin). Recomputes nothing: the PTEs come
     from the member NPZs through the same `_metrics_from_modes`
     pass the fiducial metrics outputs use.
+  inputs: [numerics_script, decision_values_script, scale_cuts_script, catalog_versions_script, harmonic_config_cosebis_comparison_figure_script]
   recipe:
     command: >
       python src/papers/bmodes/scripts/merge_harmonic_version_ptes.py

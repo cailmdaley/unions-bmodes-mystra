@@ -20,6 +20,8 @@ from pathlib import Path
 import treecorr
 from astropy.io import fits
 
+from decision_values import INTEGRATION_GRID
+
 # v1.4.8 = v1.4.6.3 + the faint/bright star-halo cuts (masks.txt in
 # /n17data/UNIONS/WL/v1.4.x/v1.4.8/).  mask_r_nside131072.hsp is a bit-packed
 # BOOLEAN HealSparse map, True where any structural bit (1|2|4|8|64|1024)
@@ -141,9 +143,9 @@ def _parser(argv=None):
     parser.add_argument(
         "--mock-ids", nargs="*", help="Explicit five-digit IDs, overriding --n-mocks."
     )
-    parser.add_argument("--min-sep", type=float, default=0.5)
-    parser.add_argument("--max-sep", type=float, default=500.0)
-    parser.add_argument("--nbins", type=int, default=1000)
+    parser.add_argument(
+        "--integration-grid", type=INTEGRATION_GRID.__getitem__, required=True
+    )
     parser.add_argument(
         "--num-threads",
         type=int,
@@ -166,6 +168,7 @@ def _parser(argv=None):
 
 def _standalone_main(argv=None):
     args = _parser(argv)
+    grid = args.integration_grid
     catalog_dir = Path(args.catalog_dir)
 
     if args.mock_id is not None:
@@ -175,9 +178,9 @@ def _standalone_main(argv=None):
         compute_one(
             catalog_dir / f"unions_glass_sim_{mock_id}_4096.fits",
             out_path,
-            min_sep=args.min_sep,
-            max_sep=args.max_sep,
-            nbins=args.nbins,
+            min_sep=grid.min_sep,
+            max_sep=grid.max_sep,
+            nbins=grid.nbins,
             mask_file=args.mask_file,
             num_threads=args.num_threads,
         )
@@ -191,7 +194,7 @@ def _standalone_main(argv=None):
     for raw_id in ids:
         mock_id = str(raw_id).zfill(5)
         catalog_path = catalog_dir / f"unions_glass_sim_{mock_id}_4096.fits"
-        output_path = output_dir / f"gg_glass_mock_{mock_id}_nbins={args.nbins}.fits"
+        output_path = output_dir / f"gg_glass_mock_{mock_id}_nbins={grid.nbins}.fits"
         if output_path.is_file():
             continue
         if not catalog_path.is_file():
@@ -200,9 +203,9 @@ def _standalone_main(argv=None):
         compute_one(
             catalog_path,
             output_path,
-            min_sep=args.min_sep,
-            max_sep=args.max_sep,
-            nbins=args.nbins,
+            min_sep=grid.min_sep,
+            max_sep=grid.max_sep,
+            nbins=grid.nbins,
             mask_file=args.mask_file,
             num_threads=args.num_threads,
         )

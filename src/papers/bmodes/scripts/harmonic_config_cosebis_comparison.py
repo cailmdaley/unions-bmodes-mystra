@@ -24,12 +24,12 @@ import seaborn as sns
 import treecorr
 from astropy.io import fits
 from cosmo_numba.B_modes.cosebis import COSEBIS
+from numerics import compute_chi2_pte
 from plotting_utils import (
     EXCLUDED_SHADE,
     FIG_WIDTH_FULL,
     FIG_WIDTH_SINGLE,
     PAPER_MPLSTYLE,
-    compute_chi2_pte,
     iter_version_figures,
     version_label,
 )

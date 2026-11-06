@@ -43,13 +43,13 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Rectangle
+from numerics import resolve_pte_threshold
 from plotting_utils import (
     FIG_WIDTH_FULL,
     PAPER_MPLSTYLE,
     format_pte_colorbar,
     make_pte_colormap,
     make_pte_norm,
-    resolve_pte_threshold,
 )
 from print_width import savefig_at_width
 from scale_cuts import (

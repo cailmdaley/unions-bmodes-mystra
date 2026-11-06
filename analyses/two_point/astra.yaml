@@ -17,6 +17,12 @@ inputs:
       multi-node MPI run.
     source: "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/production_out/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt"
 
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
 outputs:
   - id: xi_reporting
     type: data
@@ -24,7 +30,7 @@ outputs:
       TreeCorr ξ_±(θ) on the reporting grid: 20 logarithmic
       bins over [1', 250'].
     format: txt
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, decision_values_script, catalog_versions_script]
     decisions: [fiducial_catalog, reporting_binning, patch_count, leakage_correction]
     recipe:
       # lc owns the container and the environment; the recipe is a bare python
@@ -46,7 +52,7 @@ outputs:
       filters' kernels are evaluated on measurements rather than
       zero padding.
     format: txt
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, decision_values_script, catalog_versions_script]
     decisions: [fiducial_catalog, integration_grid, patch_count, leakage_correction]
     recipe:
       # Same run_2pcf.py CLI as xi_reporting, integration grid: 1000 bins

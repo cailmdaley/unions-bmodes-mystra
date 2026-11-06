@@ -28,6 +28,15 @@ inputs:
   - id: cl_version_comparison_script
     from: ../cl_version_comparison_script
 
+  - id: numerics_script
+    from: ../numerics_script
+
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
 outputs:
   - id: cl_bandpowers_reporting
     type: data
@@ -40,7 +49,7 @@ outputs:
       [Cℓ figure](#../outputs.fig_cl_fiducial).
     format: fits
     decisions: [fiducial_catalog, fiducial_blind, estimator_choice, bandpower_binning, noise_bias_correction, leakage_correction]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, decision_values_script, catalog_versions_script]
     recipe:
       # lc owns the container; bare `python`, scripts read from the vendored
       # src/ tree. Fiducial version + blind A hardcoded (single-version
@@ -63,7 +72,7 @@ outputs:
       transform](#../cosebis.decisions.harmonic_validation_binning).
     format: fits
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, estimator_choice, noise_bias_correction, leakage_correction]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, decision_values_script, catalog_versions_script]
     recipe:
       # Same generate_pseudo_cl.py CLI as cl_bandpowers_reporting, 96-bandpower
       # fine grid (--nbins 96). Distinct {output} file, so no cache collision
@@ -100,7 +109,7 @@ outputs:
       lensing signal.
     format: png
     decisions: [fiducial_catalog, pte_definition, leakage_correction]
-    inputs: [cl_bandpowers_reporting, cl_cov_reporting]
+    inputs: [cl_bandpowers_reporting, cl_cov_reporting, numerics_script, decision_values_script, catalog_versions_script]
     recipe:
       # cl_data_vector.py CLI renders the Cℓ data-vector figure (fiducial) from the
       # fiducial data vector and its bandpower covariance, the two declared
@@ -126,7 +135,7 @@ outputs:
       catalog passes all statistics at the fiducial scale cuts
       ([PTE table](#../outputs.pte_table_appendix)).
     format: png
-    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, cl_version_comparison_script]
+    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, cl_version_comparison_script, numerics_script, decision_values_script, catalog_versions_script]
     decisions: [pte_definition, fiducial_catalog, leakage_correction]
     recipe:
       # cl_version_comparison.py CLI overlays Cℓ^BB / Cℓ^EB across the 4
@@ -157,7 +166,7 @@ outputs:
       [harmonic-space PTE heatmap](#../outputs.fig_cl_pte_heatmap)
       shows.
     format: npz
-    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting]
+    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, numerics_script, decision_values_script, catalog_versions_script]
     decisions: [cl_pte_blind_strategy, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
     recipe:
       # harmonic_space_pte_matrices.py CLI, run in its PTE-matrix mode: the single

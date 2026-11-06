@@ -12,7 +12,7 @@ import math
 from datetime import datetime
 from pathlib import Path
 
-from plotting_utils import resolve_pte_threshold
+from numerics import resolve_pte_threshold
 from catalog_versions import VERSIONS, add_catalog_arguments, catalogs_from
 from decision_values import REPORTING_BINNING
 

@@ -55,6 +55,14 @@ inputs:
   from: ../xi_integration
 - id: cov_integration
   from: ../cov_integration
+- id: numerics_script
+  from: ../numerics_script
+- id: decision_values_script
+  from: ../decision_values_script
+- id: catalog_versions_script
+  from: ../catalog_versions_script
+- id: compute_cosebis_pte_single_script
+  from: ../compute_cosebis_pte_single_script
 decisions:
   pte_definition:
     from: ../pte_definition
@@ -87,6 +95,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -117,6 +128,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -147,6 +161,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -177,6 +194,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -207,6 +227,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -237,6 +260,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -267,6 +293,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -297,6 +326,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -327,6 +359,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -357,6 +392,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -387,6 +425,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -417,6 +458,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -447,6 +491,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -477,6 +524,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -507,6 +557,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -537,6 +590,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -567,6 +623,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -597,6 +656,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -627,6 +689,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -657,6 +722,9 @@ outputs:
   inputs:
   - xi_integration
   - cov_integration
+  - numerics_script
+  - decision_values_script
+  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -710,6 +778,9 @@ outputs:
   - cosebis_pte_row_17
   - cosebis_pte_row_18
   - cosebis_pte_row_19
+  - numerics_script
+  - decision_values_script
+  - compute_cosebis_pte_single_script
   recipe:
     command: |
       python src/papers/bmodes/scripts/merge_cosebis_pte_rows.py --members {inputs.cosebis_pte_row_00} {inputs.cosebis_pte_row_01} {inputs.cosebis_pte_row_02} {inputs.cosebis_pte_row_03} {inputs.cosebis_pte_row_04} {inputs.cosebis_pte_row_05} {inputs.cosebis_pte_row_06} {inputs.cosebis_pte_row_07} {inputs.cosebis_pte_row_08} {inputs.cosebis_pte_row_09} {inputs.cosebis_pte_row_10} {inputs.cosebis_pte_row_11} {inputs.cosebis_pte_row_12} {inputs.cosebis_pte_row_13} {inputs.cosebis_pte_row_14} {inputs.cosebis_pte_row_15} {inputs.cosebis_pte_row_16} {inputs.cosebis_pte_row_17} {inputs.cosebis_pte_row_18} {inputs.cosebis_pte_row_19} --out-file {output}

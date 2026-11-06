@@ -16,16 +16,14 @@ import numpy as np
 from astropy.io import fits
 from matplotlib.patches import Rectangle
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from numerics import compute_chi2_pte, ell_bin_index, resolve_pte_threshold
 from plotting_utils import (
     FIG_WIDTH_FULL,
     FIG_WIDTH_SINGLE,
     PAPER_MPLSTYLE,
-    compute_chi2_pte,
-    ell_bin_index,
     format_pte_colorbar,
     make_pte_colormap,
     make_pte_norm,
-    resolve_pte_threshold,
 )
 from print_width import savefig_at_width
 from catalog_versions import VERSIONS, add_catalog_arguments, catalogs_from

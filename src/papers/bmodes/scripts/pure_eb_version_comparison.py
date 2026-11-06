@@ -12,11 +12,11 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from numerics import compute_chi2_pte
 from plotting_utils import (
     FIG_WIDTH_FULL,
     MARKER_STYLES,
     PAPER_MPLSTYLE,
-    compute_chi2_pte,
     draw_normalized_boxes_log_scale,
     find_fiducial_index,
     get_version_alpha,

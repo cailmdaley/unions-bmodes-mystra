@@ -34,6 +34,12 @@ inputs:
   - id: cosmocov_libgsl
     from: ../cosmocov_libgsl
 
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
 decisions:
   integration_grid:
     from: ../integration_grid
@@ -72,7 +78,7 @@ template:
     The per-version analogue of
     [cov_integration](#../outputs.cov_integration); same
     `run_cosmocov_chain.sh` chain, different `--version`.
-  inputs: [cosmology_snapshot, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
+  inputs: [cosmology_snapshot, redshift_distributions, cosmocov_binary, cosmocov_libgsl, decision_values_script, catalog_versions_script]
   decisions: [fiducial_catalog, fiducial_blind, covariance_class, covariance_engine, integration_grid, leakage_correction]
   recipe:
     # The per-version unit of work: one run_cosmocov_chain.sh chain, exactly as
@@ -105,6 +111,7 @@ gather:
     [covariance.cov_sweep](#../outputs.cov_sweep); consumers untar
     it into a temp dir and pass the archive root as `--cov-dir`,
     unchanged from the July contract.
+  inputs: [decision_values_script, catalog_versions_script]
   decisions: [fiducial_catalog, leakage_correction]
   recipe:
     command: >

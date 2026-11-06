@@ -16,11 +16,8 @@ import numpy as np
 import seaborn as sns
 import treecorr
 from cosmo_numba.B_modes.cosebis import COSEBIS
-from plotting_utils import (
-    FIG_WIDTH_SINGLE,
-    PAPER_MPLSTYLE,
-    compute_chi2_pte,
-)
+from numerics import compute_chi2_pte
+from plotting_utils import FIG_WIDTH_SINGLE, PAPER_MPLSTYLE
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
 
 from sp_validation.b_modes import calculate_cosebis, scale_cut_to_bins

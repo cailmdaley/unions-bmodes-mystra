@@ -14,14 +14,14 @@ Every PTE in the table is an analytic ``scipy.stats.chi2.sf(chi2, nu)``:
 * xi_tot^B          nu = 2 x that, the joint xi_+/xi_- test;
 * COSEBIs           nu = n_modes (6 or 20), independent of the angular cut;
 * C_l^BB            nu = number of bandpowers in the ell window
-                    (``plotting_utils.compute_chi2_pte``, dof = len(data)).
+                    (``numerics.compute_chi2_pte``, dof = len(data)).
 
 nu is therefore fully determined by the cut, so chi2_obs is recovered exactly by
 inverting the stored PTE and the penalized PTE follows as sf(chi2_obs, nu-2). No
 statistic is recomputed and no MC is re-run.
 
 The fiducial pure-mode window is resolved by ``scale_cuts.resolve_fiducial_bin_window``
-and the fiducial ell window by ``plotting_utils.ell_bin_index`` -- the same
+and the fiducial ell window by ``numerics.ell_bin_index`` -- the same
 resolvers the PTE evidence itself used, never bin means.
 
 Emits a CSV with one row per (version, statistic, cut).
@@ -35,7 +35,7 @@ import sys
 import numpy as np
 from scipy import stats
 
-from plotting_utils import ell_bin_index
+from numerics import ell_bin_index
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_bin_window
 from decision_values import REPORTING_BINNING
 

@@ -358,7 +358,7 @@ def main() -> None:
         args.global_alpha,
     )
     if args.emit == "figure":
-        from plotting_utils import resolve_pte_threshold  # type: ignore
+        from numerics import resolve_pte_threshold  # type: ignore
 
         if args.pte_threshold is None:
             raise ValueError("--emit figure needs --pte-threshold")

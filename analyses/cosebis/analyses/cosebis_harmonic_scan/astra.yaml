@@ -39,6 +39,16 @@ inputs:
   from: ../cov_sweep
 - id: cl_sweep
   from: ../cl_sweep
+- id: numerics_script
+  from: ../numerics_script
+- id: decision_values_script
+  from: ../decision_values_script
+- id: scale_cuts_script
+  from: ../scale_cuts_script
+- id: catalog_versions_script
+  from: ../catalog_versions_script
+- id: harmonic_config_cosebis_comparison_figure_script
+  from: ../harmonic_config_cosebis_comparison_figure_script
 decisions:
   pte_definition:
     from: ../pte_definition
@@ -73,6 +83,10 @@ outputs:
   - xi_sweep
   - cov_sweep
   - cl_sweep
+  - numerics_script
+  - decision_values_script
+  - scale_cuts_script
+  - catalog_versions_script
   decisions:
   - fiducial_blind
   - harmonic_validation_binning
@@ -127,6 +141,10 @@ outputs:
   - xi_sweep
   - cov_sweep
   - cl_sweep
+  - numerics_script
+  - decision_values_script
+  - scale_cuts_script
+  - catalog_versions_script
   decisions:
   - fiducial_blind
   - harmonic_validation_binning
@@ -181,6 +199,10 @@ outputs:
   - xi_sweep
   - cov_sweep
   - cl_sweep
+  - numerics_script
+  - decision_values_script
+  - scale_cuts_script
+  - catalog_versions_script
   decisions:
   - fiducial_blind
   - harmonic_validation_binning
@@ -241,6 +263,11 @@ outputs:
   - harmonic_modes_sp_v1p4p5
   - harmonic_modes_sp_v1p4p8
   - harmonic_modes_sp_v1p4p11p3
+  - numerics_script
+  - decision_values_script
+  - scale_cuts_script
+  - catalog_versions_script
+  - harmonic_config_cosebis_comparison_figure_script
   recipe:
     command: |
       python src/papers/bmodes/scripts/merge_harmonic_version_ptes.py --members {inputs.harmonic_modes_sp_v1p4p5} {inputs.harmonic_modes_sp_v1p4p8} {inputs.harmonic_modes_sp_v1p4p11p3} --out-file {output}

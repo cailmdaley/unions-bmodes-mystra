@@ -130,6 +130,70 @@ inputs:
       selects (bins 9–15, resolved from the grid edges).
     source: "./src/papers/bmodes/scripts/scale_cuts.py"
 
+  - id: numerics_script
+    type: data
+    description: |
+      The null-test χ²/PTE with its Hartlap factor, the √ℓ bandpower
+      edges and the ℓ windows they select, and the PTE-threshold
+      values.
+    source: "./src/workflow/scripts/numerics.py"
+
+  - id: decision_values_script
+    type: data
+    description: |
+      The tables mapping each decision option to the values the
+      scripts compute with.
+    source: "./src/workflow/scripts/decision_values.py"
+
+  - id: catalog_versions_script
+    type: data
+    description: |
+      The compared catalog versions, their labels, and the resolution
+      of `fiducial_catalog` and `leakage_correction` to a catalog.
+    source: "./src/papers/bmodes/scripts/catalog_versions.py"
+
+  - id: pure_mode_covariance_script
+    type: data
+    description: |
+      The pure-mode covariance constructions and the χ² correction
+      they imply.
+    source: "./src/papers/bmodes/scripts/pure_mode_covariance.py"
+
+  - id: pure_eb_transform_script
+    type: data
+    description: |
+      The ξ_± → pure-E/B transform, shared by the data, the mocks and
+      the grid-convergence test.
+    source: "./src/papers/bmodes/scripts/pure_eb_transform.py"
+
+  - id: emit_nu_penalty_verdicts_script
+    type: data
+    description: |
+      The ν-penalized verdict table, whose rows the paper macros also
+      read.
+    source: "./src/papers/bmodes/scripts/emit_nu_penalty_verdicts.py"
+
+  - id: compute_cosebis_pte_single_script
+    type: data
+    description: |
+      One row of the COSEBI PTE matrix; its scale-cut pairs also fix
+      the merged matrix.
+    source: "./src/papers/bmodes/scripts/compute_cosebis_pte_single.py"
+
+  - id: gather_pure_eb_chunks_script
+    type: data
+    description: |
+      The pure-E/B gather; the grid-convergence test reuses its ξ_±
+      loader and data vector.
+    source: "./src/papers/bmodes/scripts/gather_pure_eb_chunks.py"
+
+  - id: mock_min_pte_calibration_script
+    type: data
+    description: |
+      The min-PTE script, which both calibrates and renders; its
+      calibration payload also feeds the primary null-test report.
+    source: "./src/workflow/scripts/mock_min_pte_calibration.py"
+
   - id: pseudo_cl_cov_script
     type: data
     description: |
@@ -234,7 +298,7 @@ outputs:
       range is 1–250 arcmin / 8 ≤ ℓ ≤ 2048. A row passes the null test
       when its minimum PTE is at least p_thr = 0.01; only the fiducial
       catalog at the adopted cuts passes.
-    inputs: [config_space_pte_data, harmonic_space_pte_data, generate_paper_macros_script]
+    inputs: [config_space_pte_data, harmonic_space_pte_data, generate_paper_macros_script, numerics_script, decision_values_script, scale_cuts_script, catalog_versions_script, emit_nu_penalty_verdicts_script]
     decisions: [fiducial_catalog, leakage_correction]
     recipe:
       # Terminal gather, third member of generate_paper_macros.py's
@@ -340,6 +404,8 @@ outputs:
       - config_space_pte_data
       - harmonic_space_pte_data
       - scale_cuts_script
+      - numerics_script
+      - decision_values_script
     recipe:
       # Terminal gather: both PTE payloads are already materialised; numpy +
       # scipy.stats only, runs in seconds.
@@ -393,6 +459,9 @@ outputs:
       - config_space_pte_data
       - config_space_pte_matrices_script
       - scale_cuts_script
+      - numerics_script
+      - decision_values_script
+      - catalog_versions_script
     recipe:
       # Pure render: the per-version PTE grids are already in the evidence
       # payload written by null_tests.config_space_pte_data, so this re-runs no
@@ -420,6 +489,9 @@ outputs:
     inputs:
       - harmonic_space_pte_data
       - harmonic_space_pte_matrices_script
+      - numerics_script
+      - decision_values_script
+      - catalog_versions_script
     recipe:
       # Pure render, the appendix twin of
       # null_tests.harmonic_space_pte_evidence: the (ℓ_min, ℓ_max) PTE grids for
@@ -447,6 +519,10 @@ outputs:
     inputs:
       - cosebis_harmonic_modes_full
       - harmonic_config_cosebis_comparison_figure_script
+      - numerics_script
+      - decision_values_script
+      - scale_cuts_script
+      - catalog_versions_script
     recipe:
       # Plot-only mode over the full-range modes NPZ.
       command: >

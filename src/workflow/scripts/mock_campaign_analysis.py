@@ -68,50 +68,18 @@ sys.path.insert(
 )
 from pure_mode_covariance import MC_SAMPLES_WITHOUT_RECORD, hartlap_samples  # noqa: E402
 
-try:
-    from plotting_utils import (
-        CATEGORICAL_COLORS,
-        PAPER_MPLSTYLE,
-        SCATTER_ERRORBAR,
-        compute_chi2_pte,
-        ell_bin_mask,
-        get_powspace_bin_edges,
-    )
-except ImportError:  # pragma: no cover - only used in unusually small images
-    PAPER_MPLSTYLE = None
-    CATEGORICAL_COLORS = ["#2a78d6", "#eb6834", "#1baf7a"]
-    SCATTER_ERRORBAR = {"ls": "none", "ms": 4, "elinewidth": 0.8, "capsize": 0}
+from numerics import (  # noqa: E402
+    compute_chi2_pte,
+    ell_bin_mask,
+    get_powspace_bin_edges,
+)
+from plotting_utils import (  # noqa: E402
+    CATEGORICAL_COLORS,
+    PAPER_MPLSTYLE,
+    SCATTER_ERRORBAR,
+)
 
-    def compute_chi2_pte(data, covariance, n_samples=None):
-        chi2 = float(data @ np.linalg.solve(covariance, data))
-        dof = len(data)
-        if n_samples is not None:
-            chi2 *= (n_samples - dof - 2) / (n_samples - 1)
-        return chi2, float(stats.chi2.sf(chi2, dof)), dof
-
-    def get_powspace_bin_edges(ell_eff, lmin=8, lmax=2048, power=0.5):
-        n_ell_bins = len(ell_eff)
-        ells = np.arange(lmin, lmax + 1)
-        bins_ell = np.power(
-            np.linspace(lmin**power, lmax**power, n_ell_bins + 1), 1 / power
-        )
-        bpws = np.digitize(ells.astype(float), bins_ell) - 1
-        bpws[0], bpws[-1] = 0, n_ell_bins - 1
-        return (
-            np.array([ells[bpws == i][0] for i in range(n_ell_bins)]),
-            np.array([ells[bpws == i][-1] for i in range(n_ell_bins)]),
-        )
-
-    def ell_bin_mask(ell_eff, ell_min, ell_max, **kwargs):
-        low, high = get_powspace_bin_edges(ell_eff, **kwargs)
-        return (low >= ell_min) & (high <= ell_max)
-
-
-try:
-    if PAPER_MPLSTYLE:
-        plt.style.use(PAPER_MPLSTYLE)
-except OSError as exc:  # pragma: no cover - depends on checkout relocation
-    print(f"Could not load paper matplotlib style ({exc}); using matplotlib defaults")
+plt.style.use(PAPER_MPLSTYLE)
 
 
 STAT_NAMES = (

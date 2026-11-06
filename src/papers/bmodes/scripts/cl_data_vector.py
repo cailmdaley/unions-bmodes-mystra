@@ -18,6 +18,7 @@ import numpy as np
 from astropy.io import fits
 
 # Import shared utilities (also registers SquareRootScale)
+from numerics import compute_chi2_pte, ell_bin_mask, get_powspace_bin_edges
 from plotting_utils import (
     COLOR_CL_BB,
     COLOR_CL_EB,
@@ -25,9 +26,6 @@ from plotting_utils import (
     EXCLUDED_SHADE,
     FIG_WIDTH_SINGLE,
     PAPER_MPLSTYLE,
-    compute_chi2_pte,
-    ell_bin_mask,
-    get_powspace_bin_edges,
     iter_version_figures,
 )
 from print_width import savefig_at_width

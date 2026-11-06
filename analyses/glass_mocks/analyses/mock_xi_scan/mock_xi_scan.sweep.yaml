@@ -25,13 +25,16 @@ inputs:
   - id: glass_mock_catalogs
     from: ../glass_mock_catalogs
 
+  - id: decision_values_script
+    from: ../decision_values_script
+
 decisions:
   mock_suite:
     from: ../mock_suite
+  integration_grid:
+    from: ../integration_grid
 
 matrix:
-  # COMPLETE at 350 members (2026-09-06; staged 100 → 200 → 300 → 350) —
-  # existing member outputs stay current; only the gather + downstream restale.
   mock:
     - "00001"
     - "00002"
@@ -392,14 +395,14 @@ template:
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `${mock}` on the
     1000-bin integration grid. No response correction and no leakage
     subtraction — these are Gaussian mocks.
-  inputs: [glass_mock_catalogs]
-  decisions: [mock_suite]
+  inputs: [glass_mock_catalogs, decision_values_script]
+  decisions: [mock_suite, integration_grid]
   recipe:
     command: >
       python src/workflow/scripts/run_glass_mock_2pcf.py
       --catalog-dir "$(dirname "$(printf '%s\n' "{inputs.glass_mock_catalogs}" | head -n1)")"
       --mock-id ${mock} --out-file {output}
-      --min-sep 0.5 --max-sep 300.0 --nbins 1000
+      --integration-grid {decisions.integration_grid}
     resources: { cpus: 8, memory: "20GB" }
 
 gather:
@@ -412,10 +415,12 @@ gather:
     integration grid, with the mock IDs. The mock counterpart of
     [xi_integration](#../../inputs.xi_integration), and the input both
     config-space transforms read.
+  inputs: [decision_values_script]
+  decisions: [integration_grid]
   recipe:
     command: >
       python src/workflow/scripts/mock_xi_ensemble.py
       --members ${member_refs}
-      --min-sep 0.5 --max-sep 300.0 --nbins 1000
+      --integration-grid {decisions.integration_grid}
       --out-file {output}
     resources: { cpus: 1, memory: "8GB" }

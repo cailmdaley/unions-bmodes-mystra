@@ -46,7 +46,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed  # noqa: E402
 import numpy as np  # noqa: E402
 import treecorr  # noqa: E402
 import tqdm  # noqa: E402
-from plotting_utils import compute_chi2_pte  # noqa: E402
+from numerics import compute_chi2_pte  # noqa: E402
 
 from sp_validation.b_modes import calculate_cosebis  # noqa: E402
 from decision_values import FIDUCIAL_BLIND, INTEGRATION_GRID, MODE_COUNT, REPORTING_BINNING

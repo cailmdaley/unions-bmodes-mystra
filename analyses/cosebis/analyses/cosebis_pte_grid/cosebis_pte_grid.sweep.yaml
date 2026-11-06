@@ -47,6 +47,18 @@ inputs:
   - id: cov_integration
     from: ../cov_integration
 
+  - id: numerics_script
+    from: ../numerics_script
+
+  - id: decision_values_script
+    from: ../decision_values_script
+
+  - id: catalog_versions_script
+    from: ../catalog_versions_script
+
+  - id: compute_cosebis_pte_single_script
+    from: ../compute_cosebis_pte_single_script
+
 decisions:
   pte_definition:
     from: ../pte_definition
@@ -87,7 +99,7 @@ template:
     with `pairs` restricted to this row and every other cell left
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
-  inputs: [xi_integration, cov_integration]
+  inputs: [xi_integration, cov_integration, numerics_script, decision_values_script, catalog_versions_script]
   decisions: [fiducial_catalog, fiducial_blind, scale_cut_pair_grid, pte_definition, leakage_correction, reporting_binning, integration_grid, mode_count]
   recipe:
     # Identical to the July full-grid invocation but for `--row` and `--jobs`:
@@ -153,6 +165,7 @@ gather:
     each value by its `(i_min, i_max)` key, refusing to write if
     the members do not cover the grid exactly once or disagree on
     the version, blind, mode count or theta grid.
+  inputs: [numerics_script, decision_values_script, compute_cosebis_pte_single_script]
   recipe:
     command: >
       python src/papers/bmodes/scripts/merge_cosebis_pte_rows.py
