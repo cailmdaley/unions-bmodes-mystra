@@ -1,0 +1,5 @@
+id: submitted
+description: |
+  Pure E/B decomposition, with PTEs evaluated at blind A. Every
+  decision here is inherited from the root.
+decisions: {}

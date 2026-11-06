@@ -16,8 +16,8 @@ geometry and the same per-sample inputs, and both return the reference
 function's six-tuple in its own order
 ``(xip_E, xim_E, xip_B, xim_B, xip_amb, xim_amb)``.
 
-Under ``adaptive_dqags`` the call is byte-for-byte the one the published paper
-made.  Under ``fixed_operator`` the operator is built once per geometry (it
+Under ``adaptive_dqags`` the call is the published pointwise chain's.  Under
+``fixed_operator`` the operator is built once per geometry (it
 depends only on the grid, the bounds and the kernels) and applied as a matvec
 per sample.
 
@@ -43,7 +43,7 @@ construction, so the averaged geometry runs under ``adaptive_dqags`` just as
 well -- the combination that separates the quadrature effect from the
 geometry effect, which the defaults confound.  Callers reach it by passing
 ``geometry="averaged"`` to :func:`geometry_for` (or ``transform_averaged=True``
-to the chain scripts, which already carry the flag).  The reverse pairing,
+to the chain scripts).  The reverse pairing,
 ``fixed_operator`` in the pointwise geometry, needs the evaluation points
 snapped onto the integration grid: opt in with ``snap_eval=True`` and read the
 recorded offsets.  See :func:`geometry_for` for both.
@@ -53,7 +53,7 @@ The *weights* of that fine-to-reporting average are a separate axis:
 ``--rebinning-weights`` and selecting ``npairs`` (the adopted Asgari et al.
 2019 Appendix A pair-count weighting, applied to the whole pure mode at each
 fine node so the collapsed local term is the reporting-bin xi itself),
-``uniform`` (the unweighted mean, baseline 2026-08-31 to 2026-09-07), or ``none``
+``uniform`` (the unweighted mean), or ``none``
 (the pointwise chain, which applies no fine-to-reporting rule at all).  The
 two axes are separate but not independent, and
 :func:`check_rebinning_weights` is where that is enforced: ``none`` is the
@@ -61,12 +61,10 @@ only coherent weighting in the pointwise geometry and never a coherent one in
 the averaged geometry, so a mismatched universe selection fails loudly instead
 of quietly running the wrong estimator.
 
-:class:`TwoGridOperatorUnsupported` therefore no longer fires in normal
-operation — it remains as a guard against a caller that builds a pointwise
-:class:`PureEBTransform` under ``fixed_operator``, so that the evaluation points
-are never silently snapped onto the fine grid (a ~0.3% shift in theta, right
-where the small-theta B-mode behaviour under study lives).  See
-``implementation-notes.md``.
+:class:`TwoGridOperatorUnsupported` guards against a caller that builds a
+pointwise :class:`PureEBTransform` under ``fixed_operator``, so that the
+evaluation points are never silently snapped onto the fine grid (a ~0.3% shift
+in theta, right where the small-theta B-mode behaviour under study lives).
 """
 
 import numpy as np
@@ -140,8 +138,7 @@ def geometry_for(method, geometry=None):
       the variant it enables is interpretable only alongside its offsets.
 
     Passing *geometry* explicitly is therefore how a caller says "I mean this
-    geometry, whatever the method's default is".  Every existing call site
-    passes one argument and is unaffected.
+    geometry, whatever the method's default is".
     """
 
     if method not in GEOMETRIES:
@@ -169,7 +166,7 @@ INTEGRATION_LIMITS = {
     # The published pointwise chain takes [theta_min, theta_max] from the
     # reporting grid inside the transform itself, but its supplied fine grid
     # is capped at 300' to match the data-chain extent.  This is a no-op for
-    # the data grid and preserves the historical cap for the 500' mock grid.
+    # the data grid and caps the 500' mock grid at the same extent.
     # Pointwise-only.
     "reporting_extent": (None, 300.0),
 }
@@ -397,7 +394,7 @@ class PureEBTransform:
                 "points are not nodes of the integration grid. Pass "
                 "snap_eval=True to evaluate at the nearest node instead (the "
                 "pointwise fixed_operator chain), accepting the theta shift "
-                "that implies; see implementation-notes.md."
+                "that implies."
             )
         self._eval_index = nearest
         if off_grid:
@@ -619,7 +616,7 @@ class AveragedPureEBTransform:
     ``theta_window=(lo, hi)`` (``None`` bounds = the grid's own edge) subsets
     the fine grid before the operator is built — the
     ``pure_eb_integration_limits`` decision, resolved by
-    :func:`resolve_integration_limits`.  Calls still take *full-length*
+    :func:`resolve_integration_limits`.  Calls take *full-length*
     fine-grid inputs and the subsetting is applied internally, so every call
     site passes its arrays unchanged.
     """
@@ -694,8 +691,7 @@ class AveragedPureEBTransform:
         *xip* / *xim* are the reporting-grid xi and are used only under
         ``local_from_eval_grid``, where they replace this geometry's own
         fine-to-reporting average of the local term.  Required in that case
-        and ignored otherwise, which keeps every existing two-argument call
-        site unchanged.
+        and ignored otherwise.
         """
 
         if self.local_from_eval_grid and (xip is None or xim is None):

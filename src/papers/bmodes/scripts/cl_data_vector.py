@@ -143,9 +143,8 @@ def _create_cl_figure(
 
 
 # ---------------------------------------------------------------------------
-# Canonical per-version file paths (COSMO_VAL results tree). The DAG read these
-# via _pseudo_cl_path() in claims.smk; the CLI reconstructs them from --results-dir
-# so the version sweep is self-contained (lc produces only the fiducial version).
+# Canonical per-version file paths (COSMO_VAL results tree), reconstructed from
+# --results-dir so the version sweep is self-contained.
 # ---------------------------------------------------------------------------
 def _pseudo_cl(results_dir, ver, blind="A", nbins=32):
     return f"{results_dir}/pseudo_cl_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
@@ -169,7 +168,7 @@ def _resolve_pseudo_cl_paths(
     """Resolve the pseudo-Cl and covariance paths for one version in the sweep.
 
     Every version is read from the reconstructed COSMO_VAL pattern, except the
-    fiducial version when explicit override paths are supplied: the lc-produced
+    fiducial version when explicit override paths are supplied: the
     fiducial FITS files are named `pseudo_cl_{version}.fits` /
     `pseudo_cl_cov_{version}.fits` (no blind=/nbins= tokens), so pattern
     reconstruction can't find them and an explicit path is required instead.
@@ -200,7 +199,7 @@ def main(
     ell_min_cut, ell_max_cut = FIDUCIAL_ELL_CUT["adopted"]
 
     if out_file is not None:
-        # lc one-file mode: only the fiducial paper figure (Fig. 4), 300 dpi PNG.
+        # One-file mode: only the fiducial paper figure (Fig. 4), 300 dpi PNG.
         pseudo_cl_path, pseudo_cl_cov_path = _resolve_pseudo_cl_paths(
             results_dir,
             version,
@@ -273,7 +272,7 @@ def main(
         # Track artifact
         output[fig_spec["filename"].replace(".png", "")] = fig_spec["filename"]
 
-        # Paper figure into the lc output directory
+        # Paper figure into the output directory
         if fig_spec["is_paper_figure"]:
             paper_path = out_dir / "cl_data_vector.pdf"
             fig.savefig(paper_path, bbox_inches="tight")

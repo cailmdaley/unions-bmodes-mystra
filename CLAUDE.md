@@ -1,146 +1,58 @@
-# CLAUDE.md
+# UNIONS-3500 Paper II as an ASTRA analysis
 
-## Project: UNIONS Paper II — pure E/B-mode validation (ASTRA reproduction)
+Daley et al. 2026, *UNIONS-3500 Weak Lensing: II. B-mode validation for cosmic
+shear*, accepted by A&A. The paper shows which catalog and scale cuts pass
+pure-mode, COSEBI and harmonic-space B-mode null tests. Cosmological inference
+belongs to Papers III and IV.
 
-ASTRA reproduction of the UNIONS B-modes paper (Daley et al. 2026, "Paper II"
-of the UNIONS release series). The paper establishes that the fiducial
-v1.4.6.3 leak-corrected catalog passes the configuration-space pure
-E/B-mode null tests and characterises the residual COSEBIs / harmonic-Cℓ
-behaviour. Cosmological inference is out of scope here — that's Papers III
-(config-space) and IV (harmonic-space). Paper I (catalog construction) and
-Paper V (simulations) are both Hervas-Peters et al.
+## Layout
 
-This is the FIRST UNIONS reproduction in `LightconeResearch/Reproductions`,
-and the first ASTRA spec where the analysis itself was AI-mediated. The
-target audience is anyone (human or agent) who wants to interrogate the
-paper's choices, alternatives, and quantitative claims.
+- `astra.yaml`: root decisions, findings, prior insights and report outputs.
+- `analyses/<sub>/astra.yaml`: the nine sub-analyses. README explains the split.
+- `analyses/**/<scan>.sweep.yaml`: scan declarations. The sibling `astra.yaml` is
+  generated from each; edit the declaration and regenerate with `sweep_expand.py`
+  from the `astra-sweep` practice.
+- `universes/`: `baseline` is the accepted paper, `submitted` the paper as
+  submitted. Each sub-analysis has a matching pair under its own `universes/`.
+- `index.md`: the report, which is the accepted paper's text with values and
+  figures bound to outputs.
+- `src/`: analysis code, vendored from `sp_validation`.
+- `tools/`: repository checks and the mirror sync.
 
-### Scope
+## Conventions
 
-In: catalog preparation → 2pt measurement → pure E/B + COSEBIs + Cℓ_BB
-decompositions → semi-analytical covariance + GLASS mock validation → PTE
-matrices and combined null tests.
+- `index.md` is the authority for numbers, scope and wording. Preserve the
+  paper's hedges.
+- The spec describes the science. Inputs are data and analysis products, never
+  code. Prose says what is true now, with no history or tooling talk.
+- A decision with several non-excluded options must reach the code it governs.
+  A decision with one is a documented fixed choice. Excluded options carry a
+  reason a scientist would accept.
+- `src/workflow/scripts/decision_values.py` maps options to the values scripts
+  compute with; `numerics.py` holds the shared null-test numerics.
 
-Out: cosmological-parameter inference (Papers III / IV). Their posteriors
-are not findings of Paper II and do not appear in `findings:`. Paper II's
-findings are the B-mode null-test PTEs and the version-comparison
-conclusions.
+## Checks
 
-### Sub-analysis decomposition (mirrors the snakemake DAG, not the paper section order)
-
+```bash
+uvx --from astra-tools astra validate
+uv run --no-project --with pyyaml python tools/check_decisions.py
+uv run --no-project --with pyyaml python tools/check_links.py
+uv run --no-project --with pyyaml python tools/check_reachable.py
+uv run --no-project --with pyyaml python tools/check_recipe_flags.py
+uv run --no-project python tools/check_report_links.py
+uv run --no-project python tools/test_report_links.py
+uv run --no-project --with pyyaml --with numpy python tools/test_decision_values.py
+myst build && uv run --no-project python tools/check_report_build.py
 ```
-unions_bmodes (root)
-├── catalog              v1.4.6.3 leak-corr load, masks, n(z)
-├── two_point            TreeCorr ξ± measurement (1k bins; 10k for COSEBIs)
-├── pure_eb              pure E/B decomposition of ξ±  (config space)
-├── cosebis              COSEBIs decomposition of ξ±   (config space)
-├── cl_bb                pseudo-Cℓ BB measurement      (harmonic space)
-├── covariance           CosmoCov + MC propagation, GLASS mock validation
-└── null_tests           PTE matrices + combined statistics
-```
 
-Sub-analyses inherit shared decisions (fiducial cosmology, fiducial catalog
-version, scale cuts) from the root via `from: ../<decision_id>`.
+`tools/check_prose_only.py <rev>` proves a spec diff touches only prose fields.
 
-### Source of Truth
+## Report deployment
 
-| Artifact | Location | Role |
-|----------|----------|------|
-| Paper TeX | `paper/unions_bmodes.tex` (symlink → `/automnt/n17data/cdaley/unions/pure_eb/docs/unions_release/unions_bmodes/`) | Authoritative for numerical claims, scope, prose voice |
-| Paper macros | `paper/claims_macros.tex` | Auto-generated quantitative macros; the cleanest "what number does the paper report" |
-| Source code | `/automnt/n17data/cdaley/unions/pure_eb/` | The pipeline that produced the paper |
-| Snakemake DAG | `/automnt/n17data/cdaley/unions/pure_eb/workflow/` | What each output IS (rules, configs); rule names map to spec recipes 1-to-1 |
-| Project context | `/automnt/n17data/cdaley/unions/pure_eb/CLAUDE.md` | Container/HPC details, code style, quick-reference commands |
-| Memory (dense) | `/home/cdaley/.claude/projects/-automnt-n17data-cdaley-unions-pure-eb/memory/MEMORY.md` | Active work state, decisions made, gotchas |
-| Fiber tree | `~/loom/.felt/` (project surface in `/automnt/n17data/cdaley/unions/pure_eb/.felt/`) | Lab-notebook record; primary source for prior_insights and decision rationale |
-| Literature PDFs | `/automnt/n17data/cdaley/unions/pure_eb/docs/arxiv/<id>/` | Full sources for citation extraction |
-
-### Deployment mirror (the online viewer)
-
-The viewer builds the separate `cailmdaley/unions-bmodes-mystra` repository at
-`https://myst-viewer.vercel.app/cailmdaley/unions-bmodes-mystra/<commit-sha>`.
-Changes here deploy only after the mirror is staged and pushed.
-
-From this project, run `tools/sync_mirror.sh <mirror-clone>` with the desired
-commit checked out.
-The script wipes the clone except `.git`, archives the committed project,
-strips `*cov_tmp*` files and annex pointers, and copies the report's available
-artifacts as real files from the private checkout's `results/`.
-Set `LC_RESULTS_ROOT` to use another materialized results tree.
-Missing artifacts are reported as pending; staging does not materialize them.
-Review the mirror and run `myst build` and `HOST=127.0.0.1 myst build --html`
-before committing and pushing the mirror separately.
-
-Report figures are declared and produced as 300-dpi PNGs: browsers cannot
-reliably display PDF images, and the hosted viewer does not provide an image
-converter.
-MySTRA v0.0.8 resolves the exact path and extension from the spec, including
-the sub-analysis's own `results/` namespace for path-backed analyses; it does
-not select a file by sorting a directory.
-
-### Input bundle (Paper2ASTRA-style staging)
-
-| File | Purpose |
-|------|---------|
-| `work/notes/methodology.md` | Sub-analysis-by-sub-analysis methodology, decisions, recipes, dependencies |
-| `work/notes/literature.yaml` | Prior insights with DOI + exact quote evidence |
-| `targets/targets.md` | Replication targets: headline claims, figures, tables, quantities |
-| `paper/` | Symlink to the paper source (read-only) |
-| `implementation-notes.md` | Tricky-bits notes (placeholder; recipes are not executed at this stage) |
-
-### Local skill sandbox
-
-`.claude/skills/narrative/` is a project-local copy of the lightcone-ui
-narrative skill (`add/narrative-skill` branch as of 2026-04-25). Edits made
-during the ralph loop's reflective tail land here first; promotion upstream
-is a manual cherry-pick once changes stabilise.
-
-### Stage of execution
-
-This project is at the **SPECIFY** stage (in Paper2ASTRA's nine-phase
-lexicon). We produce `astra.yaml`, `universes/baseline.yaml`, the seven
-sub-analysis specs, and their narratives. We do NOT run anything yet —
-recipes are included on outputs as documentation of what the snakemake
-rules do, but `prism run` / `astra validate --execute` is not invoked.
-
-The IMPLEMENT phase (re-running the analysis end-to-end inside Prism) is a
-follow-up effort once the spec stabilises.
-
-### Stylistic conventions
-
-- **Fidelity to paper voice.** Don't sharpen or soften claims relative to
-  the paper TeX. Preserve hedges. The paper is the authoritative voice for
-  scope, certainty, and numerical claims.
-- **Use the macros for numbers.** Anything that has a `\<name>*` macro in
-  `paper/claims_macros.tex` should appear in the spec with the same value;
-  do not re-derive.
-- **Snakemake rule names map 1-to-1 to recipe commands.** When in doubt
-  about what produces an output, find the rule by output path in
-  `workflow/rules/*.smk`.
-- **Decisions are the spine.** Any choice where a different defensible
-  value would shift a numerical result becomes a decision. Aim for 8–20
-  root-level decisions plus per-sub-analysis decisions where they are
-  locally scoped (mask version → catalog; binning → two_point; etc.).
-- **Excluded options are first-class.** When a paper considers and rejects
-  an option, declare it with `excluded: true` and `excluded_reason:`.
-  Better than silently absent.
-
-### Reading order for any agent starting fresh
-
-1. This file.
-2. The constitution at `felt show paper-ii-astra-conversion/constitution`.
-3. The parent fiber `felt show paper-ii-astra-conversion` (current state and
-   open work).
-4. `work/notes/methodology.md`.
-5. `targets/targets.md`.
-6. `astra.yaml` (current state) and any `analyses/<sub>/astra.yaml`.
-7. `paper/unions_bmodes.tex` — selected sections relevant to the current
-   iteration.
-8. The relevant fibers (search the loom by topic).
-9. The narrative skill at `.claude/skills/narrative/SKILL.md` plus
-   `references/paper-reproduction.md`.
-
-### Spec-narrative invariant
-
-Every declared decision, finding, output, and sub-analysis must be cited in
-the narrative tree. Run `astra validate astra.yaml` after any spec change.
+The report builds from the separate repository `cailmdaley/unions-bmodes-mystra`
+at `https://myst-viewer.vercel.app/cailmdaley/unions-bmodes-mystra`. Changes here
+deploy once the mirror is staged and pushed: run `tools/sync_mirror.sh
+<mirror-clone>` from a checkout with the materialized results, review it, run
+`myst build` and `HOST=127.0.0.1 myst build --html`, then commit and push the
+mirror. Report figures are 300-dpi PNGs, because browsers cannot reliably show
+PDFs and the viewer has no converter.

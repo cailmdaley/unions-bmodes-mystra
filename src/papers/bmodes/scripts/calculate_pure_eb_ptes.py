@@ -1,6 +1,6 @@
 """Calculate PTE matrices for pure E/B-mode scale-cut robustness.
 
-CLI refactor of the former Snakemake ``script:`` rule. Reads the gathered
+Reads the gathered
 pure-E/B ``semianalytic.npz`` (data vectors + MC covariance), evaluates the
 ξ_+^B / ξ_-^B / joint ξ_tot^B χ² PTE matrices over the scale-cut grid via
 ``sp_validation.b_modes.calculate_eb_statistics``, and writes the PTE matrices either to a caller-given path
@@ -10,7 +10,7 @@ to ``{out}/{version}_{blind}_pure_eb_ptes.npz``.
 The Hartlap factor follows the covariance artifact
 (``pure_mode_covariance.hartlap_samples``): the Monte Carlo draw count it
 records, or no correction for an exact covariance.
-Unrecorded historical artifacts use the shared 2000-draw convention.
+Artifacts that record no draw count use the shared 2000-draw convention.
 
     python calculate_pure_eb_ptes.py \
         --version SP_v1.4.6.3_leak_corr --blind A \

@@ -1,74 +1,65 @@
 id: submitted
 description: |
-  The selection the paper was submitted to A&A with (arXiv v2,
-  2604.03227v2): adaptive-quadrature pointwise pure E/B modes with a
-  Monte Carlo covariance and the nominal 0.05 PTE threshold. The
-  accepted paper is `baseline`; the report compares their numbers.
+  The selection the paper was submitted to A&A with (arXiv 2604.03227;
+  v1 and v2 report the same null-test results): adaptive-quadrature pointwise pure
+  E/B modes with a Monte Carlo covariance and the nominal 0.05 PTE
+  threshold. The accepted paper is `baseline`. Both universes use
+  the v1.4.6.3_v2 mocks, so the mock-based outputs here are the
+  submitted choices on that suite rather than the submitted paper's
+  v1.4.6 mocks.
 
-  Source-of-truth pointers per selection are inline below.
+  Its pure-mode fiducial window is the declared 12'–83' (seven reporting
+  bins). The submitted paper's printed fiducial pure-mode PTEs read an
+  eighth bin, 9.1'–83' (ξ_tot^B 0.18 there, 0.16 here); its full-range
+  PTEs are the same.
 
 decisions:
-  # The submitted fiducial catalog: SP_v1.4.6.3_leak_corr
   fiducial_catalog: size_cut
-  # all four `versions:` carry `_leak_corr`; uncorrected used only
-  # for cross-checks
   leakage_correction: applied
-  # The submitted fiducial blind: A
   fiducial_blind: blind_a
-  # The submitted cuts: ξ_+ θ in [12, 83] arcmin, ℓ in [300, 1600]
   fiducial_scale_cuts: adopted
-  # workflow/rules/claims.smk _COSEBIS_ANGULAR_RANGES: the submitted pipeline
-  # cut at (250**(9/20), 250**(16/20)) = edges 9/16 of geomspace(1, 250, 21),
-  # not at the rounded [12, 83] the paper text prints
+  # Edges 9 and 16 of geomspace(1', 250', 21), which the text prints rounded.
   scale_cut_convention: grid_bin_edges
-  # Each statistic tested against the nominal 0.05, as submitted. The threshold
-  # sets the PTE heatmap colour scale and the quoted threshold macro.
+  # Each statistic tested against the nominal 0.05. The threshold sets the PTE
+  # heatmap colour scale and the quoted threshold value.
   pte_threshold: nominal_0p05
-  # The submitted integration grid: 1000 bins
   integration_grid: bins_1000
-  # cosmo_numba get_pure_EB_modes -> interp_quad -> QUADPACK dqags: what the
-  # submitted data vectors, covariance and PTEs were computed with
+  # cosmo_numba's get_pure_EB_modes, integrated with QUADPACK dqags.
   pure_eb_integration_method: adaptive_dqags
-  # the pointwise chain evaluates the transform at the 20 reporting abscissae
-  # and never averages the fine pure modes into bins, so the axis does not
-  # exist here; the only selection consistent with adaptive_dqags
+  # The pointwise chain evaluates the transform at the 20 reporting bin centres,
+  # so nothing is rebinned; the only selection consistent with adaptive_dqags.
   pure_eb_rebinning_weights: none
-  # Submitted pointwise transform limits [1', 250']; no fine-grid subsetting.
+  # The transform limits [1', 250'].
   pure_eb_integration_limits: reporting_extent
-  # workflow/scripts/precompute_pure_eb_chunk.py + calculate_pure_eb_ptes.py:
-  # 2000-draw Monte Carlo, Hartlap-corrected at χ² time
+  # 2000 draws, with the Hartlap factor on the inverse at χ² time.
   pure_eb_covariance_method: monte_carlo
-  # workflow/scripts/precompute_pure_eb_chunk.py: 20 chunks × 100 = 2000
   harmonic_validation_binning: bins_96
   mc_samples: n_2000
-  # CosmoCov is theory; no Hartlap correction applied
-  # workflow/scripts/calculate_pure_eb_ptes.py: scipy.stats.chi2.sf
   pte_definition: chi2_tail
-  # sp_validation.cosmology.PLANCK18
   fiducial_cosmology: planck18
   bandpower_binning: bandpowers_32_powspace
   noise_bias_correction: analytic_shot_noise
-  cl_pte_blind_strategy: blind_a_for_paper
+  pte_blind_strategy: blind_a_for_paper
   reporting_binning: bins_20
   decomposition_method: schneider22_integral_transform
   mode_count: n_max_20
 
 analyses:
   catalog:
-    universe: baseline
+    universe: submitted
   two_point:
-    universe: baseline
+    universe: submitted
   pure_eb:
-    universe: baseline
+    universe: submitted
   cosebis:
-    universe: baseline
+    universe: submitted
   cl_bb:
-    universe: baseline
+    universe: submitted
   covariance:
-    universe: baseline
+    universe: submitted
   null_tests:
-    universe: baseline
+    universe: submitted
   glass_mocks:
-    universe: baseline
+    universe: submitted
   convergence:
-    universe: baseline
+    universe: submitted

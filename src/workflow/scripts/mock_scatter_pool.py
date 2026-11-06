@@ -16,7 +16,7 @@ _STATE: dict = {}
 
 
 def pool_size(n_items: int) -> int:
-    """Workers to use: the thread pin lc sets, capped by the work available."""
+    """Workers to use: the thread pin the runner sets, capped by the work available."""
 
     try:
         requested = int(os.environ.get("OMP_NUM_THREADS", "1"))

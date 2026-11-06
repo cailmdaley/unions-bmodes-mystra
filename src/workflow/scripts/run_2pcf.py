@@ -1,10 +1,6 @@
 """TreeCorr ξ±(θ) two-point correlation function for one catalog version.
 
-Dual-mode. Under Snakemake (``script:`` directive) the injected ``snakemake``
-object supplies the parameters; as a standalone CLI (argparse) the same compute
-runs from explicit flags. The CLI form is what the lightcone/ASTRA recipe calls,
-so the measurement is driven directly (no nested Snakemake) with lc handling
-orchestration:
+The CLI runs the measurement from explicit flags:
 
     python run_2pcf.py \
         --ver SP_v1.4.6.3_leak_corr \
@@ -12,10 +8,10 @@ orchestration:
         --cat-config /path/to/cosmo_val/cat_config.yaml \
         --out <output_dir>
 
-The measurement itself is unchanged — ``CosmologyValidation.calculate_2pcf``
-does the TreeCorr work and writes the ``.txt`` dump plus ξ+/ξ- FITS files into
-``output_dir``. ``output_dir`` is passed explicitly (rather than via the
-``COSMO_VAL`` env hook) so lc can point each run at its own ``{output}`` tree.
+``CosmologyValidation.calculate_2pcf`` does the TreeCorr work and writes the
+``.txt`` dump plus ξ+/ξ- FITS files into ``output_dir``, which is passed
+explicitly (rather than via the ``COSMO_VAL`` env hook) so each run gets its
+own output tree.
 """
 
 import argparse
@@ -35,18 +31,14 @@ def _cap_treecorr_threads():
     TreeCorr resolves its default ``num_threads=None`` through
     ``multiprocessing.cpu_count()`` (treecorr/util.py) and then calls
     ``omp_set_num_threads()`` itself, so it sizes from the NODE's core count
-    and *overrides* ``OMP_NUM_THREADS``. Under lc's SLURM venue the task slot
-    count already equals the allocated cores, so a task that grabs the whole
-    node oversubscribes by construction: 16 slots x 48 threads produced a load
-    average of 338 on a 16-core allocation, and everything on the node was
-    time-sliced to a fraction of a core.
+    and *overrides* ``OMP_NUM_THREADS``. A task that grabs the whole node
+    oversubscribes it whenever other tasks share the allocation.
 
     ``set_max_omp_threads`` is a ceiling applied inside ``set_omp_threads``
     regardless of what any caller passes down, so it holds even though the
-    TreeCorr call itself is inside pinned sp_validation code. Read from
-    ``OMP_NUM_THREADS`` rather than a new knob: that is the variable the
-    runner already sets, and this makes TreeCorr honour it like every other
-    library. Default 1 = one core per task slot.
+    TreeCorr call itself is inside sp_validation. Read from
+    ``OMP_NUM_THREADS``, the variable the runner sets, so that TreeCorr honours
+    it like every other library. Default 1 = one core per task slot.
     """
     treecorr.set_max_omp_threads(int(os.environ.get("OMP_NUM_THREADS", "1")))
 
@@ -63,8 +55,8 @@ def _skip_psf_catalogue(cv, ver):
     Under ``--out-file`` the leakage side products are discarded with the
     scratch directory and nothing downstream consumes them, so that read is
     pure cost — a second large FITS file, and a dependency on a catalogue
-    the declared inputs have no reason to carry. Bound per instance, so the
-    legacy directory mode keeps reading it.
+    the declared inputs have no reason to carry. Bound per instance, so
+    ``--out`` directory mode keeps reading it.
     """
     runner = cv.results[ver]
     runner.temporarily_read_data = functools.partial(
@@ -89,7 +81,7 @@ def run_2pcf(
     ``max_sep`` in arcmin, ``nbins`` logarithmic bins, ``npatch`` spatial
     patches (1 for the paper fiducial). ``cat_config`` is an absolute path to
     the catalog configuration; ``output_dir`` overrides
-    ``cat_config['paths']['output']`` so products land where lc expects.
+    ``cat_config['paths']['output']`` so products land in the run's own tree.
     ``read_psf=False`` skips the PSF-leakage catalogue read the ξ± itself
     does not need (see :func:`_skip_psf_catalogue`).
     """
@@ -119,10 +111,8 @@ def _from_snakemake(smk):
         max_sep=float(p["max_sep"]),
         nbins=int(p["nbins"]),
         npatch=int(p["npatch"]),
-        # cat_config / output_dir were previously resolved via an os.chdir into
-        # the cosmo_val dir + the COSMO_VAL env var; expose them as optional
-        # params so the rule can pass them explicitly, falling back to the
-        # class defaults (./cat_config.yaml, COSMO_VAL env) otherwise.
+        # Both optional, falling back to the class defaults (./cat_config.yaml,
+        # COSMO_VAL env).
         cat_config=p.get("cat_config", "./cat_config.yaml"),
         output_dir=p.get("output_dir", None),
         save_fits=True,
@@ -200,10 +190,6 @@ def _from_cli(argv=None):
 
 
 if __name__ == "__main__":
-    # A membership test, not a caught NameError: the exception form leaves
-    # every CLI-path traceback prefixed with "During handling of the above
-    # exception" and a NameError that is not the failure, which reads as
-    # the bug and is not one.
     if "snakemake" in globals():
         _from_snakemake(snakemake)  # noqa: F821
     else:

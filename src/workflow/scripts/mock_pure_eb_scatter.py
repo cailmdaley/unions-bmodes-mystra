@@ -11,10 +11,7 @@ reporting grid, ``fixed_operator`` transforms on the fine grid and averages the
 pure modes into the reporting bins under the weights ``--rebinning-weights``
 (the ``pure_eb_rebinning_weights`` decision) selects.
 
-The script is dual-mode.  Snakemake supplies one mock through ``snakemake``;
-standalone use accepts either explicit mock IDs or a glob of fine-``xi``
-files.  The latter is useful while the 350-mock production is still filling
-in.
+The CLI accepts either explicit mock IDs or a glob of fine-``xi`` files.
 """
 
 from __future__ import annotations
@@ -74,7 +71,7 @@ def _mock_id_from_path(path: Path) -> str:
 
 def _reporting_path(reporting_dir: Path, mock_id: str) -> Path:
     """External GLASS products use `_4096_nbins=20`; locally produced
-    reporting ξ (v2/masked rules) use `_nbins=20`.  Prefer the external
+    reporting ξ (v2/masked) use `_nbins=20`.  Prefer the external
     name, fall back to the local one."""
     external = reporting_dir / f"xi_glass_mock_{mock_id}_4096_nbins=20.fits"
     if external.is_file():
@@ -121,7 +118,7 @@ def compute_from_grids(
     xip_int = _native(gg_int.xip)
     xim_int = _native(gg_int.xim)
     npairs_int = _native(gg_int.npairs)
-    # transform_averaged is the legacy boolean; `geometry` is the explicit
+    # transform_averaged forces the averaged geometry; `geometry` is the explicit
     # override. Resolved through geometry_for so the method's default still
     # applies when neither is given -- an OR here would make fixed_operator
     # mean "averaged" unconditionally and put pointwise_fixedop out of reach.
@@ -531,8 +528,7 @@ def _standalone_main(argv=None):
 
 
 def _snakemake_main(smk):
-    # The vendored snakemake entry point reproduces the published behaviour;
-    # the lc recipes carry the decision through the CLI instead.
+    # The published chain's settings; recipes select the decision through the CLI.
     compute_one(
         str(smk.wildcards.mock_id),
         smk.input.fine,
@@ -544,8 +540,7 @@ def _snakemake_main(smk):
     )
 
 
-# Snakemake exec's this file with a `snakemake` global; run directly it is a
-# CLI. The __main__ guard on the CLI branch is what lets the scan stages import
+# The __main__ guard on the CLI branch is what lets the scan stages import
 # compute_ensemble instead of reimplementing it -- without it, importing this
 # module parses argv and runs a job.
 if "snakemake" in globals():

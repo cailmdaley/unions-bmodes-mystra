@@ -1,8 +1,8 @@
 """Re-measure one GLASS realisation and difference it against the ingested one.
 
-The fine ξ_± ensemble is read from the 21–23 August 2026 snakemake measurement
-rather than remade — 5 000 core-hours the campaign does not have. This is the
-receipt on that seam: one realisation measured here, under this spec's
+The fine ξ_± ensemble is read from a stored measurement rather than remade,
+which would cost 5 000 core-hours. This is the check on that choice: one
+realisation measured here, under this spec's
 environment and this spec's TreeCorr call, against the stored vector standing
 in for it in the ensemble.
 

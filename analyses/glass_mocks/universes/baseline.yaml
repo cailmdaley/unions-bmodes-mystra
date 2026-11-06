@@ -1,18 +1,9 @@
 id: baseline
 description: |
-  GLASS mock covariance campaign as the referee response should
-  quote it: the v1.4.6.3_v2 suite, generated against the paper's
-  fiducial catalog, with the mock scatter held against a
-  covariance the paper's own machinery builds for the mocks' own
-  noise — so the comparison tests that machinery rather than the
-  galaxy-count difference between mocks and data. Selecting
-  `fiducial` instead is the companion diagnostic that exhibits
-  the count difference, not a competing answer.
+  GLASS mock validation on the v1.4.6.3_v2 suite, built against the fiducial
+  catalog, with the mock scatter compared to a covariance computed for the
+  mocks' own noise. The comparison therefore tests the covariance machinery
+  rather than the galaxy-count difference between mocks and data.
 decisions:
-  # The corrected transform-averaged wide-operator campaign the
-  # findings quote (results/glass_mock_v1.4.6.3_v2/campaign_350_avg_wide,
-  # C_l column from campaign_350_avg_wide_clbbcov).
   reference_covariance: mockmatched
-  # /n09data/guerrini/glass_mock_v1.4.6.3_v2/results. The only live option;
-  # the v1.4.6 suite is excluded as a stale-density delivery.
   mock_suite: v1_4_6_3_v2

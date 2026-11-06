@@ -12,28 +12,20 @@ id: xi_scan
 version: '1.0'
 name: TreeCorr ξ± catalog-version scan
 description: |
-  Design-B producer sweep: TreeCorr ξ_±(θ) for every non-fiducial,
-  non-ecut catalog version (7 variants — 3 leak-corrected + 4
-  uncorrected) on both the 20-bin reporting and 1000-bin
-  integration grids. Each (version, grid) is its own lc output —
-  independently cacheable and re-runnable — and the gather bundles
-  them under run_2pcf's native, already-canonical
-  `{ver}_xi_minsep=..._nbins=..._npatch=1.txt` names into the
-  `tar.gz` that `two_point.xi_sweep` re-exports. Members are not
-  independently interesting; every consumer reads the bundle.
+  TreeCorr ξ_±(θ) for the catalog versions compared with the fiducial
+  measurement, on both the 20-bin reporting and 1000-bin integration
+  grids. The seven members are the initial (v1.4.5), masked (v1.4.8)
+  and relaxed-flags (v1.4.11.3) catalogs, each with and without the
+  leakage correction, and the size-cut catalog on the leakage branch
+  the fiducial measurement does not use. The pure-mode and COSEBI
+  version comparisons read the gathered bundle.
 tags:
 - sweep
-- generated
-- two_point
 inputs:
 - id: shapepipe_v14_catalogs
   from: ../shapepipe_v14_catalogs
 - id: shapepipe_v145_rerun
   from: ../shapepipe_v145_rerun
-- id: decision_values_script
-  from: ../decision_values_script
-- id: catalog_versions_script
-  from: ../catalog_versions_script
 decisions:
   integration_grid:
     from: ../integration_grid
@@ -51,15 +43,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.5` on the
     reporting grid (20 logarithmic bins over
-    [1.0', 250.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [1.0', 250.0'], one patch), measured as
+    [xi_reporting](#../outputs.xi_reporting) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -77,15 +67,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.5` on the
     integration grid (1000 logarithmic bins over
-    [0.5', 300.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [0.5', 300.0'], one patch), measured as
+    [xi_integration](#../outputs.xi_integration) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -103,15 +91,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.5_leak_corr` on the
     reporting grid (20 logarithmic bins over
-    [1.0', 250.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [1.0', 250.0'], one patch), measured as
+    [xi_reporting](#../outputs.xi_reporting) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -129,15 +115,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.5_leak_corr` on the
     integration grid (1000 logarithmic bins over
-    [0.5', 300.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [0.5', 300.0'], one patch), measured as
+    [xi_integration](#../outputs.xi_integration) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -155,15 +139,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.6.3` on the
     reporting grid (20 logarithmic bins over
-    [1.0', 250.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [1.0', 250.0'], one patch), measured as
+    [xi_reporting](#../outputs.xi_reporting) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -181,15 +163,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.6.3` on the
     integration grid (1000 logarithmic bins over
-    [0.5', 300.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [0.5', 300.0'], one patch), measured as
+    [xi_integration](#../outputs.xi_integration) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -207,15 +187,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.8` on the
     reporting grid (20 logarithmic bins over
-    [1.0', 250.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [1.0', 250.0'], one patch), measured as
+    [xi_reporting](#../outputs.xi_reporting) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -233,15 +211,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.8` on the
     integration grid (1000 logarithmic bins over
-    [0.5', 300.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [0.5', 300.0'], one patch), measured as
+    [xi_integration](#../outputs.xi_integration) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -259,15 +235,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.8_leak_corr` on the
     reporting grid (20 logarithmic bins over
-    [1.0', 250.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [1.0', 250.0'], one patch), measured as
+    [xi_reporting](#../outputs.xi_reporting) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -285,15 +259,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.8_leak_corr` on the
     integration grid (1000 logarithmic bins over
-    [0.5', 300.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [0.5', 300.0'], one patch), measured as
+    [xi_integration](#../outputs.xi_integration) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -311,15 +283,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.11.3` on the
     reporting grid (20 logarithmic bins over
-    [1.0', 250.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [1.0', 250.0'], one patch), measured as
+    [xi_reporting](#../outputs.xi_reporting) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -337,15 +307,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.11.3` on the
     integration grid (1000 logarithmic bins over
-    [0.5', 300.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [0.5', 300.0'], one patch), measured as
+    [xi_integration](#../outputs.xi_integration) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -363,15 +331,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.11.3_leak_corr` on the
     reporting grid (20 logarithmic bins over
-    [1.0', 250.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_reporting](#../outputs.xi_reporting); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [1.0', 250.0'], one patch), measured as
+    [xi_reporting](#../outputs.xi_reporting) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -389,15 +355,13 @@ outputs:
   description: |
     TreeCorr ξ_±(θ) for catalog version `SP_v1.4.11.3_leak_corr` on the
     integration grid (1000 logarithmic bins over
-    [0.5', 300.0'], npatch 1), as a single TreeCorr
-    text dump. The per-version analogue of
-    [xi_integration](#../outputs.xi_integration); same `run_2pcf.py`
-    invocation, different `--ver`.
+    [0.5', 300.0'], one patch), measured as
+    [xi_integration](#../outputs.xi_integration) is. If the fiducial
+    measurement is uncorrected, the `fiducial_counterpart` slot
+    holds the leakage-corrected size-cut catalog instead.
   inputs:
   - shapepipe_v14_catalogs
   - shapepipe_v145_rerun
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - patch_count
@@ -413,13 +377,11 @@ outputs:
 - id: xi_sweep_bundle
   type: data
   description: |
-    The 14 scan members bundled flat under their
-    July-canonical `{ver}_xi_minsep=..._nbins=..._npatch=1.txt`
-    names — the exact directory layout
-    `cosebis_version_comparison` (`--results-dir`) and the pure
-    E/B sweep (`--xi-sweep-dir`) reconstruct. Re-exported by
-    [two_point.xi_sweep](#../outputs.xi_sweep); consumers untar it
-    into a temp dir, unchanged from the July contract.
+    The ξ_± of all 14 scan members, one TreeCorr text file
+    per catalog and grid, named
+    `{ver}_xi_minsep=..._maxsep=..._nbins=..._npatch=1.txt`. Exposed
+    as [two_point.xi_sweep](#../outputs.xi_sweep) for the pure-mode
+    and COSEBI version comparisons.
   inputs:
   - xi_sp_v1p4p5_reporting
   - xi_sp_v1p4p5_integration
@@ -435,8 +397,6 @@ outputs:
   - xi_sp_v1p4p11p3_integration
   - xi_sp_v1p4p11p3_leak_corr_reporting
   - xi_sp_v1p4p11p3_leak_corr_integration
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - leakage_correction

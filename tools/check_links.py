@@ -1,7 +1,9 @@
-"""Check that every spec cross-link `[text](#...kind.id)` names an element that exists.
+"""Check that every spec cross-link `[text](#...kind.id)` resolves.
 
-kind is one of inputs, outputs, decisions, findings, prior_insights; the id must
-be declared under that kind in some hand-written or generated astra.yaml.
+A link is read from the spec holding it: each `../` climbs one analysis,
+`analyses.<id>.` or `<id>.` descends into a sub-analysis, and the tail names an
+element that analysis declares (`kind.id`) or the sub-analysis itself. Prose that
+a scan's sidecar generates is checked in the generated astra.yaml.
 
     python tools/check_links.py
 """
@@ -22,23 +24,37 @@ def ids(spec, kind):
     return {e["id"] for e in block if isinstance(e, dict) and "id" in e}
 
 
+def resolves(spec_dir, target):
+    """Whether `target` names something, read from the spec in `spec_dir`."""
+    here = spec_dir
+    while target.startswith("../"):
+        here, target = here.parent.parent if here != Path(".") else here, target[3:]
+    parts = target.split(".")
+    while parts:
+        if parts[0] in KINDS:
+            if parts[0] == "analyses" or len(parts) != 2:
+                return False
+            return parts[1] in ids(yaml.safe_load((here / "astra.yaml").read_text()), parts[0])
+        child = parts[1] if parts[0] == "analyses" and len(parts) > 1 else parts[0]
+        parts = parts[2:] if parts[0] == "analyses" else parts[1:]
+        here = here / "analyses" / child
+        if not (here / "astra.yaml").exists():
+            return False
+    return True
+
+
 def main():
-    files = [Path("astra.yaml"), *sorted(Path("analyses").rglob("astra.yaml"))]
-    known = {k: set() for k in KINDS}
-    for f in files:
-        spec = yaml.safe_load(f.read_text())
-        for k in KINDS:
-            known[k] |= ids(spec, k)
     bad = 0
-    for f in files:
-        text = f.read_text()
-        for m in LINK.finditer(re.sub(r"\s*\n\s*", " ", text)):
-            parts = m.group(1).split(".")
-            for i, p in enumerate(parts[:-1]):
-                if p.lstrip("./") in KINDS and parts[i + 1] not in known[p.lstrip("./")]:
-                    print(f"{f}: dead link #{m.group(1)}")
-                    bad += 1
-    sys.exit(1 if bad else 0)
+    for spec in [Path("astra.yaml"), *sorted(Path("analyses").rglob("astra.yaml"))]:
+        text = re.sub(r"\s*\n\s*", " ", "\n".join(
+            l for l in spec.read_text().splitlines() if not l.lstrip().startswith("#")
+        ))
+        for link in LINK.finditer(text):
+            if not resolves(spec.parent, link.group(1)):
+                print(f"{spec}: dead link #{link.group(1)}")
+                bad += 1
+    print(f"links: {bad} dead")
+    sys.exit(bool(bad))
 
 
 if __name__ == "__main__":

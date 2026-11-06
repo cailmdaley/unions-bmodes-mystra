@@ -7,14 +7,14 @@ cut. Those values live inside nested-dict `evidence.json` carriers belonging
 to `type: figure` / `type: data` ASTRA outputs
 (``null_tests.config_space_pte_evidence``, ``cosebis.cosebis_harmonic_modes``,
 and ``cosebis.cosebis_harmonic_modes_full``). MySTRA's ``{astra:value col=
-where=}`` role can only read a flat CSV/JSON table, not a nested dict — see
-``work/transpile-map.md`` §0 in the ASTRA reproduction. This script reads
+where=}`` role can only read a flat CSV/JSON table, not a nested dict. This
+script reads
 those *already-materialized* evidence.json files (it does not recompute
 anything) and writes the requested cells out as a flat CSV table, one row per
 (version, path, cut) triple.
 
-Config-space PTEs are computed empirically (bootstrap resampling), so they
-carry no chi2/dof — those columns are left blank for `path=config` rows.
+The config-space evidence stores the PTE but not its chi2/dof, so those columns
+are left blank for `path=config` rows.
 
     python emit_cosebis_harmonic_config.py \
         --config-space-evidence /path/to/config_space_pte_evidence/evidence.json \
@@ -71,8 +71,7 @@ def main():
     args = parser.parse_args()
 
     def _payload(path):
-        """Accept the legacy {'evidence': {...}} wrapper and the new
-        top-level metrics format alike."""
+        """Accept both the {'evidence': {...}} wrapper and top-level metrics."""
         d = json.load(open(path))
         return d.get("evidence", d)
 

@@ -1,9 +1,7 @@
 id: baseline
 description: |
-  UNIONS Paper II null-test fiducial: the Cℓ^BB covariance
-  blind-independence cross-check runs on the fiducial v1.4.6.3
-  catalog, and the PTE scale-cut pair grid is kept aligned with
-  the COSEBIs subset so the composite PTE figure shares one grid.
+  Null-test PTE matrices on the shared scale-cut grid, with the
+  blind-independence check on the fiducial v1.4.6.3 catalog.
 decisions:
   bb_blind_check_version: fiducial_version_v1463
   scale_cut_pair_grid_alignment: aligned_with_cosebis_subset

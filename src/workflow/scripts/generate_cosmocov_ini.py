@@ -1,13 +1,11 @@
 """Generate a CosmoCov ``.ini`` for one (version, blind, grid, flavour, mask).
 
-CLI refactor of the former ``rule covariance_ini`` heredoc. Cosmology is read
-from the frozen ``planck18.json`` snapshot (the cosmology_snapshot lc output —
-source of truth is sp_validation.cosmology.PLANCK18); survey (area, n_eff,
-sigma_e) from the catalog config's per-version ``cov_th``; n(z) from ``--nz``
-when given, otherwise via the same path convention as
-workflow/common.build_redshift_path; the footprint mask power spectrum is
-passed explicitly (empty string for the unmasked variant).
-The emitted ``.ini`` is byte-compatible with the paper's covariance_ini rule.
+Cosmology is read from the frozen ``planck18.json`` snapshot (the
+cosmology_snapshot output — source of truth is sp_validation.cosmology.PLANCK18);
+survey (area, n_eff, sigma_e) from the catalog config's per-version ``cov_th``;
+n(z) from ``--nz`` when given, otherwise via the path convention of
+``build_redshift_path``; the footprint mask power spectrum is passed explicitly
+(empty string for the unmasked variant).
 
     python generate_cosmocov_ini.py \
         --version SP_v1.4.6.3_leak_corr --blind blind_a \
@@ -29,7 +27,7 @@ from decision_values import FIDUCIAL_BLIND
 
 
 def build_redshift_path(version, blind):
-    """Replicate workflow/common.build_redshift_path."""
+    """The per-version n(z) path convention."""
     base_version = re.sub(r"_leak_corr$", "", version)
     base_version = re.sub(r"_ecut\d+", "", base_version)
     if "v1.4.11" in base_version:

@@ -84,17 +84,15 @@ class Variant:
     #: xi at the requested abscissa rather than from the fine grid at the
     #: snapped node.  Only meaningful for the snapped pointwise operator
     #: chain: dqags already reads the local term from the evaluation-grid xi,
-    #: and the averaged geometry snaps nothing.  Default False, so every
-    #: pre-existing variant is bit-identical.
+    #: and the averaged geometry snaps nothing.
     local_from_eval_grid: bool = False
     #: Name of the variant whose covariance bundle this one reads instead of
     #: building its own.  ``None`` (the default) means "own bundle".  Set only
     #: where the two propagated covariances are provably the same object, so
     #: that remaking one would be a fake dependency.  NOTE the borrowed bundle
     #: also carries the DONOR's data pure-mode vectors, so an aliased variant
-    #: has no data vector of its own in the bundle and therefore no data PTE;
-    #: pure_eb_scan_statistics reports that as absent rather than substituting
-    #: the donor's number.
+    #: has no data vector of its own in the bundle; pure_eb_scan_statistics
+    #: rebuilds it from the measured xi for the variant's data PTE.
     covariance_from: str | None = None
 
     @property
@@ -123,7 +121,7 @@ class Variant:
 
 #: The published chain, frozen in the ``archive_v2`` universe.
 PUBLISHED = "pointwise_dqags"
-#: The adopted chain (ruled 2026-08-31), the ``baseline`` universe.
+#: The adopted chain, the ``baseline`` universe.
 ADOPTED = "averaged_uniform_fixedop"
 
 VARIANTS: tuple[Variant, ...] = (

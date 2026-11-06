@@ -1,15 +1,6 @@
 """Generate pseudo-Cls (data vector only, no covariance).
 
-Dual-mode. Under Snakemake (``script:`` directive) the injected ``snakemake``
-object supplies the parameters and the native product is renamed to the tagged
-output filename the rule declares; as a standalone CLI (argparse) the same
-compute runs from explicit flags and the primitive's native
-``pseudo_cl_{ver}.fits`` is left in place under ``--out`` (no rename — each
-lc/ASTRA recipe gets its own output directory, so the untagged native name is
-unambiguous and the primitives' skip-if-exists never collides across nbins
-runs). The CLI form is what the lightcone/ASTRA recipe calls, so the
-measurement is driven directly (no nested Snakemake) with lc handling
-orchestration:
+The CLI runs the measurement from explicit flags:
 
     python generate_pseudo_cl.py \
         --ver SP_v1.4.6.3_leak_corr \
@@ -17,10 +8,11 @@ orchestration:
         --out-file <path.fits> \
         --binning powspace --nbins 32 --power 0.5
 
-``--out-file`` is the lc 0.5.0 one-file mode: the compute runs in a private
-scratch directory (so the primitives' skip-if-exists cache, keyed on the
-native ``pseudo_cl_{ver}.fits`` name, can never defeat it) and the single
-decoupled-bandpower FITS is moved to exactly that path.
+``--out-file`` is the one-file mode: the compute runs in a private scratch
+directory (so the primitives' skip-if-exists cache, keyed on the native
+``pseudo_cl_{ver}.fits`` name, can never defeat it) and the single
+decoupled-bandpower FITS is moved to exactly that path. ``--out`` instead
+leaves the native ``pseudo_cl_{ver}.fits`` in that directory.
 
 Supports two binning modes:
 - Linear binning with configurable nbins for COSEBIS
@@ -62,7 +54,7 @@ def generate_pseudo_cl(
     output_dir : str
         Directory the pseudo-Cl FITS file is written into. The primitive writes
         its native ``pseudo_cl_{version}.fits`` here; callers that need a tagged
-        filename rename it themselves (see ``_from_snakemake``).
+        filename rename it themselves.
     cat_config : str
         Path to catalog configuration YAML
     nside : int
@@ -146,7 +138,7 @@ def generate_pseudo_cl(
     # Calculate pseudo-Cls only (no covariance)
     cv.calculate_pseudo_cl()
 
-    # Report on the native product (renamed by the Snakemake caller, if any)
+    # Report on the native product
     src_cl = os.path.join(output_dir, f"pseudo_cl_{version}.fits")
     if os.path.exists(src_cl):
         with fits.open(src_cl) as hdul:
@@ -172,7 +164,7 @@ def _from_snakemake(smk):
         nbins=int(p["nbins"]),
         power=float(p.get("power", 0.5)),
     )
-    # Snakemake declares a tagged output filename; rename the native product to it.
+    # Rename the native product to the tagged output filename.
     if os.path.exists(src_cl) and src_cl != output_cl:
         os.rename(src_cl, output_cl)
         print(f"Saved to: {output_cl}")
@@ -264,10 +256,6 @@ def _from_cli(argv=None):
 
 
 if __name__ == "__main__":
-    # A membership test, not a caught NameError: the exception form leaves
-    # every CLI-path traceback prefixed with "During handling of the above
-    # exception" and a NameError that is not the failure, which reads as
-    # the bug and is not one.
     if "snakemake" in globals():
         _from_snakemake(snakemake)  # noqa: F821
     else:

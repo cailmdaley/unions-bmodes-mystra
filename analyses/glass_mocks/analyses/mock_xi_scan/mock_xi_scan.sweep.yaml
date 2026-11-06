@@ -1,36 +1,27 @@
-# Per-realisation fine ξ± for the GLASS suite. Expand with:
-#   sweep_expand.py -o analyses/glass_mocks/analyses/mock_xi_scan/astra.yaml \
-#       analyses/glass_mocks/analyses/mock_xi_scan/mock_xi_scan.sweep.yaml
+# Per-realisation fine ξ± for the GLASS suite.
 id: mock_xi_scan
 version: "1.0"
-name: "GLASS mock fine-ξ scatter"
+name: "Per-realisation fine ξ_± of the GLASS suite"
 description: |
-  The campaign's expensive stage, one realisation per member: TreeCorr
-  ξ_±(θ) on exactly the data's integration grid — geomspace 0.5'–300',
-  1000 bins — for each of the 350 GLASS realisations, 60 M galaxies
-  apiece. Ruled by Cail 2026-08-31: mock and data measurements must
-  share range and binning, node for node. The earlier [0.5', 500'] grid
-  capped at 300' left node placement mismatched. Both the COSEBI and
-  the pure-E/B filters integrate over θ and need this grid, which the
-  delivered suite does not ship — only 20-bin reporting vectors.
+  TreeCorr ξ_±(θ) for each of the 350 GLASS realisations, about 60 M
+  galaxies apiece, on exactly the data's
+  [integration grid](#decisions.integration_grid): geomspace
+  0.5'–300', 1000 bins. Mock and data measurements share range and
+  binning node for node. Both the COSEBI and the pure-E/B filters
+  integrate over θ and need this grid, which the delivered suite does
+  not ship: it carries only 20-bin reporting vectors.
 
-  A member is one mock's measurement and nothing else, which is what
-  makes the fan-out worth its size: a realisation that fails or is
-  re-run costs one member, not the suite. The gather is the artifact
-  everything downstream actually wants — the realisation axis made
-  explicit as a single stacked array.
-tags: [sweep, generated, glass, mocks]
+  The scan runs over the realisations, one measurement each. The
+  gathered [ensemble](#outputs.mock_xi_fine) stacks them along an
+  explicit realisation axis, and is what the COSEBI and pure-E/B
+  transforms of the mocks read.
+tags: [sweep]
 
 inputs:
   - id: glass_mock_catalogs
     from: ../glass_mock_catalogs
 
-  - id: decision_values_script
-    from: ../decision_values_script
-
 decisions:
-  mock_suite:
-    from: ../mock_suite
   integration_grid:
     from: ../integration_grid
 
@@ -394,9 +385,10 @@ template:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `${mock}` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
-  inputs: [glass_mock_catalogs, decision_values_script]
-  decisions: [mock_suite, integration_grid]
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
+  inputs: [glass_mock_catalogs]
+  decisions: [integration_grid]
   recipe:
     command: >
       python src/workflow/scripts/run_glass_mock_2pcf.py
@@ -413,9 +405,8 @@ gather:
     The ${n_members}-realisation fine ξ_± ensemble: `meanr`, `xip`,
     `xim`, `npairs` and `weight` stacked on the shared 1000-bin
     integration grid, with the mock IDs. The mock counterpart of
-    [xi_integration](#../../inputs.xi_integration), and the input both
+    [xi_integration](#../inputs.xi_integration), and the input both
     config-space transforms read.
-  inputs: [decision_values_script]
   decisions: [integration_grid]
   recipe:
     command: >

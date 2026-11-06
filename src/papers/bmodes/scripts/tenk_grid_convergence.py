@@ -6,13 +6,13 @@ pure numerical-convergence statement about the estimators, not a statistical one
 
 What is compared
 ----------------
-* **Pure modes** ξ_±^{E,B,amb} through the *current baseline chain* — the fixed
+* **Pure modes** ξ_±^{E,B,amb} through the baseline chain — the fixed
   linear-transform operator evaluated on the fine grid, then collapsed to the
   20 reporting bins under the ``pure_eb_rebinning_weights`` rule.  The 10,000-bin
   vector is built by the very function the baseline output uses
   (``gather_pure_eb_chunks.data_vector``), so the only difference between the
-  two sides is the grid.  The published-era pointwise ``dqags`` estimator — the
-  only one the 10k grid had ever been read through — is not exercised here.
+  two sides is the grid.  The published pointwise ``dqags`` estimator is not
+  exercised here.
 * **COSEBIs** B_n, n ≤ ``nmodes``, at both scale cuts, with the mode integrals
   run on each grid.
 
@@ -221,7 +221,7 @@ def compute(
     # fraction of the reporting bin's, and it shrinks with resolution — it is
     # the leading reason the two grids' per-bin pair sums differ at all. The
     # window itself never depends on this: it is resolved from the reporting
-    # EDGES, never from bin means (fiber fiducial-window-bin-means-bug).
+    # EDGES, never from bin means.
     edge_resolution = {}
     for label, gg_f in (("coarse", gg_1k), ("fine", gg_10k)):
         left, right = gg_f["left_edges"], gg_f["right_edges"]

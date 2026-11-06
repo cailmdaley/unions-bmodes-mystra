@@ -1,4 +1,4 @@
-"""Pure E/B data vector claim (paper Figure 1).
+"""Pure E/B data vector claim (paper Fig. 2).
 
 Fiducial catalog only: pure E/B/ambiguous decomposition of ξ± with B-modes
 consistent with zero at the fiducial scale cuts. Writes a single

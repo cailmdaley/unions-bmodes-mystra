@@ -204,10 +204,6 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
-    # A membership test, not a caught NameError: the exception form both
-    # prefixes every CLI-path traceback with a NameError that is not the
-    # failure, and would swallow a NameError raised by the snakemake branch
-    # itself, silently continuing as if there were no snakemake object.
     if "snakemake" in globals():
         xi_files = collect_mock_files([Path(f) for f in snakemake.input.xi])  # noqa: F821
         cl_files = collect_mock_files([Path(f) for f in snakemake.input.cl])  # noqa: F821
@@ -248,7 +244,7 @@ def main() -> None:
     cl_mean = np.mean(cl_data, axis=0)
     combined_mean = np.mean(data_matrix, axis=0)
 
-    # Save covariances and means — only those the caller asked for. Each lc
+    # Save covariances and means — only those the caller asked for. Each
     # recipe declares exactly one output and passes exactly one of these flags.
     for path, array in (
         (xi_covariance_path, xi_covariance),

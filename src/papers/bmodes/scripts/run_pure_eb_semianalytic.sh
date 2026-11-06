@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-# Pure E/B semi-analytic data vector + covariance driver (lc-native recipe).
+# Pure E/B semi-analytic data vector + covariance driver.
 #
 # --covariance-method monte_carlo runs the 20 independent MC chunks in parallel
 # (each a fresh python process, deterministic seed 42+chunk_id) throttled to
 # the node core count, then gathers them into the per-(version,blind)
-# semianalytic .npz; bit-exact to the paper's scatter-gather (same per-chunk
-# seeds/order). --covariance-method exact_linear skips the chunks: the gather
+# semianalytic .npz. --covariance-method exact_linear skips the chunks: the gather
 # step builds the exact M C Mᵀ from --cov-integration directly.
 #
 # Usage:
@@ -23,7 +22,7 @@
 set -euo pipefail
 
 # SCRIPTS is this project's vendored scripts; the sp_validation package is
-# installed in the environment lc runs the recipe in.
+# installed in the recipe's environment.
 SCRIPTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 VERSION=""; BLIND="A"; CATCONFIG=""; XIREP=""; XIINT=""; COVINT=""; OUT=""; OUTFILE=""
@@ -31,17 +30,14 @@ VERSION=""; BLIND="A"; CATCONFIG=""; XIREP=""; XIINT=""; COVINT=""; OUT=""; OUTF
 # decisions are the source of truth.
 INTMETHOD=""; INTLIMITS=""; REBINWEIGHTS=""; COVMETHOD=""
 # Optional: override the geometry the method defaults to. Empty = the default
-# mapping, so every existing caller is unchanged.
+# mapping.
 GEOMETRY=""
 # Optional: pointwise fixed_operator only -- read the local 0.5*(xi_p +/- xi_m)
-# term from the reporting grid instead of the snapped fine node. Empty = off,
-# so every existing caller is unchanged.
+# term from the reporting grid instead of the snapped fine node. Empty = off.
 LOCALEVAL=""
 # NPROC is how many MC chunk processes this ONE task forks. It must be the
-# task's slot, not the allocation: SLURM_CPUS_PER_TASK is the whole -c of the
-# job, so under lc (whose SLURM venue runs one task per allocated core) every
-# concurrent task forked 16 processes into a slot sized for one. Same knob as
-# the TreeCorr cap in run_2pcf.py, set by the runner; --nproc still overrides.
+# task's slot, not the allocation. Same knob as the TreeCorr cap in
+# run_2pcf.py, set by the runner; --nproc overrides.
 NCHUNKS=20; NSAMPLES=""; NPROC="${OMP_NUM_THREADS:-1}"
 MINSEP=1.0; MAXSEP=250.0; NBINS=20
 MINSEPINT=0.5; MAXSEPINT=300.0; NBINSINT=1000; NPATCH=1

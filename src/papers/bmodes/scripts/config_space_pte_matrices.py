@@ -6,14 +6,11 @@ Produces 3-panel composites (xi+^B, xi-^B, COSEBIS) for:
 
 Each composite has shared axes and a single colorbar.
 
-Dual-mode. Under Snakemake (``script:`` directive) the injected ``snakemake``
-object supplies config/inputs/outputs; as a standalone CLI (argparse) the same
-compute runs from explicit flags — the version sweep lives *inside* this script,
-so the CLI reads the per-version PTE intermediates (pure E/B ``*_pure_eb_ptes.npz``
-and the COSEBI ``pte_*.json`` scatter tree) directly from absolute directories
-directly from absolute directories.
+The version sweep lives *inside* this script, so the CLI reads the per-version
+PTE intermediates (pure E/B ``*_pure_eb_ptes.npz`` and the per-version COSEBI
+NPZs or per-pair ``pte_*.json`` files) directly from absolute directories.
 
-Under lightcone/ASTRA one invocation writes exactly one file. The compute pass
+One invocation writes exactly one file. The compute pass
 emits the evidence JSON — which carries the FULL per-version (theta_min,
 theta_max) PTE matrices, not just the adopted-cut scalars — and both composites
 then render from that payload without recomputing anything:
@@ -30,7 +27,7 @@ then render from that payload without recomputing anything:
         --from-evidence evidence.json --figure {fiducial,appendix} \
         --out-file figure.png
 
-``--out <dir>`` remains as the legacy multi-artifact mode used by Snakemake.
+``--out <dir>`` instead writes every product into one directory.
 """
 
 import argparse
@@ -80,16 +77,16 @@ def _path_matches_version(path, version):
 
 
 def _resolve_overrides(version, fiducial_overrides):
-    """lc-provenance source paths for this version, else ``(None, None)``.
+    """Explicit source paths for this version, else ``(None, None)``.
 
-    The fiducial version is repointed to its explicit lc single-output paths;
+    The fiducial version is repointed to its explicit single-output paths;
     every non-fiducial sweep version resolves its COSEBI gathered-NPZ from the
     per-version map (``cosebis_by_version``) built off ``--cosebis-pte-dir`` when
-    that directory holds the lc cosebis_ptes sweep. This keeps the fiducial and
+    that directory holds the cosebis_ptes sweep. This keeps the fiducial and
     the sweep versions on the *same* gathered-NPZ provenance (adapted back to the
-    per-pair PTE matrix by ``_cosebis_matrix_from_npz``) rather than the old
-    per-pair-JSON scatter tree. Pure E/B has no such split — the sweep emits the
-    old-tree ``{ver}_{blind}_pure_eb_ptes.npz`` name, so non-fiducial versions
+    per-pair PTE matrix by ``_cosebis_matrix_from_npz``) rather than per-pair
+    JSON files. Pure E/B has no such split — the sweep emits
+    ``{ver}_{blind}_pure_eb_ptes.npz``, so non-fiducial versions
     read it straight from the ``--pte-intermediate-dir`` file list (override None).
     Either element may be None.
     """
@@ -102,9 +99,9 @@ def _resolve_overrides(version, fiducial_overrides):
 
 
 def _cosebis_matrix_from_npz(npz_path, nmodes):
-    """Adapt lc's gathered COSEBI PTE NPZ to the per-pair-JSON PTE matrix.
+    """Adapt the gathered COSEBI PTE NPZ to the per-pair-JSON PTE matrix.
 
-    The lc producer (compute_cosebis_pte_single.py) writes one NPZ holding
+    compute_cosebis_pte_single.py writes one NPZ holding
     ``pte_B_6``/``pte_B_20`` as (nbins+1, nbins+1) matrices already indexed by
     ``[i_min, i_max]`` — the same layout ``load_cosebis_pte_matrix`` builds cell
     by cell from the JSON glob. The one structural difference is that the NPZ
@@ -171,7 +168,7 @@ def load_cosebis_pte_matrix(
         if key in data:
             pte_val = data[key]["pte_B"]
         elif nmodes == 6:
-            # Legacy format fallback
+            # Bare `pte_B` key: the n=6 PTE
             pte_val = data.get("pte_B", np.nan)
         else:
             continue
@@ -442,7 +439,7 @@ def extract_full_range_ptes(
             ptes["cosebis_20"] = pte20
         return ptes
 
-    # Old tree: pte_000_020.json for full theta range, min across blinds.
+    # Per-pair JSON files: pte_000_020.json is the full theta range, min across blinds.
     cosebis_ptes_6 = []
     cosebis_ptes_20 = []
     for pte_file in cosebis_pte_files:
@@ -822,7 +819,7 @@ def _fiducial_cuts(reporting, scale_cut_convention):
     These are the cuts in arcmin, for the evidence payload and the axis
     annotations. The reporting-grid *cell* they select is resolved separately
     by ``resolve_fiducial_bin_window`` — never by matching against bin means;
-    see that function for the bug this separation fixes.
+    see that function for why.
     """
     cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
     return cut, cut, cut
@@ -1141,7 +1138,7 @@ def main(
         fiducial_overrides,
     )
 
-    # Single-file modes (lc): compute once, write exactly the requested artifact.
+    # Single-file modes: compute once, write exactly the requested artifact.
     if emit == "evidence":
         evidence_data = build_evidence(
             catalogs,
@@ -1171,7 +1168,7 @@ def main(
         print(f"\nSaved {out_file}", flush=True)
         return
 
-    # Legacy directory mode — every product lands under a single output dir.
+    # Directory mode: every product lands under a single output dir.
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     out = {
@@ -1345,9 +1342,9 @@ def _from_cli(argv=None):
     ]
     pure_eb_pte_files = [p for p in pure_eb_pte_files if os.path.exists(p)]
 
-    # COSEBI provenance: prefer the lc cosebis_ptes sweep (gathered NPZ per
+    # COSEBI provenance: prefer the cosebis_ptes sweep (gathered NPZ per
     # version, same layout as the fiducial single-output) so fiducial and sweep
-    # versions share provenance; fall back to the old per-pair-JSON scatter tree.
+    # versions share provenance; fall back to per-pair JSON files.
     cosebis_by_version = {
         v: os.path.join(a.cosebis_pte_dir, f"cosebis_ptes_{v}_{a.blind}.npz")
         for v in versions

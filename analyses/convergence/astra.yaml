@@ -1,21 +1,13 @@
 version: "0.0.14"
 name: "Integration-grid convergence of the adopted estimators"
-
-# Why this is a sub-analysis and not a `bins_10000` flip of `integration_grid`:
-# a universe flip forks the WHOLE chain, and the chain's covariance cannot
-# follow. The pure-mode covariance is Monte-Carlo-propagated from the 1000-bin
-# CosmoCov ξ± matrix and the COSEBI mode covariance is T^T C_ξ T on that same
-# matrix; no 10,000-bin CosmoCov block exists, and building one would change
-# the covariance at the same time as the grid, which is the one thing a
-# convergence test must not do. What the test needs is a data vector remade on
-# the fine grid and scored against the covariance the baseline already has —
-# two grids inside one universe, which is an output, not a universe.
-#
-# The 10,000-bin ξ± themselves are already a declared artifact: the
-# [staged TreeCorr dump](#../two_point.inputs.tenk_xi_staging) is the `source:`, and
-# [xi_integration_convergence](#../two_point.outputs.xi_integration_convergence)
-# is the adopted copy. This sub-analysis consumes that output; nothing is
-# copied into results/ by hand.
+description: |
+  Tests whether the adopted pure-mode and COSEBI results are converged on
+  the 1,000-bin integration grid, by remaking the data vectors from a
+  10,000-bin ξ_± measurement of the fiducial catalog. It stands apart
+  from the main chain because only the data vector changes: both grids
+  are scored against the 1,000-bin covariance, since no 10,000-bin
+  CosmoCov block exists and changing it with the grid would mix the two
+  effects.
 
 inputs:
   - id: xi_reporting
@@ -33,36 +25,6 @@ inputs:
   - id: cosebis_modes_data
     from: ../cosebis.cosebis_modes_data
 
-  # Declared so an edit to either script restales the outputs below, whose
-  # recipe strings name the script by a path that does not change.
-  - id: scale_cuts_script
-    from: ../scale_cuts_script
-
-  - id: tenk_grid_convergence_script
-    type: data
-    description: |
-      The convergence comparator and its renderer. It reuses the
-      baseline chain's own data-vector and pure-mode code, so the grid
-      is the only difference, and checks its 1,000-bin vector against
-      [pure_eb_semianalytic_data](#inputs.pure_eb_semianalytic_data)
-      before comparing.
-    source: "./src/papers/bmodes/scripts/tenk_grid_convergence.py"
-
-  - id: decision_values_script
-    from: ../decision_values_script
-
-  - id: catalog_versions_script
-    from: ../catalog_versions_script
-
-  - id: pure_mode_covariance_script
-    from: ../pure_mode_covariance_script
-
-  - id: pure_eb_transform_script
-    from: ../pure_eb_transform_script
-
-  - id: gather_pure_eb_chunks_script
-    from: ../gather_pure_eb_chunks_script
-
 outputs:
   - id: tenk_grid_comparison
     when: [leakage_correction.applied]
@@ -72,41 +34,33 @@ outputs:
       Per reporting bin (ξ_±^B, ξ_±^amb) and per COSEBI mode
       (n = 1 … 20, both scale cuts): the value on the 1,000-bin and
       10,000-bin integration grids, their difference, and that
-      difference in units of the fiducial analytic σ, plus the
-      fiducial-window (12'–83') χ²/PTE on each grid. For the COSEBIs
-      it also carries all four combinations of integration grid ×
-      COSEBI interval.
+      difference in units of the fiducial analytic σ, plus the χ²/PTE
+      on each grid: the fiducial window (12'–83') for the pure modes,
+      both scale cuts at n ≤ 6 and n ≤ 20 for the COSEBIs. For the
+      COSEBIs it also carries all four combinations of integration
+      grid × COSEBI interval.
 
       Both grids are scored with the same 1,000-bin covariance: the
-      Monte-Carlo-propagated pure-mode matrix from
+      pure-mode matrix from
       [pure_eb_semianalytic_data](#inputs.pure_eb_semianalytic_data)
       and the T^T C_ξ T mode covariance from
       [cosebis_modes_data](#inputs.cosebis_modes_data). Both grids
       are TreeCorr runs over the same catalog on the same
       [0.5', 300'] extent, so sample variance cancels and every
       difference is numerical.
-      This cross-check is available only for corrected shear: the imported
-      10,000-bin measurement has no raw-shear counterpart.
+      This cross-check is available only for corrected shear: the
+      10,000-bin measurement exists only for the leak-corrected catalog.
 
       Sanity checks: pair counts summed into each reporting bin on
       both grids (totals agree to 4e-6; per-bin sums differ because
       the one fine bin straddling each reporting edge is assigned
-      whole, 3.0% of a reporting bin at 1,000 bins and 0.3% at
+      whole, up to 3.0% of a reporting bin at 1,000 bins and 0.3% at
       10,000), and the effective COSEBI interval each grid's
       bin selection produces. The fiducial window is bins (9, 15)
       on both grids.
     decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, mode_count, decomposition_method, pte_definition, leakage_correction, reporting_binning, integration_grid]
-    inputs:
-      [xi_reporting, xi_integration, xi_integration_convergence,
-       pure_eb_semianalytic_data, cosebis_modes_data,
-       scale_cuts_script, tenk_grid_convergence_script,
-       decision_values_script, catalog_versions_script, pure_mode_covariance_script,
-       pure_eb_transform_script, gather_pure_eb_chunks_script]
+    inputs: [xi_reporting, xi_integration, xi_integration_convergence, pure_eb_semianalytic_data, cosebis_modes_data]
     recipe:
-      # Compute mode. The 10,000-bin operator is a 6-block
-      # (~8.6k eval rows x 20k columns) matrix built once and applied as a
-      # matvec; the COSEBI filter tabulation at precision=120 is the other
-      # pole. Both fit in the resources below.
       command: >
         python src/papers/bmodes/scripts/tenk_grid_convergence.py
         --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
@@ -169,7 +123,7 @@ findings:
     notes: |
       Refining to 10,000 bins moves ξ_±^B by at most 0.12 σ in any of
       the seven fiducial-window bins (0.40 σ over all 20 bins, in the
-      168' bin at the operator's upper edge) and the ambiguous modes
+      168' bin near the operator's upper edge) and the ambiguous modes
       by at most 0.054 σ anywhere. PTEs: ξ_+^B 0.823 → 0.842, ξ_-^B
       0.0193 → 0.0213, joint 0.0387 → 0.0435. The residual per-bin
       motion is sign-alternating, not coherent.
@@ -178,16 +132,16 @@ findings:
       - id: ev1
         artifact: tenk_grid_comparison
         quote:
-          exact: '"pte": 0.8420537855782535'
+          exact: '"pte": 0.8420537855782536'
 
   cosebis_verdicts_stable_at_1000_bins:
     label: "COSEBI verdicts stable at 1,000 bins"
     claim: |
       The COSEBI B-mode null-test verdicts are stable to the
-      integration grid: refining from 1,000 to 10,000 bins moves the
-      n ≤ 6 modes by at most 0.64 σ and leaves every PTE verdict
-      unchanged, while individual higher modes (n ≥ 10) shift by up
-      to 1.37 σ.
+      integration grid: refining from 1,000 to 10,000 bins, with each
+      grid on its own bin selection, moves the n ≤ 6 modes by at most
+      0.64 σ and leaves every PTE verdict unchanged, while individual
+      higher modes (n ≥ 10) shift by up to 1.37 σ.
     notes: |
       The paper states this as: "we repeat the calculation on a
       10 000-bin grid for the fiducial catalog and find the B_n
@@ -202,11 +156,16 @@ findings:
 
       Each grid's edge-based bin selection lands on a slightly
       different θ interval (12.053′–82.141′ at 1,000 bins,
-      12.003′–82.800′ at 10,000); recomputing one grid over the
-      other's interval moves the high-n modes and full-range PTEs
-      further, a sensitivity to the interval rather than to
-      resolution. Shifts are in units of the 1,000-bin σ (the only
-      mode covariance), not a significance of the difference.
+      12.003′–82.800′ at 10,000), so the comparison above changes
+      interval and resolution together. Recomputing each grid over
+      the other's interval, as closely as its nodes allow, moves the
+      n ≤ 6 modes by up to 0.74 σ at the fiducial cuts and 1.27 σ
+      over the full range, and any mode by up to 1.18 σ and 2.05 σ.
+      Fiducial PTEs stay within 0.60–0.95; full-range PTEs rise to
+      6.4×10⁻⁴–1.06×10⁻³ (n ≤ 6) and 0.011–0.012 (n ≤ 20, just above
+      the 0.01 threshold, though n ≤ 6 still fails). Shifts are in
+      units of the 1,000-bin σ (the only mode covariance), not a
+      significance of the difference.
     created_at: "2026-09-13T00:00:00Z"
     evidence:
       - id: ev1

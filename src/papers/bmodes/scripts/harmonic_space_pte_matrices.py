@@ -383,10 +383,9 @@ def compute_all(
     fiducial_ell_min, fiducial_ell_max = FIDUCIAL_ELL_CUT["adopted"]
 
     # Per-version pseudo-Cl / covariance files (canonical COSMO_VAL tree, blind A).
-    # Mirrors _pseudo_cl_path(ver) / _pseudo_cl_cov_path(ver, blind) in claims.smk.
-    # Fiducial-provenance repoint: when --fiducial-version matches and an explicit
-    # lc override path is set, read that path instead of the reconstructed pattern
-    # (lc files lack the blind=/powspace_nbins= tokens, distinguished by directory).
+    # When --fiducial-version matches and an explicit override path is set, read
+    # that path instead of the reconstructed pattern (override files lack the
+    # blind=/powspace_nbins= tokens and are distinguished by directory).
     version_to_cl = {
         ver: (
             fiducial_pseudo_cl_path

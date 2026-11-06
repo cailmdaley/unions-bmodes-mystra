@@ -1,11 +1,7 @@
 """Compute COSEBIS E_n/B_n for GLASS mock realizations.
 
-Vendored from sp_validation `workflow/scripts/mock_cosebis_scatter.py`. The
-upstream file is a bare snakemake script handling one mock per job; the
-transform body is unchanged, wrapped in `compute_one` and given the batch CLI
-the lc recipes call, plus `--scale-cut-convention` so the declared
-`scale_cut_convention` decision reaches this stage instead of being frozen
-into literal θ values in the invocation.
+`compute_one` holds the transform and the recipes call the batch CLI, whose
+`--scale-cut-convention` carries the declared `scale_cut_convention` decision.
 """
 
 import argparse

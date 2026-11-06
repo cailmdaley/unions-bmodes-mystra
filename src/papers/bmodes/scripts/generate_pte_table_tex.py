@@ -2,7 +2,6 @@
 
 import argparse
 import csv
-import json
 import math
 from pathlib import Path
 
@@ -44,13 +43,9 @@ _STAT_COLUMNS = [
 ]
 
 
-def render_table(csv_path: Path, calibration_path: Path, out_file: Path) -> None:
+def render_table(csv_path: Path, out_file: Path) -> None:
     with csv_path.open(newline="") as f:
         rows = list(csv.DictReader(f))
-    with calibration_path.open() as f:
-        calibration = json.load(f)
-    threshold = float(calibration["threshold_one_sided"])
-    threshold_full = float(calibration["full_range"]["threshold_one_sided"])
 
     lines = [
         "% Auto-generated mock-calibrated PTE comparison tabular",
@@ -100,10 +95,9 @@ def render_table(csv_path: Path, calibration_path: Path, out_file: Path) -> None
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pte-csv", required=True)
-    parser.add_argument("--calibration", required=True)
     parser.add_argument("--out-file", required=True)
     args = parser.parse_args(argv)
-    render_table(Path(args.pte_csv), Path(args.calibration), Path(args.out_file))
+    render_table(Path(args.pte_csv), Path(args.out_file))
 
 
 if __name__ == "__main__":

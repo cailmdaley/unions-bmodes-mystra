@@ -60,7 +60,7 @@ def _resolve_pseudo_cl_paths(
     """Resolve the pseudo-Cl and covariance paths for one version in the sweep.
 
     Every version is read from the reconstructed COSMO_VAL pattern, except the
-    fiducial version when explicit override paths are supplied: the lc-produced
+    fiducial version when explicit override paths are supplied: the
     fiducial FITS files are named `pseudo_cl_{version}.fits` /
     `pseudo_cl_cov_{version}.fits` (no blind=/nbins= tokens), so pattern
     reconstruction can't find them and an explicit path is required instead.
@@ -90,7 +90,7 @@ def main(
     ell_min_cut, ell_max_cut = FIDUCIAL_ELL_CUT["adopted"]
 
     version_labels = catalogs.labels
-    # Leak-corrected, non-ecut versions (matches VERSIONS_LEAK_CORR in claims.smk)
+    # Leak-corrected, non-ecut versions
     versions = catalogs.comparison
 
     # Which version gets the fiducial reference line in boxes
@@ -319,13 +319,13 @@ def main(
     plt.subplots_adjust(hspace=0.08)
 
     if out_file is not None:
-        # lc one-file mode: only the version-overlay figure, 300-dpi PNG.
+        # One-file mode: only the version-overlay figure, 300-dpi PNG.
         savefig_at_width(fig, out_file, STACKED_PRINT_WIDTH, dpi=300)
         plt.close(fig)
         print(f"Saved {out_file}")
         return
 
-    # Save outputs into the lc output directory
+    # Save outputs into the output directory
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 

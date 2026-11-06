@@ -1,0 +1,3 @@
+catalogue,galaxies_counted,galaxies_from_n_gal_convention,occupied_area_deg2,area_convention_deg2,n_eff_arcmin2,sigma_e_per_component,noise_power_ratio_to_data,bb_variance_ratio_to_data
+UNIONS v1.4.6.3 leak-corrected catalogue,61378891,51647461,2750.65,2894.03,4.95728,0.267568,1,1
+GLASS v1.4.6.3_v2 mock suite,60423575,60355279,2709.91,2894.03,5.79308,0.268175,0.85961,0.738929

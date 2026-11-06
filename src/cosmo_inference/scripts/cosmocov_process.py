@@ -34,8 +34,7 @@ if __name__ == "__main__":
 
     covfile = sys.argv[1]
     output_base = sys.argv[2]
-    # Optional explicit plot path; a .png here is rendered at 300 dpi (the
-    # project figure convention) instead of the legacy 2000-dpi PDF.
+    # Optional explicit plot path; a .png is rendered at 300 dpi, a PDF at 2000.
     plot_arg = sys.argv[3] if len(sys.argv) == 4 else None
 
     c_g, c_ng, ndata = get_cov(covfile)

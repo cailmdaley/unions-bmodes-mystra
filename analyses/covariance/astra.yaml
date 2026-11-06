@@ -1,5 +1,10 @@
 version: "0.0.14"
 name: "Semi-analytical covariances"
+description: |
+  Computes the covariances behind every B-mode null test: `CosmoCov` ξ_±
+  covariances on the integration and reporting grids, and NaMaster iNKA
+  covariances of the pseudo-Cℓ bandpowers. It stands on its own because the
+  pure-mode, COSEBI, harmonic-space and mock branches all share these matrices.
 
 inputs:
   - id: mask_power_spectrum
@@ -11,48 +16,27 @@ inputs:
   - id: shapepipe_v145_rerun
     from: ../shapepipe_v145_rerun
 
-  # The fiducial catalog's n(z), read by the fiducial chain's CosmoCov runs.
+  # The fiducial catalog's n(z), read by its CosmoCov runs.
   - id: redshift_distribution
     from: ../catalog.redshift_distribution
 
-  - id: pseudo_cl_cov_script
-    from: ../pseudo_cl_cov_script
-
-  - id: cosmocov_binary
-    from: ../cosmocov_binary
-
-  - id: cosmocov_libgsl
-    from: ../cosmocov_libgsl
-    # The recipes pass the binary and library explicitly (`--cosmocov`,
-    # `--libgsl`) so the declared inputs are what the chain runs. CosmoCov reads
-    # area / n_eff / sigma_e from cat_config.yaml, not from a catalog output.
-
   - id: redshift_distributions
     from: ../redshift_distributions
-    # The raw n(z) tree. lc binds only declared inputs, and both
-    # `generate_pseudo_cl_cov.py` (via cat_config's `redshift_path`) and
-    # `generate_cosmocov_ini.py` (which writes an n(z) path under
-    # `/n17data/sguerrini/UNIONS/WL/nz/` into the `.ini`) read files inside it.
-
-  - id: decision_values_script
-    from: ../decision_values_script
-
-  - id: catalog_versions_script
-    from: ../catalog_versions_script
+    # Per-version n(z), read by the iNKA covariances and by the CosmoCov runs of
+    # the [cov_scan](#analyses.cov_scan) sweep.
 
 outputs:
   - id: cosmology_snapshot
     type: data
     description: |
       The Planck 2018 fiducial cosmology
-      (`sp_validation.cosmology.PLANCK18`: Ω_m, σ_8, n_s, Ω_b, h,
-      w_0, w_a, plus derived Ω_v) as JSON, used to write every
-      CosmoCov `.ini`.
+      (`sp_validation.cosmology.PLANCK18`) as JSON: Ω_m = 0.30966,
+      Ω_b = 0.04897, h = 0.6766, n_s = 0.9665, σ_8 = 0.8102, in flat
+      ΛCDM with Ω_v = 1 − Ω_m. It sets the cosmology of every
+      CosmoCov run.
     format: json
     decisions: [fiducial_cosmology]
     recipe:
-      # Dump the PLANCK18 snapshot (+ derived Omega_v) straight to {output}.
-      # Source of truth remains sp_validation.cosmology.PLANCK18.
       command: >
         python -c "import json; from sp_validation.cosmology import PLANCK18; d = dict(PLANCK18); d['Omega_v'] = 1 - PLANCK18['Omega_m']; json.dump(d, open('{output}', 'w'), indent=2)"
 
@@ -68,18 +52,15 @@ outputs:
       Together they give the non-Gaussian share of the ξ_±
       diagonal variance quoted in the paper.
     decisions: [fiducial_catalog, fiducial_blind, covariance_engine, reporting_binning, leakage_correction]
-    inputs: [cosmology_snapshot, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl, decision_values_script, catalog_versions_script]
+    inputs: [cosmology_snapshot, redshift_distribution]
     format: txt
     recipe:
-      # Compute just G: the NG diagnostic does not change this extract.
       command: >
         bash src/workflow/scripts/run_cosmocov_chain.sh
         --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind}
         --min-sep 1.0 --max-sep 250.0 --nbins 20 --gaussian g
         --planck18-json {inputs.cosmology_snapshot}
         --cat-config src/cosmo_val/cat_config.yaml
-        --cosmocov {inputs.cosmocov_binary}
-        --libgsl {inputs.cosmocov_libgsl}
         --nz {inputs.redshift_distribution}
         --emit processed_g --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
@@ -95,17 +76,14 @@ outputs:
       [Mask application](#decisions.mask_application) selects the SSC window
       (footprint spectrum or circular-area approximation); G remains area-only.
       It sets the non-Gaussian share of the diagonal variance
-      quoted in the paper but does not enter the PTEs, which use
+      quoted in the paper and the total-ξ_± error bars of the
+      [pure-mode data-vector figure](#../pure_eb.outputs.pure_eb_data_vector_figure),
+      but does not enter the PTEs, which use
       the [selected integration covariance](#decisions.covariance_class).
     decisions: [fiducial_catalog, fiducial_blind, mask_application, covariance_engine, reporting_binning, leakage_correction]
-    inputs: [cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl, decision_values_script, catalog_versions_script]
+    inputs: [cosmology_snapshot, mask_power_spectrum, redshift_distribution]
     format: txt
     recipe:
-      # Primary reporting-grid CosmoCov run (20 bins, ng=1, masked). Emits the
-      # processed G+NG matrix as this output's single file; the concatenated
-      # blocks, the Gaussian extract and the QA plot are separate outputs
-      # (cov_blocks / cov_reporting_g / cov_processed_qa), each selecting its
-      # product from the same chain via --emit.
       command: >
         bash src/workflow/scripts/run_cosmocov_chain.sh
         --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind}
@@ -113,8 +91,6 @@ outputs:
         --mask-application {decisions.mask_application}
         --planck18-json {inputs.cosmology_snapshot}
         --cat-config src/cosmo_val/cat_config.yaml
-        --cosmocov {inputs.cosmocov_binary}
-        --libgsl {inputs.cosmocov_libgsl}
         --mask-cls {inputs.mask_power_spectrum}
         --nz {inputs.redshift_distribution}
         --emit processed --out-file {output}
@@ -132,13 +108,9 @@ outputs:
       pure-mode covariances use a linear transform or
       [MC realisations](#../decisions.mc_samples).
     decisions: [fiducial_catalog, fiducial_blind, covariance_class, covariance_engine, integration_grid, leakage_correction]
-    inputs: [cosmology_snapshot, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl, decision_values_script, catalog_versions_script]
+    inputs: [cosmology_snapshot, redshift_distribution]
     format: txt
     recipe:
-      # Full CosmoCov chain (generate .ini from the cosmology snapshot +
-      # cat_config cov_th -> 3 blocks ++/--/+- -> cat -> cosmocov_process).
-      # The Gaussian-only class reaches the integration covariance
-      # that pure_eb and COSEBI propagation consume.
       command: >
         bash src/workflow/scripts/run_cosmocov_chain.sh
         --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind}
@@ -146,8 +118,6 @@ outputs:
         --gaussian {decisions.covariance_class}
         --planck18-json {inputs.cosmology_snapshot}
         --cat-config src/cosmo_val/cat_config.yaml
-        --cosmocov {inputs.cosmocov_binary}
-        --libgsl {inputs.cosmocov_libgsl}
         --nz {inputs.redshift_distribution}
         --emit processed --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
@@ -158,16 +128,14 @@ outputs:
       Gaussian (NaMaster iNKA) covariance of the pseudo-Cℓ
       bandpowers for the fiducial catalog at blind A, on the
       32-bandpower √ℓ-spaced grid of
-      [cl_bb's data vector](#../analyses.cl_bb) — the covariance
-      Paper IV uses for its BB / EB null tests.
-    decisions: [fiducial_catalog, fiducial_blind, bandpower_binning, noise_bias_correction, leakage_correction]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script, decision_values_script, catalog_versions_script]
+      [cl_bb's data vector](#../analyses.cl_bb), the prescription
+      Paper IV uses for its BB and EB null tests. It takes a Planck
+      2018 theory spectrum plus analytic noise, with the weighted
+      galaxy-count map at nside 1024 as the window.
+    decisions: [fiducial_catalog, fiducial_blind, bandpower_binning, noise_bias_correction, leakage_correction, fiducial_cosmology]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions]
     format: fits
     recipe:
-      # generate_pseudo_cl_cov.py CLI: NaMaster iNKA Gaussian bandpower
-      # covariance matching the reporting data-vector binning (powspace,
-      # nbins=32), written to {output}. cosmo defaults to Planck18
-      # (byte-identical to the cosmology snapshot).
       command: >
         python src/workflow/scripts/generate_pseudo_cl_cov.py
         --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
@@ -179,18 +147,16 @@ outputs:
   - id: cl_cov_fine
     type: data
     description: |
-      As [cl_cov_reporting](#outputs.cl_cov_reporting), on the 96-bin
-      √ℓ-spaced fine grid of
+      As [cl_cov_reporting](#outputs.cl_cov_reporting), on the
+      √ℓ-spaced fine grid (96 bandpowers at baseline) of
       [cl_bb.cl_bandpowers_fine](#../cl_bb.outputs.cl_bandpowers_fine),
       for the harmonic-space COSEBI transform. The other three
       leak-corrected catalogs' counterparts come from the
       [cl_scan sweep](#../cl_bb.analyses.cl_scan).
-    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, noise_bias_correction, leakage_correction]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script, decision_values_script, catalog_versions_script]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, noise_bias_correction, leakage_correction, fiducial_cosmology]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions]
     format: fits
     recipe:
-      # Same generate_pseudo_cl_cov.py CLI as cl_cov_reporting, 96-bin fine
-      # grid. Distinct {output} file, so no cache collision with the 32-bin run.
       command: >
         python src/workflow/scripts/generate_pseudo_cl_cov.py
         --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
@@ -200,12 +166,7 @@ outputs:
       resources: { cpus: 12, memory: "32GB" }
 
   - id: cov_sweep
-    # Re-export of the generated cov_scan sweep's gather output — the only edge
-    # into the sweep. The bundle uses the per-version
-    # `covariance_{ver}_A_integration/` subdirectory layout that every
-    # `--cov-dir` consumer reads. Regenerate with
-    #   scripts/sweep_expand.py -o analyses/covariance/analyses/cov_scan/astra.yaml \
-    #       analyses/covariance/analyses/cov_scan/cov_scan.sweep.yaml
+    # Integration-grid covariances of the other catalog variants.
     from: cov_scan.cov_sweep_bundle
 
 decisions:
@@ -235,11 +196,12 @@ decisions:
     label: "Semi-analytical covariance engine"
     tags: [covariance_model]
     rationale: |
+      `CosmoCov` (Krause & Eifler 2017; Fang, Eifler & Krause 2020)
+      computes every ξ_± covariance in this analysis.
       Each B-mode statistic starts from the covariance
       prescription of its companion cosmology paper. For ξ_±
       (and the pure-mode and COSEBI statistics derived from it)
-      that is `CosmoCov` (Krause & Eifler 2017; Fang, Eifler &
-      Krause 2020), Paper III's analytic code, whose 2D-FFTLog
+      that is `CosmoCov`, Paper III's analytic code, whose 2D-FFTLog
       transforms give numerically stable real-space covariances
       without simulations. For Cℓ^BB and Cℓ^EB it is NaMaster's
       iNKA Gaussian covariance, as in Paper IV's B-mode null
@@ -255,7 +217,12 @@ decisions:
         insights: [fang20_2dfftlog_stable_real_space_covariance]
         description: |
           Analytic configuration-space covariance code of Krause
-          & Eifler 2017.
+          & Eifler 2017 and Fang, Eifler & Krause 2020. It computes
+          the ξ_± covariances on the
+          [integration](#outputs.cov_integration) and
+          [reporting](#outputs.cov_reporting_ng) grids and for the
+          [catalog versions](#outputs.cov_sweep), each through
+          `run_cosmocov_chain.sh`.
       namaster_inka:
         label: "NaMaster iNKA (fiducial; harmonic-space)"
         excluded: true
@@ -271,9 +238,10 @@ decisions:
           realisations.
         excluded: true
         excluded_reason: |
-          The mocks validate the analytic covariances; a
-          350-realisation sample covariance is too noisy to
-          invert for the PTEs without correction.
+          The PTEs follow the analytic prescriptions of Papers III
+          and IV, which the mocks validate rather than replace. A
+          350-realisation sample covariance would also be noisy, and
+          singular on the 1000-bin integration grid.
 
   covariance_class:
     label: "Gaussian vs Gaussian + non-Gaussian covariance"
@@ -285,8 +253,9 @@ decisions:
       in harmonic space Paper IV likewise adds non-Gaussian
       terms only for its EE cosmology analysis. Omitting the
       connected-trispectrum and super-sample terms
-      underestimates the variances (by about 11% of the ξ_±
-      diagonal within the fiducial cuts), so the null tests are
+      underestimates the variances (the non-Gaussian share of the
+      ξ_± diagonal variance within the fiducial cuts is about 9%), so
+      the null tests are
       conservative: a test that passes with the Gaussian-only
       covariance would generally pass with a more complete one,
       as the GLASS mocks confirm.
@@ -311,18 +280,16 @@ decisions:
     label: "Footprint window in non-Gaussian covariance"
     tags: [covariance_model]
     rationale: |
-      The spectrum affects only the super-sample covariance (SSC) here:
-      CosmoCov's survey_variance() sums its first 1000 multipoles after
-      normalizing by C_0, with no minimum-length requirement.
-      This decision governs only [the reporting G+NG diagnostic](#outputs.cov_reporting_ng).
-      Non-Gaussian integration/version covariances are excluded as intractable.
-      Without the spectrum, SSC uses CosmoCov's circular-area window.
-      By contrast, Gaussian w_mask() requires 21,600 rows at 1 arcmin or
-      43,200 at 0.5 arcmin; these nside-4096 spectra have only 12,288.
-      All Gaussian covariances, including the fixed baseline mock reference,
-      are therefore area-only, and no mask path is passed to Gaussian-only runs.
-      Repairing the Gaussian boundary correction is post-paper work.
-      These are data-side SSC alternatives against that fixed mock reference.
+      This decision governs only [the reporting G+NG diagnostic](#outputs.cov_reporting_ng):
+      it changes the quoted non-Gaussian share and the total-ξ_± error bars
+      drawn from that covariance, not any PTE. Non-Gaussian integration/version
+      covariances are excluded as intractable.
+      The spectrum enters only the super-sample term here; without it
+      that term uses a circular window of the survey area. CosmoCov's
+      Gaussian mask correction needs a longer spectrum than the
+      nside-4096 ones provide (21,600 multipoles at 1′ against 12,288),
+      so all Gaussian covariances, including the mock reference, use the
+      survey area alone.
     default: masked
     options:
       masked:

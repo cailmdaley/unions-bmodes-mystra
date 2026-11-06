@@ -1,0 +1,6 @@
+id: submitted
+description: |
+  TreeCorr ξ± on the 20-bin reporting grid and the 1000-bin integration grid,
+  in a single patch.
+decisions:
+  patch_count: npatch_1

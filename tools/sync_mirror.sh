@@ -22,7 +22,7 @@ find "$mirror" -name '*cov_tmp*' \( -type f -o -type l \) -delete
 # Copy the report's artifacts from lc's qualified-output layout
 # (results/<universe>/<a>/<b>/<file>) into MySTRA's owner layout
 # (analyses/<a>/analyses/<b>/results/<universe>/<file>); root outputs stay at
-# results/<universe>/<file>. Every baseline file under the size cap is copied,
+# results/<universe>/<file>. Every file under the size cap is copied,
 # which covers the report's figures and values and the inventory's metrics and
 # evidence. Inside nested sub-analyses (the sweeps) only json, csv and png are
 # copied, so per-realisation data stay in the private repository, as do the
@@ -41,22 +41,21 @@ copy_artifact() {
   rm -f "$output"
   cp -L -- "$input" "$output"
 }
-while IFS= read -r -d '' input; do
-  rel=${input#"$source_results"/baseline/}
-  dir=$(dirname "$rel")
-  if [[ "$dir" == . ]]; then
-    copy_artifact "$input" "$mirror/results/baseline/$rel"
-    continue
-  fi
-  if [[ "$dir" == */* && ! "$rel" =~ \.(json|csv|png)$ ]]; then
-    continue
-  fi
-  owner="analyses/${dir//\//\/analyses\/}"
-  copy_artifact "$input" "$mirror/$owner/results/baseline/$(basename "$rel")"
-done < <(find -L "$source_results/baseline" -type f ! -name '.*' ! -path '*/variants/*' -print0)
-# The submitted universe's claims feed the report's version comparison.
-copy_artifact "$source_results/submitted/null_tests/paper_claims.csv" \
-  "$mirror/results/submitted/null_tests/paper_claims.csv"
+for universe in baseline submitted; do
+  while IFS= read -r -d '' input; do
+    rel=${input#"$source_results/$universe"/}
+    dir=$(dirname "$rel")
+    if [[ "$dir" == . ]]; then
+      copy_artifact "$input" "$mirror/results/$universe/$rel"
+      continue
+    fi
+    if [[ "$dir" == */* && ! "$rel" =~ \.(json|csv|png)$ ]]; then
+      continue
+    fi
+    owner="analyses/${dir//\//\/analyses\/}"
+    copy_artifact "$input" "$mirror/$owner/results/$universe/$(basename "$rel")"
+  done < <(find -L "$source_results/$universe" -type f ! -name '.*' ! -path '*/variants/*' -print0)
+done
 
 # Remove unfetched annex pointers and annex symlinks, without following links.
 python3 - "$mirror" <<'PY'

@@ -1,8 +1,8 @@
 """Emit the ν → ν−2 scale-cut penalty verdict table for the paper's PTE table.
 
-Referee comment 1 asks what happens to the B-mode null-test verdicts if the two
-fiducial scale-cut boundaries are treated as *fitted* parameters, i.e. if the
-chi-square degrees of freedom are reduced by two. This generalizes the
+The B-mode null-test verdicts when the two fiducial scale-cut boundaries are
+treated as *fitted* parameters, i.e. when the chi-square degrees of freedom are
+reduced by two. This generalizes the
 single-number footnote reproduced by ``emit_pte_combined_dof_penalized.py`` to
 every cell of the paper's PTE table: four leak-corrected catalog versions x six
 statistics x two cuts (fiducial and full range).

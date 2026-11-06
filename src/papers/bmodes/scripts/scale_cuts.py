@@ -71,7 +71,7 @@ def add_scale_cut_convention_argument(parser):
 # A bin's edges may miss the resolved cut by the rounding between the two
 # conventions (11.997' vs 12' is 2.5e-4 relative; 82.861' vs 83' is 1.7e-3).
 # The nearest bin that is genuinely outside the window misses by ~0.24
-# relative, so 1e-2 separates the two cases with three decades to spare.
+# relative, so 1e-2 separates the two cases.
 BIN_EDGE_RTOL = 1e-2
 
 
@@ -84,14 +84,12 @@ def resolve_fiducial_bin_window(grid, convention):
     bins, spanning edges 9 through 16 of ``geomspace(1', 250', 21)``.
 
     **Never resolve this window against bin mean angles.** The per-cut PTE
-    grids ship a 20-element ``theta`` of bin *means*, and the code this
-    function replaces did ``argmin(abs(theta - theta_min))`` against it. Bin 8
-    spans 9.105--11.997 arcmin with a mean of 10.614, bin 9 spans
-    11.997--15.807 with a mean of 13.988, so 11.997 snapped to bin 8: the
-    window silently became bins (8, 15), i.e. 9.1--83 arcmin, one bin wider
-    than the cut the paper declares. Every published and revised fiducial
-    pure-mode PTE (xi+^B, xi-^B, xi_tot^B) was computed on that wider window,
-    and the dof-penalised combined PTE inherited nu = 2*8 = 16 instead of 14.
+    grids ship a 20-element ``theta`` of bin *means*, and nearest-mean matching
+    (``argmin(abs(theta - theta_min))``) gives the wrong window. Bin 8 spans
+    9.105--11.997 arcmin with a mean of 10.614, bin 9 spans 11.997--15.807 with
+    a mean of 13.988, so 11.997 snaps to bin 8: the window becomes bins (8, 15),
+    i.e. 9.1--83 arcmin, one bin wider than the declared cut, with nu = 2*8 = 16
+    rather than 14 in the joint xi_tot^B test.
     """
     theta_min, theta_max = resolve_fiducial_scale_cuts(grid, convention)
     edges = reporting_grid_edges(grid)

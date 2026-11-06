@@ -15,9 +15,7 @@ This report pairs the accepted paper with its analysis records.
 Start with the [results and PTE table](#sec:results), the [comparison across catalog versions](#sec:catalog_comparison), or the [conclusions](#sec:conclusions).
 Open the [ASTRA Inventory](#astra-inventory) to inspect inputs, decisions, outputs, and findings; a figure's **Provenance** control traces the choices behind it.
 
-The [repository guide](https://github.com/cailmdaley/unions-bmodes-mystra#readme) describes the analysis structure and the accepted and submitted universes.
-The report shows the accepted-paper reference comparison, not an interactive universe switcher.
-The tables and figures retain the complete two-range, six-test reference comparison; the repository guide explains the configurable primary-report selections.
+The [repository guide](https://github.com/cailmdaley/unions-bmodes-mystra#readme) describes the analysis structure and the accepted and submitted versions.
 :::
 
 # Introduction

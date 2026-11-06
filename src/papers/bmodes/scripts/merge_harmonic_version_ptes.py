@@ -1,18 +1,11 @@
 """Gather the per-version harmonic COSEBI B-mode PTEs into one JSON.
 
-The July `harmonic_config_cosebis_comparison.py` sweep mode computed harmonic-
-and config-space COSEBIs for all four leak-corrected catalog versions in a
-single call, and `emit_cosebis_harmonic_config.py` read all four versions'
-`harmonic_b_mode_ptes` out of the resulting evidence.json. The lc 0.5.0
-migration replaced that with a one-version-per-output compute pass, which left
-the harmonic rows of `cosebis_harmonic_config` populated for the fiducial
-version only.
-
-This is the gather half of the `cosebis_harmonic_scan` astra-sweep: it takes the
+`harmonic_config_cosebis_comparison.py` computes harmonic- and config-space
+COSEBIs for one catalog version per output. This is the gather half of the `cosebis_harmonic_scan` astra-sweep: it takes the
 per-version modes NPZs produced by the sweep members and emits, for both angular
 ranges, the same `harmonic_b_mode_ptes` / `config_b_mode_ptes` dictionaries the
 per-version metrics pass produces — merged across versions, so
-`emit_cosebis_harmonic_config.py --harmonic-version-ptes` can restore the
+`emit_cosebis_harmonic_config.py --harmonic-version-ptes` can fill the
 non-fiducial harmonic rows.
 
     python merge_harmonic_version_ptes.py \

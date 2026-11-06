@@ -1,15 +1,14 @@
-"""Bundle astra-sweep member artifacts into the July-canonical sweep tar.gz.
+"""Bundle astra-sweep member artifacts into one sweep tar.gz of canonical filenames.
 
-The Design-B version sweeps (ξ±, pseudo-Cℓ, CosmoCov) are expressed as
-astra-sweep generated sub-analyses: one lc output per (version, …) member, plus
-a single *gather* output that is the public surface the hand-authored spec
-references. Downstream consumers (``cosebis_version_comparison --results-dir``,
+The version sweeps (ξ±, pseudo-Cℓ, CosmoCov) are astra-sweep generated
+sub-analyses: one output per (version, …) member, plus a single *gather* output
+that the hand-authored spec references. Downstream consumers (``cosebis_version_comparison --results-dir``,
 ``cl_version_comparison --results-dir``, the pure E/B sweep ``--xi-sweep-dir``,
-``--cov-dir``, ``config_space_pte_matrices --cosebis-pte-dir``) still read the
-sweep as a *directory of canonically-named files*,
-so the gather must reassemble exactly the July filenames.
+``--cov-dir``, ``config_space_pte_matrices --cosebis-pte-dir``) read the
+sweep as a *directory of canonically-named files*, so the gather reassembles
+those filenames.
 
-lc names a member artifact ``results/<universe>/<output_id>.<format>``, which
+A member artifact is named ``results/<universe>/<output_id>.<format>``, which
 carries no version/grid information, so this script re-derives the
 member-id → canonical-filename map from the same matrix the ``.sweep.yaml``
 declares (version list from :mod:`catalog_versions`, grids/bins/products
@@ -38,7 +37,7 @@ from decision_values import HARMONIC_VALIDATION_BINNING
 BLIND = "A"
 BINNING = "powspace"
 
-# ξ± grids (run_xi_sweep.GRIDS), npatch fixed at the paper fiducial.
+# ξ± grids, npatch fixed at the paper fiducial.
 XI_GRIDS = {
     "reporting": dict(min_sep=1.0, max_sep=250.0, nbins=20),
     "integration": dict(min_sep=0.5, max_sep=300.0, nbins=1000),

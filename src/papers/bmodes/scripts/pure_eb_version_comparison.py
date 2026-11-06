@@ -258,10 +258,10 @@ def main(
     fiducial_pure_eb_data=None,
 ):
     version_labels = catalogs.labels
-    # Leak-corrected, non-ecut versions (matches VERSIONS_LEAK_CORR in claims.smk)
+    # Leak-corrected, non-ecut versions
     versions = catalogs.comparison
 
-    # Fiducial version whose NPZ may be overridden with an explicit lc path
+    # Fiducial version whose NPZ may be overridden with an explicit path
     fiducial_version = fiducial_version or catalogs.fiducial
 
     # Per-version pure E/B NPZ paths reconstructed from the results dir, with an

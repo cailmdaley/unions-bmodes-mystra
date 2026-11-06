@@ -1,13 +1,8 @@
 # %%
 """Compute the COSEBIS B-mode PTE matrix over the full scale-cut pair grid.
 
-Reconciliation of the ASTRA ``cosebis_pte_per_cut`` output: the Snakemake DAG
-*scattered* one JSON per (version, blind, i_min, i_max) cut via this script and
-gathered them downstream. The spec describes the gathered NPZ that scatter never
-materialised. Here a single CLI loops the same ``_pte_scale_cut_pairs()`` grid,
-runs the *identical* per-pair COSEBI computation (same theta grid, nmodes, NaN-on-
-convergence-failure handling), and writes one gathered NPZ — no scatter, no
-per-pair deps to wire.
+A single CLI loops the ``_pte_scale_cut_pairs()`` grid, runs the COSEBI
+computation per pair (NaN on a convergence failure), and writes one gathered NPZ.
 """
 
 import argparse
@@ -16,9 +11,8 @@ import time
 
 # Pin every BLAS/OpenMP/numba pool to one thread BEFORE numpy (and hence
 # OpenBLAS) is imported. The pair loop below is parallelised across *processes*;
-# a nested per-process thread pool would multiply into the node's 1280-process
-# RLIMIT_NPROC and oversubscribe the SLURM cgroup (these libraries size their
-# pools from hardware, not cgroup, concurrency). Module top rather than a pool
+# a nested per-process thread pool would oversubscribe the allocation (these
+# libraries size their pools from hardware concurrency). Module top rather than a pool
 # initializer: the pool uses the *fork* context, so a child inherits the
 # parent's already-sized pools and an initializer would run far too late. Fork
 # is safe here because the parent never executes a numba parallel region before
@@ -27,7 +21,7 @@ import time
 # an inherited value would silently defeat the pinning.
 # The runner communicates the task's width via OMP_NUM_THREADS; capture it
 # BEFORE the pinning below overwrites it, or the process pool (which sizes
-# itself from this value at line ~206) silently collapses to width 1.
+# itself from this value) silently collapses to width 1.
 _POOL_WIDTH = int(os.environ.get("OMP_NUM_THREADS", "1"))
 
 for _v in (
@@ -54,7 +48,7 @@ from decision_values import FIDUCIAL_BLIND, INTEGRATION_GRID, MODE_COUNT, REPORT
 
 def _pte_scale_cut_pairs(row=None):
     """(i_min, i_max) index pairs for the PTE matrix, excluding the polynomial-
-    root-unstable subsets. Mirrors _pte_scale_cut_pairs() in claims.smk.
+    root-unstable subsets.
 
     ``row`` restricts the list to a single i_min row of the matrix. The full list
     runs i outermost, so a row is a contiguous subsequence of it: a row member's
@@ -73,8 +67,8 @@ def _pte_scale_cut_pairs(row=None):
 def _compute_pair(gg, cov_path, nmodes, theta_min, theta_max):
     """COSEBI PTEs for one (theta_min, theta_max) cut.
 
-    Bit-identical to the original per-pair scatter job. Returns a result dict,
-    or None on a polynomial-root (sympy NoConvergence) failure.
+    Returns a result dict, or None on a polynomial-root (sympy NoConvergence)
+    failure.
     """
     try:
         results = calculate_cosebis(
@@ -149,8 +143,8 @@ def main(
     t_start = time.time()
     # Version/blind tag only the output filename + provenance record; the theta
     # grid, nmodes and per-pair COSEBI compute are version-independent, so a
-    # sweep call over a non-fiducial catalog stays bit-identical to the fiducial
-    # call save for the xi/cov inputs and the tag.
+    # sweep call over a non-fiducial catalog differs from the fiducial call only
+    # in the xi/cov inputs and the tag.
     min_sep_int, max_sep_int, nbins_int = integration
 
     gg = treecorr.GGCorrelation(
@@ -193,16 +187,14 @@ def main(
     # Pairs are independent (_compute_pair reads only its arguments), so the
     # loop is a plain process pool. Results are stored by task index k, never by
     # completion order, so the output arrays are identical to the serial run.
-    # Default to the runner's per-task width, NOT the machine's. sched_getaffinity
-    # would report the whole node: lc runs every task as a subprocess of one dask
-    # worker in one cgroup, and consumes no part of ASTRA's `resources:` block, so
-    # nothing narrows a task's affinity to its slot. OMP_NUM_THREADS is the knob the
-    # runner already sets for exactly this (see run_2pcf.py, run_pure_eb_semianalytic.sh).
-    # Reading it from the environment rather than taking it as a recipe argument is
-    # deliberate: how wide a task runs is a scheduling choice, not part of what it
-    # computed, and lc keys staleness on the recipe command string -- so a core count
-    # baked into the command would restale a scientifically identical artifact every
-    # time the allocation changed shape.
+    # Default to the runner's per-task width, NOT the machine's: sched_getaffinity
+    # would report the whole node, since nothing narrows a task's affinity to its
+    # slot. OMP_NUM_THREADS carries the width (see run_2pcf.py,
+    # run_pure_eb_semianalytic.sh). It is read from the environment rather than
+    # taken as a recipe argument because how wide a task runs is a scheduling
+    # choice, not part of what it computes: artifacts go stale on the recipe
+    # command string, so a core count in the command would invalidate a
+    # scientifically identical artifact.
     if jobs is None:
         jobs = _POOL_WIDTH
     n_jobs = jobs

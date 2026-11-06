@@ -1,27 +1,19 @@
-# Harmonic-COSEBI per-version scan. Expand with:
-#   scripts/sweep_expand.py -o analyses/cosebis/analyses/cosebis_harmonic_scan/astra.yaml \
-#       analyses/cosebis/analyses/cosebis_harmonic_scan/cosebis_harmonic_scan.sweep.yaml
 id: cosebis_harmonic_scan
 version: "1.0"
 name: "Harmonic-COSEBI catalog-version scan"
 description: |
-  Restores the per-version harmonic COSEBI B-mode PTEs that the
-  July `harmonic_config_cosebis_comparison.py` sweep mode produced
-  in one call. The lc 0.5.0 one-file contract split that into a
-  per-version compute pass, which left
-  [cosebis_harmonic_config](#../../outputs.cosebis_harmonic_config)
-  carrying harmonic rows for the fiducial version only. Members
-  here are the three non-fiducial leak-corrected catalogs — the
-  fiducial version keeps its own hand-authored
-  [cosebis_harmonic_modes](#../outputs.cosebis_harmonic_modes) /
-  `_full` pair, because those NPZs also back paper Figure 8.
-  Each member runs the same compute pass on that version's 96-bin
-  pseudo-Cℓ (+ its covariance), 1000-bin ξ_± and integration
-  covariance, all read from the three version-sweep bundles by
-  canonical filename. The gather merges both angular ranges'
-  `harmonic_b_mode_ptes` into one JSON for
-  `emit_cosebis_harmonic_config.py --harmonic-version-ptes`.
-tags: [sweep, generated, cosebis]
+  The harmonic/configuration COSEBI comparison of
+  [cosebis_harmonic_modes](#../outputs.cosebis_harmonic_modes) for the
+  three non-fiducial catalog versions, leak-corrected in the fiducial
+  analysis and uncorrected when
+  [leakage_correction](#../decisions.leakage_correction) selects
+  `uncorrected`. Each member uses that version's fine pseudo-Cℓ
+  bandpowers and covariance, 1000-bin ξ_± and integration covariance.
+  The gathered
+  [cosebis_harmonic_version_ptes](#../outputs.cosebis_harmonic_version_ptes)
+  fills those versions' harmonic rows in the
+  [harmonic/configuration COSEBI table](#../../outputs.cosebis_harmonic_config).
+tags: [sweep]
 
 inputs:
   - id: xi_sweep
@@ -30,21 +22,6 @@ inputs:
     from: ../cov_sweep
   - id: cl_sweep
     from: ../cl_sweep
-
-  - id: numerics_script
-    from: ../numerics_script
-
-  - id: decision_values_script
-    from: ../decision_values_script
-
-  - id: scale_cuts_script
-    from: ../scale_cuts_script
-
-  - id: catalog_versions_script
-    from: ../catalog_versions_script
-
-  - id: harmonic_config_cosebis_comparison_figure_script
-    from: ../harmonic_config_cosebis_comparison_figure_script
 
 decisions:
   pte_definition:
@@ -81,30 +58,18 @@ template:
   type: data
   format: npz
   description: |
-    Harmonic-path (paper Eq. 19, 96-bin √ℓ-linear bandpowers) and
-    config-path COSEBI E_n/B_n plus covariances at both scale cuts
-    for catalog version `${version}`. The per-version analogue of
-    [cosebis_harmonic_modes](#../outputs.cosebis_harmonic_modes);
-    same compute pass, different `--fiducial-version`. Only its
-    B-mode PTEs are consumed (through the gather) — the paper
-    figure is rendered from the fiducial NPZ.
-  inputs: [xi_sweep, cov_sweep, cl_sweep, numerics_script, decision_values_script, scale_cuts_script, catalog_versions_script]
+    Harmonic-path and configuration-path COSEBI E_n, B_n and
+    covariances at both scale cuts for catalog version `${version}`:
+    the per-version analogue of
+    [cosebis_harmonic_modes](#../outputs.cosebis_harmonic_modes).
+  inputs: [xi_sweep, cov_sweep, cl_sweep]
   decisions: [fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition, fiducial_catalog, leakage_correction, reporting_binning, integration_grid, mode_count]
   recipe:
-    # The three version-sweep bundles are untarred into temp dirs and this
-    # version's four inputs picked out by canonical filename — the sweep
-    # gathers are black boxes, so members are addressed by name, never by
-    # member output id.
     command: |
-      # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
-      # compute would exit 0 via the trailing `rm` and lc would commit a
-      # truncated artifact as successfully produced.
       set -e
       x=$(mktemp -d) && tar xzf {inputs.xi_sweep} -C $x
       c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c
       l=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $l
-      # NB: braced shell expansions cannot be used in a sweep template — the
-      # expander claims that syntax. Bare $cb only.
       ver=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version ${version} --fine-grid)
       cb=covariance_"$ver"_A_integration
       nb=$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})
@@ -127,20 +92,15 @@ gather:
   type: metric
   format: json
   description: |
-    Harmonic- and config-path COSEBI B-mode PTE/χ² dictionaries for
-    the ${n_members} non-fiducial leak-corrected catalog versions,
-    at both the fiducial and full angular ranges, merged into one
-    JSON keyed `{fiducial, full}.harmonic_b_mode_ptes.<version>`.
-    Consumed by
-    [cosebis_harmonic_config](#../../outputs.cosebis_harmonic_config)
-    via `--harmonic-version-ptes`, which restores that table's
-    harmonic rows for all four leak-corrected versions (the
-    fiducial row still comes from
+    Harmonic- and configuration-path COSEBI B-mode χ² and PTEs over
+    n ≤ 6 for the ${n_members} non-fiducial catalog versions, at the
+    fiducial and full angular ranges. Supplies those versions'
+    harmonic rows in the
+    [harmonic/configuration COSEBI table](#../../outputs.cosebis_harmonic_config);
+    the fiducial version's rows come from
     [cosebis_harmonic_metrics](#../outputs.cosebis_harmonic_metrics)
-    and its full-range twin). Recomputes nothing: the PTEs come
-    from the member NPZs through the same `_metrics_from_modes`
-    pass the fiducial metrics outputs use.
-  inputs: [numerics_script, decision_values_script, scale_cuts_script, catalog_versions_script, harmonic_config_cosebis_comparison_figure_script]
+    and
+    [cosebis_harmonic_metrics_full](#../outputs.cosebis_harmonic_metrics_full).
   recipe:
     command: >
       python src/papers/bmodes/scripts/merge_harmonic_version_ptes.py

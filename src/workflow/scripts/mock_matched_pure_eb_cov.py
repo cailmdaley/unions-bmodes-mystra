@@ -120,13 +120,12 @@ def _load_nz(version, blind, cat_config):
 def _pointwise_binning_matrix(left_edges, right_edges, theta_int, nbins_int):
     """The published pointwise rebin of the *input* ξ_±: an unweighted mean.
 
-    Verbatim the construction in ``precompute_pure_eb_chunk.py`` (lines
-    129-146): digitize the fine grid into the reporting bins and average the
+    The construction in ``precompute_pure_eb_chunk.py``: digitize the fine grid into the reporting bins and average the
     members of each bin with equal weight.  This is a different operation from
     the fine-to-reporting average of the *pure modes* that
     ``pure_eb_rebinning_weights`` governs: it produces the reporting-grid ξ_±
     the pointwise transform is evaluated against, before any decomposition, and
-    is what the published chain did.  It is deliberately not routed through
+    is what the published chain does.  It is deliberately not routed through
     ``pure_eb_transform.make_binning_matrix`` — under the pointwise geometry
     that helper raises, since ``none`` is the only weighting the geometry
     admits, and reaching for its averaged form here would make this covariance

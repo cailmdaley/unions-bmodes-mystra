@@ -1,0 +1,5 @@
+id: submitted
+description: |
+  Fiducial catalog products. Every decision here is inherited from the root,
+  so none is selected locally.
+decisions: {}

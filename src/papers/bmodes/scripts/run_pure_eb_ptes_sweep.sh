@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-# Pure E/B PTE-matrix sweep over non-fiducial versions (Design B, Tier-2).
+# Pure E/B PTE-matrix sweep over non-fiducial versions.
 #
 # Loops the non-fiducial version list (from catalog_versions.py --nonfiducial) and runs
 # calculate_pure_eb_ptes.py once per version — the same χ² PTE-matrix compute the
 # fiducial pure_eb_pte_per_cut recipe calls. Each version's gathered semi-analytic
 # NPZ is read from the pure_eb_sweep output dir and its Gaussian integration
-# covariance from the cov_sweep output dir (both by absolute path — lc does not
-# wire cross-output deps, so the driver reads upstream sweeps directly; run
-# pure_eb_sweep + cov_sweep before this). Each version emits the canonical
+# covariance from the cov_sweep output dir, both by absolute path, so run
+# pure_eb_sweep + cov_sweep before this. Each version emits the canonical
 # ``{ver}_{blind}_pure_eb_ptes.npz`` — the exact name config_space_pte_matrices.py
 # reconstructs from --pte-intermediate-dir — straight into --out. Serial over
 # versions; each version is fast (206-pair grid, ~seconds).
@@ -20,7 +19,7 @@
 set -euo pipefail
 
 # WSCRIPTS/PSCRIPTS are this project's vendored scripts; the sp_validation
-# package is installed in the environment lc runs the recipe in.
+# package is installed in the recipe's environment.
 VENDOR_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 WSCRIPTS=$VENDOR_ROOT/workflow/scripts
 PSCRIPTS=$VENDOR_ROOT/papers/bmodes/scripts

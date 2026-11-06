@@ -4,13 +4,10 @@ Computes fine-binned ξ±(θ) for mock validation. Each output is a treecorr
 GGCorrelation FITS file readable via gg.read(path).
 
 Mock catalogs have columns: RA, Dec, e1, e2, w.
-No response correction or PSF leakage subtraction (these are Gaussian mocks).
+No response correction or PSF leakage subtraction (these are lognormal mocks).
 
-Vendored from sp_validation `workflow/scripts/run_glass_mock_2pcf.py`. The
-upstream file is a bare snakemake script running one mock per job; the body is
-unchanged apart from being wrapped in `compute_one` and given a CLI. The lc
-recipes call the single-mock form (`--mock-id` + `--out-file`), one sweep
-member per realisation, which is the same fan-out snakemake did.
+Recipes call the single-mock form (`--mock-id` + `--out-file`), one sweep member
+per realisation.
 """
 
 import argparse
@@ -22,14 +19,13 @@ from astropy.io import fits
 
 from decision_values import INTEGRATION_GRID
 
-# v1.4.8 = v1.4.6.3 + the faint/bright star-halo cuts (masks.txt in
-# /n17data/UNIONS/WL/v1.4.x/v1.4.8/).  mask_r_nside131072.hsp is a bit-packed
-# BOOLEAN HealSparse map, True where any structural bit (1|2|4|8|64|1024)
-# masks the sky; validated 2026-08-23 against the six per-bit _n{bit}.hsp
-# maps (99.74% pixel agreement) and the real catalogs: keeps 85.4% of
-# v1.4.6.3 rows vs the real v1.4.8's 87.8% (residual = pixelized mask vs
-# per-object flags; bits 4/8/64/1024 confirmed already absent from
-# v1.4.6.3).  Out-of-coverage returns the sentinel False = "no hole" = keep.
+# v1.4.8 = v1.4.6.3 + the faint/bright star-halo cuts.  mask_r_nside131072.hsp
+# is a bit-packed BOOLEAN HealSparse map, True where any structural bit
+# (1|2|4|8|64|1024) masks the sky.  It agrees with the six per-bit _n{bit}.hsp
+# maps on 99.74% of pixels and keeps 85.4% of v1.4.6.3 rows vs the real
+# v1.4.8's 87.8% (residual = pixelized mask vs per-object flags; bits
+# 4/8/64/1024 are already absent from v1.4.6.3).  Out-of-coverage returns the
+# sentinel False = "no hole" = keep.
 
 
 def apply_v148_mask(ra, dec, mask_path):

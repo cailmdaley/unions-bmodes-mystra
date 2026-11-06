@@ -1,5 +1,11 @@
 version: "0.0.14"
 name: "Harmonic-space pseudo-Cℓ^BB and Cℓ^EB"
+description: |
+  Measures catalog-based pseudo-Cℓ bandpowers and tests Cℓ^BB against zero
+  over a grid of multipole ranges, for the fiducial catalog and, through its
+  scan, every other catalog variant. It stands on its own because it works
+  directly from the shear catalogs rather than from ξ_±, giving a
+  harmonic-space check alongside the configuration-space statistics.
 
 inputs:
 
@@ -8,34 +14,19 @@ inputs:
 
   - id: redshift_distributions
     from: ../redshift_distributions
-    # The raw n(z) tree. `generate_pseudo_cl_cov.py` reads whatever
-    # `redshift_path` cat_config gives for its `--ver`, so the
-    # [cl_scan sweep](#analyses.cl_scan)'s covariance members need the tree
-    # itself bound. Same reason as the covariance unit's alias of the same name.
+    # Theory n(z) of the [cl_scan](#analyses.cl_scan) iNKA covariances for
+    # v1.4.5 and v1.4.6.3.
 
   - id: redshift_distributions_legacy
     from: ../redshift_distributions_legacy
-    # The n(z) cat_config gives the v1.4.8 / v1.4.11.3 entries, which the
-    # [cl_scan sweep](#analyses.cl_scan) covers; the pure_eb sweeps read it too.
+    # Theory n(z) of the [cl_scan](#analyses.cl_scan) iNKA covariances for
+    # v1.4.8 and v1.4.11.3.
 
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
 
   - id: shapepipe_v145_rerun
     from: ../shapepipe_v145_rerun
-    # cat_config sends both v1.4.5 variants outside the v1.4.x family.
-
-  - id: cl_version_comparison_script
-    from: ../cl_version_comparison_script
-
-  - id: numerics_script
-    from: ../numerics_script
-
-  - id: decision_values_script
-    from: ../decision_values_script
-
-  - id: catalog_versions_script
-    from: ../catalog_versions_script
 
 outputs:
   - id: cl_bandpowers_reporting
@@ -49,12 +40,8 @@ outputs:
       [Cℓ figure](#../outputs.fig_cl_fiducial).
     format: fits
     decisions: [fiducial_catalog, fiducial_blind, estimator_choice, bandpower_binning, noise_bias_correction, leakage_correction]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, decision_values_script, catalog_versions_script]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
     recipe:
-      # lc owns the container; bare `python`, scripts read from the vendored
-      # src/ tree. Fiducial version + blind A hardcoded (single-version
-      # output, faithful to the DAG). Writes the single decoupled-bandpower FITS
-      # straight to {output}.
       command: >
         python src/workflow/scripts/generate_pseudo_cl.py
         --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
@@ -66,17 +53,15 @@ outputs:
   - id: cl_bandpowers_fine
     type: data
     description: |
-      The same bandpowers on a 96-bandpower √ℓ-spaced grid, fine
-      enough to resolve the oscillations of the W_n(ℓ) filters in
-      the [harmonic-space COSEBI
-      transform](#../cosebis.decisions.harmonic_validation_binning).
+      The same bandpowers on the √ℓ-spaced grid of the
+      [harmonic-space COSEBI
+      transform](#../cosebis.decisions.harmonic_validation_binning),
+      96 bandpowers at baseline, fine enough to resolve the
+      oscillations of its W_n(ℓ) filters.
     format: fits
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, estimator_choice, noise_bias_correction, leakage_correction]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, decision_values_script, catalog_versions_script]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
     recipe:
-      # Same generate_pseudo_cl.py CLI as cl_bandpowers_reporting, 96-bandpower
-      # fine grid (--nbins 96). Distinct {output} file, so no cache collision
-      # with the 32-bin reporting run.
       command: >
         python src/workflow/scripts/generate_pseudo_cl.py
         --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
@@ -86,16 +71,8 @@ outputs:
       resources: { cpus: 12, memory: "32GB" }
 
   - id: cl_sweep
-    # Re-export of the generated cl_scan sweep's gather output — the only edge
-    # into the sweep. The bundle uses the
-    # `pseudo_cl{,_cov}_{ver}_blind=A_powspace_nbins=N.fits` names that
-    # cl_data_vector / cl_version_comparison / harmonic_space_pte_matrices read.
-    # It also carries the 96-bin fine grid for the three non-fiducial
-    # leak-corrected versions, which feeds
-    # [cosebis_harmonic_scan](#../cosebis.analyses.cosebis_harmonic_scan).
-    # Regenerate with
-    #   scripts/sweep_expand.py -o analyses/cl_bb/analyses/cl_scan/astra.yaml \
-    #       analyses/cl_bb/analyses/cl_scan/cl_scan.sweep.yaml
+    # Bandpowers and iNKA covariances of the other catalog variants. The fine-grid
+    # members feed [cosebis_harmonic_scan](#../cosebis.analyses.cosebis_harmonic_scan).
     from: cl_scan.cl_sweep_bundle
 
   - id: cl_data_vector_figure
@@ -109,11 +86,8 @@ outputs:
       lensing signal.
     format: png
     decisions: [fiducial_catalog, pte_definition, leakage_correction]
-    inputs: [cl_bandpowers_reporting, cl_cov_reporting, numerics_script, decision_values_script, catalog_versions_script]
+    inputs: [cl_bandpowers_reporting, cl_cov_reporting]
     recipe:
-      # cl_data_vector.py CLI renders the Cℓ data-vector figure (fiducial) from the
-      # fiducial data vector and its bandpower covariance, the two declared
-      # cross-output inputs; no other version is read.
       command: >
         python src/papers/bmodes/scripts/cl_data_vector.py
         --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction}
@@ -127,21 +101,17 @@ outputs:
     type: figure
     description: |
       C_ℓ^BB/σ and C_ℓ^EB/σ across catalog versions: initial (red
-      circles), size-cut/fiducial (gold squares), masked (teal
+      circles), size-cut/fiducial (olive squares), masked (teal
       diamonds) and relaxed-flags (purple triangles). Rectangles
       span each bin horizontally and the range across versions
       vertically; horizontal lines mark the fiducial value; shaded
-      bands mark the fiducial scale cuts. Only the size-cut
-      catalog passes all statistics at the fiducial scale cuts
+      bands mark multipoles outside the fiducial cuts. Only the
+      size-cut catalog passes all statistics at the fiducial scale cuts
       ([PTE table](#../outputs.pte_table_appendix)).
     format: png
-    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, cl_version_comparison_script, numerics_script, decision_values_script, catalog_versions_script]
+    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting]
     decisions: [pte_definition, fiducial_catalog, leakage_correction]
     recipe:
-      # cl_version_comparison.py CLI overlays Cℓ^BB / Cℓ^EB across the 4
-      # leak-corrected catalogs, writing the single PNG to {output}. Per-version
-      # pseudo_cl / pseudo_cl_cov (32-bin, blind A) come from the untarred sweep
-      # bundle by the canonical naming pattern.
       command: >
         d=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d &&
         python src/papers/bmodes/scripts/cl_version_comparison.py
@@ -156,7 +126,8 @@ outputs:
   - id: cl_pte_per_cut
     type: data
     description: |
-      Cℓ^BB null-test PTEs for each catalog version over a grid of
+      Cℓ^BB null-test PTEs for all eight catalog variants (four
+      catalogs, with and without leakage correction) over a grid of
       (ℓ_min, ℓ_max) bandpower ranges, using the iNKA Gaussian
       bandpower covariance from the
       [covariance sub-analysis](#../analyses.covariance). The
@@ -166,14 +137,9 @@ outputs:
       [harmonic-space PTE heatmap](#../outputs.fig_cl_pte_heatmap)
       shows.
     format: npz
-    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, numerics_script, decision_values_script, catalog_versions_script]
-    decisions: [cl_pte_blind_strategy, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
+    inputs: [cl_sweep, cl_bandpowers_reporting, cl_cov_reporting]
+    decisions: [pte_blind_strategy, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
     recipe:
-      # harmonic_space_pte_matrices.py CLI, run in its PTE-matrix mode: the single
-      # .npz of per-version Cℓ^BB PTE grids is written to {output}. The heatmap
-      # figures the July run also emitted here belong to their own declared
-      # outputs (root fig_cl_pte_heatmap, null_tests.harmonic_space_pte_evidence),
-      # which re-invoke the script in their respective plot modes.
       command: >
         d=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d &&
         python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
@@ -187,6 +153,9 @@ outputs:
       resources: { cpus: 2, memory: "8GB" }
 
 decisions:
+
+  fiducial_cosmology:
+    from: ../fiducial_cosmology
   pte_definition:
     from: ../pte_definition
   leakage_correction:
@@ -224,7 +193,7 @@ decisions:
         insights: [wolz25_catalog_based_pseudo_cl, hivon02_master_mode_coupling_deconvolution, alonso19_namaster_unbiased_spin2_pseudo_cl, reinecke23_sht_on_arbitrary_grids]
       map_based_pseudo_cl:
         excluded: true
-        excluded_reason: "The package's map/MC iNKA covariance path is broken, and the external mock spectra use the catalog estimator."
+        excluded_reason: "Not implemented here: the measurement recipes run only the catalog estimator, the GLASS mock spectra that validate it use the same one, and the iNKA covariance fails in the Monte-Carlo noise mode that matches the map estimator's noise subtraction."
         label: "Map-based pseudo-Cℓ on HEALPix"
         insights: [hivon02_master_mode_coupling_deconvolution, alonso19_namaster_unbiased_spin2_pseudo_cl]
         description: |
@@ -238,8 +207,8 @@ decisions:
   noise_bias_correction:
     from: ../noise_bias_correction
 
-  cl_pte_blind_strategy:
-    from: ../cl_pte_blind_strategy
+  pte_blind_strategy:
+    from: ../pte_blind_strategy
 
 prior_insights:
 
@@ -283,7 +252,7 @@ prior_insights:
           page: 1
     scope: |
       Wolz, Alonso & Nicola 2025, JCAP 01, 028; the basis of the
-      [cl_bb](#analyses.cl_bb) estimator and its shot-noise
+      [cl_bb](#../analyses.cl_bb) estimator and its shot-noise
       correction.
 
 
@@ -305,7 +274,8 @@ prior_insights:
           page: 2
     scope: |
       Hivon et al. 2002, ApJ 567, 2; derived for CMB temperature
-      maps, generalised to spin-2 by Alonso et al. 2019.
+      maps. NaMaster (Alonso et al. 2019) provides the spin-2
+      implementation used here.
 
   alonso19_namaster_unbiased_spin2_pseudo_cl:
     id: alonso19_namaster_unbiased_spin2_pseudo_cl
@@ -339,7 +309,7 @@ prior_insights:
       The `ducc` nonuniform-FFT code performs spherical harmonic
       transforms efficiently on completely arbitrary point sets,
       which is what makes evaluating spin-2 transforms directly at
-      the ~10⁷ UNIONS source positions practical.
+      the tens of millions of UNIONS source positions practical.
     created_at: "2026-10-31T00:00:00Z"
     evidence:
       - id: ev1

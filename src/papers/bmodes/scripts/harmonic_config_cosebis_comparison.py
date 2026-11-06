@@ -7,7 +7,7 @@ Cross-validates COSEBIS E_n and B_n computed from two independent paths:
 Produces 9 figures per the standard data vector pattern (1 paper + 4 corrected
 + 4 uncorrected), plus a version comparison figure.
 
-Angular range parameterized via snakemake.params.scale_cut (full or fiducial).
+Angular range parameterized by ``--angular-range`` (full or fiducial).
 Modes > reliable_mode_max shown with gray band.
 """
 
@@ -180,7 +180,7 @@ def _make_data_vector_figure(
 
     Two rows (E-modes, B-modes).
     E-modes in raw units. B-modes in B_n/sigma units.
-    Gray band over reliable modes (1 to reliable_mode_max).
+    Gray band over the modes beyond reliable_mode_max.
     """
     modes = np.arange(1, nmodes + 1)
     c_cfg, c_harm = sns.color_palette("Dark2", 2)
@@ -303,7 +303,7 @@ def _make_combined_data_vector_figure(
 ):
     """Combined 2x2 data vector figure: rows=E/B, columns=full/fiducial.
 
-    Column titles show the theta range. Gray band over reliable modes (1-6).
+    Column titles show the theta range. Gray band over the modes beyond 6.
     Dark2 palette, filled circles for config-space, open squares for harmonic.
     """
     modes = np.arange(1, nmodes + 1)
@@ -544,7 +544,7 @@ def main(
 ):
     """Harmonic-vs-config COSEBI cross-check for one angular range.
 
-    ``inputs`` is a dict mirroring ``snakemake.input``: per-version keys
+    ``inputs`` is a dict of per-version keys
     ``pseudo_cl_{ver}`` / ``pseudo_cl_cov_{ver}`` / ``xi_{ver}`` / ``cov_{ver}``
     (all absolute paths) plus ``specs``. All artifacts land under ``output_dir``;
     ``paper_figure_name`` (when set) is the combined 2×2 paper PDF filename.
@@ -711,8 +711,7 @@ def main(
 
             # cosebis_harmonic_modes data artifact (ASTRA cosebis.cosebis_harmonic_modes):
             # persist the fiducial-version harmonic + config-space COSEBI vectors and
-            # covariances at both scale cuts. Arrays are already computed above — this
-            # is purely additive (no change to the figure compute).
+            # covariances at both scale cuts.
             if scale_cut == scale_cut_full:
                 cov_h_full, cov_h_fid = cov_h, cov_h_other
             else:
@@ -963,8 +962,7 @@ def _figure_from_modes(modes, out_file):
 
 
 def _versions_all_for_plots():
-    """Reproduce VERSIONS_ALL_FOR_PLOTS: leak-corrected (non-ecut) versions plus
-    their uncorrected counterparts."""
+    """Leak-corrected (non-ecut) versions plus their uncorrected counterparts."""
     leak_corr = [
         v for v in VERSIONS if "_leak_corr" in v and "_ecut" not in v
     ]
@@ -973,14 +971,13 @@ def _versions_all_for_plots():
 
 
 def _cov_integration_path(cov_dir, version, blind, min_sep, max_sep, nbins):
-    """Reproduce common.covariance_path for the Gaussian integration-grid,
-    masked covariance (suffix _processed.txt)."""
+    """Path of the Gaussian integration-grid, masked covariance (suffix _processed.txt)."""
     base = f"covariance_{version}_{blind}_integration"
     return os.path.join(cov_dir, base, f"{base}_processed.txt")
 
 
 def _angular_ranges(reporting, scale_cut_convention):
-    """Reproduce claims.smk _COSEBIS_ANGULAR_RANGES."""
+    """The full and fiducial angular ranges, by name."""
     full, fiducial = _scale_cuts(reporting, scale_cut_convention)
     return {"full": full, "fiducial": fiducial}
 
@@ -1196,10 +1193,9 @@ def _from_cli(argv=None):
                 f"pseudo_cl_{ver}_blind={a.blind}_powspace_nbins={cosebis_nbins}.fits",
             )
         )
-        # 96-bin pseudo-Cl covariance is intentionally NOT lc-repointed: lc did not
-        # reproduce a 96-bin pseudo-Cl covariance (only 32-bin cl_cov_reporting
-        # exists), so this always reads from the old tree, even for the fiducial
-        # version.
+        # The 96-bin pseudo-Cl covariance has no explicit fiducial path (only the
+        # 32-bin cl_cov_reporting is produced as a spec output), so every version,
+        # including the fiducial, reads it from --cosmo-val-dir.
         inputs[f"pseudo_cl_cov_{ver}"] = os.path.join(
             a.cosmo_val_dir,
             f"pseudo_cl_cov_{ver}_blind={a.blind}_powspace_nbins={cosebis_nbins}.fits",

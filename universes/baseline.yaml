@@ -5,9 +5,10 @@ description: |
   single-grid transform-averaged geometry (fine-grid evaluation,
   `[θ_min, θ_max]` at the fine-grid extent), with the
   pair-count-weighted mean from the 1000 fine nodes into the 20
-  reporting bins. The submitted selection it revises is the
-  `submitted` universe; it moves quadrature and geometry together
-  against this one.
+  reporting bins, the exact linear covariance, and the mock-calibrated
+  threshold on the minimum PTE. The selection it revises is the
+  `submitted` universe, which differs in quadrature, geometry,
+  covariance and threshold together.
 
 decisions:
   fiducial_catalog: size_cut
@@ -17,11 +18,9 @@ decisions:
   scale_cut_convention: grid_bin_edges
   pte_threshold: calibrated_0p01
   integration_grid: bins_1000
-  # The fixed-quadrature linear operator in the single-grid transform-averaged
-  # geometry (compound in geometry only; see the root decision's option
-  # description).
+  # The operator and its geometry are described on the root decision's option.
   pure_eb_integration_method: fixed_operator
-  # Pair-count weighting: the collapsed local term is the reporting-bin xi.
+  # Pair-count weighting: the averaged local term is the reporting-bin ξ.
   pure_eb_rebinning_weights: npairs
   # Wide [grid floor, 300'] window: retain support below the 1' reporting floor.
   pure_eb_integration_limits: fine_grid_extent
@@ -33,7 +32,7 @@ decisions:
   fiducial_cosmology: planck18
   bandpower_binning: bandpowers_32_powspace
   noise_bias_correction: analytic_shot_noise
-  cl_pte_blind_strategy: blind_a_for_paper
+  pte_blind_strategy: blind_a_for_paper
   reporting_binning: bins_20
   decomposition_method: schneider22_integral_transform
   mode_count: n_max_20

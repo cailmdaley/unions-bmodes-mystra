@@ -12,9 +12,8 @@ One row per decision variant, over two shared columns:
             whether the variant's propagated covariance has the right
             amplitude.
 
-Variants read down the page rather than across it: five columns of theta gave
-each panel less than an inch and a half and left no room for either the labels
-or the numbers.  Each row carries its identity as a left-margin label -- the
+Variants read down the page, which leaves room for the labels and the numbers.
+Each row carries its identity as a left-margin label -- the
 adopted variant bold, the published one italic -- and its numbers in a third,
 axis-free text column at the right, aligned as a small table so the mock
 verdict, the KS p-value and the data PTE can be read down the page as three

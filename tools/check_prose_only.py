@@ -1,7 +1,7 @@
 """Check that a spec diff touches only prose fields.
 
 Compares every hand-written astra.yaml against a git revision with the prose
-fields (description, rationale, label, claim, notes, scope, excluded_reason)
+fields (name, description, rationale, label, claim, notes, scope, excluded_reason)
 removed. Anything else that differs — ids, recipes, inputs, decisions,
 evidence quotes, defaults — is reported and the exit status is 1.
 
@@ -15,7 +15,7 @@ from pathlib import Path
 
 import yaml
 
-PROSE = {"description", "rationale", "label", "claim", "notes", "scope", "excluded_reason"}
+PROSE = {"name", "description", "rationale", "label", "claim", "notes", "scope", "excluded_reason"}
 
 
 def strip(node, allow_findings):

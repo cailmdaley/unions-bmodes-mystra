@@ -1,15 +1,9 @@
 """Generate pseudo-Cl covariances (no data vector).
 
-Dual-mode. Under Snakemake (``script:`` directive) the injected ``snakemake``
-object supplies the parameters and the native product is renamed to the tagged
-output filename the rule declares; as a standalone CLI (argparse) the same
-compute runs from explicit flags and the primitive's native
+The CLI runs the measurement from explicit flags. The primitive's native
 ``pseudo_cl_cov_{ver}.fits`` is produced in a private scratch directory and
-moved to the single ``--out-file`` path the caller gives (one output = one
-file; the fresh scratch also means the primitives' skip-if-exists never
-collides across nbins runs). The CLI form is what the lightcone/ASTRA recipe calls, so the
-measurement is driven directly (no nested Snakemake) with lc handling
-orchestration:
+moved to the single ``--out-file`` path the caller gives (the fresh scratch
+also means the primitives' skip-if-exists never collides across nbins runs):
 
     python generate_pseudo_cl_cov.py \
         --ver SP_v1.4.6.3_leak_corr \
@@ -60,7 +54,7 @@ def generate_pseudo_cl_cov(
     output_dir : str
         Directory the covariance FITS file is written into. The primitive writes
         its native ``pseudo_cl_cov_{version}.fits`` here; callers that need a
-        tagged filename rename it themselves (see ``_from_snakemake``).
+        tagged filename rename it themselves.
     cat_config : str
         Path to catalog configuration YAML
     nside : int
@@ -157,7 +151,7 @@ def generate_pseudo_cl_cov(
     print("Calculating covariance...")
     cv.calculate_pseudo_cl_eb_cov()
 
-    # Report on the native product (renamed by the Snakemake caller, if any)
+    # Report on the native product
     src_cov = os.path.join(output_dir, f"pseudo_cl_cov_{version}.fits")
     if os.path.exists(src_cov):
         with fits.open(src_cov) as hdul:
@@ -183,7 +177,7 @@ def _from_snakemake(smk):
         nbins=int(p["nbins"]),
         power=float(p.get("power", 0.5)),
     )
-    # Snakemake declares a tagged output filename; rename the native product to it.
+    # Rename the native product to the tagged output filename.
     if os.path.exists(src_cov) and src_cov != output_cov:
         os.rename(src_cov, output_cov)
         print(f"Saved to: {output_cov}")
@@ -259,10 +253,6 @@ def _from_cli(argv=None):
 
 
 if __name__ == "__main__":
-    # A membership test, not a caught NameError: the exception form leaves
-    # every CLI-path traceback prefixed with "During handling of the above
-    # exception" and a NameError that is not the failure, which reads as
-    # the bug and is not one.
     if "snakemake" in globals():
         _from_snakemake(snakemake)  # noqa: F821
     else:

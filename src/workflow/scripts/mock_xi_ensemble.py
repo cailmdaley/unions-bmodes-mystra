@@ -20,7 +20,7 @@ from pathlib import Path
 import numpy as np
 import treecorr
 
-from decision_values import INTEGRATION_GRID
+from decision_values import INTEGRATION_GRID, REPORTING_BINNING
 
 _ID_RE = re.compile(r"_(\d{5})(?:[_.]|$)")
 _BLOCKS = ("meanr", "xip", "xim", "npairs", "weight")
@@ -80,27 +80,25 @@ def stack(members, *, min_sep, max_sep, nbins):
 def _parser(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--members", nargs="+", required=True)
-    parser.add_argument(
-        "--integration-grid", type=INTEGRATION_GRID.__getitem__, required=True
-    )
+    grid = parser.add_mutually_exclusive_group(required=True)
+    grid.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__)
+    grid.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__)
     parser.add_argument("--out-file", required=True)
     return parser.parse_args(argv)
 
 
 def main(argv=None):
     args = _parser(argv)
+    grid = args.integration_grid or args.reporting_binning
     ensemble = stack(
-        args.members,
-        min_sep=args.integration_grid.min_sep,
-        max_sep=args.integration_grid.max_sep,
-        nbins=args.integration_grid.nbins,
+        args.members, min_sep=grid.min_sep, max_sep=grid.max_sep, nbins=grid.nbins
     )
     out_path = Path(args.out_file)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     np.savez(out_path, **ensemble)
     print(
         f"Saved {out_path}: {len(ensemble['mock_ids'])} realisations "
-        f"x {args.integration_grid.nbins} bins",
+        f"x {grid.nbins} bins",
         flush=True,
     )
 

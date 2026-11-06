@@ -1,0 +1,8 @@
+id: submitted
+description: |
+  Gaussian CosmoCov covariance for all three ξ± pairings. The reporting-grid
+  G+NG diagnostic uses the footprint spectrum for its super-sample term.
+decisions:
+  covariance_engine: cosmocov
+  covariance_class: gaussian_only
+  mask_application: masked

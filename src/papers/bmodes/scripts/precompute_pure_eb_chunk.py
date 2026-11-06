@@ -1,7 +1,6 @@
 """Compute one chunk of MC samples for the pure E/B covariance.
 
-CLI refactor of the former Snakemake ``script:`` rule. The compute is
-unchanged: draw ``n_samples // n_chunks`` Gaussian realisations of ξ±(θ) from
+Draw ``n_samples // n_chunks`` Gaussian realisations of ξ±(θ) from
 the 1000-bin integration-grid CosmoCov covariance (deterministic seed
 ``42 + chunk_id``), rebin to the reporting grid, and push each draw through the
 Schneider-2022 pure-mode integral transforms (``cosmo_numba``, under the
@@ -12,8 +11,8 @@ averaging the pure modes into the reporting bins under the weights
 ``--rebinning-weights`` selects. The per-chunk
 E/B/amb sample block is written to ``{out}/pure_eb_chunk_{chunk_id}.npz`` for
 the gather stage. Each chunk is independent (fresh RNG per chunk_id), so the
-20 chunks reproduce the paper's 2000-sample covariance bit-for-bit whether run
-in parallel or looped in one process.
+20 chunks give the same 2000-sample covariance whether run in parallel or
+looped in one process.
 
     python precompute_pure_eb_chunk.py \
         --chunk-id 0 --n-chunks 20 --n-samples 2000 \
@@ -109,10 +108,9 @@ def compute_chunk(
 
     # Before the covariance load and the n(z) lookup: a universe that pairs the
     # quadrature and the weighting incoherently should say so immediately.
-    # geometry=None keeps the method's default mapping, so every existing
-    # caller is bit-identical; passing it explicitly is how the decision scan
-    # runs adaptive_dqags in the averaged geometry, which is what separates the
-    # quadrature effect from the geometry effect.
+    # geometry=None keeps the method's default mapping; passing it explicitly
+    # is how the decision scan runs adaptive_dqags in the averaged geometry,
+    # which is what separates the quadrature effect from the geometry effect.
     geometry = geometry_for(integration_method, geometry)
     theta_window = resolve_integration_limits(integration_limits, geometry)
     check_rebinning_weights(rebinning_weights, geometry)

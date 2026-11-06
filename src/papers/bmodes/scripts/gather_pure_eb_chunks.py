@@ -1,6 +1,6 @@
 """Gather MC sample chunks and compute the final pure E/B covariance.
 
-CLI refactor of the former Snakemake ``script:`` gather rule. Reads the actual
+Reads the actual
 ξ± data vectors (reporting + integration grids), computes the pure E/B/ambiguous
 decomposition (Schneider 2022) in the geometry ``--integration-method``
 implies — pointwise on the reporting grid under ``adaptive_dqags``, on the fine
@@ -72,12 +72,12 @@ def data_vector(
 ):
     """The pure-mode DATA vector, from the measured reporting/integration xi.
 
-    Factored out of :func:`gather` so a second caller can build the same
+    Separate from :func:`gather` so a second caller can build the same
     vector without also gathering MC chunks: ``pure_eb_scan_statistics`` needs
     it for a variant whose covariance is aliased to another's, since the
     borrowed bundle carries the donor's data vector rather than that variant's.
-    Splitting it rather than reimplementing it is what makes the two paths the
-    same by construction; the caller checks that against a stored vector.
+    Sharing this function makes the two paths the same by construction; the
+    caller checks that against a stored vector.
 
     *gg* / *gg_int* are the dicts :func:`_load_xi` returns.  Returns the
     six-tuple in ``REFERENCE_ORDER``.

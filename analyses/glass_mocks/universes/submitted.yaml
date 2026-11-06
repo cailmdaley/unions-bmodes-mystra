@@ -1,0 +1,9 @@
+id: submitted
+description: |
+  GLASS mock validation on the v1.4.6.3_v2 suite, built against the fiducial
+  catalog, with the mock scatter compared to a covariance computed for the
+  mocks' own noise. The comparison therefore tests the covariance machinery
+  rather than the galaxy-count difference between mocks and data.
+decisions:
+  reference_covariance: mockmatched
+  mock_suite: v1_4_6_3_v2

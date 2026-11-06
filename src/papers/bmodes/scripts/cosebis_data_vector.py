@@ -178,7 +178,7 @@ def main(version, nmodes, integration, reporting, xi_integration, cov_integratio
     gg.read(xi_integration)
 
     # Compute the E_n / B_n data vectors + T^T C_xi T mode covariance at both
-    # scale cuts. Same calculate_cosebis call as the original per-version loop.
+    # scale cuts.
     npz_payload = {"nmodes": nmodes, "version": version}
     datasets = {}
     for scale_key, scale_cut in scale_cuts.items():

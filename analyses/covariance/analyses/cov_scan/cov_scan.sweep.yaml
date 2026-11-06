@@ -1,44 +1,27 @@
-# Design-B CosmoCov version scan. Expand with:
-#   scripts/sweep_expand.py -o analyses/covariance/analyses/cov_scan/astra.yaml \
-#       analyses/covariance/analyses/cov_scan/cov_scan.sweep.yaml
 id: cov_scan
 version: "1.0"
 name: "CosmoCov integration-grid catalog-version scan"
 description: |
-  Design-B producer sweep: integration-grid 1000-bin Gaussian-only
-  area-only CosmoCov covariance for every non-fiducial, non-ecut
-  catalog version (7 variants — 3 leak-corrected + 4 uncorrected),
-  the version-swept analogue of
-  [cov_integration](#../outputs.cov_integration). Each version
-  is its own lc output — a full `run_cosmocov_chain.sh` chain, the
-  heaviest members in the reproduction — and the gather bundles
-  them under the canonical
-  `covariance_{ver}_A_integration/`
-  per-version subdirectory layout that `--cov-dir` consumers read.
-  Covariance is recomputed per variant — it is NOT assumed
-  correction-invariant: v1.4.8 has a different survey area
-  and the uncorrected variants differ in σ_e.
-tags: [sweep, generated, covariance]
+  Integration-grid 1000-bin Gaussian-only, area-only CosmoCov ξ_±
+  covariance across catalog versions: the seven variants other than
+  the selected primary catalog (at baseline, three leak-corrected and
+  four uncorrected), the version-swept analogue of
+  [cov_integration](#../outputs.cov_integration). A version enters
+  through its survey area, n_eff, σ_e and n(z); the masked catalog
+  covers 2517 deg² rather than 2894 deg². The leakage correction
+  changes none of these, so the corrected and uncorrected variants of
+  a catalog receive identical CosmoCov inputs. The gathered result
+  feeds the catalog-version pure-mode and COSEBI PTEs, among them the
+  [pure-mode sweep](#../../pure_eb.outputs.pure_eb_sweep) and the
+  [COSEBI comparison](#../../cosebis.outputs.cosebis_version_comparison).
+tags: [sweep]
 
 inputs:
   - id: cosmology_snapshot
     from: ../../covariance.cosmology_snapshot
-  # The chain's two host reads that no `{inputs...}` used to name: the CosmoCov
-  # binary it execs, and the n(z) that generate_cosmocov_ini.py composes from
-  # the version string and writes into the .ini. Every member needs both; all
-  # seven versions' n(z) live under the one declared tree.
+  # Each version's n(z).
   - id: redshift_distributions
     from: ../redshift_distributions
-  - id: cosmocov_binary
-    from: ../cosmocov_binary
-  - id: cosmocov_libgsl
-    from: ../cosmocov_libgsl
-
-  - id: decision_values_script
-    from: ../decision_values_script
-
-  - id: catalog_versions_script
-    from: ../catalog_versions_script
 
 decisions:
   integration_grid:
@@ -72,19 +55,14 @@ template:
   type: data
   format: txt
   description: |
-    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
+    Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `${version}` on the 1000-bin integration grid
     ([0.5', 300'], blind A).
     The per-version analogue of
-    [cov_integration](#../outputs.cov_integration); same
-    `run_cosmocov_chain.sh` chain, different `--version`.
-  inputs: [cosmology_snapshot, redshift_distributions, cosmocov_binary, cosmocov_libgsl, decision_values_script, catalog_versions_script]
+    [cov_integration](#../outputs.cov_integration).
+  inputs: [cosmology_snapshot, redshift_distributions]
   decisions: [fiducial_catalog, fiducial_blind, covariance_class, covariance_engine, integration_grid, leakage_correction]
   recipe:
-    # The per-version unit of work: one run_cosmocov_chain.sh chain, exactly as
-    # the fiducial cov_integration recipe calls it. CosmoCov scratch (.ini,
-    # .log, cov_tmp*/order_cov_tmp*) stays inside the chain's own scratch dir;
-    # only the processed matrix reaches {output}.
     command: >
       bash src/workflow/scripts/run_cosmocov_chain.sh
       --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version ${version})" --blind {decisions.fiducial_blind}
@@ -92,8 +70,6 @@ template:
       --gaussian {decisions.covariance_class}
       --planck18-json {inputs.cosmology_snapshot}
       --cat-config src/cosmo_val/cat_config.yaml
-      --cosmocov {inputs.cosmocov_binary}
-      --libgsl {inputs.cosmocov_libgsl}
       --emit processed --out-file {output}
     resources: { cpus: 4, memory: "16GB" }
 
@@ -102,16 +78,9 @@ gather:
   type: data
   format: tar.gz
   description: |
-    The ${n_members} scan members bundled under their
-    July-canonical per-version subdirectory layout
-    `covariance_{ver}_A_integration/{base}_processed.txt`
-    for the Gaussian-only integration covariance.
-    This is the tree `cosebis_version_comparison` (`--cov-dir`) and
-    the pure E/B sweep read. Re-exported by
-    [covariance.cov_sweep](#../outputs.cov_sweep); consumers untar
-    it into a temp dir and pass the archive root as `--cov-dir`,
-    unchanged from the July contract.
-  inputs: [decision_values_script, catalog_versions_script]
+    The ${n_members} scan members together: one Gaussian-only
+    integration covariance per catalog variant, published as
+    [covariance.cov_sweep](#../outputs.cov_sweep).
   decisions: [fiducial_catalog, leakage_correction]
   recipe:
     command: >

@@ -14,10 +14,7 @@ project:
   github: https://github.com/cailmdaley/unions-bmodes-mystra
   bibliography:
     - references.bib
-  # Author list and affiliations are the paper's, verbatim from the A&A source
-  # (`paper/unions_bmodes.tex`). Names use
-  # the paper's initials form; ORCIDs disambiguate. No CRediT `roles:` are
-  # declared — the TeX carries none, and inventing them would be fabrication.
+  # Author list and affiliations are the paper's, verbatim from the A&A source.
   authors:
     - name: C. Daley
       orcid: 0000-0002-3760-2086

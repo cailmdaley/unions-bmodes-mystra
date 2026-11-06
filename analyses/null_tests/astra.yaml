@@ -1,12 +1,13 @@
 version: "0.0.14"
 name: "B-mode null tests, PTE matrices, and blind-independence checks"
+description: |
+  Turns the B-mode measurements into the paper's verdicts: χ² PTE matrices over
+  every scale-cut pair for each statistic and catalog version, and the numbers
+  the paper quotes. It stands on its own because it gathers the results of every
+  measurement, covariance and mock analysis, and adds the check that the B-mode
+  covariances do not depend on the n(z) blind.
 
 inputs:
-
-  - id: paper_claims_script
-    type: data
-    description: Script converting the claims macros to a table and comparing universes.
-    source: "./src/papers/bmodes/scripts/paper_claims.py"
 
   - id: pure_eb_pte_per_cut
     from: ../pure_eb.pure_eb_pte_per_cut
@@ -44,38 +45,21 @@ inputs:
   - id: blind_check_pseudo_cl
     from: ../blind_check_pseudo_cl
 
-  # Declared so an edit to either script restales the outputs below, whose
-  # recipe strings name the script by a path that does not change.
-  - id: config_space_pte_matrices_script
-    from: ../config_space_pte_matrices_script
-
-  - id: scale_cuts_script
-    from: ../scale_cuts_script
-
-  - id: generate_paper_macros_script
-    from: ../generate_paper_macros_script
-
-  # Calibrated minimum-PTE threshold from the sibling mock campaign.
   - id: mock_min_pte_calibration
     from: ../glass_mocks.mock_min_pte_calibration
 
-  # Sigma ratios / chi^2 calibration and the scale-cut scan, for the prose macros.
   - id: mock_campaign_evidence
     from: ../glass_mocks.mock_campaign_evidence
 
   - id: mock_min_pte_scale_cut_scan
     from: ../glass_mocks.mock_min_pte_scale_cut_scan
 
-  # Harmonic-vs-configuration COSEBI PTE metrics (App. cross-check), consumed
-  # by pte_summary_macros to emit the four \*CosebisPteSixThree* macros.
   - id: cosebis_harmonic_metrics
     from: ../cosebis.cosebis_harmonic_metrics
 
   - id: cosebis_harmonic_metrics_full
     from: ../cosebis.cosebis_harmonic_metrics_full
 
-  # Survey, first-mode, mock-ensemble and covariance summaries behind the
-  # prose macros of pte_summary_macros.
   - id: survey_properties
     from: ../catalog.survey_properties
 
@@ -97,26 +81,15 @@ inputs:
   - id: cov_reporting_ng
     from: ../covariance.cov_reporting_ng
 
-  - id: numerics_script
-    from: ../numerics_script
-
-  - id: decision_values_script
-    from: ../decision_values_script
-
-  - id: catalog_versions_script
-    from: ../catalog_versions_script
-
-  - id: emit_nu_penalty_verdicts_script
-    from: ../emit_nu_penalty_verdicts_script
-
 outputs:
   - id: paper_claims
     type: table
     format: csv
     description: |
-      One row per claims macro, with its name, display text and numeric value
-      where applicable, derived from [pte_summary_macros](#outputs.pte_summary_macros).
-    inputs: [pte_summary_macros, paper_claims_script]
+      The table the paper's text reads its quoted numbers from: one row per
+      macro of [pte_summary_macros](#outputs.pte_summary_macros), with its
+      name, display text and numeric value where it has one.
+    inputs: [pte_summary_macros]
     recipe:
       command: >-
         python src/papers/bmodes/scripts/paper_claims.py extract
@@ -126,10 +99,14 @@ outputs:
     type: metric
     format: json
     description: |
-      ξ_+^B, ξ_-^B and COSEBI B_n χ² PTE matrices over the
-      (θ_min, θ_max) pair grid of `geomspace(1', 250', 21)` for all
-      catalog variants, with the values at the
-      [adopted 12'–83' cut](#../decisions.fiducial_scale_cuts).
+      ξ_+^B, ξ_-^B, joint ξ_tot^B and COSEBI B_n (n ≤ 6 and n ≤ 20) χ²
+      PTE matrices over the (θ_min, θ_max) pair grid of
+      `geomspace(1', 250', 21)`, for all four catalog versions with and
+      without leakage correction, with the values at the
+      [adopted 12'–83' cut](#../decisions.fiducial_scale_cuts) and over
+      the full range. The adopted-cut values are read from grid cells,
+      so the [θ-cut convention](#../decisions.scale_cut_convention)
+      changes the cut recorded here but none of the PTEs.
       Feeds the config-space columns of the per-version PTE table
       and the configuration-space PTE heatmaps.
     decisions: [scale_cut_convention, scale_cut_pair_grid_alignment, fiducial_catalog, leakage_correction, reporting_binning, fiducial_blind]
@@ -138,16 +115,7 @@ outputs:
       - cosebis_ptes
       - pure_eb_pte_per_cut
       - cosebis_pte_per_cut
-      - config_space_pte_matrices_script
-      - scale_cuts_script
-      - numerics_script
-      - decision_values_script
-      - catalog_versions_script
     recipe:
-      # config_space_pte_matrices.py, evidence-only mode. The 7-version
-      # (leak-corrected + uncorrected) sweep lives INSIDE the script; the swept
-      # per-version PTE intermediates arrive as tar.gz bundles and are unpacked
-      # into temp dirs. The fiducial version's per-cut NPZs come in directly.
       command: >
         d_pe=$(mktemp -d) && tar xzf {inputs.pure_eb_ptes} -C $d_pe &&
         d_cb=$(mktemp -d) && tar xzf {inputs.cosebis_ptes} -C $d_cb &&
@@ -168,24 +136,19 @@ outputs:
     type: metric
     format: json
     description: |
-      Cℓ^BB χ² PTE matrices over the (ℓ_min, ℓ_max) bandpower-pair
-      grid spanning 8 ≤ ℓ ≤ 2048 for all catalog variants, with the
-      value at the
-      [adopted 300 < ℓ < 1600 cut](#../decisions.fiducial_scale_cuts).
+      Cℓ^BB χ² PTE matrices over the (ℓ_min, ℓ_max) pair grid of the
+      32 bandpowers spanning 8 ≤ ℓ ≤ 2048, for all four catalog
+      versions with and without leakage correction, with the values at
+      the [adopted 300 < ℓ < 1600 cut](#../decisions.fiducial_scale_cuts)
+      and over the full range.
       Feeds the harmonic column of the per-version PTE table and
       the Cℓ^BB PTE heatmap.
     inputs:
       - cl_sweep
       - cl_bandpowers_reporting
       - cl_cov_reporting
-      - numerics_script
-      - decision_values_script
-      - catalog_versions_script
-    decisions: [cl_pte_blind_strategy, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
+    decisions: [pte_blind_strategy, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
     recipe:
-      # harmonic_space_pte_matrices.py, evidence-only mode. The 7-version sweep
-      # lives INSIDE the script and reads per-version pseudo_cl_* /
-      # pseudo_cl_cov_* (blind A) FITS out of the unpacked cl_sweep bundle.
       command: >
         d_cl=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d_cl &&
         python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
@@ -208,7 +171,8 @@ outputs:
       - the six headline PTEs and the version-comparison numbers,
         with pure-mode scale cuts resolved from the
         [scale-cut convention](#../decisions.scale_cut_convention) and
-        rounded to integer arcmin;
+        rounded to integer arcmin, which gives 12 and 83 under either
+        reading;
       - the harmonic/configuration COSEBI cross-check PTEs
         (`\harmCosebisPteSixThreeFid`, `\cfgCosebisPteSixThreeFid`,
         `\harmCosebisPteSixThreeFull`, `\cfgCosebisPteSixThreeFull`) from
@@ -227,7 +191,7 @@ outputs:
       - from [the scale-cut scan](#inputs.mock_min_pte_scale_cut_scan), the
         clean-sample failure rate at the adopted threshold in the fiducial
         window (`\mockAlphaFiducial`);
-      - from the two PTE payloads, the minimum ν−2 PTE over the six
+      - from the two PTE matrix outputs, the minimum ν−2 PTE over the six
         statistics at the fiducial cuts (`\fiducialMinPteNuPenalty`,
         computed as in the root `nu_penalty_verdicts` table) and the
         largest PTE shift induced by the object-wise PSF-leakage
@@ -265,12 +229,6 @@ outputs:
       - mock_vs_data_noise_table
       - cov_reporting_g
       - cov_reporting_ng
-      - generate_paper_macros_script
-      - numerics_script
-      - decision_values_script
-      - scale_cuts_script
-      - catalog_versions_script
-      - emit_nu_penalty_verdicts_script
     recipe:
       command: >
         python src/papers/bmodes/scripts/generate_paper_macros.py
@@ -298,13 +256,17 @@ outputs:
     type: figure
     format: png
     description: |
-      BB-block diagonal variance across blinds A, B and C, compared
-      with the EE-block diagonal variance, for pure E/B, COSEBIs and
-      harmonic Cℓ, on the
-      [catalog version](#decisions.bb_blind_check_version) chosen for
-      the check. Supports the [blind-A fiducial
+      Per-bin ratios of the covariance diagonals of blinds B and C to
+      blind A, for the B-mode block and, as the reference, the E-mode
+      block: pure E/B over the 20 reporting bins, COSEBIs (n ≤ 20) on
+      the full 1'–250' range and harmonic Cℓ over the 32 bandpowers, on
+      the [catalog version](#decisions.bb_blind_check_version) chosen
+      for the check. Supports the [blind-A fiducial
       choice](#../decisions.fiducial_blind); it does not enter the
-      headline figures.
+      headline figures. The covariances are read from fixed per-blind
+      files, so the [Monte-Carlo sample
+      count](#../decisions.mc_samples) only sizes the ±√(2/N) reference
+      band drawn on the ξ_± panels.
     decisions: [bb_blind_check_version, reporting_binning, integration_grid, mode_count, mc_samples]
     inputs:
       - blind_check_pure_eb
@@ -312,7 +274,6 @@ outputs:
       - blind_check_cosmocov
       - blind_check_xi
       - blind_check_pseudo_cl
-      - decision_values_script
     recipe:
       command: >
         python src/papers/bmodes/scripts/bb_covariance_blind_independence.py
@@ -328,8 +289,8 @@ outputs:
 decisions:
   pte_definition:
     from: ../pte_definition
-  cl_pte_blind_strategy:
-    from: ../cl_pte_blind_strategy
+  pte_blind_strategy:
+    from: ../pte_blind_strategy
 
   scale_cut_convention:
     from: ../scale_cut_convention
@@ -341,21 +302,22 @@ decisions:
     label: "Catalog for the blind-independence check"
     tags: [data_selection]
     rationale: |
-      Blind independence is a geometric property of the footprint,
-      so one catalog version suffices for the
-      [BB-covariance blind-independence
+      The B-mode covariance of a null signal is shape noise, plus a
+      small E-to-B mask leakage in harmonic space, and neither reason
+      for its blind independence is specific to a catalog version, so
+      one version suffices for the [BB-covariance blind-independence
       check](#outputs.bb_covariance_blind_independence_evidence).
       It uses the fiducial leak-corrected v1.4.6.3 catalog, for which
-      the GLASS mock suite was built. B-mode covariance ratios are expected to sit closer
-      to unity across blinds than E-mode ratios, though finite MC
-      sampling can still introduce visible B-mode covariance scatter.
+      the GLASS mock suite was built. B-mode covariance ratios are
+      expected to sit closer to unity across blinds than E-mode ratios;
+      a Monte Carlo pure-mode covariance adds sampling scatter to both.
     default: fiducial_version_v1463
     options:
       fiducial_version_v1463:
         label: "Fiducial size-cut v1.4.6.3"
         description: |
           Per-blind covariances on the fiducial leak-corrected
-          catalog, matching the admissible mock suite.
+          catalog, matching the adopted mock suite.
       mock_version_v146:
         label: "Earlier mock version v1.4.6"
         description: |
@@ -363,27 +325,29 @@ decisions:
           earlier GLASS mock delivery.
         excluded: true
         excluded_reason: |
-          The v1.4.6 mock suite is a stale-density delivery
-          (see [mock_suite](#../glass_mocks.decisions.mock_suite));
-          the check follows the admissible v1.4.6.3 suite.
+          v1.4.6 is not one of the paper's four catalog versions, and
+          its [mock suite](#../glass_mocks.decisions.mock_suite) sits on
+          a mask that is not the data's footprint; the check follows
+          the adopted v1.4.6.3 suite.
 
   scale_cut_pair_grid_alignment:
     label: "Scale-cut grid alignment across statistics"
     tags: [scale_cuts]
     rationale: |
       The configuration-space PTE composite uses the same
-      `geomspace(1', 250', 21)` index pairs for ξ_+^B, ξ_-^B and
+      `geomspace(1', 250', 21)` reporting bins for ξ_+^B, ξ_-^B and
       COSEBI B_n, so the
       [adopted 12'–83' fiducial cut
-      ](#../decisions.fiducial_scale_cuts) falls in the same
-      (i = 9, j = 16) cell of every panel. The COSEBI
-      [stable-pair grid
-      ](#../analyses.cosebis) is a strict subset of the pure-mode
-      grid (pure modes have no polynomial-root instability), so the
-      missing COSEBI cells appear as NaN tiles. The harmonic-space
-      composite uses its own (ℓ_min, ℓ_max) bandpower-pair grid over
-      8 ≤ ℓ ≤ 2048; the ℓ-cut is a separate decision from the θ-cut,
-      so no cross-grid alignment is enforced.
+      ](#../decisions.fiducial_scale_cuts) selects the same window in
+      every panel: bins 9–15, spanning edges 9–16. The pure-mode
+      matrices index a cut by its first and last bin, (9, 15), and the
+      COSEBI matrices by its edges, (9, 16). The COSEBI panels show 190
+      of the 210 pure-mode cuts: the single-bin cuts, which include the
+      four [unstable pairs
+      ](#../cosebis.decisions.scale_cut_pair_grid), are NaN tiles. The
+      harmonic-space composite uses its own (ℓ_min, ℓ_max)
+      bandpower-pair grid over 8 ≤ ℓ ≤ 2048, which has no cell-by-cell
+      correspondence with the θ grid.
     default: aligned_with_cosebis_subset
     options:
       aligned_with_cosebis_subset:
@@ -391,7 +355,7 @@ decisions:
       independent_grids:
         label: "Independent grids per statistic"
         excluded: true
-        excluded_reason: "The PTE composite indexes shared reporting-bin edges; separate θ-grids have no implemented comparison path."
+        excluded_reason: "Not implemented: the PTE composite indexes one shared set of reporting bins."
         description: |
           A separate θ-grid per statistic, which would prevent
           comparing the adopted-cut cell across panels.

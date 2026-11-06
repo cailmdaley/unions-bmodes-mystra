@@ -491,7 +491,7 @@ def main(
         harmonic_results["C"]["EE"]["max_dev"],
     ]
 
-    # Pass criteria (updated: analytic vs MC methods show different behavior)
+    # Pass criteria differ between the analytic and MC methods:
     # COSEBIS uses analytic propagation (T @ Cov @ T.T) → blind-independent
     # Pure E/B and Harmonic use MC sampling → inherit sampling noise
     cosebis_bb_max = max(
@@ -508,7 +508,7 @@ def main(
     # E-modes should vary ~10% due to sample variance
     ee_varies_as_expected = 0.05 < cosebis_ee_max < 0.15
 
-    # Legacy summary (for backwards compatibility)
+    # Summary over all three statistics
     bb_max = max(bb_max_devs)
     ee_max = max(ee_max_devs)
     bb_closer_to_unity = bb_max < ee_max

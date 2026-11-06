@@ -1,10 +1,7 @@
 id: baseline
 description: |
-  UNIONS Paper II COSEBIs fiducial: 20 modes on the
-  `geomspace(1', 250', 21)` grid, PTEs reported for both the
-  n ≤ 6 and n ≤ 20 subsets, the harmonic cross-check path run
-  at 96 √ℓ-linear bandpowers, and the production scale-cut pair
-  grid (stable pairs only).
+  COSEBIs with 20 modes on the reporting grid, PTEs for both the n ≤ 6 and
+  n ≤ 20 subsets, on the production scale-cut grid of stable pairs.
 decisions:
   mode_subsets: n_le_6_and_n_le_20
   scale_cut_pair_grid: production_grid

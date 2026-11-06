@@ -164,11 +164,11 @@ def main(
     fiducial_xi_path=None,
     fiducial_cov_path=None,
 ):
-    # Leak-corrected, non-ecut versions (matches VERSIONS_LEAK_CORR in claims.smk)
+    # Leak-corrected, non-ecut versions
     versions = catalogs.comparison
     version_labels = catalogs.labels
 
-    # Fiducial version whose inputs may be overridden with explicit lc paths
+    # Fiducial version whose inputs may be overridden with explicit paths
     fiducial_version = fiducial_version or catalogs.fiducial
 
     # Per-version integration-grid xi and Gaussian covariance (canonical trees),

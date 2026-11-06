@@ -1,4 +1,4 @@
-"""Shared plotting utilities for claims scripts."""
+"""Shared plotting utilities for the paper scripts."""
 
 from pathlib import Path
 
@@ -511,7 +511,7 @@ def iter_version_figures(version_labels, fiducial_version):
 
 
 def get_version_figure_outputs(version_labels):
-    """Get list of all per-version figure filenames for Snakemake outputs.
+    """Get list of all per-version figure filenames.
 
     Parameters
     ----------

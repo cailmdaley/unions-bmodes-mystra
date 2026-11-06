@@ -33,16 +33,10 @@ artifacts:
   writes exactly one file.  They recompute nothing: every number they report is
   a function of the stored arrays.
 
-Vendored from sp_validation ``workflow/scripts/mock_campaign_analysis.py``.
-Changes from upstream: the ``--reference-covariance`` switch, which turns the
-covariance triple that used to be chosen by hand-editing the invocation into
-the declared ``reference_covariance`` decision (``fiducial`` uses the
-covariances passed on the base flags, ``mockmatched`` uses the
-``*-mockmatched`` companions); ``--cl-cov-mockmatched``, which lets the
-mockmatched selection take a directly computed mock C_l^BB covariance instead
-of the count-ratio rescale (omitting it reproduces the earlier behaviour
-exactly); the compute/report split above; and per-mock products arriving as
-stacked ensembles rather than as directories of per-mock files.
+``--reference-covariance`` selects the covariance triple through the declared
+``reference_covariance`` decision: ``fiducial`` uses the covariances passed on
+the base flags, ``mockmatched`` the ``*-mockmatched`` companions.  Per-mock
+products arrive as stacked ensembles.
 """
 
 from __future__ import annotations
@@ -1101,7 +1095,7 @@ def compute_statistics(
             RuntimeWarning,
         )
 
-    # Provenance check requested by the campaign brief.  Compare the first
+    # Provenance check: compare the first
     # dozen IDs for which the in-repo FITS product exists; the external array's
     # row 4 is the BB vector.
     compared = 0
@@ -1377,7 +1371,7 @@ def _resolve_reference_covariance(args):
 def _apply_scale_cut_convention(convention):
     """Rebind the θ-cut globals to the selected convention.
 
-    The upstream script reads COSEBI_THETA_MIN/MAX as module constants in six
+    The script reads COSEBI_THETA_MIN/MAX as module constants in six
     places and PURE_THETA_MIN/MAX in three; rebinding them once here keeps the
     decision explicit at the CLI without threading a parameter through the
     whole gather.  The pure-mode cut selects the same seven reporting bins

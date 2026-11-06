@@ -10,59 +10,27 @@
 
 id: cosebis_pte_grid
 version: '1.0'
-name: COSEBI PTE matrix, one member per i_min row
+name: COSEBI PTE matrix over scale cuts
 description: |
-  The fiducial COSEBI B-mode PTE matrix, decomposed the way the
-  matrix itself is shaped: one member per i_min row of the
-  `geomspace(1', 250', 21)` scale-cut grid
-  ([scale_cut_pair_grid](#../../decisions.scale_cut_pair_grid)),
-  each computing every stable `(i_min, j)` pair in its row. The
-  same 206 pairs, the same theta grid, the same `nmodes = 20`,
-  the same four excluded polynomial-root-unstable pairs, the same
-  NaN-on-convergence-failure handling — only the loop bounds
-  differ, and the gather puts the rows back.
-
-  Previously the whole grid was one lc output running
-  `compute_cosebis_pte_single.py` over all 206 pairs serially.
-  That made it the wall-clock pole of the reproduction and, being
-  a single output, something lc could not spread: one task, one
-  node, one core's worth of forward progress. Twenty members let
-  lc schedule the grid across the allocation — twenty task slots
-  instead of one, which is where the win comes from. The
-  in-member process pool over that row's pairs is a second level
-  that multiplies against the first, so the recipe holds it at
-  one worker per member; see the recipe comment for why the
-  pool's own default is actively dangerous here.
-
-  Rows are unequal — i_min = 0 carries 20 pairs, i_min = 19
-  carries 1, mean 10.3 — so wall clock is set by row 0 at 20/206
-  ≈ 9.7% of the serial loop, and less than that once the inner
-  pool covers a row in ceil(20 / cpus) waves. Stride-balanced
-  chunks of ~11 pairs would even that out, but chunk membership
-  is a function of the whole exclusion set: adding or dropping
-  one unstable pair reshuffles every chunk and invalidates every
-  cached member, where the same change touches exactly one row.
-  Rows also survive in a member id — `cosebis_pte_row_07` names
-  the scientific object it computes — and a failed row is
-  legible as a missing band of the matrix rather than an
-  arbitrary scatter of cells.
+  The COSEBI B-mode PTE matrix of the fiducial catalog: E_n and B_n
+  with their χ² and PTEs at n ≤ 6 and n ≤ 20, for each stable pair of
+  edges of `geomspace(1', 250', 21)`
+  ([scale_cut_pair_grid](#../decisions.scale_cut_pair_grid)). Each
+  member computes one θ_min row of the matrix, and the gather
+  assembles the rows into
+  [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut). That matrix
+  is read by
+  [config_space_pte_data](#../../outputs.config_space_pte_data), behind
+  the [PTE composite figure](#../../outputs.fig_pte_heatmaps) and the
+  [PTE table](#../../outputs.pte_table_appendix), and by the
+  [mock minimum-PTE calibration](#../../outputs.mock_min_pte_calibration).
 tags:
 - sweep
-- generated
-- cosebis
 inputs:
 - id: xi_integration
   from: ../xi_integration
 - id: cov_integration
   from: ../cov_integration
-- id: numerics_script
-  from: ../numerics_script
-- id: decision_values_script
-  from: ../decision_values_script
-- id: catalog_versions_script
-  from: ../catalog_versions_script
-- id: compute_cosebis_pte_single_script
-  from: ../compute_cosebis_pte_single_script
 decisions:
   pte_definition:
     from: ../pte_definition
@@ -84,20 +52,12 @@ outputs:
 - id: cosebis_pte_row_00
   type: data
   description: |
-    Row `i_min = 00` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(00, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 00` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(00, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -117,20 +77,12 @@ outputs:
 - id: cosebis_pte_row_01
   type: data
   description: |
-    Row `i_min = 01` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(01, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 01` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(01, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -150,20 +102,12 @@ outputs:
 - id: cosebis_pte_row_02
   type: data
   description: |
-    Row `i_min = 02` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(02, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 02` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(02, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -183,20 +127,12 @@ outputs:
 - id: cosebis_pte_row_03
   type: data
   description: |
-    Row `i_min = 03` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(03, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 03` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(03, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -216,20 +152,12 @@ outputs:
 - id: cosebis_pte_row_04
   type: data
   description: |
-    Row `i_min = 04` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(04, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 04` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(04, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -249,20 +177,12 @@ outputs:
 - id: cosebis_pte_row_05
   type: data
   description: |
-    Row `i_min = 05` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(05, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 05` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(05, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -282,20 +202,12 @@ outputs:
 - id: cosebis_pte_row_06
   type: data
   description: |
-    Row `i_min = 06` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(06, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 06` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(06, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -315,20 +227,12 @@ outputs:
 - id: cosebis_pte_row_07
   type: data
   description: |
-    Row `i_min = 07` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(07, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 07` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(07, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -348,20 +252,12 @@ outputs:
 - id: cosebis_pte_row_08
   type: data
   description: |
-    Row `i_min = 08` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(08, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 08` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(08, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -381,20 +277,12 @@ outputs:
 - id: cosebis_pte_row_09
   type: data
   description: |
-    Row `i_min = 09` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(09, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 09` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(09, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -414,20 +302,12 @@ outputs:
 - id: cosebis_pte_row_10
   type: data
   description: |
-    Row `i_min = 10` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(10, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 10` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(10, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -447,20 +327,12 @@ outputs:
 - id: cosebis_pte_row_11
   type: data
   description: |
-    Row `i_min = 11` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(11, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 11` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(11, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -480,20 +352,12 @@ outputs:
 - id: cosebis_pte_row_12
   type: data
   description: |
-    Row `i_min = 12` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(12, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 12` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(12, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -513,20 +377,12 @@ outputs:
 - id: cosebis_pte_row_13
   type: data
   description: |
-    Row `i_min = 13` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(13, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 13` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(13, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -546,20 +402,12 @@ outputs:
 - id: cosebis_pte_row_14
   type: data
   description: |
-    Row `i_min = 14` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(14, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 14` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(14, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -579,20 +427,12 @@ outputs:
 - id: cosebis_pte_row_15
   type: data
   description: |
-    Row `i_min = 15` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(15, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 15` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(15, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -612,20 +452,12 @@ outputs:
 - id: cosebis_pte_row_16
   type: data
   description: |
-    Row `i_min = 16` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(16, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 16` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(16, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -645,20 +477,12 @@ outputs:
 - id: cosebis_pte_row_17
   type: data
   description: |
-    Row `i_min = 17` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(17, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 17` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(17, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -678,20 +502,12 @@ outputs:
 - id: cosebis_pte_row_18
   type: data
   description: |
-    Row `i_min = 18` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(18, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 18` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(18, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -711,20 +527,12 @@ outputs:
 - id: cosebis_pte_row_19
   type: data
   description: |
-    Row `i_min = 19` of the fiducial COSEBI PTE matrix: the
-    E_n/B_n vectors, χ² and PTEs at both reported mode subsets
-    (n ≤ 6, n ≤ 20) for every stable `(19, j)` scale-cut
-    pair. An NPZ of the same shape and key order as the full-grid
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut),
-    with `pairs` restricted to this row and every other cell left
-    at its NaN initialiser. Not independently interesting — the
-    science reads the assembled matrix.
+    Row `i_min = 19` of the fiducial COSEBI PTE matrix: E_n and
+    B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20, for every stable
+    `(19, j)` scale-cut pair. All other cells of the matrix are NaN.
   inputs:
   - xi_integration
   - cov_integration
-  - numerics_script
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -744,19 +552,11 @@ outputs:
 - id: cosebis_pte_matrix
   type: data
   description: |
-    The 20 rows reassembled into the single full-grid
-    NPZ that
-    [cosebis_pte_per_cut](#../../outputs.cosebis_pte_per_cut)
-    re-exports — the exact artifact the serial loop wrote, keys
-    in the same order with the same dtypes, shapes and NaN
-    placement, so
-    [fig_pte_heatmaps](#../../../outputs.fig_pte_heatmaps) reads it unchanged (`theta_grid`, `pte_B_6`, `pte_B_20`, and
-    the full-range `[0, 20]` cell). `merge_cosebis_pte_rows.py`
-    recomputes nothing: it rebuilds the global pair list from the
-    same `_pte_scale_cut_pairs()` the members restrict and places
-    each value by its `(i_min, i_max)` key, refusing to write if
-    the members do not cover the grid exactly once or disagree on
-    the version, blind, mode count or theta grid.
+    The 20 rows assembled into the full COSEBI PTE matrix,
+    available as
+    [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut). A pair
+    whose filter roots do not converge keeps NaN and is flagged in
+    `convergence_failure`.
   inputs:
   - cosebis_pte_row_00
   - cosebis_pte_row_01
@@ -778,9 +578,6 @@ outputs:
   - cosebis_pte_row_17
   - cosebis_pte_row_18
   - cosebis_pte_row_19
-  - numerics_script
-  - decision_values_script
-  - compute_cosebis_pte_single_script
   recipe:
     command: |
       python src/papers/bmodes/scripts/merge_cosebis_pte_rows.py --members {inputs.cosebis_pte_row_00} {inputs.cosebis_pte_row_01} {inputs.cosebis_pte_row_02} {inputs.cosebis_pte_row_03} {inputs.cosebis_pte_row_04} {inputs.cosebis_pte_row_05} {inputs.cosebis_pte_row_06} {inputs.cosebis_pte_row_07} {inputs.cosebis_pte_row_08} {inputs.cosebis_pte_row_09} {inputs.cosebis_pte_row_10} {inputs.cosebis_pte_row_11} {inputs.cosebis_pte_row_12} {inputs.cosebis_pte_row_13} {inputs.cosebis_pte_row_14} {inputs.cosebis_pte_row_15} {inputs.cosebis_pte_row_16} {inputs.cosebis_pte_row_17} {inputs.cosebis_pte_row_18} {inputs.cosebis_pte_row_19} --out-file {output}

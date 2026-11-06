@@ -433,8 +433,8 @@ def summarise_window(ptes, info, alpha):
             minima, alpha
         ),
         "median_min_pte": float(np.median(minima)),
-        # Exceedance fractions at the two fixed levels the response letter
-        # quotes, alongside the calibrated quantile. Computed from the same
+        # Exceedance fractions at two fixed levels, alongside the calibrated
+        # quantile. Computed from the same
         # `minima` as `threshold` and `median_min_pte`: on a comparable window
         # this is the fraction of mocks whose minimum over all six statistics
         # falls below the level, and where a statistic is unavailable the

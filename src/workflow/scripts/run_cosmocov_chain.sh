@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
-# CosmoCov covariance chain (lc-native recipe).
+# CosmoCov covariance chain.
 #
-# Faithful port of covariance_ini -> covariance_cosmocov (x3 blocks) ->
-# covariance_cat -> covariance_process. The .ini generation and cosmocov_process
-# step run with the ambient python (lc owns the container; sp_validation is
-# installed in the project environment). The 3 shear-shear blocks (++,--,+-) are
-# independent and run in parallel.
+# Generates the CosmoCov .ini, runs the 3 shear-shear blocks (++,--,+-), which
+# are independent, in parallel, concatenates them and post-processes the
+# result with cosmocov_process. The .ini generation and cosmocov_process steps
+# run with the ambient python (sp_validation is installed in the project
+# environment).
 #
 # The CosmoCov binary is dynamically linked against libgsl.so.23,
-# libgslcblas and libfftw3. The container carries the latter two but ships
-# gsl.so.27, so the one missing soname is supplied from the host via --libgsl
-# and linked into a scratch directory that is on LD_LIBRARY_PATH *only* for the
-# binary's own invocations — letting gsl 23 shadow the container stack for the
-# python steps would put pyccl and friends on a library they were not built
-# against. This replaces the original rule's `module load gcc/intelpython/
-# openmpi`, whose only purpose was to supply these libraries on the bare host.
+# libgslcblas and libfftw3. The container carries the latter two
+# but ships gsl.so.27, so the one missing soname is supplied from the
+# host via --libgsl and linked into a scratch directory that is on
+# LD_LIBRARY_PATH *only* for the binary's own invocations — letting
+# gsl 23 shadow the container stack for the python steps would put
+# pyccl and friends on a library they were not built
+# against.
 #
 # The whole chain runs in a private scratch directory: no CosmoCov temporaries
 # (cov_tmp*/order_cov_tmp*), .ini or .log ever land next to the output. Exactly
@@ -65,7 +65,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-# ASTRA option IDs and the legacy single-letter spelling name the same terms.
+# ASTRA option IDs and the single-letter spelling name the same terms.
 case "$GAUSSIAN" in
   gaussian_only) GAUSSIAN=g;;
 esac
@@ -115,7 +115,7 @@ ln -sf "$LIBGSL" "$HOSTLIBS/libgsl.so.23"
 
 echo "[cosmocov] running 3 blocks (parallel)"
 cd "$SCRATCH"
-# BLOCK_PAIRS = [("++","1"), ("--","2"), ("+-","3")] — one CosmoCov invocation per block
+# One CosmoCov invocation per block: ++ is 1, -- is 2, +- is 3
 for idx in 1 2 3; do
   (
     LD_LIBRARY_PATH="$HOSTLIBS${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
@@ -124,7 +124,7 @@ for idx in 1 2 3; do
 done
 wait
 
-# Concatenate blocks in BLOCK_PAIRS order (++, --, +-) — as covariance_cat does
+# Concatenate blocks in order (++, --, +-)
 CAT="$SCRATCH/covariance.txt"
 : > "$CAT"
 for pm_idx in "++:1" "--:2" "+-:3"; do

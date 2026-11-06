@@ -1,7 +1,7 @@
 """Test whether the v1.4.8 star-mask footprint leaks pure B modes geometrically.
 
-Referee comment 4 asks whether the masked catalogue's ξ± pure-mode B failures
-are contamination or geometry.  GLASS lognormal mocks are systematics-free and
+Are the masked catalogue's ξ± pure-mode B failures contamination or geometry?
+GLASS lognormal mocks are systematics-free and
 carry no B power by construction, so any pure-B signal they develop under a
 footprint is purely an estimator/geometry effect (ambiguous-mode leakage from
 the finite, more complex mask).

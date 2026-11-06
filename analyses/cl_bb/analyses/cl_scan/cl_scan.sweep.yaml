@@ -1,47 +1,33 @@
-# Design-B pseudo-Cℓ version scan. Expand with:
-#   scripts/sweep_expand.py -o analyses/cl_bb/analyses/cl_scan/astra.yaml \
-#       analyses/cl_bb/analyses/cl_scan/cl_scan.sweep.yaml
 id: cl_scan
 version: "1.0"
 name: "Pseudo-Cℓ catalog-version scan"
 description: |
-  Design-B producer sweep: pseudo-Cℓ data vector and its NaMaster
-  iNKA Gaussian bandpower covariance (√ℓ-linear `powspace`
-  binning, blind A) for every non-fiducial, non-ecut catalog
-  version (7 variants — 3 leak-corrected + 4 uncorrected). Two
-  bandpower grids: the 32-bin reporting grid for every version,
-  and the 96-bin fine grid for the leak-corrected versions only,
-  which exists to feed the
+  Pseudo-Cℓ bandpowers and their NaMaster iNKA Gaussian covariance,
+  √ℓ-spaced at blind A, across catalog versions: the seven variants
+  other than the selected primary catalog (at baseline, three
+  leak-corrected and four uncorrected). All seven use the 32-bandpower
+  reporting grid; the initial, masked and relaxed-flags catalogs on the
+  primary leakage branch also use the finer grid of the
   [harmonic COSEBI scan](#../../cosebis.analyses.cosebis_harmonic_scan).
-  Each (version, grid, product) is its own lc output; the gather
-  bundles them under the canonical
-  `pseudo_cl{,_cov}_{ver}_blind=A_powspace_nbins=N.fits` names
-  that `cl_version_comparison` / `cl_data_vector` /
-  `harmonic_space_pte_matrices` read via `--results-dir`.
-  Per-version footprint masks resolve internally from cat_config,
-  so no per-version mask wiring is needed here.
-tags: [sweep, generated, cl_bb]
+  Each variant's window comes from its own catalog: source positions
+  and weights for the bandpowers, the weighted galaxy-count map for
+  the covariance. The gathered result feeds the
+  [version comparison](#../outputs.cl_version_comparison_figure), the
+  [Cℓ^BB PTE grids](#../outputs.cl_pte_per_cut) and the harmonic COSEBI
+  scan.
+tags: [sweep]
 
 inputs:
-  # The raw n(z) trees. generate_pseudo_cl_cov.py follows cat_config's
-  # per-version `redshift_path` at runtime, and lc binds only declared inputs,
-  # so the cl_cov members need both trees the config names: the SOM tree for
-  # v1.4.5 / v1.4.6.3, the legacy file for v1.4.8 / v1.4.11.3.
+  # Theory n(z) of the iNKA covariances: the SOM tree for v1.4.5 and v1.4.6.3,
+  # the legacy file for v1.4.8 and v1.4.11.3.
   - id: redshift_distributions
     from: ../redshift_distributions
   - id: redshift_distributions_legacy
     from: ../redshift_distributions_legacy
-  # Every member opens its version's catalog through cat_config.
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
   - id: shapepipe_v145_rerun
     from: ../shapepipe_v145_rerun
-
-  - id: decision_values_script
-    from: ../decision_values_script
-
-  - id: catalog_versions_script
-    from: ../catalog_versions_script
 
 decisions:
   noise_bias_correction:
@@ -58,6 +44,8 @@ decisions:
     from: ../fiducial_blind
   harmonic_validation_binning:
     from: ../harmonic_validation_binning
+  fiducial_cosmology:
+    from: ../fiducial_cosmology
 
 matrix:
   version:
@@ -76,13 +64,9 @@ matrix:
   nbins: ['32', '32', '32', '32', '32', '32', '32', '"$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})"', '"$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})"', '"$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})"']
   grid_decision: [bandpower_binning, bandpower_binning, bandpower_binning, bandpower_binning, bandpower_binning, bandpower_binning, bandpower_binning, harmonic_validation_binning, harmonic_validation_binning, harmonic_validation_binning]
   product: [cl, cl_cov]
-  # Only the bandpower measurement reads the estimator: calculate_pseudo_cl_eb_cov
-  # builds a map field whatever cell_method says. A template's decision list has a
-  # fixed length, so the covariance member repeats noise_bias_correction here.
-  product_decision: [estimator_choice, noise_bias_correction]
-  # Per-product resource envelopes, from the fiducial single-version recipes
-  # (cl_bandpowers_* 12/32GB/2h; cl_cov_reporting 12/16GB/3h), raised to cover
-  # the 96-bin grid.
+  # Only the bandpowers use the estimator; the iNKA covariance is built on the
+  # weighted galaxy-count map for either estimator.
+  product_decision: [estimator_choice, fiducial_cosmology]
   mem: ["32GB", "16GB"]
   ptime: ["4h", "8h"]
 
@@ -93,19 +77,13 @@ template:
   type: data
   format: fits
   description: |
-    Pseudo-Cℓ `${product}` product for catalog version
-    `${version}` on the `${grid}` √ℓ-linear bandpower grid at
-    blind A (nside 1024, npatch 1). The per-version analogue of
-    the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
-    `generate_pseudo_${product}.py` invocation, different `--ver`.
-  inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, redshift_distributions_legacy, decision_values_script, catalog_versions_script]
+    Pseudo-Cℓ `${product}` product (`cl` for the bandpowers,
+    `cl_cov` for their iNKA Gaussian covariance) for catalog version
+    `${version}` on the `${grid}` √ℓ-spaced bandpower grid at
+    blind A, computed as for the fiducial catalog.
+  inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, redshift_distributions_legacy]
   decisions: [fiducial_catalog, fiducial_blind, noise_bias_correction, "${grid_decision}", "${product_decision}", leakage_correction]
   recipe:
-    # The per-version unit of work. generate_pseudo_cl.py and
-    # generate_pseudo_cl_cov.py take an identical flag family, so one template
-    # covers both products. The July driver (run_cl_sweep.py) looped these
-    # serially and renamed their native filenames; lc schedules the members and
-    # the gather does the canonical naming.
     command: >
       python src/workflow/scripts/generate_pseudo_${product}.py
       --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version ${version} $(if [ ${grid} = fine ]; then printf -- '--fine-grid'; fi))"
@@ -119,15 +97,9 @@ gather:
   type: data
   format: tar.gz
   description: |
-    The ${n_members} scan members bundled flat under their
-    July-canonical
-    `pseudo_cl{,_cov}_{ver}_blind=A_powspace_nbins=N.fits` names —
-    the exact directory layout the harmonic-space consumers
-    reconstruct. Re-exported by
-    [cl_bb.cl_sweep](#../outputs.cl_sweep); consumers untar it into
-    a temp dir and pass that as `--results-dir`, unchanged from the
-    July contract.
-  inputs: [decision_values_script, catalog_versions_script]
+    The ${n_members} scan members together: bandpowers and iNKA
+    covariances per catalog variant and grid, published as
+    [cl_bb.cl_sweep](#../outputs.cl_sweep).
   decisions: [fiducial_catalog, leakage_correction, harmonic_validation_binning]
   recipe:
     command: >

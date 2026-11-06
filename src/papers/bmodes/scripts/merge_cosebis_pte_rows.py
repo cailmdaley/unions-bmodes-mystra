@@ -1,9 +1,9 @@
 """Gather the per-row COSEBI PTE NPZs of the cosebis_pte_grid sweep into one NPZ.
 
 `compute_cosebis_pte_single.py` loops the 206 stable (i_min, i_max) scale-cut
-pairs and writes one gathered NPZ. That loop is the wall-clock pole of the
-cosebis unit and, as a single lc output, cannot be spread across nodes. The
-`cosebis_pte_grid` astra-sweep splits it by i_min row — each member runs the
+pairs and writes one gathered NPZ. That loop is the slowest step of the
+cosebis analysis, so the `cosebis_pte_grid` astra-sweep splits it by i_min row
+across nodes — each member runs the
 same CLI with `--row i`, producing an NPZ of the *identical* shape and key order
 whose `pairs` array holds only that row.
 

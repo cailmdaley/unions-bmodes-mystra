@@ -115,10 +115,10 @@ def main(version, pure_eb_path, out_file):
     # Convert to correlation matrix for visualization
     correlation = _cov_to_corr(cov_pure_eb)
 
-    # Create figure (matching v1 epistemics style)
+    # Create figure
     fig, ax = plt.subplots(figsize=(FIG_WIDTH_SINGLE, FIG_WIDTH_SINGLE * 0.8))
 
-    # Plot correlation matrix (no origin="lower" so y increases downward like v1)
+    # Plot correlation matrix (no origin="lower", so y increases downward)
     im = ax.imshow(
         correlation,
         cmap="icefire",
@@ -127,7 +127,7 @@ def main(version, pure_eb_path, out_file):
         aspect="equal",
     )
 
-    # 6 block labels (matching v1 epistemics style)
+    # 6 block labels
     block_labels = [
         r"$\xi_+^{\mathrm{E}}$",
         r"$\xi_-^{\mathrm{E}}$",

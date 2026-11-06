@@ -6,9 +6,8 @@ reporting bin, with the excluded scales shaded and the COSEBIs both at the
 fiducial cuts (filled) and over all scales (open).  Row 1 is the across-realization mean in units of the analytic
 (data) sigma, with
 sigma_emp/(sigma_ana sqrt(N)) error bars, so the y-axis reads as "fraction
-of a data error bar".  Row 2 is sigma_emp/sigma_ana, the check that the
-analytic covariance reproduces the mock scatter, as sigma_ana / sigma_emp so
-that a value below one reads "the analytic covariance is tighter than the mock
+of a data error bar".  Row 2 checks that the analytic covariance reproduces
+the mock scatter, as sigma_ana / sigma_emp so that a value below one reads "the analytic covariance is tighter than the mock
 scatter", with the +-1/sqrt(2N) sampling uncertainty of that ratio on each point.
 
 Columns: COSEBI B_n | xi_+^B and xi_-^B | C_l^BB.  Colour encodes the

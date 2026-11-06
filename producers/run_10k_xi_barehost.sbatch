@@ -1,28 +1,12 @@
 #!/bin/bash
-# ============================================================================
-# 10,000-bin convergence xi (two_point.xi_integration_convergence) — BARE-HOST.
+# The 10,000-bin xi_pm run behind two_point.xi_integration_convergence: TreeCorr
+# on the leakage-corrected size-cut catalog over 0.5'-300', split across MPI
+# ranks with npatch = 50. It runs outside the analysis's container because the
+# measurement needs multi-node MPI, and it writes to the staging directory that
+# the input `tenk_xi_staging` points at.
 #
-# WHY bare-host (Cail's steer, 2026-07-05): TreeCorr needs no container, and the
-# container path is an MPI dead end — its mpi4py is a MPICH wheel (libmpi.so.12)
-# while the container's mpiexec is OpenMPI 4.1.4 and the historical launcher is
-# OpenMPI 5.0.5; multi-node containerized MPI has no working launcher (no
-# ssh/orted in the image, host<->host ssh publickey-denied, host/container ABI
-# mismatch). Bare-host dissolves it: the host ~/.local mpi4py 4.1.1 links the
-# SLURM-integrated /softs/openmpi/5.0.5-slurm-CentOS8 (libmpi.so.40 + libpmix.so.2),
-# so `mpiexec --map-by ppr:N:node` does multi-node natively via SLURM PMIx. This
-# is exactly the historical `xi_highres` snakemake rule's launcher (see
-# workflow/rules/twopoint.smk) and Axel Guinot's proven run_corr.sh.
-#
-# run_2pcf_highres.py falls back to its standalone cat_config resolver when the
-# full sp_validation stack is absent (bare-host), so NO PYTHONPATH is set — the
-# resolver returns byte-identical shear config (path + leak_corr columns).
-#
-# Usage:
-#   SCALED SMOKE (proves multi-node COMM_WORLD + output, ~min):
-#     sbatch --nodes=2 --nodelist=n32,n33 -t 20:00 --export=ALL,SMOKE=1 run_10k_xi_barehost.sbatch
-#   PRODUCTION (10k grid, ~1.5-2 days at 180 cores):
-#     sbatch run_10k_xi_barehost.sbatch
-# ============================================================================
+#   sbatch run_10k_xi_barehost.sbatch
+#   sbatch --nodes=2 -t 20:00 --export=ALL,SMOKE=1 run_10k_xi_barehost.sbatch   # small test
 #SBATCH --job-name=tenk_xi
 #SBATCH -p pscompl
 #SBATCH -N3
@@ -40,11 +24,9 @@ SCRIPT=$WT/workflow/scripts/run_2pcf_highres.py
 PY=/softs/intelpython/intelpython3-2025.1.0_196/bin/python3.12
 OMPI=/softs/openmpi/5.0.5-slurm-CentOS8
 
-# Host OpenMPI 5.0.5-slurm (ABI-matched to the host ~/.local mpi4py 4.1.1)
 export PATH=$OMPI/bin:$PATH
 export LD_LIBRARY_PATH=$OMPI/lib:${LD_LIBRARY_PATH:-}
-# treecorr num_threads is read from SLURM_CPUS_PER_TASK by the script; pin it so
-# ranks don't each grab a whole node's cores (mpiexec, not srun, launches ranks).
+# TreeCorr reads its thread count from SLURM_CPUS_PER_TASK.
 export SLURM_CPUS_PER_TASK=12
 export OMP_NUM_THREADS=12
 
@@ -54,10 +36,6 @@ if [ "${SMOKE:-0}" = "1" ]; then
   OUT=/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/smoke_2node
 else
   NBINS=10000; NPATCH=50; PPN=5     # 3 nodes x 5 ranks x 12 threads = 180 cores
-  # STAGING, not the lc output dir: `lc run xi_integration_convergence` clears
-  # its {output} dir before running the (copy) recipe (snakemake removes declared
-  # output first), which would delete a grid written straight there. The recipe
-  # copies from this staging dir — which lc never touches — into {output}.
   OUT=/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/production_out
 fi
 NTASKS=$(( NODES * PPN ))
@@ -66,7 +44,6 @@ mkdir -p "$OUT"
 echo "[tenk_xi] $( [ "${SMOKE:-0}" = "1" ] && echo SMOKE || echo PRODUCTION ): nbins=$NBINS npatch=$NPATCH nodes=$NODES ppr=$PPN ntasks=$NTASKS -> $OUT"
 echo "[tenk_xi] host mpiexec: $(which mpiexec)"; mpiexec --version | head -1
 
-# NO PYTHONPATH -> run_2pcf_highres uses its standalone cat_config resolver.
 mpiexec --map-by ppr:${PPN}:node -n ${NTASKS} \
   "$PY" "$SCRIPT" \
   --cat-config $WT/cosmo_val/cat_config.yaml \

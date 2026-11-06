@@ -12,36 +12,25 @@ id: cov_scan
 version: '1.0'
 name: CosmoCov integration-grid catalog-version scan
 description: |
-  Design-B producer sweep: integration-grid 1000-bin Gaussian-only
-  area-only CosmoCov covariance for every non-fiducial, non-ecut
-  catalog version (7 variants — 3 leak-corrected + 4 uncorrected),
-  the version-swept analogue of
-  [cov_integration](#../outputs.cov_integration). Each version
-  is its own lc output — a full `run_cosmocov_chain.sh` chain, the
-  heaviest members in the reproduction — and the gather bundles
-  them under the canonical
-  `covariance_{ver}_A_integration/`
-  per-version subdirectory layout that `--cov-dir` consumers read.
-  Covariance is recomputed per variant — it is NOT assumed
-  correction-invariant: v1.4.8 has a different survey area
-  and the uncorrected variants differ in σ_e.
+  Integration-grid 1000-bin Gaussian-only, area-only CosmoCov ξ_±
+  covariance across catalog versions: the seven variants other than
+  the selected primary catalog (at baseline, three leak-corrected and
+  four uncorrected), the version-swept analogue of
+  [cov_integration](#../outputs.cov_integration). A version enters
+  through its survey area, n_eff, σ_e and n(z); the masked catalog
+  covers 2517 deg² rather than 2894 deg². The leakage correction
+  changes none of these, so the corrected and uncorrected variants of
+  a catalog receive identical CosmoCov inputs. The gathered result
+  feeds the catalog-version pure-mode and COSEBI PTEs, among them the
+  [pure-mode sweep](#../../pure_eb.outputs.pure_eb_sweep) and the
+  [COSEBI comparison](#../../cosebis.outputs.cosebis_version_comparison).
 tags:
 - sweep
-- generated
-- covariance
 inputs:
 - id: cosmology_snapshot
   from: ../../covariance.cosmology_snapshot
 - id: redshift_distributions
   from: ../redshift_distributions
-- id: cosmocov_binary
-  from: ../cosmocov_binary
-- id: cosmocov_libgsl
-  from: ../cosmocov_libgsl
-- id: decision_values_script
-  from: ../decision_values_script
-- id: catalog_versions_script
-  from: ../catalog_versions_script
 decisions:
   integration_grid:
     from: ../integration_grid
@@ -59,19 +48,14 @@ outputs:
 - id: cov_sp_v1p4p5
   type: data
   description: |
-    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
+    Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.5` on the 1000-bin integration grid
     ([0.5', 300'], blind A).
     The per-version analogue of
-    [cov_integration](#../outputs.cov_integration); same
-    `run_cosmocov_chain.sh` chain, different `--version`.
+    [cov_integration](#../outputs.cov_integration).
   inputs:
   - cosmology_snapshot
   - redshift_distributions
-  - cosmocov_binary
-  - cosmocov_libgsl
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -81,7 +65,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -89,19 +73,14 @@ outputs:
 - id: cov_sp_v1p4p5_leak_corr
   type: data
   description: |
-    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
+    Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.5_leak_corr` on the 1000-bin integration grid
     ([0.5', 300'], blind A).
     The per-version analogue of
-    [cov_integration](#../outputs.cov_integration); same
-    `run_cosmocov_chain.sh` chain, different `--version`.
+    [cov_integration](#../outputs.cov_integration).
   inputs:
   - cosmology_snapshot
   - redshift_distributions
-  - cosmocov_binary
-  - cosmocov_libgsl
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -111,7 +90,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -119,19 +98,14 @@ outputs:
 - id: cov_fiducial_counterpart
   type: data
   description: |
-    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
+    Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.6.3` on the 1000-bin integration grid
     ([0.5', 300'], blind A).
     The per-version analogue of
-    [cov_integration](#../outputs.cov_integration); same
-    `run_cosmocov_chain.sh` chain, different `--version`.
+    [cov_integration](#../outputs.cov_integration).
   inputs:
   - cosmology_snapshot
   - redshift_distributions
-  - cosmocov_binary
-  - cosmocov_libgsl
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -141,7 +115,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.6.3)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.6.3)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -149,19 +123,14 @@ outputs:
 - id: cov_sp_v1p4p8
   type: data
   description: |
-    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
+    Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.8` on the 1000-bin integration grid
     ([0.5', 300'], blind A).
     The per-version analogue of
-    [cov_integration](#../outputs.cov_integration); same
-    `run_cosmocov_chain.sh` chain, different `--version`.
+    [cov_integration](#../outputs.cov_integration).
   inputs:
   - cosmology_snapshot
   - redshift_distributions
-  - cosmocov_binary
-  - cosmocov_libgsl
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -171,7 +140,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -179,19 +148,14 @@ outputs:
 - id: cov_sp_v1p4p8_leak_corr
   type: data
   description: |
-    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
+    Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.8_leak_corr` on the 1000-bin integration grid
     ([0.5', 300'], blind A).
     The per-version analogue of
-    [cov_integration](#../outputs.cov_integration); same
-    `run_cosmocov_chain.sh` chain, different `--version`.
+    [cov_integration](#../outputs.cov_integration).
   inputs:
   - cosmology_snapshot
   - redshift_distributions
-  - cosmocov_binary
-  - cosmocov_libgsl
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -201,7 +165,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -209,19 +173,14 @@ outputs:
 - id: cov_sp_v1p4p11p3
   type: data
   description: |
-    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
+    Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.11.3` on the 1000-bin integration grid
     ([0.5', 300'], blind A).
     The per-version analogue of
-    [cov_integration](#../outputs.cov_integration); same
-    `run_cosmocov_chain.sh` chain, different `--version`.
+    [cov_integration](#../outputs.cov_integration).
   inputs:
   - cosmology_snapshot
   - redshift_distributions
-  - cosmocov_binary
-  - cosmocov_libgsl
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -231,7 +190,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -239,19 +198,14 @@ outputs:
 - id: cov_sp_v1p4p11p3_leak_corr
   type: data
   description: |
-    Processed Gaussian-only, area-only CosmoCov ξ_± covariance for
+    Gaussian-only, area-only CosmoCov ξ_± covariance for
     catalog version `SP_v1.4.11.3_leak_corr` on the 1000-bin integration grid
     ([0.5', 300'], blind A).
     The per-version analogue of
-    [cov_integration](#../outputs.cov_integration); same
-    `run_cosmocov_chain.sh` chain, different `--version`.
+    [cov_integration](#../outputs.cov_integration).
   inputs:
   - cosmology_snapshot
   - redshift_distributions
-  - cosmocov_binary
-  - cosmocov_libgsl
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -261,7 +215,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -269,15 +223,9 @@ outputs:
 - id: cov_sweep_bundle
   type: data
   description: |
-    The 7 scan members bundled under their
-    July-canonical per-version subdirectory layout
-    `covariance_{ver}_A_integration/{base}_processed.txt`
-    for the Gaussian-only integration covariance.
-    This is the tree `cosebis_version_comparison` (`--cov-dir`) and
-    the pure E/B sweep read. Re-exported by
-    [covariance.cov_sweep](#../outputs.cov_sweep); consumers untar
-    it into a temp dir and pass the archive root as `--cov-dir`,
-    unchanged from the July contract.
+    The 7 scan members together: one Gaussian-only
+    integration covariance per catalog variant, published as
+    [covariance.cov_sweep](#../outputs.cov_sweep).
   inputs:
   - cov_sp_v1p4p5
   - cov_sp_v1p4p5_leak_corr
@@ -286,8 +234,6 @@ outputs:
   - cov_sp_v1p4p8_leak_corr
   - cov_sp_v1p4p11p3
   - cov_sp_v1p4p11p3_leak_corr
-  - decision_values_script
-  - catalog_versions_script
   decisions:
   - fiducial_catalog
   - leakage_correction

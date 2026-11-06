@@ -10,35 +10,26 @@
 
 id: mock_xi_scan
 version: '1.0'
-name: GLASS mock fine-ξ scatter
+name: Per-realisation fine ξ_± of the GLASS suite
 description: |
-  The campaign's expensive stage, one realisation per member: TreeCorr
-  ξ_±(θ) on exactly the data's integration grid — geomspace 0.5'–300',
-  1000 bins — for each of the 350 GLASS realisations, 60 M galaxies
-  apiece. Ruled by Cail 2026-08-31: mock and data measurements must
-  share range and binning, node for node. The earlier [0.5', 500'] grid
-  capped at 300' left node placement mismatched. Both the COSEBI and
-  the pure-E/B filters integrate over θ and need this grid, which the
-  delivered suite does not ship — only 20-bin reporting vectors.
+  TreeCorr ξ_±(θ) for each of the 350 GLASS realisations, about 60 M
+  galaxies apiece, on exactly the data's
+  [integration grid](#decisions.integration_grid): geomspace
+  0.5'–300', 1000 bins. Mock and data measurements share range and
+  binning node for node. Both the COSEBI and the pure-E/B filters
+  integrate over θ and need this grid, which the delivered suite does
+  not ship: it carries only 20-bin reporting vectors.
 
-  A member is one mock's measurement and nothing else, which is what
-  makes the fan-out worth its size: a realisation that fails or is
-  re-run costs one member, not the suite. The gather is the artifact
-  everything downstream actually wants — the realisation axis made
-  explicit as a single stacked array.
+  The scan runs over the realisations, one measurement each. The
+  gathered [ensemble](#outputs.mock_xi_fine) stacks them along an
+  explicit realisation axis, and is what the COSEBI and pure-E/B
+  transforms of the mocks read.
 tags:
 - sweep
-- generated
-- glass
-- mocks
 inputs:
 - id: glass_mock_catalogs
   from: ../glass_mock_catalogs
-- id: decision_values_script
-  from: ../decision_values_script
 decisions:
-  mock_suite:
-    from: ../mock_suite
   integration_grid:
     from: ../integration_grid
 outputs:
@@ -47,12 +38,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00001` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -66,12 +56,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00002` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -85,12 +74,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00003` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -104,12 +92,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00004` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -123,12 +110,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00005` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -142,12 +128,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00006` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -161,12 +146,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00007` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -180,12 +164,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00008` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -199,12 +182,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00009` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -218,12 +200,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00010` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -237,12 +218,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00011` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -256,12 +236,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00012` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -275,12 +254,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00013` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -294,12 +272,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00014` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -313,12 +290,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00015` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -332,12 +308,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00016` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -351,12 +326,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00017` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -370,12 +344,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00018` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -389,12 +362,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00019` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -408,12 +380,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00020` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -427,12 +398,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00021` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -446,12 +416,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00022` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -465,12 +434,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00023` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -484,12 +452,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00024` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -503,12 +470,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00025` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -522,12 +488,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00026` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -541,12 +506,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00027` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -560,12 +524,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00028` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -579,12 +542,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00029` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -598,12 +560,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00030` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -617,12 +578,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00031` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -636,12 +596,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00032` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -655,12 +614,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00033` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -674,12 +632,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00034` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -693,12 +650,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00035` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -712,12 +668,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00036` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -731,12 +686,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00037` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -750,12 +704,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00038` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -769,12 +722,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00039` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -788,12 +740,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00040` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -807,12 +758,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00041` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -826,12 +776,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00042` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -845,12 +794,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00043` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -864,12 +812,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00044` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -883,12 +830,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00045` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -902,12 +848,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00046` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -921,12 +866,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00047` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -940,12 +884,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00048` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -959,12 +902,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00049` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -978,12 +920,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00050` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -997,12 +938,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00051` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1016,12 +956,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00052` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1035,12 +974,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00053` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1054,12 +992,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00054` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1073,12 +1010,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00055` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1092,12 +1028,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00056` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1111,12 +1046,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00057` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1130,12 +1064,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00058` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1149,12 +1082,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00059` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1168,12 +1100,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00060` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1187,12 +1118,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00061` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1206,12 +1136,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00062` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1225,12 +1154,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00063` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1244,12 +1172,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00064` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1263,12 +1190,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00065` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1282,12 +1208,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00066` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1301,12 +1226,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00067` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1320,12 +1244,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00068` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1339,12 +1262,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00069` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1358,12 +1280,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00070` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1377,12 +1298,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00071` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1396,12 +1316,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00072` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1415,12 +1334,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00073` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1434,12 +1352,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00074` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1453,12 +1370,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00075` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1472,12 +1388,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00076` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1491,12 +1406,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00077` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1510,12 +1424,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00078` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1529,12 +1442,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00079` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1548,12 +1460,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00080` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1567,12 +1478,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00081` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1586,12 +1496,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00082` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1605,12 +1514,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00083` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1624,12 +1532,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00084` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1643,12 +1550,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00085` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1662,12 +1568,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00086` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1681,12 +1586,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00087` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1700,12 +1604,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00088` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1719,12 +1622,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00089` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1738,12 +1640,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00090` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1757,12 +1658,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00091` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1776,12 +1676,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00092` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1795,12 +1694,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00093` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1814,12 +1712,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00094` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1833,12 +1730,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00095` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1852,12 +1748,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00096` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1871,12 +1766,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00097` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1890,12 +1784,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00098` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1909,12 +1802,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00099` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1928,12 +1820,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00100` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1947,12 +1838,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00101` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1966,12 +1856,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00102` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -1985,12 +1874,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00103` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2004,12 +1892,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00104` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2023,12 +1910,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00105` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2042,12 +1928,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00106` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2061,12 +1946,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00107` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2080,12 +1964,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00108` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2099,12 +1982,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00109` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2118,12 +2000,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00110` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2137,12 +2018,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00111` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2156,12 +2036,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00112` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2175,12 +2054,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00113` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2194,12 +2072,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00114` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2213,12 +2090,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00115` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2232,12 +2108,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00116` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2251,12 +2126,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00117` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2270,12 +2144,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00118` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2289,12 +2162,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00119` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2308,12 +2180,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00120` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2327,12 +2198,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00121` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2346,12 +2216,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00122` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2365,12 +2234,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00123` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2384,12 +2252,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00124` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2403,12 +2270,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00125` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2422,12 +2288,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00126` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2441,12 +2306,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00127` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2460,12 +2324,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00128` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2479,12 +2342,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00129` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2498,12 +2360,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00130` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2517,12 +2378,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00131` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2536,12 +2396,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00132` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2555,12 +2414,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00133` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2574,12 +2432,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00134` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2593,12 +2450,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00135` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2612,12 +2468,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00136` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2631,12 +2486,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00137` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2650,12 +2504,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00138` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2669,12 +2522,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00139` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2688,12 +2540,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00140` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2707,12 +2558,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00141` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2726,12 +2576,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00142` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2745,12 +2594,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00143` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2764,12 +2612,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00144` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2783,12 +2630,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00145` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2802,12 +2648,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00146` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2821,12 +2666,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00147` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2840,12 +2684,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00148` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2859,12 +2702,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00149` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2878,12 +2720,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00150` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2897,12 +2738,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00151` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2916,12 +2756,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00152` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2935,12 +2774,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00153` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2954,12 +2792,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00154` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2973,12 +2810,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00155` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -2992,12 +2828,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00156` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3011,12 +2846,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00157` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3030,12 +2864,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00158` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3049,12 +2882,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00159` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3068,12 +2900,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00160` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3087,12 +2918,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00161` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3106,12 +2936,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00162` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3125,12 +2954,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00163` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3144,12 +2972,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00164` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3163,12 +2990,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00165` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3182,12 +3008,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00166` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3201,12 +3026,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00167` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3220,12 +3044,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00168` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3239,12 +3062,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00169` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3258,12 +3080,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00170` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3277,12 +3098,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00171` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3296,12 +3116,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00172` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3315,12 +3134,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00173` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3334,12 +3152,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00174` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3353,12 +3170,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00175` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3372,12 +3188,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00176` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3391,12 +3206,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00177` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3410,12 +3224,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00178` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3429,12 +3242,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00179` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3448,12 +3260,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00180` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3467,12 +3278,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00181` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3486,12 +3296,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00182` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3505,12 +3314,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00183` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3524,12 +3332,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00184` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3543,12 +3350,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00185` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3562,12 +3368,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00186` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3581,12 +3386,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00187` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3600,12 +3404,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00188` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3619,12 +3422,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00189` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3638,12 +3440,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00190` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3657,12 +3458,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00191` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3676,12 +3476,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00192` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3695,12 +3494,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00193` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3714,12 +3512,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00194` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3733,12 +3530,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00195` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3752,12 +3548,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00196` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3771,12 +3566,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00197` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3790,12 +3584,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00198` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3809,12 +3602,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00199` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3828,12 +3620,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00200` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3847,12 +3638,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00201` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3866,12 +3656,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00202` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3885,12 +3674,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00203` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3904,12 +3692,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00204` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3923,12 +3710,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00205` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3942,12 +3728,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00206` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3961,12 +3746,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00207` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3980,12 +3764,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00208` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -3999,12 +3782,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00209` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4018,12 +3800,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00210` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4037,12 +3818,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00211` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4056,12 +3836,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00212` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4075,12 +3854,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00213` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4094,12 +3872,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00214` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4113,12 +3890,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00215` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4132,12 +3908,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00216` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4151,12 +3926,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00217` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4170,12 +3944,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00218` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4189,12 +3962,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00219` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4208,12 +3980,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00220` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4227,12 +3998,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00221` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4246,12 +4016,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00222` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4265,12 +4034,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00223` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4284,12 +4052,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00224` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4303,12 +4070,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00225` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4322,12 +4088,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00226` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4341,12 +4106,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00227` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4360,12 +4124,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00228` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4379,12 +4142,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00229` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4398,12 +4160,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00230` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4417,12 +4178,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00231` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4436,12 +4196,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00232` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4455,12 +4214,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00233` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4474,12 +4232,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00234` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4493,12 +4250,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00235` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4512,12 +4268,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00236` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4531,12 +4286,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00237` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4550,12 +4304,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00238` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4569,12 +4322,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00239` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4588,12 +4340,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00240` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4607,12 +4358,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00241` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4626,12 +4376,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00242` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4645,12 +4394,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00243` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4664,12 +4412,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00244` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4683,12 +4430,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00245` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4702,12 +4448,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00246` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4721,12 +4466,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00247` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4740,12 +4484,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00248` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4759,12 +4502,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00249` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4778,12 +4520,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00250` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4797,12 +4538,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00251` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4816,12 +4556,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00252` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4835,12 +4574,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00253` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4854,12 +4592,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00254` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4873,12 +4610,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00255` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4892,12 +4628,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00256` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4911,12 +4646,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00257` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4930,12 +4664,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00258` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4949,12 +4682,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00259` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4968,12 +4700,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00260` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -4987,12 +4718,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00261` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5006,12 +4736,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00262` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5025,12 +4754,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00263` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5044,12 +4772,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00264` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5063,12 +4790,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00265` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5082,12 +4808,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00266` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5101,12 +4826,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00267` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5120,12 +4844,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00268` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5139,12 +4862,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00269` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5158,12 +4880,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00270` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5177,12 +4898,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00271` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5196,12 +4916,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00272` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5215,12 +4934,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00273` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5234,12 +4952,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00274` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5253,12 +4970,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00275` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5272,12 +4988,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00276` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5291,12 +5006,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00277` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5310,12 +5024,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00278` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5329,12 +5042,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00279` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5348,12 +5060,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00280` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5367,12 +5078,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00281` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5386,12 +5096,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00282` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5405,12 +5114,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00283` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5424,12 +5132,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00284` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5443,12 +5150,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00285` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5462,12 +5168,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00286` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5481,12 +5186,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00287` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5500,12 +5204,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00288` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5519,12 +5222,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00289` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5538,12 +5240,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00290` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5557,12 +5258,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00291` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5576,12 +5276,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00292` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5595,12 +5294,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00293` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5614,12 +5312,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00294` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5633,12 +5330,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00295` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5652,12 +5348,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00296` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5671,12 +5366,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00297` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5690,12 +5384,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00298` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5709,12 +5402,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00299` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5728,12 +5420,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00300` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5747,12 +5438,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00301` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5766,12 +5456,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00302` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5785,12 +5474,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00303` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5804,12 +5492,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00304` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5823,12 +5510,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00305` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5842,12 +5528,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00306` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5861,12 +5546,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00307` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5880,12 +5564,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00308` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5899,12 +5582,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00309` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5918,12 +5600,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00310` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5937,12 +5618,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00311` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5956,12 +5636,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00312` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5975,12 +5654,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00313` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -5994,12 +5672,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00314` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6013,12 +5690,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00315` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6032,12 +5708,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00316` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6051,12 +5726,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00317` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6070,12 +5744,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00318` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6089,12 +5762,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00319` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6108,12 +5780,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00320` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6127,12 +5798,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00321` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6146,12 +5816,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00322` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6165,12 +5834,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00323` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6184,12 +5852,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00324` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6203,12 +5870,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00325` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6222,12 +5888,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00326` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6241,12 +5906,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00327` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6260,12 +5924,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00328` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6279,12 +5942,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00329` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6298,12 +5960,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00330` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6317,12 +5978,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00331` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6336,12 +5996,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00332` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6355,12 +6014,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00333` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6374,12 +6032,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00334` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6393,12 +6050,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00335` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6412,12 +6068,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00336` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6431,12 +6086,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00337` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6450,12 +6104,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00338` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6469,12 +6122,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00339` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6488,12 +6140,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00340` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6507,12 +6158,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00341` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6526,12 +6176,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00342` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6545,12 +6194,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00343` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6564,12 +6212,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00344` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6583,12 +6230,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00345` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6602,12 +6248,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00346` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6621,12 +6266,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00347` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6640,12 +6284,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00348` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6659,12 +6302,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00349` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6678,12 +6320,11 @@ outputs:
   description: |
     Fine-binned TreeCorr ξ_±(θ) for GLASS realisation `00350` on the
     1000-bin integration grid. No response correction and no leakage
-    subtraction — these are Gaussian mocks.
+    subtraction: the realisations carry input shears and no PSF
+    leakage.
   inputs:
   - glass_mock_catalogs
-  - decision_values_script
   decisions:
-  - mock_suite
   - integration_grid
   recipe:
     command: |
@@ -6698,7 +6339,7 @@ outputs:
     The 350-realisation fine ξ_± ensemble: `meanr`, `xip`,
     `xim`, `npairs` and `weight` stacked on the shared 1000-bin
     integration grid, with the mock IDs. The mock counterpart of
-    [xi_integration](#../../inputs.xi_integration), and the input both
+    [xi_integration](#../inputs.xi_integration), and the input both
     config-space transforms read.
   inputs:
   - xi_fine_00001
@@ -7051,7 +6692,6 @@ outputs:
   - xi_fine_00348
   - xi_fine_00349
   - xi_fine_00350
-  - decision_values_script
   decisions:
   - integration_grid
   recipe:
