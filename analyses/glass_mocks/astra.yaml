@@ -1,5 +1,5 @@
 version: "0.0.14"
-name: "GLASS mock covariance campaign"
+name: "GLASS mock validation"
 description: |
   Validation of the B-mode estimators, covariances and PTE
   convention on 350 systematics-free GLASS lognormal realisations.
@@ -21,7 +21,9 @@ description: |
   ([finding](#findings.mocks_are_over_constraining)), so they are
   held against a covariance the same CosmoCov / MC / NaMaster chain
   builds at the mocks' own noise. The campaign thus tests the
-  covariance machinery, not the data covariance directly.
+  covariance machinery, not the data covariance directly: the
+  [analytic covariances](#../analyses.covariance), not a mock sample
+  covariance, enter the PTEs.
 tags: [glass, mocks, covariance, referee]
 
 inputs:

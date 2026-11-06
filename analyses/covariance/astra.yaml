@@ -1,5 +1,5 @@
 version: "0.0.14"
-name: "Semi-analytical covariance and GLASS mock validation"
+name: "Semi-analytical covariances"
 
 inputs:
   - id: selected_config
@@ -339,34 +339,6 @@ decisions:
         excluded: true
         excluded_reason: |
           The reported joint ξ_tot^B test needs the cross-block.
-
-  glass_validation_strategy:
-    label: "GLASS mock-validation use"
-    tags: [covariance, validation]
-    rationale: |
-      The GLASS lognormal mocks, generated under the
-      [Planck-18 fiducial](#../decisions.fiducial_cosmology),
-      carry no PSF leakage or other imaging systematics. They
-      test whether the
-      [estimators](#../analyses.null_tests) produce spurious
-      B modes from a systematics-free input, and whether the
-      analytic σ matches the scatter across realisations. The
-      analytic covariances, not the mock sample covariance,
-      enter the PTEs.
-    default: validation_only
-    options:
-      validation_only:
-        label: "Validation comparator (fiducial)"
-        description: |
-          Mock scatter is compared with the analytic σ and the
-          ensemble-mean B modes with zero.
-      sample_covariance_production:
-        label: "GLASS sample covariance as production"
-        excluded: true
-        excluded_reason: |
-          The mocks validate the analytic covariances; 350
-          realisations give too noisy an inverse to replace
-          them.
 
 analyses:
 

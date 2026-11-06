@@ -10,4 +10,3 @@ decisions:
   covariance_class: gaussian_only
   mask_application: masked
   block_pairs: all_three
-  glass_validation_strategy: validation_only

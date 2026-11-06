@@ -215,7 +215,7 @@ end-to-end view; details telescope into sub-analysis pages.
 | `pure_eb.md` | `pure_eb` | Pure E/B decomposition (§3.2); Fig 1, Fig 4 (`pure_eb_covariance_figure`); `decisions.mc_samples`, `hartlap_application`. |
 | `cosebis.md` | `cosebis` | COSEBIs (§3.3); Fig 2; harmonic-vs-config cross-check Fig 8; `findings.cosebis_full_range_failure`, `filter_sets_sensitivity`. |
 | `cl_bb.md` | `cl_bb` | Catalog-based pseudo-Cℓ (§3.4); Fig 3; `decisions.estimator_choice`, `bandpower_binning`. |
-| `covariance.md` | `covariance` | CosmoCov + MC propagation + GLASS validation (§3.5, §3.7); `decisions.covariance_engine`, `glass_validation_strategy`. |
+| `covariance.md` | `covariance` | CosmoCov + MC propagation + GLASS validation (§3.5, §3.7); `decisions.covariance_engine`. |
 | `null_tests.md` | `null_tests` | PTE framework (§4.1), Figs 6–7, Table 1 detail; `findings.size_cut_unique_pass`, `multi_statistic_consensus`; `decisions.pte_definition`, `healthy_pte_range`, `fiducial_scale_cuts`. |
 
 Planned page files: `index.md`, `catalog.md`, `two_point.md`, `pure_eb.md`,

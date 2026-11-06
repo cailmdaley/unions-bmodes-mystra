@@ -7,5 +7,5 @@ for COSEBIs specifically, the mean $B_n$ over a subset of 100 realizations is bi
 We also find that the scatter in the simulated realizations is comparable to the fiducial error bars adopted for each statistic, indicating that our uncertainty estimates are of the right order.
 
 The companion cosmology papers validate their pipelines with the same simulation suite: Paper III checks the configuration-space pipeline and [`CosmoCov`](https://github.com/CosmoLike/CosmoCov) covariance, while Paper IV checks the harmonic-space pipeline and [`NaMaster`](https://github.com/LSSTDESC/NaMaster) covariance.
-Here we {astra}`apply the simulations <covariance.decisions.glass_validation_strategy>` to the $B$-mode statistics specifically, complementing the cosmological-inference tests in those papers.
+Here we {astra}`apply the simulations <covariance.decisions.covariance_engine>` to the $B$-mode statistics specifically, complementing the cosmological-inference tests in those papers.
 Taken together, these tests show that the low-level $B$-mode structure discussed below is a property of the data rather than an artifact of the estimators or their numerical implementation.

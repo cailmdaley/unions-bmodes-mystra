@@ -601,7 +601,7 @@ narrative:
     [pseudo-Cℓ sample covariance](#outputs.cov_glass_cl_reporting)
     from the 350 v1.4.6-matched GLASS realisations on the
     20-bin reporting grid; this is the
-    [validation-only role](#decisions.glass_validation_strategy)
+    [validation-only role](#decisions.covariance_engine)
     of the mocks. Because the mocks contain no PSF-related
     systematics, they test whether the estimators generate
     spurious B-modes on a noise-dominated input; the paper
