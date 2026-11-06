@@ -5,5 +5,4 @@ description: |
   and the 20-mode COSEBI vector, each remade on the 10,000-bin
   integration grid and scored against the 1,000-bin baseline
   covariance.
-decisions:
-  mode_count: n_max_20
+decisions: {}

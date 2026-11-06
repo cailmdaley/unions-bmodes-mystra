@@ -42,6 +42,8 @@ inputs:
 - id: cl_sweep
   from: ../cl_sweep
 decisions:
+  pte_definition:
+    from: ../pte_definition
   fiducial_blind:
     from: ../fiducial_blind
   harmonic_validation_binning:
@@ -68,6 +70,7 @@ outputs:
   - fiducial_blind
   - harmonic_validation_binning
   - scale_cut_convention
+  - pte_definition
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -117,6 +120,7 @@ outputs:
   - fiducial_blind
   - harmonic_validation_binning
   - scale_cut_convention
+  - pte_definition
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -166,6 +170,7 @@ outputs:
   - fiducial_blind
   - harmonic_validation_binning
   - scale_cut_convention
+  - pte_definition
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed

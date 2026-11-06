@@ -50,6 +50,7 @@ Run these checks from the project root without installing the scientific stack:
 ```bash
 uv run --no-project --with pyyaml python tools/check_prose_only.py <base-revision>
 uv run --no-project --with pyyaml python tools/check_links.py
+uv run --no-project --with pyyaml python tools/check_decisions.py
 uv run --no-project python tools/check_report_links.py
 uv run --no-project python tools/test_report_links.py
 myst build

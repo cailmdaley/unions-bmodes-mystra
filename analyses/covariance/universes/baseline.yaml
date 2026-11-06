@@ -9,4 +9,3 @@ decisions:
   covariance_engine: cosmocov
   covariance_class: gaussian_only
   mask_application: masked
-  block_pairs: all_three

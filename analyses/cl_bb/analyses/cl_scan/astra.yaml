@@ -47,6 +47,12 @@ inputs:
 - id: shapepipe_v145_rerun
   from: ../shapepipe_v145_rerun
 decisions:
+  noise_bias_correction:
+    from: ../noise_bias_correction
+  bandpower_binning:
+    from: ../bandpower_binning
+  estimator_choice:
+    from: ../estimator_choice
   leakage_correction:
     from: ../leakage_correction
   fiducial_catalog:
@@ -75,10 +81,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - estimator_choice
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -102,10 +110,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - noise_bias_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -129,10 +139,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - estimator_choice
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -156,10 +168,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - noise_bias_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -183,10 +197,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - estimator_choice
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.6.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.6.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -210,10 +226,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - noise_bias_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.6.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.6.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -237,10 +255,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - estimator_choice
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -264,10 +284,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - noise_bias_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -291,10 +313,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - estimator_choice
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -318,10 +342,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - noise_bias_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -345,10 +371,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - estimator_choice
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -372,10 +400,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - noise_bias_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -399,10 +429,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - estimator_choice
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -426,10 +458,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
-  - harmonic_validation_binning
+  - noise_bias_correction
+  - bandpower_binning
+  - noise_bias_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ nbins32 = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -453,10 +487,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
+  - noise_bias_correction
   - harmonic_validation_binning
+  - estimator_choice
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ fine = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -480,10 +516,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
+  - noise_bias_correction
   - harmonic_validation_binning
+  - noise_bias_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ fine = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -507,10 +545,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
+  - noise_bias_correction
   - harmonic_validation_binning
+  - estimator_choice
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ fine = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -534,10 +574,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
+  - noise_bias_correction
   - harmonic_validation_binning
+  - noise_bias_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ fine = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -561,10 +603,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
+  - noise_bias_correction
   - harmonic_validation_binning
+  - estimator_choice
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ fine = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 32GB
@@ -588,10 +632,12 @@ outputs:
   decisions:
   - fiducial_catalog
   - fiducial_blind
+  - noise_bias_correction
   - harmonic_validation_binning
+  - noise_bias_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ fine = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A --out-file {output}
+      python src/workflow/scripts/generate_pseudo_cl_cov.py --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins {decisions.harmonic_validation_binning} --power 0.5 --blind A --out-file {output}
     resources:
       cpus: 12
       memory: 16GB

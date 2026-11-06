@@ -44,6 +44,12 @@ inputs:
     from: ../shapepipe_v145_rerun
 
 decisions:
+  noise_bias_correction:
+    from: ../noise_bias_correction
+  bandpower_binning:
+    from: ../bandpower_binning
+  estimator_choice:
+    from: ../estimator_choice
   leakage_correction:
     from: ../leakage_correction
   fiducial_catalog:
@@ -67,14 +73,20 @@ matrix:
     - SP_v1.4.11.3_leak_corr
   slot: [SP_v1.4.5, SP_v1.4.5_leak_corr, fiducial_counterpart, SP_v1.4.8, SP_v1.4.8_leak_corr, SP_v1.4.11.3, SP_v1.4.11.3_leak_corr, SP_v1.4.5, SP_v1.4.8, SP_v1.4.11.3]
   grid: [nbins32, nbins32, nbins32, nbins32, nbins32, nbins32, nbins32, fine, fine, fine]
+  nbins: ['32', '32', '32', '32', '32', '32', '32', '{decisions.harmonic_validation_binning}', '{decisions.harmonic_validation_binning}', '{decisions.harmonic_validation_binning}']
+  grid_decision: [bandpower_binning, bandpower_binning, bandpower_binning, bandpower_binning, bandpower_binning, bandpower_binning, bandpower_binning, harmonic_validation_binning, harmonic_validation_binning, harmonic_validation_binning]
   product: [cl, cl_cov]
+  # Only the bandpower measurement reads the estimator: calculate_pseudo_cl_eb_cov
+  # builds a map field whatever cell_method says. A template's decision list has a
+  # fixed length, so the covariance member repeats noise_bias_correction here.
+  product_decision: [estimator_choice, noise_bias_correction]
   # Per-product resource envelopes, from the fiducial single-version recipes
   # (cl_bandpowers_* 12/32GB/2h; cl_cov_reporting 12/16GB/3h), raised to cover
   # the 96-bin grid.
   mem: ["32GB", "16GB"]
   ptime: ["4h", "8h"]
 
-zip: [[product, mem, ptime], [version, slot, grid]]
+zip: [[product, product_decision, mem, ptime], [version, slot, grid, nbins, grid_decision]]
 
 template:
   id: pseudo_${product}_${slot}_${grid}
@@ -87,7 +99,7 @@ template:
     the fiducial `cl_bandpowers_*` / `cl_cov_*` outputs; same
     `generate_pseudo_${product}.py` invocation, different `--ver`.
   inputs: [selected_config, redshift_distribution, mask_power_spectrum, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, redshift_distributions_legacy]
-  decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning]
+  decisions: [fiducial_catalog, fiducial_blind, noise_bias_correction, "${grid_decision}", "${product_decision}"]
   recipe:
     # The per-version unit of work. generate_pseudo_cl.py and
     # generate_pseudo_cl_cov.py take an identical flag family, so one template
@@ -98,7 +110,7 @@ template:
       python src/workflow/scripts/generate_pseudo_${product}.py
       --ver "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version ${version} $(if [ ${grid} = fine ]; then printf -- '--fine-grid'; fi))"
       --cat-config src/cosmo_val/cat_config.yaml
-      --nside 1024 --npatch 1 --binning powspace --nbins "$(if [ ${grid} = fine ]; then printf '%s' {decisions.harmonic_validation_binning}; else printf '%s' 32; fi)" --power 0.5 --blind A
+      --nside 1024 --npatch 1 --binning powspace --nbins ${nbins} --power 0.5 --blind A
       --out-file {output}
     resources: { cpus: 12, memory: "${mem}" }
 

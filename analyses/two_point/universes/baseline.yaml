@@ -6,5 +6,4 @@ description: |
   decision: integration_grid) selection (1000 bins) for the
   integration run.
 decisions:
-  reporting_binning: bins_20
   patch_count: npatch_1

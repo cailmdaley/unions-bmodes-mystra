@@ -26,6 +26,12 @@ inputs:
     from: ../shapepipe_v145_rerun
 
 decisions:
+  integration_grid:
+    from: ../integration_grid
+  reporting_binning:
+    from: ../reporting_binning
+  patch_count:
+    from: ../patch_count
   leakage_correction:
     from: ../leakage_correction
   fiducial_catalog:
@@ -45,10 +51,11 @@ matrix:
   min_sep: [1.0, 0.5]
   max_sep: [250.0, 300.0]
   nbins: [20, 1000]
+  grid_decision: [reporting_binning, integration_grid]
 
-# grid/min_sep/max_sep/nbins are one composite axis: the two angular grids,
+# grid/min_sep/max_sep/nbins/grid_decision are one composite axis: the two angular grids,
 # not their cartesian product.
-zip: [[version, slot], [grid, min_sep, max_sep, nbins]]
+zip: [[version, slot], [grid, min_sep, max_sep, nbins, grid_decision]]
 
 template:
   id: xi_${slot}_${grid}
@@ -62,7 +69,7 @@ template:
     [xi_${grid}](#../outputs.xi_${grid}); same `run_2pcf.py`
     invocation, different `--ver`.
   inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun]
-  decisions: [fiducial_catalog]
+  decisions: [fiducial_catalog, patch_count, "${grid_decision}"]
   recipe:
     # The per-version unit of work: exactly the run_2pcf.py CLI the fiducial
     # xi_reporting / xi_integration recipes call, with --ver swept. The July

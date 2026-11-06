@@ -6,6 +6,5 @@ description: |
   at 96 √ℓ-linear bandpowers, and the production scale-cut pair
   grid (stable pairs only).
 decisions:
-  mode_count: n_max_20
   mode_subsets: n_le_6_and_n_le_20
   scale_cut_pair_grid: production_grid

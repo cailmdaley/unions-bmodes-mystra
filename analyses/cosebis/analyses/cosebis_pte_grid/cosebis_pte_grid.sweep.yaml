@@ -50,6 +50,8 @@ inputs:
     from: ../cov_integration
 
 decisions:
+  pte_definition:
+    from: ../pte_definition
   fiducial_catalog:
     from: ../fiducial_catalog
   fiducial_blind:
@@ -80,7 +82,7 @@ template:
     at its NaN initialiser. Not independently interesting — the
     science reads the assembled matrix.
   inputs: [selected_config, xi_integration, cov_integration]
-  decisions: [fiducial_catalog, fiducial_blind, scale_cut_pair_grid]
+  decisions: [fiducial_catalog, fiducial_blind, scale_cut_pair_grid, pte_definition]
   recipe:
     # Identical to the July full-grid invocation but for `--row` and `--jobs`:
     # same config, same fiducial ξ_± and Gaussian integration covariance, so a

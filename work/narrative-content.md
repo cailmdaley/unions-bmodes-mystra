@@ -101,7 +101,7 @@ narrative:
     transforms at source positions avoids the pixelization
     artefacts that map-based pseudo-Cℓ develops at the UNIONS
     footprint angular resolution, and the
-    [analytic shot-noise correction](#cl_bb.decisions.noise_bias_correction)
+    [analytic shot-noise correction](#decisions.noise_bias_correction)
     is part of that estimator choice. A
     [Fourier band-power family-mate (HybridEB; Becker & Rozo
     2016)](#prior_insights.hybrideb_filter_optimisation_alternative)
@@ -373,7 +373,7 @@ narrative:
     harmonic-space PTE composite figure that
     [null_tests](#../analyses.null_tests) gathers,
     and follows the same
-    [blind-A paper strategy](#decisions.pte_blind_strategy) as
+    [blind-A paper strategy](#../decisions.cl_pte_blind_strategy) as
     [pure_eb](#../analyses.pure_eb): paper-facing PTEs use
     blind A only, with per-blind generation reserved for the
     BB-covariance blind-independence cross-check.
@@ -558,7 +558,7 @@ narrative:
     spectrum](#inputs.mask_power_spectrum) for `_masked` runs.
     The CosmoCov C++ binary is then invoked by
     `rule covariance_cosmocov` for each of the three
-    [shear-shear block pairs](#decisions.block_pairs), producing
+    [shear-shear block pairs](#decisions.covariance_engine), producing
     [block files](#outputs.cov_blocks) `++`, `--`, `+-`
     independently (one block per Slurm task); the three
     [blocks](#outputs.cov_blocks) are concatenated by `rule
@@ -804,8 +804,8 @@ narrative:
     [Gaussian integration covariance
     ](#inputs.cov_integration_g) and applying the
     [Schneider 2022 kernels](#decisions.decomposition_method)
-    to each draw via the
-    [cosmo_numba implementation](#decisions.implementation)
+    to each draw via
+    [cosmo_numba](#../decisions.decomposition_method)
     (Guinot et al. 2026), producing
     per-chunk MC artifacts;
     `precompute_pure_eb` gathers the 20 chunks

@@ -156,13 +156,6 @@ inputs:
       Builds and renders the harmonic-space Cℓ^BB PTE matrices.
     source: "./src/papers/bmodes/scripts/harmonic_space_pte_matrices.py"
 
-  - id: print_width_script
-    type: data
-    description: |
-      Saves a figure exactly as wide as it prints, so the style's
-      font sizes are the printed ones.
-    source: "./src/workflow/scripts/print_width.py"
-
   - id: harmonic_config_cosebis_comparison_figure_script
     type: data
     description: |
@@ -215,6 +208,8 @@ outputs:
   # its own `inputs:`; aliases inherit format and recipe from the source.
   # ---------------------------------------------------------------------------
   - {id: paper_claims, from: null_tests.paper_claims}
+  - {id: bb_covariance_blind_independence_evidence, from: null_tests.bb_covariance_blind_independence_evidence}
+  - {id: tenk_grid_comparison, from: convergence.tenk_grid_comparison}
   - {id: config_space_pte_data, from: null_tests.config_space_pte_data}
   - {id: harmonic_space_pte_data, from: null_tests.harmonic_space_pte_data}
   - {id: mock_min_pte_calibration, from: glass_mocks.mock_min_pte_calibration}
@@ -347,7 +342,7 @@ outputs:
       `nu_penalized`, `chi2`, `pte`, `pte_penalized`, `pte_decrease`,
       `passes`, `passes_penalized`, `verdict_change` (the last three
       against the nominal 0.05 level).
-    decisions: [scale_cut_convention]
+    decisions: [scale_cut_convention, pte_definition]
     inputs:
       - selected_config
       - config_space_pte_data
@@ -406,7 +401,6 @@ outputs:
       - selected_config
       - config_space_pte_data
       - config_space_pte_matrices_script
-      - print_width_script
       - scale_cuts_script
       - paper_mplstyle
     recipe:
@@ -437,7 +431,6 @@ outputs:
       - selected_config
       - harmonic_space_pte_data
       - harmonic_space_pte_matrices_script
-      - print_width_script
       - paper_mplstyle
     recipe:
       # Pure render, the appendix twin of
@@ -488,7 +481,7 @@ decisions:
 
   fiducial_catalog:
     label: "Fiducial catalog variant"
-    tags: [catalog, scope, primary]
+    tags: [data_selection]
     rationale: |
       Which ShapePipe v1.4 variant the reported results rest on.
       The size-cut catalog is adopted because blinded null tests on
@@ -530,7 +523,7 @@ decisions:
 
   fiducial_cosmology:
     label: "Fiducial cosmology for covariance theory"
-    tags: [covariance, theory]
+    tags: [covariance_model]
     rationale: |
       The semi-analytical covariance needs a fixed cosmology for
       its matter power spectrum. Planck 2018 + BAO ΛCDM is the
@@ -549,7 +542,7 @@ decisions:
 
   fiducial_blind:
     label: "Fiducial blind for reported data vectors"
-    tags: [blinding, scope]
+    tags: [blinding]
     rationale: |
       Blinding acts on the source n(z): an external coordinator
       produced three variants (A, B, C), two with random shifts. The
@@ -575,7 +568,7 @@ decisions:
 
   fiducial_scale_cuts:
     label: "Scale cuts for the B-mode null tests"
-    tags: [scale_cuts, primary]
+    tags: [scale_cuts]
     rationale: |
       Which angular and multipole ranges the null tests (and Papers
       III and IV's inference) use: 12 < θ < 83 arcmin in
@@ -621,7 +614,7 @@ decisions:
 
   scale_cut_convention:
     label: "θ-cut convention"
-    tags: [scale_cuts, primary]
+    tags: [scale_cuts]
     rationale: |
       What the stated 12'–83' [configuration-space
       cut](#decisions.fiducial_scale_cuts) denotes. The null tests
@@ -650,7 +643,7 @@ decisions:
 
   integration_grid:
     label: "ξ± integration grid for B-mode filters"
-    tags: [two_point, integration, method]
+    tags: [integration]
     rationale: |
       The pure-mode and COSEBI filters are integrated against ξ±
       measured on a grid much finer than the 20 reporting bins:
@@ -672,7 +665,7 @@ decisions:
 
   pure_eb_integration_method:
     label: "Pure E/B transform quadrature"
-    tags: [pure_eb, integration, method, primary]
+    tags: [integration]
     rationale: |
       The Schneider (2022) transform, as implemented in
       `cosmo_numba`, lays a degree-5 local interpolant through the
@@ -739,7 +732,7 @@ decisions:
 
   pure_eb_rebinning_weights:
     label: "Pure-mode rebinning weights"
-    tags: [pure_eb, binning, method, primary]
+    tags: [binning]
     rationale: |
       The [averaged geometry](#decisions.pure_eb_integration_method)
       leaves the pure modes on 1000 fine nodes, which must be
@@ -787,7 +780,7 @@ decisions:
 
   pure_eb_integration_limits:
     label: "Pure-mode integration limits"
-    tags: [pure_eb, integration, method, primary]
+    tags: [integration]
     rationale: |
       The Schneider (2022) decomposition is defined on a finite
       [θ_min, θ_max]. A wide interval lets small-θ contamination
@@ -827,7 +820,7 @@ decisions:
 
   pure_eb_covariance_method:
     label: "Pure-mode covariance construction"
-    tags: [pure_eb, covariance, statistics, method, primary]
+    tags: [covariance_model]
     rationale: |
       The [fixed-quadrature estimator](#decisions.pure_eb_integration_method)
       is exactly linear in the fine ξ_± vector, ξ^{E/B/amb} =
@@ -870,7 +863,7 @@ decisions:
 
   harmonic_validation_binning:
     label: "Harmonic COSEBI bandpower count"
-    tags: [cosebis, harmonic, validation]
+    tags: [binning]
     rationale: |
       The harmonic COSEBI path sums W_n(ℓ) filters against pseudo-Cℓ
       bandpowers, so its measurement, covariance and transform must share
@@ -894,7 +887,7 @@ decisions:
 
   mc_samples:
     label: "Monte-Carlo sample count"
-    tags: [covariance, method]
+    tags: [covariance_model]
     rationale: |
       How many Gaussian draws of ξ± from the CosmoCov covariance the
       [Monte-Carlo pure-mode covariance](#decisions.pure_eb_covariance_method)
@@ -914,7 +907,7 @@ decisions:
 
   pte_definition:
     label: "PTE statistical convention"
-    tags: [statistics, reporting]
+    tags: [statistics]
     rationale: |
       Every PTE is the χ² tail probability of the measured χ² with
       ν equal to the number of data points in the range, valid for
@@ -938,7 +931,7 @@ decisions:
 
   pte_threshold:
     label: "PTE pass threshold p_thr"
-    tags: [statistics, reporting, primary]
+    tags: [statistics]
     rationale: |
       The test statistic is the minimum PTE over the six B-mode
       statistics, and p_thr is set on the systematics-free GLASS
@@ -973,7 +966,7 @@ decisions:
 
   leakage_correction:
     label: "PSF-leakage correction"
-    tags: [catalog, calibration, primary]
+    tags: [data_selection]
     rationale: |
       Each catalog variant exists with and without Paper I's
       object-wise PSF-leakage correction (binned regression in S/N
@@ -990,6 +983,179 @@ decisions:
         label: "Uncorrected"
         description: |
           Raw ShapePipe ellipticities; used for cross-checks only.
+
+  bandpower_binning:
+    label: "Bandpower binning scheme"
+    tags: [binning]
+    rationale: |
+      The Cℓ^BB null tests use Paper IV's data-vector binning:
+      32 square-root-spaced bandpowers (ℓ^0.5) over
+      8 ≤ ℓ ≤ 2048, the scheme Paper IV adopts from DES Y3.
+      Square-root spacing sits between linear binning, which
+      spends most bandpowers at high ℓ, and logarithmic binning,
+      which spends most at low ℓ. The
+      [harmonic-space COSEBIs](#analyses.cosebis) use 96
+      bandpowers in the same scheme, fine enough to resolve the
+      W_n(ℓ) filter oscillations.
+    default: bandpowers_32_powspace
+    options:
+      bandpowers_32_powspace:
+        label: "32 √ℓ-spaced over 8 ≤ ℓ ≤ 2048 (fiducial)"
+      bandpowers_96_powspace:
+        excluded: true
+        excluded_reason: "Evaluated for the harmonic COSEBI transform, not the BB null test; external BB mock products have 32 bands."
+        label: "96 √ℓ-spaced over 8 ≤ ℓ ≤ 2048 (COSEBI transform)"
+        description: |
+          Fine grid for the harmonic-space COSEBIs; not used by
+          the Cℓ^BB null test.
+      bandpowers_16_powspace:
+        excluded: true
+        excluded_reason: "The external BB mock spectra and covariance are fixed at 32 bands."
+        label: "16 √ℓ-spaced"
+        description: |
+          Coarser bandpowers, departing from Paper IV's data
+          vector.
+      bandpowers_64_powspace:
+        excluded: true
+        excluded_reason: "The external BB mock spectra and covariance are fixed at 32 bands."
+        label: "64 √ℓ-spaced"
+        description: |
+          Finer bandpowers, departing from Paper IV's data
+          vector.
+
+  noise_bias_correction:
+    label: "Shot-noise / noise-bias correction"
+    tags: [estimator]
+    rationale: |
+      Shape noise biases pseudo-Cℓ auto-spectra by an amount
+      that scales with the inverse galaxy density. The paper
+      subtracts an analytic shot-noise contribution following
+      Paper IV's implementation of the catalog-based estimator,
+      which Wolz et al. (2025) show is unbiased against noise
+      uncorrelated between sources. A Monte-Carlo estimate is
+      the standard alternative for map-based pipelines.
+    default: analytic_shot_noise
+    options:
+      analytic_shot_noise:
+        label: "Analytic shot-noise subtraction (as in Paper IV; fiducial)"
+        insights: [wolz25_catalog_based_pseudo_cl]
+      mc_noise_bias:
+        excluded: true
+        excluded_reason: "The package's random-rotation iNKA covariance path is broken; no matching external mock covariance exists."
+        label: "Monte-Carlo noise-bias estimator"
+        description: |
+          Subtracts the mean Cℓ of ellipticity-randomised
+          realisations.
+
+  cl_pte_blind_strategy:
+    label: "Per-blind PTE evaluation strategy"
+    tags: [blinding]
+    rationale: |
+      The reported Cℓ^BB PTEs use blind-A data vectors and the
+      blind-A bandpower covariance, as for
+      [the pure-mode PTEs](#analyses.pure_eb). A side check in
+      [null_tests](#analyses.null_tests) compares covariances
+      across the three blinds and finds the B-mode covariances
+      closer to blind-independent than the E-mode ones.
+    default: blind_a_for_paper
+    options:
+      blind_a_for_paper:
+        label: "Blind A for the reported PTEs (fiducial)"
+      all_blinds_for_paper:
+        excluded: true
+        excluded_reason: "The paper reports blind A; independence is tested by null_tests.bb_covariance_blind_independence_evidence."
+        label: "All three blinds in the reported PTEs"
+        description: |
+          Would triple the PTE table without adding B-mode
+          information, given the blind-independence check.
+
+  reporting_binning:
+    label: "Reporting-grid angular binning"
+    tags: [binning]
+    rationale: |
+      20 logarithmic bins over [1', 250'] match the
+      configuration-space data vector of Paper III. The bin edges
+      define the
+      [adopted scale cuts](#decisions.fiducial_scale_cuts):
+      the fiducial 12'–83' window spans edges 9 to 16 of
+      `geomspace(1, 250, 21)`.
+    default: bins_20
+    options:
+      bins_20:
+        label: "20 log bins over [1', 250'] (fiducial)"
+        description: |
+          The binning of the paper and of Paper III.
+      bins_40:
+        excluded: true
+        excluded_reason: "External mock reporting measurements and their matched covariance are fixed at 20 bins."
+        label: "40 log bins over [1', 250']"
+        description: |
+          Finer reporting grid for sensitivity studies; not used
+          in the paper.
+
+  decomposition_method:
+    label: "Pure-mode integral-transform construction"
+    tags: [estimator]
+    rationale: |
+      Schneider et al. (2022) decompose ξ_±(θ) on a finite
+      [θ_min, θ_max] into pure E, pure B and ambiguous components
+      by integral transforms of the measured ξ_±, with boundary
+      functions S_±(θ) and V_±(θ) absorbing the ambiguous-mode
+      polynomials a + b θ², c θ⁻² + d θ⁻⁴. Reconstructing the pure
+      modes from COSEBI coefficients is mathematically equivalent
+      but needs the same angular range for ξ_+ and ξ_-; the direct
+      transform lets each carry its own scale cuts, so it is used.
+      The transform runs through `cosmo_numba` (Guinot et al. 2026,
+      <https://github.com/aguinot/cosmo-numba>), a JIT implementation of
+      the Schneider et al. (2022) kernels covering the boundary functions
+      S_± and V_± and the integral kernels on the 1000-bin grid. It is the
+      only production implementation maintained alongside `sp_validation`.
+    default: schneider22_integral_transform
+    options:
+      schneider22_integral_transform:
+        label: "Schneider et al. 2022 integral transform (fiducial)"
+        insights: [pure_mode_decomposition_unique_on_finite_interval, schneider22_pure_modes_direct_from_xi, guinot26_cosmo_numba_precision]
+      cosebi_reconstruction:
+        label: "COSEBI-coefficient reconstruction"
+        excluded: true
+        excluded_reason: "Paper II implements the direct Schneider (2022) transform; reconstructing ξ E/B from COSEBI coefficients has no implementation."
+        description: |
+          Equivalent on a shared [θ_min, θ_max], but does not
+          allow independent ξ_+ / ξ_- scale cuts.
+
+  mode_count:
+    label: "Number of COSEBI modes computed"
+    tags: [estimator]
+    rationale: |
+      The cosmological E-mode amplitude saturates by n ≈ 5–6, but
+      systematics need not, so n_max = 20 is conservative for
+      information and matches the mode count used to test COSEBI
+      B modes for systematics. The filter roots are computed at
+      120-digit precision, so numerics do not set the limit. Fewer
+      modes would lose the high-n end of the full-range
+      [COSEBI failure signature](#findings.ccd_scale_cosebi_pattern).
+      The [convergence test](#analyses.convergence) covers every
+      mode the COSEBI analysis reports, so it takes the same n_max.
+    default: n_max_20
+    options:
+      n_max_20:
+        label: "20 modes (fiducial)"
+        insights: [asgari19a_cosebis_nmax20_for_systematics]
+      n_max_15:
+        excluded: true
+        excluded_reason: "The data/mocks PTE and calibration schema implements n≤6 and n≤20, not a 15-mode test family."
+        label: "15 modes"
+        description: |
+          Drops the high-n modes where the full-range
+          repeating-additive signature is most visible.
+      n_max_30:
+        label: "30 modes"
+        description: |
+          Not computed.
+        excluded: true
+        excluded_reason: |
+          Beyond the n ≤ 20 used for B-mode systematics tests; adds
+          noise-dominated degrees of freedom.
 
 # -----------------------------------------------------------------------------
 # Findings — claims derived from this analysis's own measurements. Each is
@@ -1161,6 +1327,86 @@ findings:
 # as small and fragmented as UNIONS.
 # -----------------------------------------------------------------------------
 prior_insights:
+  asgari19a_cosebis_nmax20_for_systematics:
+    id: asgari19a_cosebis_nmax20_for_systematics
+    claim: |
+      COSEBI E-mode predictions vanish beyond the first ~7 modes, so
+      high modes carry no cosmological information, but systematic
+      signals need not follow that behaviour and can be significant
+      at large n. Truncating at n = 20 covers both the cosmological
+      and the systematic-diagnostic range.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "Therefore, we do not expect to gain any cosmological information from these modes."
+        location:
+          page: 7
+      - id: ev2
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "On the other hand the signal from systematic effects does not necessarily follow the same behaviour."
+        location:
+          page: 7
+      - id: ev3
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "which encompasses modes that are important for both cosmological and systematic analyses."
+        location:
+          page: 7
+    scope: |
+      COSEBI B-mode analysis of KiDS-450, DES-SV and CFHTLenS
+      (Asgari et al. 2019a, §4); same n_max = 20 as Paper II.
+
+  schneider22_pure_modes_direct_from_xi:
+    id: schneider22_pure_modes_direct_from_xi
+    claim: |
+      Pure-mode correlation functions and COSEBIs carry the same
+      information, but the pure modes can be computed directly from
+      ξ_± without the (infinite) COSEBI set; in practice the
+      equivalence is only approximate, because of the finite number
+      of COSEBI modes and the finite ξ_± binning.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/202142450"
+        quote:
+          exact: "However, as we show here, they can also be obtained without first calculating the (infinite) set of COSEBIs."
+        location:
+          page: 6
+      - id: ev2
+        doi: "10.1051/0004-6361/202142450"
+        quote:
+          exact: "In practice, this exact equivalence will apply only approximately, due to the finite number of COSEBI modes and the finite binning of the correlation functions"
+        location:
+          page: 6
+    scope: "Schneider, Asgari, Heydenreich & Joachimi 2022, A&A 664, A77 — §3.3–3.4."
+
+  guinot26_cosmo_numba_precision:
+    id: guinot26_cosmo_numba_precision
+    claim: |
+      `cosmo-numba` computes COSEBIs, whose weight functions need
+      ~80-digit precision (float64 is not sufficient; at that
+      precision it reproduces the original implementation exactly),
+      and the Schneider et al. 2022 pure-mode correlation functions,
+      which are less numerically demanding but need a fast implementation.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.48550/arXiv.2603.18419"
+        quote:
+          exact: "We can see that classic float64 precision would not be sufficient, and with a precision of 80 our code exactly recovers the results from the original implementation."
+        location:
+          page: 3
+      - id: ev2
+        doi: "10.48550/arXiv.2603.18419"
+        quote:
+          exact: "Those integrals are less numerically challenging than the COSEBIs, but having a fast computation is necessary for their integration in an inference pipeline."
+        location:
+          page: 2
+    scope: "Guinot et al. 2026, arXiv 2603.18419 — software paper by a Paper II co-author."
+
 
   hartlap07_correction:
     id: hartlap07_correction

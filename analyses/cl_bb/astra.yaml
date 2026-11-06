@@ -37,9 +37,6 @@ inputs:
   - id: paper_mplstyle
     from: ../paper_mplstyle
 
-  - id: print_width_script
-    from: ../print_width_script
-
   - id: cl_version_comparison_script
     from: ../cl_version_comparison_script
 
@@ -54,7 +51,7 @@ outputs:
       They are the data vector of the
       [Cℓ figure](#../outputs.fig_cl_fiducial).
     format: fits
-    decisions: [fiducial_catalog, fiducial_blind]
+    decisions: [fiducial_catalog, fiducial_blind, estimator_choice, bandpower_binning, noise_bias_correction]
     inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distribution, mask_power_spectrum]
     recipe:
       # lc owns the container; bare `python`, scripts read from the vendored
@@ -77,7 +74,7 @@ outputs:
       the [harmonic-space COSEBI
       transform](#../cosebis.decisions.harmonic_validation_binning).
     format: fits
-    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, estimator_choice, noise_bias_correction]
     inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distribution, mask_power_spectrum]
     recipe:
       # Same generate_pseudo_cl.py CLI as cl_bandpowers_reporting, 96-bandpower
@@ -114,8 +111,8 @@ outputs:
       B-mode contamination is not strongly correlated with the
       lensing signal.
     format: png
-    decisions: [fiducial_catalog]
-    inputs: [selected_config, cl_bandpowers_reporting, cl_cov_reporting, paper_mplstyle, print_width_script]
+    decisions: [fiducial_catalog, pte_definition]
+    inputs: [selected_config, cl_bandpowers_reporting, cl_cov_reporting, paper_mplstyle]
     recipe:
       # cl_data_vector.py CLI renders the Cℓ data-vector figure (fiducial) from the
       # fiducial data vector and its bandpower covariance, the two declared
@@ -141,7 +138,8 @@ outputs:
       catalog passes all statistics at the fiducial scale cuts
       ([PTE table](#../outputs.pte_table_appendix)).
     format: png
-    inputs: [selected_config, cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, paper_mplstyle, print_width_script, cl_version_comparison_script]
+    inputs: [selected_config, cl_sweep, cl_bandpowers_reporting, cl_cov_reporting, paper_mplstyle, cl_version_comparison_script]
+    decisions: [pte_definition]
     recipe:
       # cl_version_comparison.py CLI overlays Cℓ^BB / Cℓ^EB across the 4
       # leak-corrected catalogs, writing the single PNG to {output}. Per-version
@@ -172,6 +170,7 @@ outputs:
       shows.
     format: npz
     inputs: [selected_config, cl_sweep, cl_bandpowers_reporting, cl_cov_reporting]
+    decisions: [cl_pte_blind_strategy, pte_definition]
     recipe:
       # harmonic_space_pte_matrices.py CLI, run in its PTE-matrix mode: the single
       # .npz of per-version Cℓ^BB PTE grids is written to {output}. The heatmap
@@ -191,6 +190,8 @@ outputs:
       resources: { cpus: 2, memory: "8GB" }
 
 decisions:
+  pte_definition:
+    from: ../pte_definition
   leakage_correction:
     from: ../leakage_correction
 
@@ -205,7 +206,7 @@ decisions:
 
   estimator_choice:
     label: "Pseudo-Cℓ estimator"
-    tags: [cl_bb, method, primary]
+    tags: [estimator]
     rationale: |
       The Wolz et al. (2025) catalog-based estimator evaluates
       spin-2 spherical-harmonic transforms directly at source
@@ -235,89 +236,13 @@ decisions:
           the pixel scale.
 
   bandpower_binning:
-    label: "Bandpower binning scheme"
-    tags: [cl_bb, binning, primary]
-    rationale: |
-      The Cℓ^BB null tests use Paper IV's data-vector binning:
-      32 square-root-spaced bandpowers (ℓ^0.5) over
-      8 ≤ ℓ ≤ 2048, the scheme Paper IV adopts from DES Y3.
-      Square-root spacing sits between linear binning, which
-      spends most bandpowers at high ℓ, and logarithmic binning,
-      which spends most at low ℓ. The
-      [harmonic-space COSEBIs](#../analyses.cosebis) use 96
-      bandpowers in the same scheme, fine enough to resolve the
-      W_n(ℓ) filter oscillations.
-    default: bandpowers_32_powspace
-    options:
-      bandpowers_32_powspace:
-        label: "32 √ℓ-spaced over 8 ≤ ℓ ≤ 2048 (fiducial)"
-      bandpowers_96_powspace:
-        excluded: true
-        excluded_reason: "Evaluated for the harmonic COSEBI transform, not the BB null test; external BB mock products have 32 bands."
-        label: "96 √ℓ-spaced over 8 ≤ ℓ ≤ 2048 (COSEBI transform)"
-        description: |
-          Fine grid for the harmonic-space COSEBIs; not used by
-          the Cℓ^BB null test.
-      bandpowers_16_powspace:
-        excluded: true
-        excluded_reason: "The external BB mock spectra and covariance are fixed at 32 bands."
-        label: "16 √ℓ-spaced"
-        description: |
-          Coarser bandpowers, departing from Paper IV's data
-          vector.
-      bandpowers_64_powspace:
-        excluded: true
-        excluded_reason: "The external BB mock spectra and covariance are fixed at 32 bands."
-        label: "64 √ℓ-spaced"
-        description: |
-          Finer bandpowers, departing from Paper IV's data
-          vector.
+    from: ../bandpower_binning
 
   noise_bias_correction:
-    label: "Shot-noise / noise-bias correction"
-    tags: [cl_bb, calibration]
-    rationale: |
-      Shape noise biases pseudo-Cℓ auto-spectra by an amount
-      that scales with the inverse galaxy density. The paper
-      subtracts an analytic shot-noise contribution following
-      Paper IV's implementation of the catalog-based estimator,
-      which Wolz et al. (2025) show is unbiased against noise
-      uncorrelated between sources. A Monte-Carlo estimate is
-      the standard alternative for map-based pipelines.
-    default: analytic_shot_noise
-    options:
-      analytic_shot_noise:
-        label: "Analytic shot-noise subtraction (as in Paper IV; fiducial)"
-        insights: [wolz25_catalog_based_pseudo_cl]
-      mc_noise_bias:
-        excluded: true
-        excluded_reason: "The package's random-rotation iNKA covariance path is broken; no matching external mock covariance exists."
-        label: "Monte-Carlo noise-bias estimator"
-        description: |
-          Subtracts the mean Cℓ of ellipticity-randomised
-          realisations.
+    from: ../noise_bias_correction
 
-  pte_blind_strategy:
-    label: "Per-blind PTE evaluation strategy"
-    tags: [cl_bb, blinding, validation]
-    rationale: |
-      The reported Cℓ^BB PTEs use blind-A data vectors and the
-      blind-A bandpower covariance, as for
-      [the pure-mode PTEs](#../analyses.pure_eb). A side check in
-      [null_tests](#../analyses.null_tests) compares covariances
-      across the three blinds and finds the B-mode covariances
-      closer to blind-independent than the E-mode ones.
-    default: blind_a_for_paper
-    options:
-      blind_a_for_paper:
-        label: "Blind A for the reported PTEs (fiducial)"
-      all_blinds_for_paper:
-        excluded: true
-        excluded_reason: "The paper reports blind A; independence is tested by null_tests.bb_covariance_blind_independence_evidence."
-        label: "All three blinds in the reported PTEs"
-        description: |
-          Would triple the PTE table without adding B-mode
-          information, given the blind-independence check.
+  cl_pte_blind_strategy:
+    from: ../cl_pte_blind_strategy
 
 prior_insights:
 

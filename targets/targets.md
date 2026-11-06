@@ -217,7 +217,7 @@ Where each target above is represented in the spec. Use this to verify that a ro
 | Galaxy size cut threshold r_h,gal/r_h,psf > 0.707 | `decisions.fiducial_catalog.options.size_cut.description` (root) — encodes the threshold; carried by Paper I rather than re-derived here. |
 | Stellar masking (r<12, 12<r<18) | `decisions.fiducial_catalog.options.masked.description`. Out of scope for fiducial spec since `masked` is not the default. |
 | Angular range (fiducial ξ±) 12–83 arcmin | `decisions.fiducial_scale_cuts.options.adopted` (root). |
-| Angular bins = 20 (logarithmic reporting) | `analyses.two_point.decisions.reporting_binning` — captures both bin count and log spacing. |
+| Angular bins = 20 (logarithmic reporting) | `decisions.reporting_binning` — captures both bin count and log spacing. |
 | Integration grid 0.5–300 arcmin / 1000 bins | `decisions.integration_grid.options.bins_1000` (root); see `implementation-notes.md` for the paper's "0.5–500" prose discrepancy (operational parity with code is 300). |
 | Multipole range 300 < ℓ < 1600 | `decisions.fiducial_scale_cuts.options.adopted` (root) — carries both θ and ℓ bounds. |
 | Full multipole range 8 ≤ ℓ ≤ 2048 | Implicit in the harmonic full-range PTE row of `outputs.pte_table_results`; `analyses.cl_bb` describes the production pseudo-Cℓ binning. Not surfaced as its own decision. |

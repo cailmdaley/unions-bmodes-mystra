@@ -31,6 +31,12 @@ decisions:
   mc_samples: n_2000
   pte_definition: chi2_tail
   fiducial_cosmology: planck18
+  bandpower_binning: bandpowers_32_powspace
+  noise_bias_correction: analytic_shot_noise
+  cl_pte_blind_strategy: blind_a_for_paper
+  reporting_binning: bins_20
+  decomposition_method: schneider22_integral_transform
+  mode_count: n_max_20
 
 analyses:
   catalog:

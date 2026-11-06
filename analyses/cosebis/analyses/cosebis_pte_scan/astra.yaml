@@ -43,6 +43,8 @@ inputs:
 - id: cov_sweep
   from: ../cov_sweep
 decisions:
+  pte_definition:
+    from: ../pte_definition
   leakage_correction:
     from: ../leakage_correction
   fiducial_catalog:
@@ -70,6 +72,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -111,6 +114,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -152,6 +156,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -193,6 +198,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -234,6 +240,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -275,6 +282,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed
@@ -316,6 +324,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       # lc runs recipes as `bash -c` with no `set -e`, so without this a failed

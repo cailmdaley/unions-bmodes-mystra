@@ -6,6 +6,4 @@ description: |
   version, blind, and the covariance construction are aliased
   from the root.
 decisions:
-  decomposition_method: schneider22_integral_transform
-  implementation: cosmo_numba
   pte_blind_strategy: blind_a_only_for_paper

@@ -27,7 +27,7 @@ outputs:
       bins over [1', 250'].
     format: txt
     inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun]
-    decisions: [fiducial_catalog]
+    decisions: [fiducial_catalog, reporting_binning, patch_count]
     recipe:
       # lc owns the container and the environment; the recipe is a bare python
       # call against the vendored src/ scripts. --ver is the cat_config version
@@ -49,7 +49,7 @@ outputs:
       zero padding.
     format: txt
     inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun]
-    decisions: [fiducial_catalog, integration_grid]
+    decisions: [fiducial_catalog, integration_grid, patch_count]
     recipe:
       # Same run_2pcf.py CLI as xi_reporting, integration grid: 1000 bins
       # over [0.5', 300']. See xi_reporting for the recipe-form rationale.
@@ -110,32 +110,11 @@ decisions:
     from: ../integration_grid
 
   reporting_binning:
-    label: "Reporting-grid angular binning"
-    tags: [two_point, binning]
-    rationale: |
-      20 logarithmic bins over [1', 250'] match the
-      configuration-space data vector of Paper III. The bin edges
-      define the
-      [adopted scale cuts](#../decisions.fiducial_scale_cuts):
-      the fiducial 12'–83' window spans edges 9 to 16 of
-      `geomspace(1, 250, 21)`.
-    default: bins_20
-    options:
-      bins_20:
-        label: "20 log bins over [1', 250'] (fiducial)"
-        description: |
-          The binning of the paper and of Paper III.
-      bins_40:
-        excluded: true
-        excluded_reason: "External mock reporting measurements and their matched covariance are fixed at 20 bins."
-        label: "40 log bins over [1', 250']"
-        description: |
-          Finer reporting grid for sensitivity studies; not used
-          in the paper.
+    from: ../reporting_binning
 
   patch_count:
     label: "TreeCorr patch decomposition"
-    tags: [two_point, covariance]
+    tags: [covariance_model]
     rationale: |
       Patches only serve a jackknife covariance. The
       [covariance sub-analysis](#../analyses.covariance) is

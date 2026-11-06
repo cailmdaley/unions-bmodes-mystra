@@ -255,7 +255,7 @@ outputs:
       into the same ensemble layout as
       [mock_xi_fine](#outputs.mock_xi_fine).
     inputs: [glass_mock_xi_reporting]
-    decisions: [mock_suite]
+    decisions: [mock_suite, reporting_binning]
     recipe:
       command: >
         python src/workflow/scripts/mock_xi_ensemble.py
@@ -318,7 +318,7 @@ outputs:
       truncated at 300' to match the fiducial CosmoCov integration
       grid.
     inputs: [mock_xi_fine, mock_xi_reporting]
-    decisions: [mock_suite, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits]
+    decisions: [mock_suite, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, decomposition_method]
     recipe:
       command: >
         python src/workflow/scripts/mock_pure_eb_scatter.py
@@ -357,7 +357,7 @@ outputs:
       [reference_covariance](#decisions.reference_covariance) is
       `mockmatched`.
     inputs: [selected_config, cov_integration_mockmatched, xi_reporting, xi_integration, redshift_distributions]
-    decisions: [fiducial_catalog, fiducial_blind, mc_samples, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method]
+    decisions: [fiducial_catalog, fiducial_blind, mc_samples, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, decomposition_method]
     recipe:
       # mock_matched_pure_eb_cov.py is precompute_pure_eb_chunk + gather in one
       # deterministic invocation, on the twin's own partition: 20 batches x 100
@@ -414,7 +414,7 @@ outputs:
       masks, and the covariance triple, scale cuts and any skipped
       realisations. Every campaign number derives from this file.
     inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, mock_xi_fine, glass_mock_cl, xi_integration, cov_integration, pure_eb_semianalytic_data, cl_cov_reporting, cov_integration_mockmatched, pure_cov_mockmatched, cl_cov_mockmatched]
-    decisions: [reference_covariance, mock_suite, scale_cut_convention, fiducial_catalog, fiducial_blind]
+    decisions: [reference_covariance, mock_suite, scale_cut_convention, fiducial_catalog, fiducial_blind, pte_definition]
     recipe:
       # --reference-covariance picks the covariance triple; under `mockmatched`
       # the C_l^BB reference is the directly computed mock covariance rather
@@ -538,7 +538,7 @@ outputs:
       over one reporting bin (median mock B_{n≤20} PTE 0.13 there,
       against ~0.45 on every window of two bins or more).
     inputs: [mock_per_mock_statistics, mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration, pure_eb_semianalytic_data, cov_integration_mockmatched, pure_cov_mockmatched, min_pte_window_scan_script]
-    decisions: [reference_covariance, mock_suite]
+    decisions: [reference_covariance, mock_suite, pte_definition]
     recipe:
       # --reference-covariance selects the pair, exactly as it does for
       # mock_per_mock_statistics. There is no C_l member: the harmonic PTEs
@@ -784,7 +784,7 @@ outputs:
       a small-scale residual the cut excludes, so ξ_+^B reads PTE 0.004
       on the full range and 0.13 inside the cut.
     inputs: [selected_config, mock_per_mock_statistics, scale_cuts_script]
-    decisions: [reference_covariance, scale_cut_convention]
+    decisions: [reference_covariance, scale_cut_convention, pte_definition]
     recipe:
       command: >
         python src/workflow/scripts/mock_mean_vector_plot.py
@@ -860,6 +860,12 @@ outputs:
       resources: { cpus: 1, memory: "4GB" }
 
 decisions:
+  pte_definition:
+    from: ../pte_definition
+  decomposition_method:
+    from: ../decomposition_method
+  reporting_binning:
+    from: ../reporting_binning
 
   fiducial_catalog:
     from: ../fiducial_catalog
@@ -890,7 +896,7 @@ decisions:
 
   reference_covariance:
     label: "Analytic covariance the mock scatter is compared against"
-    tags: [glass, covariance]
+    tags: [covariance_model]
     rationale: |
       Which analytic covariance the mocks' empirical scatter is held
       against. The realisations carry 17% more galaxies than the data
@@ -954,7 +960,7 @@ decisions:
 
   mock_suite:
     label: "GLASS realisation suite"
-    tags: [glass]
+    tags: [covariance_model]
     rationale: |
       Which suite of 350 GLASS lognormal realisations to validate on.
       The v1.4.6.3_v2 suite is generated on the fiducial catalog's

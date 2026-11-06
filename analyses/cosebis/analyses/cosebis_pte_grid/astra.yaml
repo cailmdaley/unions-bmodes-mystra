@@ -58,6 +58,8 @@ inputs:
 - id: cov_integration
   from: ../cov_integration
 decisions:
+  pte_definition:
+    from: ../pte_definition
   fiducial_catalog:
     from: ../fiducial_catalog
   fiducial_blind:
@@ -84,6 +86,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 00 --out-file {output}
@@ -110,6 +113,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 01 --out-file {output}
@@ -136,6 +140,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 02 --out-file {output}
@@ -162,6 +167,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 03 --out-file {output}
@@ -188,6 +194,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 04 --out-file {output}
@@ -214,6 +221,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 05 --out-file {output}
@@ -240,6 +248,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 06 --out-file {output}
@@ -266,6 +275,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 07 --out-file {output}
@@ -292,6 +302,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 08 --out-file {output}
@@ -318,6 +329,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 09 --out-file {output}
@@ -344,6 +356,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 10 --out-file {output}
@@ -370,6 +383,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 11 --out-file {output}
@@ -396,6 +410,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 12 --out-file {output}
@@ -422,6 +437,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 13 --out-file {output}
@@ -448,6 +464,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 14 --out-file {output}
@@ -474,6 +491,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 15 --out-file {output}
@@ -500,6 +518,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 16 --out-file {output}
@@ -526,6 +545,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 17 --out-file {output}
@@ -552,6 +572,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 18 --out-file {output}
@@ -578,6 +599,7 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - scale_cut_pair_grid
+  - pte_definition
   recipe:
     command: |
       python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --config {inputs.selected_config} --xi-integration {inputs.xi_integration} --cov-integration {inputs.cov_integration} --row 19 --out-file {output}

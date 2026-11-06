@@ -39,9 +39,6 @@ inputs:
   - id: paper_mplstyle
     from: ../paper_mplstyle
 
-  - id: print_width_script
-    from: ../print_width_script
-
   - id: cosebis_version_comparison_script
     from: ../cosebis_version_comparison_script
 
@@ -74,7 +71,7 @@ outputs:
       cuts, with the mode covariance T^T C_ξ T and the σ_n that
       normalise B_n / σ_n in the
       [COSEBI data-vector figure](#../outputs.fig_cosebis_fiducial).
-    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention]
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, pte_definition]
     inputs: [selected_config, xi_integration, cov_integration]
     recipe:
       command: >
@@ -97,7 +94,7 @@ outputs:
       (open diamonds). Modes n > 6 are shaded; the n ≤ 6 subset captures
       nearly all cosmological information.
     decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention]
-    inputs: [selected_config, cosebis_modes_data, paper_mplstyle, print_width_script]
+    inputs: [selected_config, cosebis_modes_data, paper_mplstyle]
     recipe:
       # Plot-only pass of the same CLI.
       command: >
@@ -144,8 +141,8 @@ outputs:
       full range (upper) and fiducial cuts (lower). Only the size-cut
       catalog passes all statistics at the fiducial scale cuts ([PTE
       table](#../outputs.pte_table_appendix)).
-    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention]
-    inputs: [selected_config, xi_sweep, cov_sweep, xi_integration, cov_integration, paper_mplstyle, print_width_script, cosebis_version_comparison_script]
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, pte_definition]
+    inputs: [selected_config, xi_sweep, cov_sweep, xi_integration, cov_integration, paper_mplstyle, cosebis_version_comparison_script]
     recipe:
       # The plotter recomputes COSEBIs per version from the unpacked xi and
       # covariance sweep bundles, found by canonical filename.
@@ -178,7 +175,7 @@ outputs:
       [harmonic/configuration cross-check figure](#../outputs.fig_harmonic_config_cosebis_full);
       PTEs are in
       [cosebis_harmonic_metrics](#outputs.cosebis_harmonic_metrics).
-    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition]
     inputs: [selected_config, cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration]
     recipe:
       command: >
@@ -226,7 +223,7 @@ outputs:
       [full-range cross-check figure](#../outputs.fig_harmonic_config_cosebis_full);
       PTEs are in
       [cosebis_harmonic_metrics_full](#outputs.cosebis_harmonic_metrics_full).
-    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition]
     inputs: [selected_config, cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration]
     recipe:
       # Same CLI as cosebis_harmonic_modes, --angular-range full instead of
@@ -278,6 +275,8 @@ outputs:
     from: cosebis_harmonic_scan.cosebis_harmonic_version_ptes
 
 decisions:
+  pte_definition:
+    from: ../pte_definition
   leakage_correction:
     from: ../leakage_correction
 
@@ -294,40 +293,11 @@ decisions:
     from: ../scale_cut_convention
 
   mode_count:
-    label: "Number of COSEBI modes computed"
-    tags: [cosebis, modes]
-    rationale: |
-      The cosmological E-mode amplitude saturates by n ≈ 5–6, but
-      systematics need not, so n_max = 20 is conservative for
-      information and matches the mode count used to test COSEBI
-      B modes for systematics. The filter roots are computed at
-      120-digit precision, so numerics do not set the limit. Fewer
-      modes would lose the high-n end of the full-range
-      [COSEBI failure signature](#../findings.ccd_scale_cosebi_pattern).
-    default: n_max_20
-    options:
-      n_max_20:
-        label: "20 modes (fiducial)"
-        insights: [asgari19a_cosebis_nmax20_for_systematics]
-      n_max_15:
-        excluded: true
-        excluded_reason: "The data/mocks PTE and calibration schema implements n≤6 and n≤20, not a 15-mode test family."
-        label: "15 modes"
-        description: |
-          Drops the high-n modes where the full-range
-          repeating-additive signature is most visible.
-      n_max_30:
-        label: "30 modes"
-        description: |
-          Not computed.
-        excluded: true
-        excluded_reason: |
-          Beyond the n ≤ 20 used for B-mode systematics tests; adds
-          noise-dominated degrees of freedom.
+    from: ../mode_count
 
   mode_subsets:
     label: "PTE-reported mode subsets"
-    tags: [cosebis, statistics, primary]
+    tags: [estimator]
     rationale: |
       n ≤ 6 is the cosmologically informative range, where the
       E-mode amplitude has saturated; n ≤ 20 tests the B modes over
@@ -357,7 +327,7 @@ decisions:
 
   scale_cut_pair_grid:
     label: "COSEBI PTE scale-cut grid"
-    tags: [cosebis, scale_cuts, statistics]
+    tags: [scale_cuts]
     rationale: |
       The COSEBI PTE matrix is evaluated on every [i_min, i_max] pair
       of edges of the 20-bin `geomspace(1', 250', 21)` reporting

@@ -63,7 +63,7 @@ outputs:
       pair-count correction, so no unused spectrum is passed here.
       Together they give the non-Gaussian share of the ξ_±
       diagonal variance quoted in the paper.
-    decisions: [fiducial_catalog, fiducial_blind]
+    decisions: [fiducial_catalog, fiducial_blind, covariance_engine, reporting_binning]
     inputs: [selected_config, cosmology_snapshot, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
     format: txt
     recipe:
@@ -93,7 +93,7 @@ outputs:
       It sets the non-Gaussian share of the diagonal variance
       quoted in the paper but does not enter the PTEs, which use
       the [selected integration covariance](#decisions.covariance_class).
-    decisions: [fiducial_catalog, fiducial_blind, mask_application]
+    decisions: [fiducial_catalog, fiducial_blind, mask_application, covariance_engine, reporting_binning]
     inputs: [selected_config, cosmology_snapshot, mask_power_spectrum, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
     format: txt
     recipe:
@@ -127,7 +127,7 @@ outputs:
       COSEBI covariances derive from it by a linear transform;
       pure-mode covariances use a linear transform or
       [MC realisations](#../decisions.mc_samples).
-    decisions: [fiducial_catalog, fiducial_blind, covariance_class]
+    decisions: [fiducial_catalog, fiducial_blind, covariance_class, covariance_engine, integration_grid]
     inputs: [selected_config, cosmology_snapshot, redshift_distribution, redshift_distributions, cosmocov_binary, cosmocov_libgsl]
     format: txt
     recipe:
@@ -156,7 +156,7 @@ outputs:
       32-bandpower √ℓ-spaced grid of
       [cl_bb's data vector](#../analyses.cl_bb) — the covariance
       Paper IV uses for its BB / EB null tests.
-    decisions: [fiducial_catalog, fiducial_blind]
+    decisions: [fiducial_catalog, fiducial_blind, bandpower_binning, noise_bias_correction]
     inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script]
     format: fits
     recipe:
@@ -181,7 +181,7 @@ outputs:
       for the harmonic-space COSEBI transform. The other three
       leak-corrected catalogs' counterparts come from the
       [cl_scan sweep](#../cl_bb.analyses.cl_scan).
-    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, noise_bias_correction]
     inputs: [selected_config, shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions, pseudo_cl_cov_script]
     format: fits
     recipe:
@@ -205,6 +205,14 @@ outputs:
     from: cov_scan.cov_sweep_bundle
 
 decisions:
+  integration_grid:
+    from: ../integration_grid
+  reporting_binning:
+    from: ../reporting_binning
+  noise_bias_correction:
+    from: ../noise_bias_correction
+  bandpower_binning:
+    from: ../bandpower_binning
   fiducial_cosmology:
     from: ../fiducial_cosmology
   leakage_correction:
@@ -221,7 +229,7 @@ decisions:
 
   covariance_engine:
     label: "Semi-analytical covariance engine"
-    tags: [covariance, method]
+    tags: [covariance_model]
     rationale: |
       Each B-mode statistic starts from the covariance
       prescription of its companion cosmology paper. For ξ_±
@@ -232,7 +240,10 @@ decisions:
       without simulations. For Cℓ^BB and Cℓ^EB it is NaMaster's
       iNKA Gaussian covariance, as in Paper IV's B-mode null
       tests. The GLASS mocks validate both rather than replace
-      them.
+      them. CosmoCov computes the shear-shear covariance as three
+      blocks, ++ (ξ_+ auto), -- (ξ_- auto) and +- (cross), all
+      required: the joint ξ_tot^B test needs the cross-block, and
+      the pure-mode and COSEBI transforms mix ξ_+ and ξ_-.
     default: cosmocov
     options:
       cosmocov:
@@ -262,7 +273,7 @@ decisions:
 
   covariance_class:
     label: "Gaussian vs Gaussian + non-Gaussian covariance"
-    tags: [covariance, statistics, primary]
+    tags: [covariance_model]
     rationale: |
       The fiducial B-mode null tests use only the Gaussian part of the
       covariance. In configuration space this keeps the
@@ -294,7 +305,7 @@ decisions:
 
   mask_application:
     label: "Footprint window in non-Gaussian covariance"
-    tags: [covariance, geometry]
+    tags: [covariance_model]
     rationale: |
       The spectrum affects only the super-sample covariance (SSC) here:
       CosmoCov's survey_variance() sums its first 1000 multipoles after
@@ -320,28 +331,6 @@ decisions:
         description: |
           CosmoCov's analytic circular-area SSC window, with no footprint file.
           Gaussian terms remain area-only.
-
-  block_pairs:
-    label: "Shear-shear block pairs computed by CosmoCov"
-    tags: [covariance, structure]
-    rationale: |
-      CosmoCov computes the shear-shear covariance as three
-      blocks: ++ (ξ_+ auto), -- (ξ_- auto) and +- (cross). The
-      joint ξ_tot^B test needs the cross-block, and the pure-mode
-      and COSEBI transforms mix ξ_+ and ξ_-, so all three are
-      required; the decision documents the structure rather than
-      offering a real choice.
-    default: all_three
-    options:
-      all_three:
-        label: "All three: ++, --, +-"
-      auto_only:
-        label: "Auto blocks only (++, --)"
-        description: |
-          Enough for separate ξ_+^B and ξ_-^B PTEs.
-        excluded: true
-        excluded_reason: |
-          The reported joint ξ_tot^B test needs the cross-block.
 
 analyses:
 

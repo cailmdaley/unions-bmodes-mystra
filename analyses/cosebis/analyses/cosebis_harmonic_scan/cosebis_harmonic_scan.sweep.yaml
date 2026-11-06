@@ -34,6 +34,8 @@ inputs:
     from: ../cl_sweep
 
 decisions:
+  pte_definition:
+    from: ../pte_definition
   fiducial_blind:
     from: ../fiducial_blind
   harmonic_validation_binning:
@@ -64,7 +66,7 @@ template:
     B-mode PTEs are consumed (through the gather) — the paper
     figure is rendered from the fiducial NPZ.
   inputs: [selected_config, xi_sweep, cov_sweep, cl_sweep]
-  decisions: [fiducial_blind, harmonic_validation_binning, scale_cut_convention]
+  decisions: [fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition]
   recipe:
     # The three version-sweep bundles are untarred into temp dirs and this
     # version's four inputs picked out by canonical filename — the sweep

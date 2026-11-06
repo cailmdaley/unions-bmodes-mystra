@@ -41,6 +41,10 @@ inputs:
 - id: cosmocov_libgsl
   from: ../cosmocov_libgsl
 decisions:
+  integration_grid:
+    from: ../integration_grid
+  covariance_engine:
+    from: ../covariance_engine
   leakage_correction:
     from: ../leakage_correction
   fiducial_catalog:
@@ -69,6 +73,8 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - covariance_class
+  - covariance_engine
+  - integration_grid
   recipe:
     command: |
       bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
@@ -95,6 +101,8 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - covariance_class
+  - covariance_engine
+  - integration_grid
   recipe:
     command: |
       bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.5_leak_corr)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
@@ -121,6 +129,8 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - covariance_class
+  - covariance_engine
+  - integration_grid
   recipe:
     command: |
       bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.6.3)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
@@ -147,6 +157,8 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - covariance_class
+  - covariance_engine
+  - integration_grid
   recipe:
     command: |
       bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
@@ -173,6 +185,8 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - covariance_class
+  - covariance_engine
+  - integration_grid
   recipe:
     command: |
       bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.8_leak_corr)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
@@ -199,6 +213,8 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - covariance_class
+  - covariance_engine
+  - integration_grid
   recipe:
     command: |
       bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}
@@ -225,6 +241,8 @@ outputs:
   - fiducial_catalog
   - fiducial_blind
   - covariance_class
+  - covariance_engine
+  - integration_grid
   recipe:
     command: |
       bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/paper_config.py --config {inputs.selected_config} --scan-version SP_v1.4.11.3_leak_corr)" --blind A --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --cosmocov {inputs.cosmocov_binary} --libgsl {inputs.cosmocov_libgsl} --emit processed --out-file {output}

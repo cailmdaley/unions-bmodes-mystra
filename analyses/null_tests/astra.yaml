@@ -122,7 +122,7 @@ outputs:
       [adopted 12'–83' cut](#../decisions.fiducial_scale_cuts).
       Feeds the config-space columns of the per-version PTE table
       and the configuration-space PTE heatmaps.
-    decisions: [scale_cut_convention]
+    decisions: [scale_cut_convention, scale_cut_pair_grid_alignment]
     inputs:
       - selected_config
       - pure_eb_ptes
@@ -167,6 +167,7 @@ outputs:
       - cl_sweep
       - cl_bandpowers_reporting
       - cl_cov_reporting
+    decisions: [cl_pte_blind_strategy, pte_definition]
     recipe:
       # harmonic_space_pte_matrices.py, evidence-only mode. The 7-version sweep
       # lives INSIDE the script and reads per-version pseudo_cl_* /
@@ -307,6 +308,10 @@ outputs:
         --out-file {output}
 
 decisions:
+  pte_definition:
+    from: ../pte_definition
+  cl_pte_blind_strategy:
+    from: ../cl_pte_blind_strategy
 
   scale_cut_convention:
     from: ../scale_cut_convention
@@ -316,7 +321,7 @@ decisions:
 
   bb_blind_check_version:
     label: "Catalog for the blind-independence check"
-    tags: [null_tests, blinding, validation]
+    tags: [data_selection]
     rationale: |
       Blind independence is a geometric property of the footprint,
       so one catalog version suffices for the
@@ -346,7 +351,7 @@ decisions:
 
   scale_cut_pair_grid_alignment:
     label: "Scale-cut grid alignment across statistics"
-    tags: [null_tests, scale_cuts]
+    tags: [scale_cuts]
     rationale: |
       The configuration-space PTE composite uses the same
       `geomspace(1', 250', 21)` index pairs for ξ_+^B, ξ_-^B and

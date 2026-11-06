@@ -38,9 +38,6 @@ inputs:
   - id: paper_mplstyle
     from: ../paper_mplstyle
 
-  - id: print_width_script
-    from: ../print_width_script
-
   - id: pure_eb_version_comparison_script
     from: ../pure_eb_version_comparison_script
 
@@ -58,7 +55,7 @@ outputs:
       [pure-mode PTE matrix](#outputs.pure_eb_pte_per_cut)
       uses its B-mode block.
     format: npz
-    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples]
+    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples, decomposition_method]
     inputs: [selected_config, xi_reporting, xi_integration, cov_integration, redshift_distributions]
     recipe:
       # run_pure_eb_semianalytic.sh: under monte_carlo it runs the 20 MC chunks
@@ -93,7 +90,7 @@ outputs:
       from the finite angular range. Shaded regions mark the fiducial
       scale cuts.
     format: png
-    decisions: [fiducial_catalog, scale_cut_convention]
+    decisions: [fiducial_catalog, scale_cut_convention, pte_definition]
     inputs: [selected_config, pure_eb_semianalytic_data, cov_reporting_ng, paper_mplstyle]
     recipe:
       # pure_eb_data_vector.py: pure E/B data-vector figure, fiducial only. Reads the
@@ -140,8 +137,8 @@ outputs:
       Only the size-cut catalog passes all statistics at the fiducial
       scale cuts ([PTE table](#../outputs.pte_table_appendix)).
     format: png
-    decisions: [scale_cut_convention]
-    inputs: [selected_config, pure_eb_semianalytic_data, pure_eb_sweep, paper_mplstyle, print_width_script, pure_eb_version_comparison_script]
+    decisions: [scale_cut_convention, pte_definition]
+    inputs: [selected_config, pure_eb_semianalytic_data, pure_eb_sweep, paper_mplstyle, pure_eb_version_comparison_script]
     recipe:
       # pure_eb_version_comparison.py: pure-mode row of the version-comparison stack. The
       # non-fiducial versions come from the pure_eb_sweep tarball (unpacked to a
@@ -168,7 +165,7 @@ outputs:
       correction](#decisions.pure_eb_covariance_method) when the
       covariance is a Monte Carlo estimate and none when it is exact.
     format: npz
-    decisions: [fiducial_catalog, fiducial_blind]
+    decisions: [fiducial_catalog, fiducial_blind, pte_blind_strategy, pte_definition]
     inputs: [selected_config, pure_eb_semianalytic_data, cov_integration]
     recipe:
       # calculate_pure_eb_ptes.py reads the gathered semianalytic npz +
@@ -198,7 +195,7 @@ outputs:
       ([cov_sweep](#../covariance.outputs.cov_sweep)). Feeds the
       [version comparison](#outputs.pure_eb_version_comparison_figure).
     format: tar.gz
-    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples]
+    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples, decomposition_method]
     inputs: [selected_config, xi_sweep, cov_sweep, redshift_distributions, redshift_distributions_legacy]
     recipe:
       # run_pure_eb_sweep.sh loops the non-fiducial version list (sweep_versions.py)
@@ -240,7 +237,7 @@ outputs:
       Feeds the per-version [PTE
       heatmaps](#../outputs.fig_pte_heatmaps).
     format: tar.gz
-    decisions: [fiducial_catalog, fiducial_blind]
+    decisions: [fiducial_catalog, fiducial_blind, pte_blind_strategy, pte_definition]
     inputs: [selected_config, pure_eb_sweep, cov_sweep, redshift_distributions, redshift_distributions_legacy]
     recipe:
       # run_pure_eb_ptes_sweep.sh loops the non-fiducial version list
@@ -263,6 +260,8 @@ outputs:
       resources: { cpus: 4, memory: "16GB" }
 
 decisions:
+  pte_definition:
+    from: ../pte_definition
 
   fiducial_catalog:
     from: ../fiducial_catalog
@@ -289,51 +288,11 @@ decisions:
     from: ../mc_samples
 
   decomposition_method:
-    label: "Pure-mode integral-transform construction"
-    tags: [pure_eb, method, primary]
-    rationale: |
-      Schneider et al. (2022) decompose ξ_±(θ) on a finite
-      [θ_min, θ_max] into pure E, pure B and ambiguous components
-      by integral transforms of the measured ξ_±, with boundary
-      functions S_±(θ) and V_±(θ) absorbing the ambiguous-mode
-      polynomials a + b θ², c θ⁻² + d θ⁻⁴. Reconstructing the pure
-      modes from COSEBI coefficients is mathematically equivalent
-      but needs the same angular range for ξ_+ and ξ_-; the direct
-      transform lets each carry its own scale cuts, so it is used,
-      through the [cosmo_numba implementation](#decisions.implementation).
-    default: schneider22_integral_transform
-    options:
-      schneider22_integral_transform:
-        label: "Schneider et al. 2022 integral transform (fiducial)"
-        insights: [pure_mode_decomposition_unique_on_finite_interval, schneider22_pure_modes_direct_from_xi]
-      cosebi_reconstruction:
-        label: "COSEBI-coefficient reconstruction"
-        excluded: true
-        excluded_reason: "Paper II implements the direct Schneider (2022) transform; reconstructing ξ E/B from COSEBI coefficients has no implementation."
-        description: |
-          Equivalent on a shared [θ_min, θ_max], but does not
-          allow independent ξ_+ / ξ_- scale cuts.
-
-  implementation:
-    label: "Pure-mode integral-transform implementation"
-    tags: [pure_eb, software]
-    rationale: |
-      `cosmo_numba` (Guinot et al. 2026,
-      <https://github.com/aguinot/cosmo-numba>) is a JIT
-      implementation of the Schneider et al. (2022) kernels,
-      covering the boundary functions S_± and V_± and the
-      integral kernels on the 1000-bin grid. It is the only
-      production implementation maintained alongside
-      `sp_validation`; no alternative is exposed.
-    default: cosmo_numba
-    options:
-      cosmo_numba:
-        label: "cosmo_numba (Guinot et al. 2026; fiducial)"
-        insights: [guinot26_cosmo_numba_precision]
+    from: ../decomposition_method
 
   pte_blind_strategy:
     label: "Per-blind PTE evaluation strategy"
-    tags: [pure_eb, blinding, validation]
+    tags: [blinding]
     rationale: |
       The reported PTEs use blind A. The PTEs are also evaluated
       per blind (A, B, C), each with its own
@@ -382,81 +341,4 @@ prior_insights:
         location:
           page: 1
     scope: "Sample covariances of Gaussian data, not theory covariances (Hartlap et al. 2007, Eq. 17)."
-
-  pure_mode_decomposition_unique_on_finite_interval:
-    id: pure_mode_decomposition_unique_on_finite_interval
-    claim: |
-      Pure-mode correlation functions ξ_±^E, ξ_±^B and ξ_±^amb can
-      be derived from ξ_±(θ) measured on a finite interval
-      [θ_min, θ_max], decomposing it uniquely as
-      ξ_+ = ξ_+^E + ξ_+^B + ξ_+^amb and ξ_- = ξ_-^E − ξ_-^B + ξ_-^amb.
-      This underlies the configuration-space pure-mode B-mode null test.
-    created_at: "2026-04-25T00:00:00Z"
-    evidence:
-      - id: ev1
-        doi: "10.1051/0004-6361/202142450"
-        quote:
-          exact: |
-            we derive explicit equations for the pure-mode
-            shear correlation functions, ξ_±^E/B(θ), and their
-            ambiguous components, ξ_±^amb(θ), that can be
-            derived from the measured ξ_±(θ) on a finite
-            angular interval, θ_min ≤ θ ≤ θ_max, such that
-            ξ_±(θ) can be decomposed uniquely into pure-mode
-            functions as ξ_+ = ξ_+^E + ξ_+^B + ξ_+^amb and
-            ξ_- = ξ_-^E − ξ_-^B + ξ_-^amb.
-          prefix: "ambiguous modes that cannot uniquely be assigned to either E- or B-mode shear. In this paper"
-          suffix: "The derivation is obtained by defining a new set of Complete Orthogonal Sets of E and B mode-separating Integrals (COSEBIs)"
-        location:
-          page: 1
-    scope: "Schneider, Asgari, Heydenreich & Joachimi 2022, A&A 664, A77 — abstract."
-
-
-  schneider22_pure_modes_direct_from_xi:
-    id: schneider22_pure_modes_direct_from_xi
-    claim: |
-      Pure-mode correlation functions and COSEBIs carry the same
-      information, but the pure modes can be computed directly from
-      ξ_± without the (infinite) COSEBI set; in practice the
-      equivalence is only approximate, because of the finite number
-      of COSEBI modes and the finite ξ_± binning.
-    created_at: "2026-10-31T00:00:00Z"
-    evidence:
-      - id: ev1
-        doi: "10.1051/0004-6361/202142450"
-        quote:
-          exact: "However, as we show here, they can also be obtained without first calculating the (infinite) set of COSEBIs."
-        location:
-          page: 6
-      - id: ev2
-        doi: "10.1051/0004-6361/202142450"
-        quote:
-          exact: "In practice, this exact equivalence will apply only approximately, due to the finite number of COSEBI modes and the finite binning of the correlation functions"
-        location:
-          page: 6
-    scope: "Schneider, Asgari, Heydenreich & Joachimi 2022, A&A 664, A77 — §3.3–3.4."
-
-  guinot26_cosmo_numba_precision:
-    id: guinot26_cosmo_numba_precision
-    claim: |
-      `cosmo-numba` computes COSEBIs, whose weight functions need
-      ~80-digit precision (float64 is not sufficient; at that
-      precision it reproduces the original implementation exactly),
-      and the Schneider et al. 2022 pure-mode correlation functions,
-      which are less numerically demanding but need a fast implementation.
-    created_at: "2026-10-31T00:00:00Z"
-    evidence:
-      - id: ev1
-        doi: "10.48550/arXiv.2603.18419"
-        quote:
-          exact: "We can see that classic float64 precision would not be sufficient, and with a precision of 80 our code exactly recovers the results from the original implementation."
-        location:
-          page: 3
-      - id: ev2
-        doi: "10.48550/arXiv.2603.18419"
-        quote:
-          exact: "Those integrals are less numerically challenging than the COSEBIs, but having a fast computation is necessary for their integration in an inference pipeline."
-        location:
-          page: 2
-    scope: "Guinot et al. 2026, arXiv 2603.18419 — software paper by a Paper II co-author."
 
