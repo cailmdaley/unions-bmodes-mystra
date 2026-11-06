@@ -1039,7 +1039,7 @@ decisions:
           realisations.
 
   cl_pte_blind_strategy:
-    label: "Per-blind PTE evaluation strategy"
+    label: "Per-blind Cℓ PTE evaluation strategy"
     tags: [blinding]
     rationale: |
       The reported Cℓ^BB PTEs use blind-A data vectors and the
