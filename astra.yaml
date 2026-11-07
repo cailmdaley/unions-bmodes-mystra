@@ -10,8 +10,8 @@ name: "UNIONS-3500 B-mode Validation"
 description: |
   B-mode null tests of the UNIONS-3500 ShapePipe v1.4 shear catalogs (Daley et
   al. 2026). Pure-mode correlation functions, COSEBIs and harmonic-space power
-  spectra, with covariances validated on GLASS mocks, fix
-  the fiducial catalog and scale cuts for the UNIONS cosmology papers.
+  spectra, with covariances validated on GLASS mocks, inform
+  the fiducial catalog and scale cuts of the UNIONS cosmology papers.
 
 # -----------------------------------------------------------------------------
 # Top-level inputs: what came from outside this analysis, the catalogs of Paper I,
@@ -47,7 +47,7 @@ inputs:
       (v1.4.11.3) uses the v1.4.6 one. The leakage correction acts on
       ellipticities, not photometry, so corrected and uncorrected
       catalogs share one n(z).
-    source: "/n17data/sguerrini/UNIONS/WL/nz/v{base_version}/nz_{base_version}_{blind}.txt"
+    source: "/n17data/sguerrini/UNIONS/WL/nz/v{base_version}/nz_SP_v{base_version}_{blind}.txt"
 
   - id: redshift_distributions_pre_som
     type: data
@@ -534,8 +534,7 @@ decisions:
         label: "Fine-grid extent, 0.5'–300'"
         description: |
           Averaged geometry: fine-grid nodes from the 0.5' grid
-          floor to 300' (the mock grid's native 500' upper edge is
-          capped at 300'); support below 1' keeps the edge rows
+          floor to 300'; support below 1' keeps the edge rows
           determined.
       reporting_extent:
         label: "Reporting-grid extent, 1'–250'"
@@ -902,7 +901,7 @@ decisions:
       builds the fiducial covariance, run at the mocks' own noise, held
       against the mock scatter. The reference covariances are the fiducial
       recipes under this decision, and stand apart from the
-      [data covariances](#analyses.covariances), which the null tests read
+      [data covariances](#analyses.covariances.outputs.pure_eb_covariance), which the null tests read
       under either selection. Mock-matching is two rebuilds of the fiducial
       primitives:
 
@@ -928,7 +927,7 @@ decisions:
       runs. Mock and data occupy one footprint (data 2750.65 deg²,
       mock 2709.91 deg², overlap 2703.17 deg²), so the count ratio —
       51.65 M weight-effective data galaxies against 60 423 575 mock
-      galaxies, σ_e agreeing to 0.2% (0.26757 vs 0.26818) — sets the
+      galaxies, σ_e agreeing to 0.2% (0.26757 vs 0.26817) — sets the
       noise difference: mock BB variance 0.725 of the data's from the
       machinery, 0.716 empirically
       ([clbb_variance_ratios](#analyses.validation.analyses.glass_mocks.outputs.clbb_variance_ratios)).
@@ -1254,7 +1253,7 @@ findings:
 # NKA's failure on B-mode spectra and at ℓ ≲ 50, Nicola 2021 for the improved
 # NKA (the estimator actually used) and its residual low-ℓ and E/B-mixing
 # errors, Alonso 2019 for why an unpurified Cℓ^BB variance is dominated by
-# leaked E modes, and Alonso 2026 for the catalogue-based iNKA's ℓ ≳ 10
+# leaked E modes, and Wolz 2026 for the catalogue-based iNKA's ℓ ≳ 10
 # B-mode validity floor. Together these motivate validating the covariance on
 # the GLASS mocks; none of them predicts the size of the effect for a footprint
 # as small and fragmented as UNIONS.
@@ -1303,18 +1302,18 @@ prior_insights:
     created_at: "2026-10-31T00:00:00Z"
     evidence:
       - id: ev1
-        doi: "10.1051/0004-6361/202142450"
+        doi: "10.1051/0004-6361/202142479"
         quote:
           exact: "However, as we show here, they can also be obtained without first calculating the (infinite) set of COSEBIs."
         location:
           page: 6
       - id: ev2
-        doi: "10.1051/0004-6361/202142450"
+        doi: "10.1051/0004-6361/202142479"
         quote:
           exact: "In practice, this exact equivalence will apply only approximately, due to the finite number of COSEBI modes and the finite binning of the correlation functions"
         location:
           page: 6
-    scope: "Schneider, Asgari, Heydenreich & Joachimi 2022, A&A 664, A77 — §3.3–3.4."
+    scope: "Schneider et al. 2022, A&A 664, A77 — §3.3–3.4."
 
   guinot26_cosmo_numba_precision:
     id: guinot26_cosmo_numba_precision
@@ -1378,7 +1377,7 @@ prior_insights:
     created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
-        doi: "10.1051/0004-6361/202142450"
+        doi: "10.1051/0004-6361/202142479"
         quote:
           exact: |
             we derive explicit equations for the pure-mode
@@ -1425,7 +1424,7 @@ prior_insights:
     created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
-        doi: "10.1051/0004-6361/200913577"
+        doi: "10.1051/0004-6361/201014235"
         quote:
           exact: |
             Here we aim at a complete E-/B-mode decomposition of
@@ -1441,7 +1440,7 @@ prior_insights:
         location:
           page: 1
       - id: ev2
-        doi: "10.1051/0004-6361/200913577"
+        doi: "10.1051/0004-6361/201014235"
         quote:
           exact: |
             For example, for ξ_± on the interval 1' ≤ θ ≤ 400',
@@ -1784,7 +1783,7 @@ prior_insights:
           exact: "The Narrow Kernel Approximation, which may hold less well for very sparse masks"
         location:
           page: 10
-    scope: "DES-Y3-like 4000 deg² footprint (Alonso et al. 2026, arXiv 2607.14843, §4.1–4.2)"
+    scope: "DES-Y3-like 4000 deg² footprint (Wolz et al. 2026, arXiv 2607.14843, §4.1–4.2)"
     notes: |
       DES Y3 bin 3, ~2.5e7 sources (f_sky ≈ 0.1), Gaussian shear
       with and without shape noise, bandpowers to ℓ_max = 10,000.
@@ -1965,10 +1964,6 @@ prior_insights:
       The correction itself is Paper I's; Guerrini et al. supply the
       diagnostic.
 
-# -----------------------------------------------------------------------------
-# Sub-analyses, each in analyses/<id>/astra.yaml, inheriting shared inputs and
-# decisions via `from: ../<root_id>`.
-# -----------------------------------------------------------------------------
   tessore23_glass_lognormal_mocks:
     id: tessore23_glass_lognormal_mocks
     claim: |
@@ -1995,6 +1990,10 @@ prior_insights:
           page: 1
     scope: "Tessore et al. 2023, OJAp 6, 11 (abstract); the UNIONS suite itself is Paper III's."
 
+# -----------------------------------------------------------------------------
+# Sub-analyses, each in analyses/<id>/astra.yaml, inheriting shared inputs and
+# decisions via `from: ../<root_id>`.
+# -----------------------------------------------------------------------------
 analyses:
 
   covariances:

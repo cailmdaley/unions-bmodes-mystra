@@ -7,12 +7,12 @@ description: |
   three leak-corrected and four uncorrected). All seven use the 32-bandpower
   reporting grid; the initial, masked and relaxed-flags catalogs on the
   primary leakage branch also use the finer grid of the
-  [harmonic COSEBI scan](#../../../analyses.validation.analyses.cosebis_harmonic_scan).
+  [harmonic COSEBI scan](#../../../analyses.validation.analyses.cosebis_harmonic_scan.outputs.cosebis_harmonic_version_ptes).
   Each variant's window comes from its own catalog's source positions and
   weights. The gathered result feeds the
   [version comparison](#../../../analyses.null_tests.outputs.cl_version_comparison_figure), the
   [Cℓ^BB PTE grids](#../../../analyses.null_tests.outputs.cl_pte_per_cut) and the harmonic COSEBI
-  scan; the [iNKA covariances](#../../../analyses.covariances.analyses.cl_cov_scan)
+  scan; the [iNKA covariances](#../../../analyses.covariances.outputs.cl_cov_sweep)
   are their own scan.
 tags: [sweep]
 

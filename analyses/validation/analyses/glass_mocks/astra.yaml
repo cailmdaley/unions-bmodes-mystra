@@ -19,7 +19,7 @@ description: |
   are held against a covariance the same CosmoCov and NaMaster chain
   builds at the mocks' own noise. The campaign thus tests the
   covariance machinery, not the data covariance directly: the
-  [analytic covariances](#../../analyses.covariances), not a mock sample
+  [analytic covariances](#../../analyses.covariances.outputs.pure_eb_covariance_reference), not a mock sample
   covariance, enter the PTEs.
 
 inputs:
@@ -576,8 +576,8 @@ prior_insights:
       The Gaussian iNKA covariance adopted by UNIONS Paper IV
       (harmonic-space cosmology) gives larger small-scale
       uncertainties than either `OneCovariance` or the GLASS mocks —
-      15% against the mocks, around 20% against `OneCovariance` — and
-      Paper IV attributes the gap to iNKA accounting for a spatially
+      around 20% against both, with its Fig. 4 caption quoting 15%
+      against the mocks — and Paper IV attributes the gap to iNKA accounting for a spatially
       varying galaxy number density, which breaks the stationary-noise
       assumption the other two estimates make.
     notes: |
@@ -745,7 +745,8 @@ findings:
 
       **Paper IV.** Paper IV finds its Gaussian iNKA covariance
       overestimates the small-scale variance relative to the GLASS
-      mocks (15%) and `OneCovariance` (~20%), attributing it to iNKA's
+      mocks and `OneCovariance` (~20% against both; its Fig. 4 caption
+      quotes 15% against the mocks), attributing it to iNKA's
       treatment of a spatially varying number density
       ([paper_iv_inka_overestimates_variance](#prior_insights.paper_iv_inka_overestimates_variance)).
       The density excess makes the mocks' variance ~26% low by

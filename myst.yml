@@ -4,7 +4,7 @@ project:
   description: >-
     B-mode null tests of the UNIONS-3500 cosmic shear catalog with pure-mode
     correlation functions, COSEBIs and harmonic-space power spectra, which
-    fix the fiducial sample and scale cuts.
+    inform the fiducial sample and scale cuts.
   venue:
     title: Astronomy & Astrophysics
   open_access: true
@@ -168,6 +168,8 @@ project:
     # Pinned, not `releases/latest/...`: that URL is a 302 and sandboxed
     # builders (e.g. the MyST viewer) may not follow it.
     - https://github.com/LightconeResearch/MySTRA/releases/download/v0.0.8/mystra.mjs
+  numbering:
+    headings: true
   toc:
     - file: index.md
 site:

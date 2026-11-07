@@ -69,8 +69,8 @@ outputs:
       enters.
     format: txt
     when: [leakage_correction.applied]
-    decisions: []
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    decisions: [leakage_correction]
+    inputs: [shapepipe_v14_catalogs]
     recipe:
       # A host job, not a recipe `lc` can run: the container's OpenMPI cannot start
       # under candide's Slurm, and `lc` has no way to hand a recipe an allocation
@@ -225,7 +225,7 @@ outputs:
       resources: { cpus: 12, memory: "32GB" }
 
   - id: cl_sweep
-    # Bandpowers of the other catalog variants. The fine-grid members feed [cosebis_harmonic_scan](#../analyses.validation.analyses.cosebis_harmonic_scan).
+    # Bandpowers of the other catalog variants. The fine-grid members feed [cosebis_harmonic_scan](#../analyses.validation.analyses.cosebis_harmonic_scan.outputs.cosebis_harmonic_version_ptes).
     from: cl_scan.cl_sweep_bundle
 
 decisions:
@@ -263,7 +263,7 @@ decisions:
     rationale: |
       For a ξ_± measurement, patches matter only through a
       jackknife covariance. The
-      [covariances sub-analysis](#../analyses.covariances) is
+      [ξ_± covariance](#../analyses.covariances.outputs.cov_integration) is
       semi-analytic (CosmoCov), so the measurement runs on a single
       patch; the jackknife was only a development cross-check, which
       the paper reports agrees with the semi-analytic ξ_± covariance

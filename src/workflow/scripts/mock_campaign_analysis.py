@@ -956,7 +956,6 @@ def compute_statistics(
         "cosebi_scale_conventions": stored_scale_metadata,
         "pure_eb_input_grid": {
             "first_mock_integration_limits": pure_integration_limits,
-            "covariance_integration_limits": "fine_grid_extent",
             "comparison_warning": pure_integration_limits is None,
         },
     }

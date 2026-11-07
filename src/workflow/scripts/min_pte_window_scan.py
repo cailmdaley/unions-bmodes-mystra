@@ -395,7 +395,7 @@ def window_ptes(state, edges, i, j):
             "one reporting bin: the COSEBI basis is solved over a single "
             "reporting bin's theta range, where it is too ill-conditioned to "
             "compare against the rest of the plane (median B_n<=20 PTE 0.13 "
-            "here against ~0.45 on every window with two bins or more). "
+            "here against ~0.41 on every window with two bins or more). "
             "Whether mpmath raises NoConvergence or returns these roots is "
             "environment-dependent, so the window is excluded structurally "
             "rather than by whether the solve happened to fail."

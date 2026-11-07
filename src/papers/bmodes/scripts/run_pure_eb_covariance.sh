@@ -13,7 +13,7 @@
 #     --xi-reporting <xi 20-bin .txt> --xi-integration <xi 1000-bin .txt> \
 #     --cov-integration <cov ..._processed.txt> \
 #     --integration-method {adaptive_dqags|fixed_operator} \
-#     --integration-limits {floor_1arcmin|fine_grid_extent|reporting_extent} \
+#     --integration-limits {fine_grid_extent|reporting_extent} \
 #     --rebinning-weights {uniform|npairs|none} \
 #     --covariance-method {exact_linear|monte_carlo} \
 #     [--geometry {pointwise|averaged}] [--local-from-eval-grid] \

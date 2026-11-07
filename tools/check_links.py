@@ -2,8 +2,9 @@
 
 A link is read from the spec holding it: each `../` climbs one analysis,
 `analyses.<id>.` or `<id>.` descends into a sub-analysis, and the tail names an
-element that analysis declares (`kind.id`) or the sub-analysis itself. Prose that
-a scan's sidecar generates is checked in the generated astra.yaml.
+element that analysis declares (`kind.id`). A link to a whole sub-analysis is
+refused, because report dialogs have nothing to open for it. Prose that a scan's
+sidecar generates is checked in the generated astra.yaml.
 
     python tools/check_links.py
 """
@@ -40,7 +41,7 @@ def resolves(spec_dir, target):
         here = here / "analyses" / child
         if not (here / "astra.yaml").exists():
             return False
-    return True
+    return False
 
 
 def main():

@@ -1,10 +1,13 @@
-"""Build the mock-matched pure-E/B covariance.
+"""Build a mock-matched pure-E/B covariance for ``pure_eb_scan_covariances.py``.
 
-Under ``--covariance-method exact_linear`` the covariance is ``M C_ξ Mᵀ`` of
-the averaged transform (``pure_mode_covariance``), with C_ξ the mock-matched
-ξ_± covariance; no draws are made. Under ``monte_carlo``, this is the paper's ``precompute_pure_eb_chunk.py`` plus
-``gather_pure_eb_chunks.py`` path in one deterministic invocation.  The
-processed 1000-bin ξ covariance is sampled in batches with seeds
+The reference covariance the mock campaign reads comes from
+``run_pure_eb_covariance.sh``; only the scan calls this script.  Under
+``--covariance-method exact_linear`` the covariance is ``M C_ξ Mᵀ`` of the
+averaged transform (``pure_mode_covariance``), with C_ξ the mock-matched ξ_±
+covariance; no draws are made.  Under ``monte_carlo``, this is the
+``precompute_pure_eb_chunk.py`` plus ``gather_pure_eb_chunks.py`` construction
+in one deterministic invocation.  The processed 1000-bin ξ covariance is
+sampled in batches with seeds
 ``seed + batch_id`` — 20 batches of 100 under the defaults, which is
 ``precompute_pure_eb_chunk.py``'s own partition, so the two chains draw the
 same streams; each sample is passed through Schneider (2022) under the

@@ -9,7 +9,7 @@ description: |
   [ξ_± measurement](#inputs.xi_integration) and none of its shear. The
   [reference covariances](#decisions.reference_covariance) are the same recipes
   at the noise the GLASS mocks are held against, kept apart from the data
-  covariances the null tests read, and a [scan](#analyses.blind_cov_scan) repeats
+  covariances the null tests read, and a [scan](#outputs.blind_cov_sweep) repeats
   them across the n(z) blinds.
 
 inputs:
@@ -29,7 +29,7 @@ inputs:
   - id: redshift_distributions
     from: ../redshift_distributions
     # Per-version n(z), read by the CosmoCov and iNKA covariances, by the
-    # CosmoCov runs of the [cov_scan](#analyses.cov_scan) sweep and, as the theory
+    # CosmoCov runs of the [cov_scan](#outputs.cov_sweep) sweep and, as the theory
     # mean of its draws, by the Monte Carlo pure-mode covariance.
 
   # The masked (v1.4.8) and relaxed-flags (v1.4.11.3) catalogs of
@@ -222,7 +222,7 @@ outputs:
       Gaussian (NaMaster iNKA) covariance of the Cℓ
       bandpowers for the fiducial catalog at blind A, on the
       32-bandpower √ℓ-spaced grid of
-      [the harmonic-space data vector](#../analyses.data_vectors), the prescription
+      [the harmonic-space data vector](#../analyses.data_vectors.outputs.cl_bandpowers_reporting), the prescription
       Paper IV uses for its BB and EB null tests. It takes a Planck
       2018 theory spectrum plus analytic noise, with the weighted
       galaxy-count map at nside 1024 as the window.
@@ -246,7 +246,7 @@ outputs:
       [cl_bandpowers_fine](#../analyses.data_vectors.outputs.cl_bandpowers_fine),
       for the harmonic-space COSEBI transform. The other three
       leak-corrected catalogs' counterparts come from the
-      [cl_cov_scan sweep](#analyses.cl_cov_scan).
+      [cl_cov_scan sweep](#outputs.cl_cov_sweep).
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, noise_bias_correction, leakage_correction, fiducial_cosmology]
     inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions]
     format: fits
@@ -290,7 +290,7 @@ outputs:
 
   - id: cl_cov_sweep
     # iNKA covariances of the other catalog variants. The fine-grid members feed
-    # [cosebis_harmonic_scan](#../analyses.validation.analyses.cosebis_harmonic_scan).
+    # [cosebis_harmonic_scan](#../analyses.validation.analyses.cosebis_harmonic_scan.outputs.cosebis_harmonic_version_ptes).
     from: cl_cov_scan.cl_cov_sweep_bundle
 
   - id: pure_eb_covariance

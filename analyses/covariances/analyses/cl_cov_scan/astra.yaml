@@ -17,7 +17,7 @@ description: |
   catalog (in the fiducial analysis, three leak-corrected and four uncorrected),
   on the 32-bandpower reporting grid, and the initial, masked and relaxed-flags
   catalogs on the primary leakage branch on the finer grid of the
-  [harmonic COSEBI scan](#../../../analyses.validation.analyses.cosebis_harmonic_scan).
+  [harmonic COSEBI scan](#../../../analyses.validation.analyses.cosebis_harmonic_scan.outputs.cosebis_harmonic_version_ptes).
   Each variant's window is the weighted galaxy-count map of its own catalog. The
   gathered result feeds the
   [version comparison](#../../../analyses.null_tests.outputs.cl_version_comparison_figure), the

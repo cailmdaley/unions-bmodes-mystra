@@ -1,6 +1,9 @@
 """Regression checks for report navigation without building the publication."""
 import unittest
 
+from pathlib import Path
+
+from check_links import resolves
 from check_report_links import broken_links
 from check_report_build import check
 
@@ -9,10 +12,9 @@ class ReportLinksTest(unittest.TestCase):
     def test_myst_and_equation_labels(self):
         text = r"""
 (sec:results)=
-(data-availability .unnumbered)=
 $$ (eq:transform)
 \label{eq:estimator}
-[results](#sec:results) [data](#data-availability)
+[results](#sec:results)
 [transform](#eq:transform) [estimator](#eq:estimator)
 [inventory](#astra-inventory)
 """
@@ -23,6 +25,13 @@ $$ (eq:transform)
             broken_links("[output](#outputs.pte_table_appendix) [missing](#sec:missing)"),
             ["outputs.pte_table_appendix", "sec:missing"],
         )
+
+
+class SpecLinksTest(unittest.TestCase):
+    def test_link_to_a_whole_sub_analysis_fails(self):
+        here = Path("analyses/null_tests")
+        self.assertFalse(resolves(here, "../analyses.covariances"))
+        self.assertTrue(resolves(here, "../analyses.covariances.outputs.cl_cov_sweep"))
 
 
 class ReportBuildTest(unittest.TestCase):

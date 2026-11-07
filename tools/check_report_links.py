@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 def broken_links(text):
-    labels = set(re.findall(r"^\(([^\s)]+)(?:\s+[^)]*)?\)=", text, re.M))
+    labels = set(re.findall(r"^\(([^\s)]+)\)=", text, re.M))
     labels.update(re.findall(r"\\label\{([^}]+)\}", text))
     labels.update(re.findall(r"^\$\$\s+\(([^)]+)\)", text, re.M))
     labels.add("astra-inventory")

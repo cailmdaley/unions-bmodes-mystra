@@ -297,9 +297,8 @@ outputs:
     description: |
       Cℓ^BB null-test PTEs for all eight catalog variants (four
       catalogs, with and without leakage correction) over a grid of
-      (ℓ_min, ℓ_max) bandpower ranges, using the iNKA Gaussian
-      bandpower covariance from the
-      [covariances sub-analysis](#../analyses.covariances). The
+      (ℓ_min, ℓ_max) bandpower ranges, using the
+      [iNKA Gaussian bandpower covariances](#../analyses.covariances.outputs.cl_cov_sweep). The
       [adopted 300 < ℓ < 1600
       cut](#decisions.fiducial_scale_cuts) is one cell of the
       grid, which the

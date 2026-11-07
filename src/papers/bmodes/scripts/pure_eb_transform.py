@@ -158,16 +158,13 @@ def geometry_for(method, geometry=None):
 #: window in arcmin, applied by subsetting the fine integration grid before
 #: the operator is built.  ``None`` bounds mean "the grid's own edge".
 INTEGRATION_LIMITS = {
-    # The data fine grid ends at 300'; the GLASS fine grid at 500'.  Capping
-    # at 300' everywhere keeps mock and data operators on the same extent.
-    # The wide floor is the default because the averaged operator needs
+    # The data and GLASS fine grids both end at 300', so mock and data
+    # operators share one extent.  The wide floor is the default because the averaged operator needs
     # support below the 1' reporting floor at its edge.
     "fine_grid_extent": (None, 300.0),
     # The published pointwise chain takes [theta_min, theta_max] from the
-    # reporting grid inside the transform itself, but its supplied fine grid
-    # is capped at 300' to match the data-chain extent.  This is a no-op for
-    # the data grid and caps the 500' mock grid at the same extent.
-    # Pointwise-only.
+    # reporting grid inside the transform itself, and its supplied fine grid
+    # keeps the same 300' extent.  Pointwise-only.
     "reporting_extent": (None, 300.0),
 }
 

@@ -18,6 +18,7 @@ import numpy as np
 import treecorr
 from astropy.io import fits
 from plotting_utils import PAPER_MPLSTYLE
+from pure_mode_covariance import hartlap_samples
 
 from sp_validation.b_modes import calculate_cosebis
 from decision_values import (
@@ -134,6 +135,7 @@ def make_figure(
     cosebis_results,
     output_path,
     n_samples=2000,
+    mc_band=False,
 ):
     """Four-panel figure comparing BB vs EE stability across blinds.
 
@@ -143,6 +145,9 @@ def make_figure(
 
     Color encoding: E-mode vs B-mode
     Marker encoding: square = B/A, triangle = C/A (same for both E and B)
+
+    ``mc_band`` adds the ±√(2/N) sampling band and error bars to the ξ_±
+    panels, for a Monte Carlo pure-mode covariance.
     """
     fig, axes = plt.subplots(2, 2, figsize=(9, 7))
 
@@ -151,8 +156,8 @@ def make_figure(
     color_B = "#0072B2"  # blue for B
 
     # Expected 1σ error on ratio of two MC-estimated quantities
-    # σ(ratio) ≈ √(2/N) for ratio ≈ 1
-    ratio_err = np.sqrt(2.0 / n_samples)
+    # σ(ratio) ≈ √(2/N) for ratio ≈ 1; an exact covariance has none
+    ratio_err = np.sqrt(2.0 / n_samples) if mc_band else None
 
     # Helper for ratio panels
     def setup_ratio_panel(ax, ylabel_x, title, show_mc_band=False):
@@ -176,7 +181,7 @@ def make_figure(
         ax,
         r"$\theta$ [arcmin]",
         r"$\xi_+$: covariance ratio across blinds",
-        show_mc_band=True,
+        show_mc_band=mc_band,
     )
 
     # B-mode (blue): square for B/A, triangle for C/A
@@ -234,7 +239,7 @@ def make_figure(
         ax,
         r"$\theta$ [arcmin]",
         r"$\xi_-$: covariance ratio across blinds",
-        show_mc_band=True,
+        show_mc_band=mc_band,
     )
 
     ax.errorbar(
@@ -465,6 +470,8 @@ def main(
             )
 
     # Generate figure
+    with np.load(pure_eb_paths["A"]) as artifact:
+        mc_band = hartlap_samples(artifact) is not None
     make_figure(
         theta,
         ell_eff,
@@ -473,6 +480,7 @@ def main(
         cosebis_results,
         figure_path,
         n_samples=n_samples,
+        mc_band=mc_band,
     )
 
     # Compute summary statistics
@@ -497,9 +505,8 @@ def main(
         harmonic_results["C"]["EE"]["max_dev"],
     ]
 
-    # Pass criteria differ between the analytic and MC methods:
-    # COSEBIS uses analytic propagation (T @ Cov @ T.T) → blind-independent
-    # Pure E/B and Harmonic use MC sampling → inherit sampling noise
+    # The pass criteria are COSEBI-only, whose covariance is the analytic
+    # T @ Cov @ T.T.
     cosebis_bb_max = max(
         cosebis_results["B"]["B"]["max_dev"],
         cosebis_results["C"]["B"]["max_dev"],
@@ -526,10 +533,9 @@ def main(
     print(f"  COSEBIS E_n max deviation: {cosebis_ee_max * 100:.2f}%")
     print(f"  COSEBIS B_n blind-independent (<0.1%): {cosebis_bb_blind_independent}")
     print(f"  E-modes vary as expected (5-15%): {ee_varies_as_expected}")
-    print("\n  Pure E/B + Harmonic (MC methods):")
+    print("\n  All statistics (pure E/B, COSEBIS, harmonic):")
     print(f"    BB max deviation: {bb_max * 100:.2f}%")
     print(f"    EE max deviation: {ee_max * 100:.2f}%")
-    print("    Note: MC sampling noise causes BB to vary similarly to EE")
 
 
 def _from_cli(argv=None):

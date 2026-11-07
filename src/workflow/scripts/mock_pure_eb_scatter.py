@@ -2,7 +2,7 @@
 
 The reporting grid is the external 20-bin GLASS ``xi`` product (1--250
 arcmin).  The integration grid is the locally-produced 1000-bin ``gg``
-product (0.5--500 arcmin).  This is deliberately only the data-vector part of
+product (0.5--300 arcmin).  This is deliberately only the data-vector part of
 ``sp_validation.b_modes.calculate_pure_eb_correlation``: no covariance or
 jackknife machinery is run here.  The transform's quadrature is selected by
 ``--integration-method`` (the ``pure_eb_integration_method`` decision), which
@@ -238,7 +238,7 @@ def compute_one(
     integration_limits: str,
     geometry: str | None = None,
     fine_min_sep: float = 0.5,
-    fine_max_sep: float = 500.0,
+    fine_max_sep: float = 300.0,
     fine_nbins: int = 1000,
     reporting_min_sep: float = 1.0,
     reporting_max_sep: float = 250.0,

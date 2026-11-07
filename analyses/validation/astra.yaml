@@ -10,7 +10,7 @@ description: |
   from ξ_±, which shows that null-test sensitivity is set by the filter functions
   rather than the basis. The B-mode covariances are compared across the n(z)
   blinds, which supports using one blind throughout. The
-  [GLASS mocks](#analyses.glass_mocks) hold the estimators, covariances and PTE
+  [GLASS mocks](#outputs.mock_validation_figure) hold the estimators, covariances and PTE
   convention against 350 systematics-free simulations.
 
 inputs:
@@ -260,9 +260,10 @@ outputs:
       [integration-grid ξ_±](#inputs.xi_integration) and the multipoles
       from the [bandpowers](#inputs.cl_bandpowers_reporting). Supports the
       [blind-A fiducial choice](#decisions.fiducial_blind); it does not
-      enter the headline figures. The [Monte-Carlo sample
-      count](#decisions.mc_samples) sizes the ±√(2/N) reference band drawn
-      on the ξ_± panels.
+      enter the headline figures. Under the Monte Carlo
+      [covariance method](#../decisions.pure_eb_covariance_method), the
+      [sample count](#decisions.mc_samples) sizes the ±√(2/N) reference band
+      drawn on the ξ_± panels.
     decisions: [bb_blind_check_version, reporting_binning, integration_grid, mode_count, mc_samples]
     inputs:
       - blind_cov_sweep
