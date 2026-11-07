@@ -5,8 +5,8 @@ parallel on separate nodes rather than serially inside a single job.  It
 produces the two MC-propagated pure-mode covariances the comparison needs:
 
 * ``<variant>__data.npz`` -- the data's own pure-mode vectors and 120x120
-  covariance, from ``run_pure_eb_semianalytic.sh``.  The twin of
-  ``pure_eb_semianalytic_data``, and the artifact the variant's DATA PTE is
+  covariance, from ``run_pure_eb.sh``.  The twin of
+  ``pure_eb_data``, and the artifact the variant's DATA PTE is
   computed from downstream.
 * ``<variant>__mockmatched.npz`` -- the same propagation at the mock suite's
   own noise, from ``mock_matched_pure_eb_cov.py``.  The twin of
@@ -131,7 +131,7 @@ def main() -> None:
             _run(
                 [
                     "bash",
-                    "src/papers/bmodes/scripts/run_pure_eb_semianalytic.sh",
+                    "src/papers/bmodes/scripts/run_pure_eb.sh",
                     "--version", FIDUCIAL_VERSION,
                     "--blind", FIDUCIAL_BLIND,
                     "--cat-config", CAT_CONFIG,

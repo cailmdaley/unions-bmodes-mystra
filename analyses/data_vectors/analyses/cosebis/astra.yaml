@@ -1,0 +1,158 @@
+version: "0.0.14"
+name: "COSEBIs"
+description: |
+  Compresses ξ_± into the discrete COSEBI modes E_n and B_n and tests B_n
+  against zero for the fiducial catalog, across catalog versions and over the
+  grid of scale cuts. COSEBIs stand on their own because their filters are
+  built for a given angular range, so every scale cut is a fresh computation.
+
+inputs:
+  - id: xi_integration
+    from: ../real_space.xi_integration
+
+  - id: xi_sweep
+    from: ../real_space.xi_sweep
+
+  - id: cov_integration
+    from: ../cov_integration
+
+  - id: cov_sweep
+    from: ../cov_sweep
+
+outputs:
+  - id: cosebis_modes_data
+    type: data
+    format: npz
+    description: |
+      COSEBI E_n and B_n (n = 1 … 20) for the
+      [fiducial catalog](#../../decisions.fiducial_catalog) at both scale
+      cuts, with the mode covariance T^T C_ξ T and the σ_n that
+      normalise B_n / σ_n in the
+      [COSEBI data-vector figure](#../../outputs.fig_cosebis_fiducial).
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, leakage_correction, reporting_binning, integration_grid]
+    inputs: [xi_integration, cov_integration]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/cosebis_data_vector.py
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
+        --xi-integration {inputs.xi_integration}
+        --cov-integration {inputs.cov_integration}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 8, memory: "16GB" }
+
+  - id: fig_cosebis_data_vector
+    type: figure
+    format: png
+    description: |
+      COSEBI B-mode amplitudes for the [fiducial
+      catalog](#../../decisions.fiducial_catalog), normalized by
+      uncertainty (B_n/σ_n), at the fiducial scale cuts of 12–83 arcmin
+      (filled circles) and over the full angular range of 1–250 arcmin
+      (open diamonds). Modes n > 6 are shaded; the n ≤ 6 subset captures
+      nearly all cosmological information.
+    decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention]
+    inputs: [cosebis_modes_data]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/cosebis_data_vector.py
+        --plot-from-modes {inputs.cosebis_modes_data}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
+
+  - id: cosebis_pte_per_cut
+    # Fiducial-catalog COSEBI PTE matrices at blind A over all stable scale-cut
+    # pairs of `geomspace(1', 250', 21)`, for n <= 6 and n <= 20. Read by the
+    # configuration-space PTE products and the mock minimum-PTE calibration.
+    from: cosebis_pte_grid.cosebis_pte_matrix
+
+  - id: cosebis_ptes
+    # The same PTE matrices for the seven other catalog versions.
+    from: cosebis_pte_scan.cosebis_ptes_bundle
+
+  - id: cosebis_version_comparison
+    type: figure
+    format: png
+    description: |
+      COSEBI B-mode amplitudes B_n/σ_n across catalog versions at full
+      range (upper) and fiducial cuts (lower), recomputed per version:
+      initial (red circles), size-cut/fiducial (olive squares), masked
+      (teal diamonds), and relaxed-flags (purple triangles). Rectangles
+      delineate each mode in the horizontal direction and span the range
+      of values across versions in the vertical direction; horizontal
+      lines mark the fiducial value. A light band covers n ≤ 6. Only the
+      size-cut catalog passes all statistics at the fiducial scale cuts
+      ([PTE table](#../../outputs.pte_table_appendix)).
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, leakage_correction, reporting_binning, integration_grid]
+    inputs: [xi_sweep, cov_sweep, xi_integration, cov_integration]
+    recipe:
+      command: >
+        x=$(mktemp -d) && c=$(mktemp -d) &&
+        tar xzf {inputs.xi_sweep} -C $x &&
+        tar xzf {inputs.cov_sweep} -C $c &&
+        python src/papers/bmodes/scripts/cosebis_version_comparison.py
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
+        --results-dir $x
+        --cov-dir $c
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
+        --fiducial-xi-path {inputs.xi_integration}
+        --fiducial-cov-path {inputs.cov_integration}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 8, memory: "16GB" }
+
+decisions:
+  pte_definition:
+    from: ../../pte_definition
+  leakage_correction:
+    from: ../../leakage_correction
+  fiducial_catalog:
+    from: ../../fiducial_catalog
+  fiducial_blind:
+    from: ../../fiducial_blind
+  scale_cut_convention:
+    from: ../../scale_cut_convention
+  mode_count:
+    from: ../../mode_count
+  scale_cut_pair_grid:
+    label: "COSEBI PTE scale-cut grid"
+    tags: [scale_cuts]
+    rationale: |
+      The COSEBI PTE matrix is evaluated on every [i_min, i_max] pair
+      of edges of the 20-bin `geomspace(1', 250', 21)` reporting
+      grid,
+      to show sensitivity to the scale cut in the
+      [PTE composite figure](#../../outputs.fig_pte_heatmaps); its
+      fiducial and full-range cells feed the
+      [PTE table](#../../outputs.pte_table_appendix) and the mock
+      calibration. Four single-bin pairs, (9, 10), (10, 11), (11, 12)
+      and (13, 14), are excluded because the polynomial-root
+      construction of T_{±n}(θ) fails on them. The figure shows only
+      cuts spanning at least two bins, 190 of the 206.
+    default: production_grid
+    options:
+      production_grid:
+        label: "Stable index pairs of geomspace(1', 250', 21)"
+        description: |
+          206 pairs: all 210 edge pairs minus the four unstable ones.
+      single_pair:
+        excluded: true
+        excluded_reason: "Full-range PTE reporting and mock calibration require the full-range cell absent from this grid."
+        label: "Single pair only (i=9, j=16)"
+        description: |
+          Only the
+          [adopted 12'–83' fiducial cut](#../../decisions.fiducial_scale_cuts);
+          no scale-cut sensitivity.
+  integration_grid:
+    from: ../../integration_grid
+  reporting_binning:
+    from: ../../reporting_binning
+
+analyses:
+
+  cosebis_pte_scan:
+    path: ./analyses/cosebis_pte_scan
+
+  cosebis_pte_grid:
+    path: ./analyses/cosebis_pte_grid

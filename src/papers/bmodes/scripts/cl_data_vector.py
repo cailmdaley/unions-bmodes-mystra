@@ -49,9 +49,9 @@ def _compute_pte_with_cuts(data, covariance, ell, ell_min, ell_max):
     return pte, chi2, dof
 
 
-def _load_pseudo_cl_data(pseudo_cl_path, pseudo_cl_cov_path):
-    """Load pseudo-Cl data and covariance from FITS files."""
-    hdu = fits.open(pseudo_cl_path)
+def _load_cl_data(cl_path, cl_cov_path):
+    """Load Cl data and covariance from FITS files."""
+    hdu = fits.open(cl_path)
     data = hdu["PSEUDO_CELL"].data
     hdu.close()
 
@@ -59,7 +59,7 @@ def _load_pseudo_cl_data(pseudo_cl_path, pseudo_cl_cov_path):
     cl_eb = data["EB"]
     cl_bb = data["BB"]
 
-    hdu_cov = fits.open(pseudo_cl_cov_path)
+    hdu_cov = fits.open(cl_cov_path)
     cov_eb = hdu_cov["COVAR_EB_EB"].data
     cov_bb = hdu_cov["COVAR_BB_BB"].data
     hdu_cov.close()
@@ -146,42 +146,41 @@ def _create_cl_figure(
 # Canonical per-version file paths (COSMO_VAL results tree), reconstructed from
 # --results-dir so the version sweep is self-contained.
 # ---------------------------------------------------------------------------
-def _pseudo_cl(results_dir, ver, blind="A", nbins=32):
-    return f"{results_dir}/pseudo_cl_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
+def _cl(results_dir, ver, blind="A", nbins=32):
+    return f"{results_dir}/cl_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
 
 
-def _pseudo_cl_cov(results_dir, ver, blind="A", nbins=32):
+def _cl_cov(results_dir, ver, blind="A", nbins=32):
     return (
-        f"{results_dir}/pseudo_cl_cov_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
+        f"{results_dir}/cl_cov_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
     )
 
 
-def _resolve_pseudo_cl_paths(
+def _resolve_cl_paths(
     results_dir,
     ver,
     fiducial_version=None,
-    fiducial_pseudo_cl_path=None,
-    fiducial_pseudo_cl_cov_path=None,
+    fiducial_cl_path=None,
+    fiducial_cl_cov_path=None,
     blind="A",
     nbins=32,
 ):
-    """Resolve the pseudo-Cl and covariance paths for one version in the sweep.
+    """Resolve the Cl and covariance paths for one version in the sweep.
 
     Every version is read from the reconstructed COSMO_VAL pattern, except the
     fiducial version when explicit override paths are supplied: the
-    fiducial FITS files are named `pseudo_cl_{version}.fits` /
-    `pseudo_cl_cov_{version}.fits` (no blind=/nbins= tokens), so pattern
+    fiducial FITS files carry no blind=/nbins= tokens, so pattern
     reconstruction can't find them and an explicit path is required instead.
     """
     if (
         ver == fiducial_version
-        and fiducial_pseudo_cl_path
-        and fiducial_pseudo_cl_cov_path
+        and fiducial_cl_path
+        and fiducial_cl_cov_path
     ):
-        return fiducial_pseudo_cl_path, fiducial_pseudo_cl_cov_path
+        return fiducial_cl_path, fiducial_cl_cov_path
     return (
-        _pseudo_cl(results_dir, ver, blind, nbins),
-        _pseudo_cl_cov(results_dir, ver, blind, nbins),
+        _cl(results_dir, ver, blind, nbins),
+        _cl_cov(results_dir, ver, blind, nbins),
     )
 
 
@@ -190,8 +189,8 @@ def main(
     results_dir,
     out_dir=None,
     fiducial_version=None,
-    fiducial_pseudo_cl_path=None,
-    fiducial_pseudo_cl_cov_path=None,
+    fiducial_cl_path=None,
+    fiducial_cl_cov_path=None,
     out_file=None,
 ):
     version = catalogs.fiducial
@@ -200,15 +199,15 @@ def main(
 
     if out_file is not None:
         # One-file mode: only the fiducial paper figure (Fig. 4), 300 dpi PNG.
-        pseudo_cl_path, pseudo_cl_cov_path = _resolve_pseudo_cl_paths(
+        cl_path, cl_cov_path = _resolve_cl_paths(
             results_dir,
             version,
             fiducial_version,
-            fiducial_pseudo_cl_path,
-            fiducial_pseudo_cl_cov_path,
+            fiducial_cl_path,
+            fiducial_cl_cov_path,
         )
-        ell, cl_bb, cl_eb, cov_bb, cov_eb, sigma_bb, sigma_eb = _load_pseudo_cl_data(
-            pseudo_cl_path, pseudo_cl_cov_path
+        ell, cl_bb, cl_eb, cov_bb, cov_eb, sigma_bb, sigma_eb = _load_cl_data(
+            cl_path, cl_cov_path
         )
         fig = _create_cl_figure(
             ell,
@@ -240,15 +239,15 @@ def main(
         )
 
         # Load data
-        pseudo_cl_path, pseudo_cl_cov_path = _resolve_pseudo_cl_paths(
+        cl_path, cl_cov_path = _resolve_cl_paths(
             results_dir,
             ver,
             fiducial_version,
-            fiducial_pseudo_cl_path,
-            fiducial_pseudo_cl_cov_path,
+            fiducial_cl_path,
+            fiducial_cl_cov_path,
         )
-        ell, cl_bb, cl_eb, cov_bb, cov_eb, sigma_bb, sigma_eb = _load_pseudo_cl_data(
-            pseudo_cl_path, pseudo_cl_cov_path
+        ell, cl_bb, cl_eb, cov_bb, cov_eb, sigma_bb, sigma_eb = _load_cl_data(
+            cl_path, cl_cov_path
         )
 
         # Create figure with appropriate title
@@ -279,15 +278,15 @@ def main(
             print(f"Saved {paper_path}")
 
     # Compute PTEs for evidence (fiducial version, leak-corrected only)
-    pseudo_cl_path, pseudo_cl_cov_path = _resolve_pseudo_cl_paths(
+    cl_path, cl_cov_path = _resolve_cl_paths(
         results_dir,
         version,
         fiducial_version,
-        fiducial_pseudo_cl_path,
-        fiducial_pseudo_cl_cov_path,
+        fiducial_cl_path,
+        fiducial_cl_cov_path,
     )
-    ell, cl_bb, cl_eb, cov_bb, cov_eb, sigma_bb, sigma_eb = _load_pseudo_cl_data(
-        pseudo_cl_path, pseudo_cl_cov_path
+    ell, cl_bb, cl_eb, cov_bb, cov_eb, sigma_bb, sigma_eb = _load_cl_data(
+        cl_path, cl_cov_path
     )
 
     # Compute PTEs (null tests) using full ell range
@@ -342,7 +341,7 @@ def _from_cli(argv=None):
         "--results-dir",
         default=None,
         help=(
-            "COSMO_VAL output dir with per-version pseudo_cl_* / pseudo_cl_cov_* FITS; "
+            "COSMO_VAL output dir with per-version cl_* / cl_cov_* FITS; "
             "read by the legacy 9-figure set, and by --out-file only when the "
             "fiducial override paths are not given"
         ),
@@ -357,25 +356,25 @@ def _from_cli(argv=None):
         "--fiducial-version",
         default=None,
         help=(
-            "Version string whose pseudo-Cl inputs should be read from explicit "
+            "Version string whose Cl inputs should be read from explicit "
             "override paths instead of the reconstructed COSMO_VAL pattern "
             "(e.g. SP_v1.4.6.3_leak_corr)."
         ),
     )
     ap.add_argument(
-        "--fiducial-pseudo-cl-path",
+        "--fiducial-cl-path",
         default=None,
         help=(
-            "Explicit path to the fiducial version's pseudo-Cl FITS (lc output). "
-            "Requires --fiducial-version and --fiducial-pseudo-cl-cov-path."
+            "Explicit path to the fiducial version's Cl FITS (lc output). "
+            "Requires --fiducial-version and --fiducial-cl-cov-path."
         ),
     )
     ap.add_argument(
-        "--fiducial-pseudo-cl-cov-path",
+        "--fiducial-cl-cov-path",
         default=None,
         help=(
-            "Explicit path to the fiducial version's pseudo-Cl covariance FITS "
-            "(lc output). Requires --fiducial-version and --fiducial-pseudo-cl-path."
+            "Explicit path to the fiducial version's Cl covariance FITS "
+            "(lc output). Requires --fiducial-version and --fiducial-cl-path."
         ),
     )
     a = ap.parse_args(argv)
@@ -386,8 +385,8 @@ def _from_cli(argv=None):
         a.results_dir,
         a.out,
         fiducial_version=a.fiducial_version,
-        fiducial_pseudo_cl_path=a.fiducial_pseudo_cl_path,
-        fiducial_pseudo_cl_cov_path=a.fiducial_pseudo_cl_cov_path,
+        fiducial_cl_path=a.fiducial_cl_path,
+        fiducial_cl_cov_path=a.fiducial_cl_cov_path,
         out_file=a.out_file,
     )
 

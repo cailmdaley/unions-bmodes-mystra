@@ -14,7 +14,7 @@ from pathlib import Path
 
 from numerics import resolve_pte_threshold
 from catalog_versions import VERSIONS, add_catalog_arguments, catalogs_from
-from decision_values import REPORTING_BINNING
+from decision_values import REPORTING_BINNING, SURVEY_PROPERTIES
 
 
 # Version number to word mapping for TeX-safe macro names
@@ -101,7 +101,7 @@ def generate_macros(
     pte_threshold: float = None,
     mock_campaign_evidence_path: Path = None,
     mock_scale_cut_scan_path: Path = None,
-    survey_properties_path: Path = None,
+    survey=None,
     cosebis_modes_path: Path = None,
     mock_per_mock_statistics_path: Path = None,
     mock_mean_vector_stats_path: Path = None,
@@ -576,16 +576,14 @@ def generate_macros(
             macros.append(f"\\newcommand{{\\mockAlphaFiducial}}{{{100 * window[key]:.0f}\\%}}")
             macros.append("")
 
-    if survey_properties_path is not None and survey_properties_path.exists():
-        with open(survey_properties_path) as f:
-            survey = json.load(f)
+    if survey is not None:
         macros.append("% survey properties (fiducial catalogue, Table 1 row)")
-        macros.append(f"\\newcommand{{\\surveyArea}}{{\\num{{{survey['area']:.0f}}}}}")
-        macros.append(f"\\newcommand{{\\surveyNeff}}{{\\num{{{survey['n_eff']:.2f}}}}}")
+        macros.append(f"\\newcommand{{\\surveyArea}}{{\\num{{{survey.area:.0f}}}}}")
+        macros.append(f"\\newcommand{{\\surveyNeff}}{{\\num{{{survey.n_eff:.2f}}}}}")
         # sigma_e_combined is the two-component dispersion; the paper quotes
         # the per-component value.
         macros.append(
-            f"\\newcommand{{\\surveySigmaE}}{{\\num{{{survey['sigma_e_combined'] / math.sqrt(2):.2f}}}}}"
+            f"\\newcommand{{\\surveySigmaE}}{{\\num{{{survey.sigma_e_combined / math.sqrt(2):.2f}}}}}"
         )
         macros.append("")
 
@@ -1011,8 +1009,9 @@ def _from_cli(argv=None):
     )
     ap.add_argument(
         "--survey-properties",
+        type=SURVEY_PROPERTIES.__getitem__,
         default=None,
-        help="Absolute path to catalog survey_properties.json (area, n_eff, sigma_e)",
+        help="fiducial_catalog option whose area, n_eff and sigma_e fill the survey macros",
     )
     ap.add_argument(
         "--cosebis-modes-data",
@@ -1110,7 +1109,7 @@ def _from_cli(argv=None):
             mock_scale_cut_scan_path=(
                 Path(a.mock_scale_cut_scan) if a.mock_scale_cut_scan else None
             ),
-            survey_properties_path=_optional_path(a.survey_properties),
+            survey=a.survey_properties,
             cosebis_modes_path=_optional_path(a.cosebis_modes_data),
             mock_per_mock_statistics_path=_optional_path(a.mock_per_mock_statistics),
             mock_mean_vector_stats_path=_optional_path(a.mock_mean_vector_stats),

@@ -1,0 +1,77 @@
+version: "0.0.14"
+name: "Validation"
+description: |
+  The evidence that the null tests can be trusted: 350 GLASS mocks hold the
+  estimators, covariances and PTE convention against systematics-free
+  simulations, and the estimator checks test the adopted estimators against
+  finer grids, another basis and the other n(z) blinds.
+
+inputs:
+  - id: xi_reporting
+    from: ../data_vectors.xi_reporting
+  - id: xi_integration
+    from: ../data_vectors.xi_integration
+  - id: xi_integration_convergence
+    from: ../data_vectors.xi_integration_convergence
+  - id: xi_sweep
+    from: ../data_vectors.xi_sweep
+  - id: pure_eb_data
+    from: ../data_vectors.pure_eb_data
+  - id: pure_eb_pte_per_cut
+    from: ../data_vectors.pure_eb_pte_per_cut
+  - id: cosebis_modes_data
+    from: ../data_vectors.cosebis_modes_data
+  - id: cosebis_pte_per_cut
+    from: ../data_vectors.cosebis_pte_per_cut
+  - id: cl_bandpowers_fine
+    from: ../data_vectors.cl_bandpowers_fine
+  - id: cl_sweep
+    from: ../data_vectors.cl_sweep
+  - id: cl_pte_per_cut
+    from: ../data_vectors.cl_pte_per_cut
+  - id: cosmology_snapshot
+    from: ../covariances.cosmology_snapshot
+  - id: cov_integration
+    from: ../covariances.cov_integration
+  - id: cov_sweep
+    from: ../covariances.cov_sweep
+  - id: cl_cov_reporting
+    from: ../covariances.cl_cov_reporting
+  - id: cl_cov_fine
+    from: ../covariances.cl_cov_fine
+  - id: redshift_distributions
+    from: ../redshift_distributions
+  - id: blind_check_pure_eb
+    from: ../blind_check_pure_eb
+  - id: blind_check_harmonic_cov
+    from: ../blind_check_harmonic_cov
+  - id: blind_check_cosmocov
+    from: ../blind_check_cosmocov
+  - id: blind_check_xi
+    from: ../blind_check_xi
+  - id: blind_check_cl
+    from: ../blind_check_cl
+
+outputs:
+  - {id: mock_per_mock_statistics, from: glass_mocks.mock_per_mock_statistics}
+  - {id: mock_min_pte_calibration, from: glass_mocks.mock_min_pte_calibration}
+  - {id: mock_min_pte_figure, from: glass_mocks.mock_min_pte_figure}
+  - {id: mock_min_pte_scale_cut_scan, from: glass_mocks.mock_min_pte_scale_cut_scan}
+  - {id: mock_campaign_evidence, from: glass_mocks.mock_campaign_evidence}
+  - {id: mock_validation_figure, from: glass_mocks.mock_validation_figure}
+  - {id: mock_mean_vector_stats, from: glass_mocks.mock_mean_vector_stats}
+  - {id: mock_vs_data_noise_table, from: glass_mocks.mock_vs_data_noise_table}
+  - {id: tenk_grid_comparison, from: estimator_checks.tenk_grid_comparison}
+  - {id: cosebis_harmonic_modes, from: estimator_checks.cosebis_harmonic_modes}
+  - {id: cosebis_harmonic_metrics, from: estimator_checks.cosebis_harmonic_metrics}
+  - {id: cosebis_harmonic_metrics_full, from: estimator_checks.cosebis_harmonic_metrics_full}
+  - {id: cosebis_harmonic_version_ptes, from: estimator_checks.cosebis_harmonic_version_ptes}
+  - {id: bb_covariance_blind_independence_evidence, from: estimator_checks.bb_covariance_blind_independence_evidence}
+
+analyses:
+
+  glass_mocks:
+    path: ./analyses/glass_mocks
+
+  estimator_checks:
+    path: ./analyses/estimator_checks

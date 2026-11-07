@@ -1,0 +1,7 @@
+id: baseline
+description: |
+  TreeCorr ξ± on the 20-bin reporting grid and the 1000-bin integration grid,
+  in a single patch, and the pure E/B decomposition, with PTEs evaluated at
+  blind A.
+decisions:
+  patch_count: npatch_1

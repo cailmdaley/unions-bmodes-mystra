@@ -14,25 +14,36 @@ figure's **Provenance** control shows the decisions behind it.
 
 ## How the analysis is organised
 
-`astra.yaml` holds the shared decisions, the paper's findings and its figures and
-tables. Each sub-analysis in `analyses/` is one stage of the measurement:
+`astra.yaml` holds the shared inputs and decisions, the paper's findings and its
+figures and tables. The tree under `analyses/` reads in the order of the argument:
+the covariances, the three data vectors they serve, the null tests on those data
+vectors, and the validation behind both.
 
 | Sub-analysis | What it does |
 |---|---|
-| `catalog` | n(z), mask spectrum and survey properties of the fiducial catalog |
-| `two_point` | TreeCorr ξ± on the reporting and integration grids |
-| `covariance` | `CosmoCov` ξ± and NaMaster pseudo-Cℓ covariances |
-| `pure_eb` | Pure E/B decomposition, localised in angular separation |
-| `cosebis` | COSEBI modes, from ξ± and from harmonic-space bandpowers |
-| `cl_bb` | Catalog-based pseudo-Cℓ^BB and Cℓ^EB |
-| `null_tests` | PTE matrices over scale cuts, and the numbers the paper quotes |
-| `glass_mocks` | Validation of estimators and covariances on 350 GLASS mocks, and the PTE threshold |
-| `convergence` | Convergence of the adopted estimators against a 10,000-bin grid |
+| `covariances` | `CosmoCov` ξ± and NaMaster Cℓ covariances |
+| `data_vectors` | The three representations of the B-mode signal |
+| `data_vectors/real_space` | TreeCorr ξ± on the reporting and integration grids, and the pure E/B decomposition, localised in angular separation |
+| `data_vectors/cosebis` | COSEBI modes from ξ± |
+| `data_vectors/harmonic_space` | Catalog-based Cℓ^BB and Cℓ^EB |
+| `null_tests` | PTE matrices over scale cuts, the primary null test, and the numbers the paper quotes |
+| `validation` | The evidence that the null tests can be trusted |
+| `validation/glass_mocks` | Validation of estimators and covariances on 350 GLASS mocks, and the PTE threshold |
+| `validation/estimator_checks` | The adopted estimators against a 10,000-bin grid, COSEBIs from harmonic-space bandpowers against those from ξ±, and the B-mode covariances across n(z) blinds |
 
-Each scan in `analyses/<sub>/analyses/` repeats one measurement across catalog
-versions, mock realisations or scale cuts, and gathers the members into a single
-product. The scans are declared in `*.sweep.yaml` files, from which the sibling
-`astra.yaml` is generated.
+`data_vectors` and `validation` hold no computation of their own: each declares
+what its children read and re-exports what the rest of the tree reads. Data flows
+one way, from covariances through data vectors and validation to the null tests.
+
+Each scan repeats one measurement across catalog versions, mock realisations or
+scale cuts, and gathers the members into a single product. A scan sits in
+`analyses/` beside the sub-analysis it serves, declared in a `*.sweep.yaml` file
+from which the sibling `astra.yaml` is generated.
+
+A catalog's n(z) file, mask power spectrum, area, n_eff and σ_e are facts from
+Paper I, not steps of this analysis. They live in the option tables of
+`src/workflow/scripts/decision_values.py`, selected by `fiducial_catalog` and
+`fiducial_blind`, and recipes read them through that table.
 
 Code in `src/` is vendored from `sp_validation`; the recipe on each output names
 the exact command.
@@ -68,6 +79,11 @@ cluster rerun. The 32 outputs that can run without the catalogs (the tables,
 macros and figures drawn from recorded evidence) reproduce their records: the
 same numbers to 2.5e-14 and the same pixels. The measurement scripts have not been
 run in this form, so a full rerun is still owed.
+
+Recorded results sit in the present tree with their manifests as written, so a
+manifest's output ids and paths are those of the run that made it, and `lc` treats
+the outputs as changed. The members of the recorded `cl_sweep` bundle still carry
+that run's `pseudo_cl_*` file names, so its gather reruns before anything reads it.
 
 Code is not a declared input, so editing a script does not mark outputs stale;
 each output's manifest records the commit that made it. `CosmoCov` and its GSL

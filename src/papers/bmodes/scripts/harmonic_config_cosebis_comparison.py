@@ -1,7 +1,7 @@
 """Harmonic vs configuration-space COSEBIS cross-validation.
 
 Cross-validates COSEBIS E_n and B_n computed from two independent paths:
-1. Harmonic: pseudo-C_ell (powspace) -> cosebis_from_Cell() with 100k-point FFT-log
+1. Harmonic: C_ell (powspace) -> cosebis_from_Cell() with 100k-point FFT-log
 2. Configuration: fine-binned xi_pm -> calculate_cosebis()
 
 Produces 9 figures per the standard data vector pattern (1 paper + 4 corrected
@@ -63,7 +63,7 @@ def _safe_sigma(covariance_diag):
 
 
 def _build_cell_covariance(cov_path):
-    """Build joint [EE, BB] covariance from FITS pseudo-Cl covariance file."""
+    """Build joint [EE, BB] covariance from FITS Cl covariance file."""
     with fits.open(cov_path) as hdul:
         cov_EE_EE = hdul["COVAR_EE_EE"].data
         cov_EE_BB = hdul["COVAR_EE_BB"].data
@@ -116,10 +116,10 @@ def _build_transforms(cosebis_obj, ell):
 
 
 def _compute_harmonic_cosebis(
-    pseudo_cl_path, pseudo_cov_path, nmodes, theta_min, theta_max
+    cl_path, cl_cov_path, nmodes, theta_min, theta_max
 ):
-    """Compute COSEBIS from pseudo-C_ell and propagate covariance."""
-    with fits.open(pseudo_cl_path) as hdul:
+    """Compute COSEBIS from C_ell and propagate covariance."""
+    with fits.open(cl_path) as hdul:
         data = hdul["PSEUDO_CELL"].data
         ell = np.asarray(data["ELL"], dtype=float)
         cl_ee = np.asarray(data["EE"], dtype=float)
@@ -136,7 +136,7 @@ def _compute_harmonic_cosebis(
 
     T_E, T_B = _build_transforms(cosebis_obj, ell)
 
-    cov_cell = _build_cell_covariance(pseudo_cov_path)
+    cov_cell = _build_cell_covariance(cl_cov_path)
     n_ell = len(ell)
     transform = np.zeros((2 * nmodes, 2 * n_ell))
     transform[:nmodes, :n_ell] = T_E
@@ -545,7 +545,7 @@ def main(
     """Harmonic-vs-config COSEBI cross-check for one angular range.
 
     ``inputs`` is a dict of per-version keys
-    ``pseudo_cl_{ver}`` / ``pseudo_cl_cov_{ver}`` / ``xi_{ver}`` / ``cov_{ver}``
+    ``cl_{ver}`` / ``cl_cov_{ver}`` / ``xi_{ver}`` / ``cov_{ver}``
     (all absolute paths) plus ``specs``. All artifacts land under ``output_dir``;
     ``paper_figure_name`` (when set) is the combined 2×2 paper PDF filename.
     """
@@ -555,18 +555,18 @@ def main(
     scale_cut = tuple(scale_cut)
 
     reliable_mode_max = _reliable_mode_max(cosebis_nbins)
-    print(f"Using {cosebis_nbins}-bin pseudo-Cl, reliable modes 1-{reliable_mode_max}")
+    print(f"Using {cosebis_nbins}-bin Cl, reliable modes 1-{reliable_mode_max}")
 
     versions_leak_corr = [v for v in VERSIONS if "_leak_corr" in v]
 
     # Build input path lookups from the inputs dict
-    pseudo_cl_paths = {
+    cl_paths = {
         k: v
         for k, v in inputs.items()
-        if k.startswith("pseudo_cl_") and not k.startswith("pseudo_cl_cov_")
+        if k.startswith("cl_") and not k.startswith("cl_cov_")
     }
-    pseudo_cov_paths = {
-        k: v for k, v in inputs.items() if k.startswith("pseudo_cl_cov_")
+    cl_cov_paths = {
+        k: v for k, v in inputs.items() if k.startswith("cl_cov_")
     }
     xi_paths = {k: v for k, v in inputs.items() if k.startswith("xi_")}
     cov_paths = {k: v for k, v in inputs.items() if k.startswith("cov_")}
@@ -591,8 +591,8 @@ def main(
         else:
             ver = fig_spec["version_uncorr"]
 
-        pseudo_cl_key = f"pseudo_cl_{ver}"
-        pseudo_cov_key = f"pseudo_cl_cov_{ver}"
+        cl_key = f"cl_{ver}"
+        cl_cov_key = f"cl_cov_{ver}"
         xi_key = f"xi_{ver}"
         cov_key = f"cov_{ver}"
 
@@ -611,8 +611,8 @@ def main(
 
         # Harmonic-space
         ce_h, cb_h, cov_h = _compute_harmonic_cosebis(
-            pseudo_cl_paths[pseudo_cl_key],
-            pseudo_cov_paths[pseudo_cov_key],
+            cl_paths[cl_key],
+            cl_cov_paths[cl_cov_key],
             nmodes,
             scale_cut[0],
             scale_cut[1],
@@ -661,8 +661,8 @@ def main(
                 integration,
             )
             ce_h_other, cb_h_other, cov_h_other = _compute_harmonic_cosebis(
-                pseudo_cl_paths[pseudo_cl_key],
-                pseudo_cov_paths[pseudo_cov_key],
+                cl_paths[cl_key],
+                cl_cov_paths[cl_cov_key],
                 nmodes,
                 other_cut[0],
                 other_cut[1],
@@ -799,7 +799,7 @@ def main(
             "config_b_mode_ptes": config_ptes,
             "note": (
                 f"Harmonic-space COSEBIS computed via cosmo_numba cosebis_from_Cell() "
-                f"from {cosebis_nbins}-bin powspace pseudo-C_ell. "
+                f"from {cosebis_nbins}-bin powspace C_ell. "
                 f"With {cosebis_nbins} bins, modes 1-{reliable_mode_max} are reliably "
                 f"recovered (validated on GLASS mocks: E_n/config within 2%). "
                 f"Higher modes are limited by W_n(ell) numerical precision at "
@@ -837,8 +837,8 @@ def _compute_modes_npz(
     integration,
     reporting,
     version,
-    pseudo_cl_path,
-    pseudo_cov_path,
+    cl_path,
+    cl_cov_path,
     xi_path,
     cov_path,
     out_file,
@@ -866,7 +866,7 @@ def _compute_modes_npz(
             xi_path, cov_path, nmodes, cut, integration
         )
         ce_h, cb_h, cov_h = _compute_harmonic_cosebis(
-            pseudo_cl_path, pseudo_cov_path, nmodes, cut[0], cut[1]
+            cl_path, cl_cov_path, nmodes, cut[0], cut[1]
         )
         payload[f"{name}_harm_En"] = ce_h
         payload[f"{name}_harm_Bn"] = cb_h
@@ -1043,11 +1043,11 @@ def _from_cli(argv=None):
         ),
     )
     ap.add_argument(
-        "--fiducial-pseudo-cl-path",
+        "--fiducial-cl-path",
         default=None,
         help=(
-            "Explicit path to the fiducial 96-bin pseudo-Cl FITS reproduced by lc "
-            "(from lc's cl_bandpowers_fine; e.g. pseudo_cl_SP_v1.4.6.3_leak_corr.fits), "
+            "Explicit path to the fiducial 96-bin Cl FITS reproduced by lc "
+            "(lc's cl_bandpowers_fine), "
             "overriding the --cosmo-val-dir pattern lookup for --fiducial-version."
         ),
     )
@@ -1068,17 +1068,17 @@ def _from_cli(argv=None):
             "Explicit path to the fiducial Gaussian integration covariance "
             "reproduced by lc (covariance_processed.txt), overriding the "
             "--covariance-dir pattern lookup for --fiducial-version. NOTE: there is "
-            "no equivalent override for the 96-bin pseudo-Cl covariance — lc did "
+            "no equivalent override for the 96-bin Cl covariance — lc did "
             "not reproduce it (only a 32-bin cl_cov_reporting exists) — so that "
             "input always reads from the old tree, even for the fiducial version."
         ),
     )
     ap.add_argument(
-        "--fiducial-pseudo-cl-cov-path",
+        "--fiducial-cl-cov-path",
         default=None,
         help=(
-            "Explicit path to the fiducial pseudo-Cl covariance FITS matching "
-            "--fiducial-pseudo-cl-path. Required by the compute pass when "
+            "Explicit path to the fiducial Cl covariance FITS matching "
+            "--fiducial-cl-path. Required by the compute pass when "
             "--cosmo-val-dir is not given."
         ),
     )
@@ -1114,7 +1114,7 @@ def _from_cli(argv=None):
     # --- Compute pass: one version, both scale cuts, one NPZ at --out-file. ---
     if a.out_file:
         version = a.fiducial_version or catalogs.fiducial
-        pseudo_cl_path = a.fiducial_pseudo_cl_path or (
+        cl_path = a.fiducial_cl_path or (
             os.path.join(
                 a.cosmo_val_dir,
                 f"pseudo_cl_{version}_blind={a.blind}_powspace_nbins={cosebis_nbins}.fits",
@@ -1122,7 +1122,7 @@ def _from_cli(argv=None):
             if a.cosmo_val_dir
             else None
         )
-        pseudo_cov_path = a.fiducial_pseudo_cl_cov_path or (
+        cl_cov_path = a.fiducial_cl_cov_path or (
             os.path.join(
                 a.cosmo_val_dir,
                 f"pseudo_cl_cov_{version}_blind={a.blind}_powspace_nbins={cosebis_nbins}.fits",
@@ -1149,8 +1149,8 @@ def _from_cli(argv=None):
         missing = [
             name
             for name, value in (
-                ("--fiducial-pseudo-cl-path", pseudo_cl_path),
-                ("--fiducial-pseudo-cl-cov-path", pseudo_cov_path),
+                ("--fiducial-cl-path", cl_path),
+                ("--fiducial-cl-cov-path", cl_cov_path),
                 ("--fiducial-xi-path", xi_path),
                 ("--fiducial-cov-path", cov_path),
             )
@@ -1168,8 +1168,8 @@ def _from_cli(argv=None):
             a.integration_grid,
             a.reporting_binning,
             version,
-            pseudo_cl_path,
-            pseudo_cov_path,
+            cl_path,
+            cl_cov_path,
             xi_path,
             cov_path,
             a.out_file,
@@ -1185,18 +1185,18 @@ def _from_cli(argv=None):
     for ver in versions:
         is_fiducial = ver == a.fiducial_version
 
-        inputs[f"pseudo_cl_{ver}"] = (
-            a.fiducial_pseudo_cl_path
-            if is_fiducial and a.fiducial_pseudo_cl_path
+        inputs[f"cl_{ver}"] = (
+            a.fiducial_cl_path
+            if is_fiducial and a.fiducial_cl_path
             else os.path.join(
                 a.cosmo_val_dir,
                 f"pseudo_cl_{ver}_blind={a.blind}_powspace_nbins={cosebis_nbins}.fits",
             )
         )
-        # The 96-bin pseudo-Cl covariance has no explicit fiducial path (only the
+        # The 96-bin Cl covariance has no explicit fiducial path (only the
         # 32-bin cl_cov_reporting is produced as a spec output), so every version,
         # including the fiducial, reads it from --cosmo-val-dir.
-        inputs[f"pseudo_cl_cov_{ver}"] = os.path.join(
+        inputs[f"cl_cov_{ver}"] = os.path.join(
             a.cosmo_val_dir,
             f"pseudo_cl_cov_{ver}_blind={a.blind}_powspace_nbins={cosebis_nbins}.fits",
         )

@@ -13,8 +13,8 @@
 #
 # Usage:
 #   run_pure_eb_ptes_sweep.sh --cat-config <cat_config.yaml> \
-#     --pure-eb-sweep-dir <pure_eb/.../pure_eb_sweep> \
-#     --cov-sweep-dir <covariance/.../cov_sweep> \
+#     --pure-eb-sweep-dir <data_vectors/real_space/.../pure_eb_sweep> \
+#     --cov-sweep-dir <covariances/.../cov_sweep> \
 #     --out <output_dir> --blind A --versions "v1 v2 ..."
 set -euo pipefail
 

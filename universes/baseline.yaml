@@ -38,21 +38,11 @@ decisions:
   mode_count: n_max_20
 
 analyses:
-  catalog:
+  covariances:
     universe: baseline
-  two_point:
-    universe: baseline
-  pure_eb:
-    universe: baseline
-  cosebis:
-    universe: baseline
-  cl_bb:
-    universe: baseline
-  covariance:
+  data_vectors:
     universe: baseline
   null_tests:
     universe: baseline
-  glass_mocks:
-    universe: baseline
-  convergence:
+  validation:
     universe: baseline

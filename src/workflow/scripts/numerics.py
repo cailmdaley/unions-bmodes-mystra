@@ -69,7 +69,7 @@ def get_powspace_bin_edges(ell_eff, lmin=8, lmax=2048, power=0.5):
     Parameters
     ----------
     ell_eff : array_like
-        Effective (mean) ell per bin, as stored in pseudo-Cl FITS files.
+        Effective (mean) ell per bin, as stored in Cl FITS files.
     lmin, lmax : int
         Multipole range used in the NaMaster binning.
     power : float

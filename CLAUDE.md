@@ -8,12 +8,15 @@ belongs to Papers III and IV.
 ## Layout
 
 - `astra.yaml`: root decisions, findings, prior insights and report outputs.
-- `analyses/<sub>/astra.yaml`: the nine sub-analyses. README explains the split.
-- `analyses/**/<scan>.sweep.yaml`: scan declarations. The sibling `astra.yaml` is
-  generated from each; edit the declaration and regenerate with `sweep_expand.py`
-  from the `astra-sweep` practice.
+- `analyses/**/astra.yaml`: the sub-analyses, four at the top with `data_vectors`
+  and `validation` holding their children in `analyses/<sub>/analyses/`. README
+  explains the split.
+- `<scan>.sweep.yaml`: scan declarations, in each scan's own directory. The
+  sibling `astra.yaml` is generated from each; edit the declaration and regenerate
+  with `sweep_expand.py` from the `astra-sweep` practice.
 - `universes/`: `baseline` is the accepted paper, `submitted` the paper as
-  submitted. Each sub-analysis has a matching pair under its own `universes/`.
+  submitted. Each sub-analysis has a matching pair under its own `universes/`,
+  and a parent binds its children by name.
 - `index.md`: the report, which is the accepted paper's text with values and
   figures bound to outputs.
 - `src/`: analysis code, vendored from `sp_validation`.
@@ -34,7 +37,9 @@ belongs to Papers III and IV.
   A decision with one is a documented fixed choice. Excluded options carry a
   reason a scientist would accept.
 - `src/workflow/scripts/decision_values.py` maps options to the values scripts
-  compute with; `numerics.py` holds the shared null-test numerics.
+  compute with, including a catalog's n(z) file, mask spectrum and survey
+  properties, which recipes read through it and never as spec inputs;
+  `numerics.py` holds the shared null-test numerics.
 
 ## Checks
 

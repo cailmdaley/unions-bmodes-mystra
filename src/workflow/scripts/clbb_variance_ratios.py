@@ -37,7 +37,7 @@ BB_ROW = 4  # row 4 of each per-mock Cl block is BB
 
 
 def load_bb_covariance(path):
-    """The BB-BB block of a NaMaster pseudo-Cl bandpower covariance."""
+    """The BB-BB block of a NaMaster Cl bandpower covariance."""
 
     with fits.open(path) as hdul:
         covariance = np.array(hdul["COVAR_BB_BB"].data, dtype=np.float64)

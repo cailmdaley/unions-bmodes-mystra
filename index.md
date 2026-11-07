@@ -162,7 +162,7 @@ Harmonic-space power spectra for the fiducial catalog, normalized by uncertainty
 We estimate $C_\ell^{EB}$ and $C_\ell^{BB}$ [equation](#eq:cl_definition) directly from the discrete catalog, providing $\ell$-dependent $B$-mode diagnostics that complement the angular-space statistics. The {cite:t}`wolz.etal25` estimator represents the survey mask as delta functions at source positions and computes the spin-2 transforms on this irregular grid using the `ducc` library {cite:p}`reinecke.seljebotn23`. We subtract an analytic shot-noise contribution following the implementation in Paper IV. We bin into 32 bandpowers with square-root spacing ($\ell^{0.5}$) over $8 \leq \ell \leq 2048$. [figure](#fig:cl_fiducial) shows the measured $C_\ell^{BB}$ and $C_\ell^{EB}$ for the fiducial catalog.
 
 (fig:eb_covariance)=
-:::{astra} analyses.pure_eb.outputs.pure_eb_covariance_figure
+:::{astra} analyses.data_vectors.outputs.pure_eb_covariance_figure
 :class: astra-output--no-caption
 :::
 
@@ -174,7 +174,7 @@ Pure $E$/$B$-mode correlation-function covariance matrix for the fiducial catalo
 ## Covariance estimation
 
 (fig:mock_validation)=
-:::{astra} analyses.glass_mocks.outputs.mock_validation_figure
+:::{astra} analyses.validation.outputs.mock_validation_figure
 :class: astra-output--no-caption
 :::
 
@@ -204,7 +204,7 @@ We assess $B$-mode significance across a grid of angular scale-cut combinations.
 We use the same realizations to test the $\chi^2_\nu$ sampling distribution assumed for the PTE. The $C_\ell^{BB}$ PTEs are uniform, while the configuration-space PTEs skew mildly low, with $\langle\chi^2\rangle/\nu = ${astra:value col=display where="macro=mockChiTwoNuConfigMin"}`outputs.paper_claims`–{astra:value col=display where="macro=mockChiTwoNuConfigMax"}`outputs.paper_claims`. This excess matches the covariance comparison above. In configuration space the analytic $\sigma$ is slightly smaller than the mock scatter, which raises $\chi^2$ by the inverse square of their ratio; in harmonic space the two agree. Calibrating $p_{\mathrm{thr}}$ on the same realizations partially absorbs this skew.
 
 (fig:mock_min_pte)=
-:::{astra} analyses.glass_mocks.outputs.mock_min_pte_figure
+:::{astra} analyses.validation.outputs.mock_min_pte_figure
 :class: astra-output--no-caption
 :::
 

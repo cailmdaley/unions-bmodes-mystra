@@ -1,87 +1,89 @@
 version: "0.0.14"
-name: "B-mode null tests, PTE matrices, and blind-independence checks"
+name: "B-mode null tests"
 description: |
   Turns the B-mode measurements into the paper's verdicts: χ² PTE matrices over
-  every scale-cut pair for each statistic and catalog version, and the numbers
-  the paper quotes. It stands on its own because it gathers the results of every
-  measurement, covariance and mock analysis, and adds the check that the B-mode
-  covariances do not depend on the n(z) blind.
+  every scale-cut pair for each statistic and catalog version, the primary null
+  test and the numbers the paper quotes. It stands on its own because it gathers
+  the results of every measurement, covariance and mock analysis.
 
 inputs:
 
   - id: pure_eb_pte_per_cut
-    from: ../pure_eb.pure_eb_pte_per_cut
+    from: ../data_vectors.pure_eb_pte_per_cut
 
   - id: cosebis_pte_per_cut
-    from: ../cosebis.cosebis_pte_per_cut
+    from: ../data_vectors.cosebis_pte_per_cut
 
   - id: pure_eb_ptes
-    from: ../pure_eb.pure_eb_ptes
+    from: ../data_vectors.pure_eb_ptes
 
   - id: cosebis_ptes
-    from: ../cosebis.cosebis_ptes
+    from: ../data_vectors.cosebis_ptes
 
   - id: cl_sweep
-    from: ../cl_bb.cl_sweep
+    from: ../data_vectors.cl_sweep
 
   - id: cl_bandpowers_reporting
-    from: ../cl_bb.cl_bandpowers_reporting
+    from: ../data_vectors.cl_bandpowers_reporting
 
   - id: cl_cov_reporting
-    from: ../covariance.cl_cov_reporting
-
-  - id: blind_check_pure_eb
-    from: ../blind_check_pure_eb
-
-  - id: blind_check_harmonic_cov
-    from: ../blind_check_harmonic_cov
-
-  - id: blind_check_cosmocov
-    from: ../blind_check_cosmocov
-
-  - id: blind_check_xi
-    from: ../blind_check_xi
-
-  - id: blind_check_pseudo_cl
-    from: ../blind_check_pseudo_cl
+    from: ../covariances.cl_cov_reporting
 
   - id: mock_min_pte_calibration
-    from: ../glass_mocks.mock_min_pte_calibration
+    from: ../validation.mock_min_pte_calibration
 
   - id: mock_campaign_evidence
-    from: ../glass_mocks.mock_campaign_evidence
+    from: ../validation.mock_campaign_evidence
 
   - id: mock_min_pte_scale_cut_scan
-    from: ../glass_mocks.mock_min_pte_scale_cut_scan
+    from: ../validation.mock_min_pte_scale_cut_scan
 
   - id: cosebis_harmonic_metrics
-    from: ../cosebis.cosebis_harmonic_metrics
+    from: ../validation.cosebis_harmonic_metrics
 
   - id: cosebis_harmonic_metrics_full
-    from: ../cosebis.cosebis_harmonic_metrics_full
-
-  - id: survey_properties
-    from: ../catalog.survey_properties
+    from: ../validation.cosebis_harmonic_metrics_full
 
   - id: cosebis_modes_data
-    from: ../cosebis.cosebis_modes_data
+    from: ../data_vectors.cosebis_modes_data
 
   - id: mock_per_mock_statistics
-    from: ../glass_mocks.mock_per_mock_statistics
+    from: ../validation.mock_per_mock_statistics
 
   - id: mock_mean_vector_stats
-    from: ../glass_mocks.mock_mean_vector_stats
+    from: ../validation.mock_mean_vector_stats
 
   - id: mock_vs_data_noise_table
-    from: ../glass_mocks.mock_vs_data_noise_table
+    from: ../validation.mock_vs_data_noise_table
 
   - id: cov_reporting_g
-    from: ../covariance.cov_reporting_g
+    from: ../covariances.cov_reporting_g
 
   - id: cov_reporting_ng
-    from: ../covariance.cov_reporting_ng
+    from: ../covariances.cov_reporting_ng
 
 outputs:
+  - id: primary_null_test_report
+    type: metric
+    format: json
+    description: |
+      The null test for the selected primary range and COSEBI mode subsets,
+      with the global minimum-PTE threshold and mock p-value recalibrated from
+      the stored per-mock PTE columns; the mocks are not remeasured. The
+      complete six-test, two-range evidence stays in
+      [mock_min_pte_calibration](#inputs.mock_min_pte_calibration).
+    inputs: [mock_min_pte_calibration, mock_per_mock_statistics]
+    decisions: [fiducial_scale_cuts, mode_subsets]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/primary_null_test_report.py
+        --calibration {inputs.mock_min_pte_calibration}
+        --per-mock-statistics {inputs.mock_per_mock_statistics}
+        --fiducial-scale-cuts {decisions.fiducial_scale_cuts}
+        --mode-subsets {decisions.mode_subsets}
+        --out-file {output}
+      resources: { cpus: 1, memory: "2GB" }
+
   - id: paper_claims
     type: table
     format: csv
@@ -155,8 +157,8 @@ outputs:
         --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --blind {decisions.fiducial_blind}
         --results-dir $d_cl
         --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
-        --fiducial-pseudo-cl-path {inputs.cl_bandpowers_reporting}
-        --fiducial-pseudo-cl-cov-path {inputs.cl_cov_reporting}
+        --fiducial-cl-path {inputs.cl_bandpowers_reporting}
+        --fiducial-cl-cov-path {inputs.cl_cov_reporting}
         --emit evidence
         --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
@@ -196,8 +198,8 @@ outputs:
         computed as in the root `nu_penalty_verdicts` table) and the
         largest PTE shift induced by the object-wise PSF-leakage
         correction (`\leakCorrMaxPteShift`);
-      - the survey row (`\surveyArea`, `\surveyNeff`, `\surveySigmaE`) from
-        [survey_properties](#inputs.survey_properties);
+      - the survey row (`\surveyArea`, `\surveyNeff`, `\surveySigmaE`) of the
+        [fiducial catalog](#../decisions.fiducial_catalog);
       - the COSEBI first-mode significance B₁/σ₁ at both windows
         (`\cosebisFirstModeSignificance{Full,Fid}`) from
         [cosebis_modes_data](#inputs.cosebis_modes_data);
@@ -222,7 +224,6 @@ outputs:
       - mock_min_pte_scale_cut_scan
       - cosebis_harmonic_metrics
       - cosebis_harmonic_metrics_full
-      - survey_properties
       - cosebis_modes_data
       - mock_per_mock_statistics
       - mock_mean_vector_stats
@@ -242,7 +243,7 @@ outputs:
         --harmonic-config-full-evidence {inputs.cosebis_harmonic_metrics_full}
         --scale-cut-convention {decisions.scale_cut_convention}
         --pte-threshold {decisions.pte_threshold}
-        --survey-properties {inputs.survey_properties}
+        --survey-properties {decisions.fiducial_catalog}
         --cosebis-modes-data {inputs.cosebis_modes_data}
         --mock-per-mock-statistics {inputs.mock_per_mock_statistics}
         --mock-mean-vector-stats {inputs.mock_mean_vector_stats}
@@ -252,84 +253,17 @@ outputs:
         --emit macros
         --out-file {output}
 
-  - id: bb_covariance_blind_independence_evidence
-    type: figure
-    format: png
-    description: |
-      Per-bin ratios of the covariance diagonals of blinds B and C to
-      blind A, for the B-mode block and, as the reference, the E-mode
-      block: pure E/B over the 20 reporting bins, COSEBIs (n ≤ 20) on
-      the full 1'–250' range and harmonic Cℓ over the 32 bandpowers, on
-      the [catalog version](#decisions.bb_blind_check_version) chosen
-      for the check. Supports the [blind-A fiducial
-      choice](#../decisions.fiducial_blind); it does not enter the
-      headline figures. The covariances are read from fixed per-blind
-      files, so the [Monte-Carlo sample
-      count](#../decisions.mc_samples) only sizes the ±√(2/N) reference
-      band drawn on the ξ_± panels.
-    decisions: [bb_blind_check_version, reporting_binning, integration_grid, mode_count, mc_samples]
-    inputs:
-      - blind_check_pure_eb
-      - blind_check_harmonic_cov
-      - blind_check_cosmocov
-      - blind_check_xi
-      - blind_check_pseudo_cl
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/bb_covariance_blind_independence.py
-        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --mc-samples {decisions.mc_samples}
-        --version {decisions.bb_blind_check_version}
-        --pure-eb-template '{inputs.blind_check_pure_eb}'
-        --harmonic-template '{inputs.blind_check_harmonic_cov}'
-        --cov-integration-template '{inputs.blind_check_cosmocov}'
-        --xi-template '{inputs.blind_check_xi}'
-        --pseudo-cl-template '{inputs.blind_check_pseudo_cl}'
-        --out-file {output}
-
 decisions:
+  fiducial_scale_cuts:
+    from: ../fiducial_scale_cuts
   pte_definition:
     from: ../pte_definition
   pte_blind_strategy:
     from: ../pte_blind_strategy
-
   scale_cut_convention:
     from: ../scale_cut_convention
-
   pte_threshold:
     from: ../pte_threshold
-
-  bb_blind_check_version:
-    label: "Catalog for the blind-independence check"
-    tags: [data_selection]
-    rationale: |
-      The B-mode covariance of a null signal is shape noise, plus a
-      small E-to-B mask leakage in harmonic space, and neither reason
-      for its blind independence is specific to a catalog version, so
-      one version suffices for the [BB-covariance blind-independence
-      check](#outputs.bb_covariance_blind_independence_evidence).
-      It uses the fiducial leak-corrected v1.4.6.3 catalog, for which
-      the GLASS mock suite was built. B-mode covariance ratios are
-      expected to sit closer to unity across blinds than E-mode ratios;
-      a Monte Carlo pure-mode covariance adds sampling scatter to both.
-    default: size_cut_v1463
-    options:
-      size_cut_v1463:
-        label: "Size-cut v1.4.6.3"
-        description: |
-          Per-blind covariances on the fiducial leak-corrected
-          catalog, matching the adopted mock suite.
-      mock_version_v146:
-        label: "Mock version v1.4.6"
-        description: |
-          Per-blind covariances at v1.4.6, the catalog version of
-          the excluded GLASS mock suite.
-        excluded: true
-        excluded_reason: |
-          v1.4.6 is not one of the paper's four catalog versions, and
-          its [mock suite](#../glass_mocks.decisions.mock_suite) sits on
-          a mask that is not the data's footprint; the check follows
-          the adopted v1.4.6.3 suite.
-
   scale_cut_pair_grid_alignment:
     label: "Scale-cut grid alignment across statistics"
     tags: [scale_cuts]
@@ -344,7 +278,7 @@ decisions:
       COSEBI matrices by its edges, (9, 16). The COSEBI panels show 190
       of the 210 pure-mode cuts: the single-bin cuts, which include the
       four [unstable pairs
-      ](#../cosebis.decisions.scale_cut_pair_grid), are NaN tiles. The
+      ](#../data_vectors.cosebis.decisions.scale_cut_pair_grid), are NaN tiles. The
       harmonic-space composite uses its own (ℓ_min, ℓ_max)
       bandpower-pair grid over 8 ≤ ℓ ≤ 2048, which has no cell-by-cell
       correspondence with the θ grid.
@@ -363,13 +297,88 @@ decisions:
     from: ../fiducial_blind
   fiducial_catalog:
     from: ../fiducial_catalog
-  integration_grid:
-    from: ../integration_grid
   leakage_correction:
     from: ../leakage_correction
-  mc_samples:
-    from: ../mc_samples
-  mode_count:
-    from: ../mode_count
   reporting_binning:
     from: ../reporting_binning
+  mode_subsets:
+    label: "PTE-reported mode subsets"
+    tags: [estimator]
+    rationale: |
+      n ≤ 6 is the cosmologically informative range, where the
+      E-mode amplitude has saturated; n ≤ 20 tests the B modes over
+      the full computed basis, which matters for the full-range
+      oscillatory pattern that motivates the lower angular cut.
+      The selection acts in [primary_null_test_report](#outputs.primary_null_test_report),
+      recalibrating its minimum from the selected stored mock PTE columns;
+      the complete reference products and mode-vector figures retain both subsets.
+      Larger subsets are unavailable because the
+      [mode count](#../decisions.mode_count) is 20.
+    default: n_le_6_and_n_le_20
+    options:
+      n_le_6_and_n_le_20:
+        label: "Both subsets"
+        insights: [asgari12_few_cosebis_modes_saturate_information, asgari19a_cosebis_nmax20_for_systematics]
+      n_le_6_only:
+        label: "n ≤ 6 only"
+        description: |
+          Drops the n ≤ 20 test.
+      n_le_20_only:
+        label: "n ≤ 20 only"
+        description: |
+          Drops the cosmologically informative subset.
+
+prior_insights:
+
+  asgari12_few_cosebis_modes_saturate_information:
+    id: asgari12_few_cosebis_modes_saturate_information
+    claim: |
+      A relatively small number of COSEBI modes always saturates the
+      available cosmological information, fewer for logarithmic than
+      for linear COSEBIs. Restricting the cosmologically informative
+      PTE subset to the first few modes keeps nearly all the E-mode
+      information.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201218828"
+        quote:
+          exact: "We find that a relatively small number of COSEBIs modes is always enough to saturate to the maximum information level."
+        location:
+          page: 1
+    scope: |
+      Fisher forecasts (Asgari, Schneider & Simon 2012); the
+      saturation point depends on survey and parameters, and Paper
+      II's n ≈ 5–6 comes from its own E-mode data vector.
+
+  asgari19a_cosebis_nmax20_for_systematics:
+    id: asgari19a_cosebis_nmax20_for_systematics
+    claim: |
+      COSEBI E-mode predictions vanish beyond the first ~7 modes, so
+      high modes carry no cosmological information, but systematic
+      signals need not follow that behaviour and can be significant
+      at large n. Truncating at n = 20 covers both the cosmological
+      and the systematic-diagnostic range.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "Therefore, we do not expect to gain any cosmological information from these modes."
+        location:
+          page: 7
+      - id: ev2
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "On the other hand the signal from systematic effects does not necessarily follow the same behaviour."
+        location:
+          page: 7
+      - id: ev3
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "which encompasses modes that are important for both cosmological and systematic analyses."
+        location:
+          page: 7
+    scope: |
+      COSEBI B-mode analysis of KiDS-450, DES-SV and CFHTLenS
+      (Asgari et al. 2019a, §4); same n_max = 20 as Paper II.

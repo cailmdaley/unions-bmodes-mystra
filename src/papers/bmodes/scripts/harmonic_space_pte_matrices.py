@@ -32,27 +32,27 @@ from decision_values import FIDUCIAL_BLIND, FIDUCIAL_ELL_CUT
 plt.style.use(PAPER_MPLSTYLE)
 
 
-def _pseudo_cl(results_dir, ver, blind="A", nbins=32):
-    return f"{results_dir}/pseudo_cl_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
+def _cl(results_dir, ver, blind="A", nbins=32):
+    return f"{results_dir}/cl_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
 
 
-def _pseudo_cl_cov(results_dir, ver, blind="A", nbins=32):
+def _cl_cov(results_dir, ver, blind="A", nbins=32):
     return (
-        f"{results_dir}/pseudo_cl_cov_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
+        f"{results_dir}/cl_cov_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
     )
 
 
 def compute_pte_matrix(
-    pseudo_cl_path, pseudo_cl_cov_path, fiducial_ell_min=None, fiducial_ell_max=None
+    cl_path, cl_cov_path, fiducial_ell_min=None, fiducial_ell_max=None
 ):
     """Compute PTE matrix for all ell-bin cut combinations.
 
     Parameters
     ----------
-    pseudo_cl_path : str
-        Path to pseudo-Cl FITS file.
-    pseudo_cl_cov_path : str
-        Path to pseudo-Cl covariance FITS file.
+    cl_path : str
+        Path to Cl FITS file.
+    cl_cov_path : str
+        Path to Cl covariance FITS file.
     fiducial_ell_min : float, optional
         Minimum ell for fiducial cut.
     fiducial_ell_max : float, optional
@@ -67,8 +67,8 @@ def compute_pte_matrix(
     stats : dict
         Summary statistics.
     """
-    # Load pseudo-Cl data
-    hdu = fits.open(pseudo_cl_path)
+    # Load Cl data
+    hdu = fits.open(cl_path)
     data = hdu["PSEUDO_CELL"].data
     hdu.close()
 
@@ -77,7 +77,7 @@ def compute_pte_matrix(
     n_ell = len(ell)
 
     # Load covariance
-    hdu_cov = fits.open(pseudo_cl_cov_path)
+    hdu_cov = fits.open(cl_cov_path)
     cov_bb = hdu_cov["COVAR_BB_BB"].data
     hdu_cov.close()
 
@@ -374,32 +374,32 @@ def compute_all(
     fiducial_blind,
     results_dir,
     fiducial_version_override=None,
-    fiducial_pseudo_cl_path=None,
-    fiducial_pseudo_cl_cov_path=None,
+    fiducial_cl_path=None,
+    fiducial_cl_cov_path=None,
 ):
     """Run the per-version PTE sweep; return (matrices, ells, stats) dicts."""
     versions = [v for v in VERSIONS if "_ecut" not in v]
 
     fiducial_ell_min, fiducial_ell_max = FIDUCIAL_ELL_CUT["adopted"]
 
-    # Per-version pseudo-Cl / covariance files (canonical COSMO_VAL tree, blind A).
+    # Per-version Cl / covariance files (canonical COSMO_VAL tree, blind A).
     # When --fiducial-version matches and an explicit override path is set, read
     # that path instead of the reconstructed pattern (override files lack the
     # blind=/powspace_nbins= tokens and are distinguished by directory).
     version_to_cl = {
         ver: (
-            fiducial_pseudo_cl_path
-            if ver == fiducial_version_override and fiducial_pseudo_cl_path is not None
-            else _pseudo_cl(results_dir, ver, blind=fiducial_blind)
+            fiducial_cl_path
+            if ver == fiducial_version_override and fiducial_cl_path is not None
+            else _cl(results_dir, ver, blind=fiducial_blind)
         )
         for ver in versions
     }
     version_to_cov = {
         ver: (
-            fiducial_pseudo_cl_cov_path
+            fiducial_cl_cov_path
             if ver == fiducial_version_override
-            and fiducial_pseudo_cl_cov_path is not None
-            else _pseudo_cl_cov(results_dir, ver, blind=fiducial_blind)
+            and fiducial_cl_cov_path is not None
+            else _cl_cov(results_dir, ver, blind=fiducial_blind)
         )
         for ver in versions
     }
@@ -413,7 +413,7 @@ def compute_all(
         print(f"\n--- Processing {version} (blind={fiducial_blind}) ---")
 
         if version not in version_to_cl:
-            print(f"  WARNING: No pseudo-Cl file found for {version}, skipping")
+            print(f"  WARNING: No Cl file found for {version}, skipping")
             continue
 
         if version not in version_to_cov:
@@ -584,7 +584,7 @@ def _from_cli(argv=None):
     ap.add_argument(
         "--results-dir",
         default=None,
-        help="Flat dir of per-version pseudo_cl_* / pseudo_cl_cov_* FITS "
+        help="Flat dir of per-version cl_* / cl_cov_* FITS "
         "(e.g. an untarred cl_sweep bundle); required unless --from-evidence",
     )
     ap.add_argument(
@@ -620,15 +620,15 @@ def _from_cli(argv=None):
         help="Version whose inputs are read from explicit lc override paths below",
     )
     ap.add_argument(
-        "--fiducial-pseudo-cl-path",
+        "--fiducial-cl-path",
         default=None,
-        help="Explicit path to fiducial pseudo-Cl FITS produced by lc "
+        help="Explicit path to fiducial Cl FITS produced by lc "
         "(overrides pattern reconstruction for --fiducial-version)",
     )
     ap.add_argument(
-        "--fiducial-pseudo-cl-cov-path",
+        "--fiducial-cl-cov-path",
         default=None,
-        help="Explicit path to fiducial pseudo-Cl covariance FITS produced by lc "
+        help="Explicit path to fiducial Cl covariance FITS produced by lc "
         "(overrides pattern reconstruction for --fiducial-version)",
     )
     a = ap.parse_args(argv)
@@ -657,8 +657,8 @@ def _from_cli(argv=None):
         a.blind,
         a.results_dir,
         fiducial_version_override=a.fiducial_version,
-        fiducial_pseudo_cl_path=a.fiducial_pseudo_cl_path,
-        fiducial_pseudo_cl_cov_path=a.fiducial_pseudo_cl_cov_path,
+        fiducial_cl_path=a.fiducial_cl_path,
+        fiducial_cl_cov_path=a.fiducial_cl_cov_path,
     )
 
     if a.emit == "matrices":

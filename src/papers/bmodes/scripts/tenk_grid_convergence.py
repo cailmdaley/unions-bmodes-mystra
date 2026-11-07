@@ -658,7 +658,7 @@ def _from_cli(argv=None):
     ap.add_argument("--xi-reporting")
     ap.add_argument("--xi-1k", help="1,000-bin integration-grid TreeCorr dump")
     ap.add_argument("--xi-10k", help="10,000-bin integration-grid TreeCorr dump")
-    ap.add_argument("--pure-eb-baseline", help="Baseline pure_eb_semianalytic_data NPZ")
+    ap.add_argument("--pure-eb-baseline", help="Baseline pure_eb_data NPZ")
     ap.add_argument("--cosebis-baseline", help="Baseline cosebis_modes_data NPZ")
     ap.add_argument("--plot-from-json", help="Render mode: the computed JSON")
     ap.add_argument(

@@ -2,8 +2,8 @@
 # Pure E/B semi-analytic covariance sweep over non-fiducial versions.
 #
 # Loops the non-fiducial version list (from catalog_versions.py --nonfiducial) and runs
-# the same run_pure_eb_semianalytic.sh scatter-gather the fiducial
-# pure_eb_semianalytic_data recipe calls, once per version. Each version's
+# the same run_pure_eb.sh scatter-gather the fiducial
+# pure_eb_data recipe calls, once per version. Each version's
 # reporting+integration ξ± is read from the xi_sweep output dir and its Gaussian
 # integration covariance from the cov_sweep output dir, both by absolute path,
 # so run xi_sweep + cov_sweep before this. The gathered
@@ -13,8 +13,8 @@
 #
 # Usage:
 #   run_pure_eb_sweep.sh --cat-config <cat_config.yaml> \
-#     --xi-sweep-dir <two_point/.../xi_sweep> \
-#     --cov-sweep-dir <covariance/.../cov_sweep> \
+#     --xi-sweep-dir <data_vectors/real_space/.../xi_sweep> \
+#     --cov-sweep-dir <covariances/.../cov_sweep> \
 #     --integration-method {adaptive_dqags|fixed_operator} \
 #     --integration-limits {floor_1arcmin|fine_grid_extent|reporting_extent} \
 #     --rebinning-weights {uniform|npairs|none} \
@@ -69,7 +69,7 @@ for ver in $VERSIONS; do
   done
   echo "[pure_eb_sweep] $ver"
   stage="$OUT/_stage_${ver}"
-  bash "$PSCRIPTS/run_pure_eb_semianalytic.sh" \
+  bash "$PSCRIPTS/run_pure_eb.sh" \
     --version "$ver" --blind "$BLIND" --cat-config "$CATCONFIG" \
     --xi-reporting "$xirep" --xi-integration "$xiint" --cov-integration "$covint" \
     --integration-method "$INTMETHOD" \

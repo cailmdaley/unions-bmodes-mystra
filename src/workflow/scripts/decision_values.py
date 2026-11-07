@@ -9,9 +9,13 @@ argparse `type=` for that decision's flag:
 Excluded options stay in the tables, so a table always covers its decision.
 tools/test_decision_values.py keeps the keys equal to the spec's option ids.
 
-Shell recipes read a scalar through the CLI:
+`NZ_FILE`, `MASK_CLS` and `SURVEY_PROPERTIES` are facts about the catalogs from
+Paper I, keyed by `fiducial_catalog` and, for the n(z), by `fiducial_blind`.
+
+Shell recipes read a value through the CLI, one key per decision it depends on:
 
     python decision_values.py mc_samples n_2000
+    python decision_values.py nz_file size_cut blind_a
 """
 
 import sys
@@ -26,6 +30,14 @@ class Grid(NamedTuple):
     nbins: int
 
 
+class SurveyProperties(NamedTuple):
+    """Survey scale of a catalog."""
+
+    area: float  # deg²
+    n_eff: float  # arcmin⁻²
+    sigma_e_combined: float  # two-component shape dispersion
+
+
 FIDUCIAL_BLIND = {"blind_a": "A", "blind_b": "B", "blind_c": "C"}
 
 # The cat_config version of each catalog; `_leak_corr` is added per leakage_correction.
@@ -34,6 +46,34 @@ FIDUCIAL_CATALOG = {
     "initial": "SP_v1.4.5",
     "masked": "SP_v1.4.8",
     "relaxed_flags": "SP_v1.4.11.3",
+}
+
+# Each catalog's n(z) file per blind. The masked and relaxed-flags catalogs use
+# the pre-SOM n(z).
+NZ_FILE = {
+    catalog: {option: path.format(blind=blind) for option, blind in FIDUCIAL_BLIND.items()}
+    for catalog, path in {
+        "size_cut": "/n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_{blind}.txt",
+        "initial": "/n17data/sguerrini/UNIONS/WL/nz/v1.4.5/nz_SP_v1.4.5_{blind}.txt",
+        "masked": "/n17data/mkilbing/astro/data/CFIS/v1.0/nz/dndz_SP_{blind}.txt",
+        "relaxed_flags": "/n17data/mkilbing/astro/data/CFIS/v1.0/nz/dndz_SP_{blind}.txt",
+    }.items()
+}
+
+# Footprint mask power spectrum (nside 4096, normalised); only the fiducial
+# catalog has one.
+MASK_CLS = {
+    "size_cut": "/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_nside_4096_norm.txt",
+    "initial": None,
+    "masked": None,
+    "relaxed_flags": None,
+}
+
+SURVEY_PROPERTIES = {
+    "size_cut": SurveyProperties(2894.0303815287743, 4.957279270321334, 0.3783979556382064),
+    "initial": SurveyProperties(2894.0303815287743, 6.477062501504287, 0.39740419232655594),
+    "masked": SurveyProperties(2517.021356326454, 4.983323636055024, 0.3797397825805285),
+    "relaxed_flags": SurveyProperties(2894.0303815287743, 6.2581259680050625, 0.380499698062307),
 }
 
 REPORTING_BINNING = {
@@ -65,6 +105,9 @@ FIDUCIAL_ELL_CUT = {
 TABLES = {
     "fiducial_blind": FIDUCIAL_BLIND,
     "fiducial_catalog": FIDUCIAL_CATALOG,
+    "nz_file": NZ_FILE,
+    "mask_cls": MASK_CLS,
+    "survey_properties": SURVEY_PROPERTIES,
     "reporting_binning": REPORTING_BINNING,
     "integration_grid": INTEGRATION_GRID,
     "patch_count": PATCH_COUNT,
@@ -75,4 +118,7 @@ TABLES = {
 }
 
 if __name__ == "__main__":
-    print(TABLES[sys.argv[1]][sys.argv[2]])
+    value = TABLES[sys.argv[1]]
+    for option in sys.argv[2:]:
+        value = value[option]
+    print(value)

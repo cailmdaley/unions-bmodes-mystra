@@ -388,7 +388,7 @@ def main(
     harmonic_paths,
     xi_integration_path,
     cov_integration_paths,
-    pseudo_cl_path,
+    cl_path,
     nmodes,
     theta_min,
     theta_max,
@@ -427,8 +427,8 @@ def main(
             nbins_int,
         )
 
-    # Read ell bin centers from pseudo-Cl data file
-    with fits.open(pseudo_cl_path) as hdu:
+    # Read ell bin centers from Cl data file
+    with fits.open(cl_path) as hdu:
         ell_eff = hdu["PSEUDO_CELL"].data["ELL"]
 
     # Compute ratios relative to blind A
@@ -543,7 +543,7 @@ def _from_cli(argv=None):
     ap.add_argument("--harmonic-template", required=True)
     ap.add_argument("--cov-integration-template", required=True)
     ap.add_argument("--xi-template", required=True)
-    ap.add_argument("--pseudo-cl-template", required=True)
+    ap.add_argument("--cl-template", required=True)
     ap.add_argument("--out-file", required=True, help="Output PNG path (lc {output})")
     a = ap.parse_args(argv)
 
@@ -554,7 +554,7 @@ def _from_cli(argv=None):
         b: a.cov_integration_template.format(version=version, blind=b) for b in BLINDS
     }
     xi_integration_path = a.xi_template.format(version=version)
-    pseudo_cl_path = a.pseudo_cl_template.format(version=version)
+    cl_path = a.cl_template.format(version=version)
 
     main(
         integration=a.integration_grid,
@@ -563,7 +563,7 @@ def _from_cli(argv=None):
         harmonic_paths=harmonic_paths,
         xi_integration_path=xi_integration_path,
         cov_integration_paths=cov_integration_paths,
-        pseudo_cl_path=pseudo_cl_path,
+        cl_path=cl_path,
         nmodes=a.mode_count,
         theta_min=a.reporting_binning.min_sep,
         theta_max=a.reporting_binning.max_sep,

@@ -45,21 +45,11 @@ decisions:
   mode_count: n_max_20
 
 analyses:
-  catalog:
+  covariances:
     universe: submitted
-  two_point:
-    universe: submitted
-  pure_eb:
-    universe: submitted
-  cosebis:
-    universe: submitted
-  cl_bb:
-    universe: submitted
-  covariance:
+  data_vectors:
     universe: submitted
   null_tests:
     universe: submitted
-  glass_mocks:
-    universe: submitted
-  convergence:
+  validation:
     universe: submitted

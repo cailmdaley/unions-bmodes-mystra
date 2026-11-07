@@ -1,0 +1,59 @@
+version: "0.0.14"
+name: "Data vectors"
+description: |
+  The three representations of the B-mode signal the null tests act on:
+  correlation functions and pure E/B modes in real space, COSEBIs, and power
+  spectra in harmonic space. Each is measured for the fiducial catalog and
+  across catalog versions, with its PTEs over scale cuts.
+
+inputs:
+  - id: shapepipe_v14_catalogs
+    from: ../shapepipe_v14_catalogs
+  - id: shapepipe_v145_rerun
+    from: ../shapepipe_v145_rerun
+  - id: redshift_distributions
+    from: ../redshift_distributions
+  - id: redshift_distributions_pre_som
+    from: ../redshift_distributions_pre_som
+  - id: cov_integration
+    from: ../covariances.cov_integration
+  - id: cov_reporting_ng
+    from: ../covariances.cov_reporting_ng
+  - id: cov_sweep
+    from: ../covariances.cov_sweep
+  - id: cl_cov_reporting
+    from: ../covariances.cl_cov_reporting
+
+outputs:
+  - {id: xi_reporting, from: real_space.xi_reporting}
+  - {id: xi_integration, from: real_space.xi_integration}
+  - {id: xi_integration_convergence, from: real_space.xi_integration_convergence}
+  - {id: xi_sweep, from: real_space.xi_sweep}
+  - {id: pure_eb_data, from: real_space.pure_eb_data}
+  - {id: pure_eb_data_vector_figure, from: real_space.pure_eb_data_vector_figure}
+  - {id: pure_eb_covariance_figure, from: real_space.pure_eb_covariance_figure}
+  - {id: pure_eb_version_comparison_figure, from: real_space.pure_eb_version_comparison_figure}
+  - {id: pure_eb_pte_per_cut, from: real_space.pure_eb_pte_per_cut}
+  - {id: pure_eb_ptes, from: real_space.pure_eb_ptes}
+  - {id: cosebis_modes_data, from: cosebis.cosebis_modes_data}
+  - {id: fig_cosebis_data_vector, from: cosebis.fig_cosebis_data_vector}
+  - {id: cosebis_version_comparison, from: cosebis.cosebis_version_comparison}
+  - {id: cosebis_pte_per_cut, from: cosebis.cosebis_pte_per_cut}
+  - {id: cosebis_ptes, from: cosebis.cosebis_ptes}
+  - {id: cl_bandpowers_reporting, from: harmonic_space.cl_bandpowers_reporting}
+  - {id: cl_bandpowers_fine, from: harmonic_space.cl_bandpowers_fine}
+  - {id: cl_sweep, from: harmonic_space.cl_sweep}
+  - {id: cl_data_vector_figure, from: harmonic_space.cl_data_vector_figure}
+  - {id: cl_version_comparison_figure, from: harmonic_space.cl_version_comparison_figure}
+  - {id: cl_pte_per_cut, from: harmonic_space.cl_pte_per_cut}
+
+analyses:
+
+  real_space:
+    path: ./analyses/real_space
+
+  cosebis:
+    path: ./analyses/cosebis
+
+  harmonic_space:
+    path: ./analyses/harmonic_space

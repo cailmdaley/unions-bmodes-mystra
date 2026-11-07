@@ -1,0 +1,10 @@
+id: baseline
+description: |
+  The GLASS mock suite and the estimator checks. Every decision is made in a
+  child or inherited from the root.
+decisions: {}
+analyses:
+  glass_mocks:
+    universe: baseline
+  estimator_checks:
+    universe: baseline

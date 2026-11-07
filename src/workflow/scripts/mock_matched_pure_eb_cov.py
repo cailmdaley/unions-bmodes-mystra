@@ -129,7 +129,7 @@ def _pointwise_binning_matrix(left_edges, right_edges, theta_int, nbins_int):
     ``pure_eb_transform.make_binning_matrix`` — under the pointwise geometry
     that helper raises, since ``none`` is the only weighting the geometry
     admits, and reaching for its averaged form here would make this covariance
-    disagree with ``pure_eb_semianalytic_data`` for reasons that have nothing to
+    disagree with ``pure_eb_data`` for reasons that have nothing to
     do with the input covariance.
     """
 

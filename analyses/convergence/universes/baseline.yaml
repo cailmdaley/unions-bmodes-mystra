@@ -1,6 +1,0 @@
-id: baseline
-description: |
-  Convergence of the pure-mode chain and the 20-mode COSEBI vector, remade
-  on the 10,000-bin integration grid and scored against the 1000-bin
-  covariance. Every decision here is inherited from the root.
-decisions: {}

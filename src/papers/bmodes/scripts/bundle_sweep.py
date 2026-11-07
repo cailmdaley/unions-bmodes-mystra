@@ -1,6 +1,6 @@
 """Bundle astra-sweep member artifacts into one sweep tar.gz of canonical filenames.
 
-The version sweeps (ξ±, pseudo-Cℓ, CosmoCov) are astra-sweep generated
+The version sweeps (ξ±, Cℓ, CosmoCov) are astra-sweep generated
 sub-analyses: one output per (version, …) member, plus a single *gather* output
 that the hand-authored spec references. Downstream consumers (``cosebis_version_comparison --results-dir``,
 ``cl_version_comparison --results-dir``, the pure E/B sweep ``--xi-sweep-dir``,
@@ -44,7 +44,7 @@ XI_GRIDS = {
 }
 XI_NPATCH = 1
 
-# pseudo-Cℓ: 32-bin reporting grid for every version; 96-bin fine grid only for
+# Cℓ: 32-bin reporting grid for every version; 96-bin fine grid only for
 # the leak-corrected versions (it exists to feed the harmonic COSEBI scan).
 CL_GRIDS = ("nbins32", "fine")
 CL_PRODUCTS = ("cl", "cl_cov")
@@ -91,11 +91,11 @@ def _cl_map(versions, fine_nbins, catalogs):
                 continue  # fine grid is leak-corrected-only (harmonic COSEBI scan)
             for product in CL_PRODUCTS:
                 slot = munge_id(ver.removesuffix("_leak_corr")) if fine else _slot(ver)
-                member = f"pseudo_{product}_{slot}_{grid}"
+                member = f"{product}_{slot}_{grid}"
                 actual = catalogs.scan_version(ver, fine=fine)
                 nbins = fine_nbins if fine else 32
                 out[member] = (
-                    f"pseudo_{product}_{actual}_blind={BLIND}_{BINNING}_nbins={nbins}.fits"
+                    f"{product}_{actual}_blind={BLIND}_{BINNING}_nbins={nbins}.fits"
                 )
     return out
 

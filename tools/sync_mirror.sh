@@ -24,9 +24,9 @@ find "$mirror" -name '*cov_tmp*' \( -type f -o -type l \) -delete
 # (analyses/<a>/analyses/<b>/results/<universe>/<file>); root outputs stay at
 # results/<universe>/<file>. Every file under the size cap is copied,
 # which covers the report's figures and values and the inventory's metrics and
-# evidence. Inside nested sub-analyses (the sweeps) only json, csv and png are
-# copied, so per-realisation data stay in the private repository, as do the
-# large integration tables. A file whose annex content is absent stays pending.
+# evidence. Inside the sweeps only json, csv and png are copied, so
+# per-realisation data stay in the private repository, as do the large
+# integration tables. A file whose annex content is absent stays pending.
 max_bytes=${MIRROR_MAX_BYTES:-2000000}
 copy_artifact() {
   local input=$1 output=$2
@@ -49,10 +49,10 @@ for universe in baseline submitted; do
       copy_artifact "$input" "$mirror/results/$universe/$rel"
       continue
     fi
-    if [[ "$dir" == */* && ! "$rel" =~ \.(json|csv|png)$ ]]; then
+    owner="analyses/${dir//\//\/analyses\/}"
+    if compgen -G "$project/$owner/*.sweep.yaml" >/dev/null && [[ ! "$rel" =~ \.(json|csv|png)$ ]]; then
       continue
     fi
-    owner="analyses/${dir//\//\/analyses\/}"
     copy_artifact "$input" "$mirror/$owner/results/$universe/$(basename "$rel")"
   done < <(find -L "$source_results/$universe" -type f ! -name '.*' ! -path '*/variants/*' -print0)
 done

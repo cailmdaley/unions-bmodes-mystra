@@ -24,8 +24,8 @@ import bundle_sweep
 from catalog_versions import VERSIONS, Catalogs
 import compute_cosebis_pte_single as pairs
 from decision_values import MC_SAMPLES
-import generate_pseudo_cl as cl
-import generate_pseudo_cl_cov as cl_cov
+import generate_cl as cl
+import generate_cl_cov as cl_cov
 import merge_cosebis_pte_rows as merge
 import primary_null_test_report as reporting
 import prove_decision_identity as identity
@@ -70,12 +70,12 @@ class DecisionWiringTests(unittest.TestCase):
     def test_estimator_and_noise_reach_existing_primitives(self):
         for method in ["catalog"]:
             with tempfile.TemporaryDirectory() as tmp, patch.object(cl, "CosmologyValidation") as cv:
-                cl.generate_pseudo_cl("test", tmp, "unused", binning="powspace", nbins=128)
+                cl.generate_cl("test", tmp, "unused", binning="powspace", nbins=128)
                 self.assertEqual(cv.call_args.kwargs["cell_method"], method)
                 self.assertEqual(cv.call_args.kwargs["n_ell_bins"], 128)
                 cv.return_value.calculate_pseudo_cl.assert_called_once()
             with tempfile.TemporaryDirectory() as tmp, patch.object(cl_cov, "CosmologyValidation") as cv:
-                cl_cov.generate_pseudo_cl_cov("test", tmp, "unused", nbins=128)
+                cl_cov.generate_cl_cov("test", tmp, "unused", nbins=128)
                 cv.return_value.calculate_pseudo_cl_eb_cov.assert_called_once()
 
     def test_bin_count_reaches_the_measurement(self):
@@ -86,7 +86,7 @@ class DecisionWiringTests(unittest.TestCase):
                 path = Path(kwargs["output_dir"]) / "generated.fits"
                 path.write_bytes(b"fixture")
                 return str(path)
-            with patch.object(cl, "generate_pseudo_cl", side_effect=fake_generate):
+            with patch.object(cl, "generate_cl", side_effect=fake_generate):
                 cl._from_cli(["--ver", "test", "--cat-config", "unused", "--nbins", "128",
                               "--out-file", output])
             self.assertEqual(Path(output).read_bytes(), b"fixture")
@@ -147,7 +147,7 @@ class DecisionWiringTests(unittest.TestCase):
             identity.array_delta(np.array([1.]), np.array([1.+1e-3]), 1e-4)
         with self.assertRaises(ValueError):
             identity.array_delta(np.array([1]), np.array([2]), 1e-4)
-        self.assertNotIn("baseline/pure_eb/pure_eb_semianalytic_data.npz", identity.ARCH_UNCHANGED)
+        self.assertNotIn("baseline/data_vectors/real_space/pure_eb_data.npz", identity.ARCH_UNCHANGED)
         with tempfile.TemporaryDirectory() as tmp:
             tmp = Path(tmp)
             for tree in ["before", "results"]:
@@ -238,7 +238,7 @@ else:
             env = dict(os.environ, PATH=f"{tmp}:{os.environ['PATH']}")
             for option, expected in MC_SAMPLES.items():
                 output = tmp / f"{option}.npz"
-                subprocess.run(["bash", str(ROOT / "src/papers/bmodes/scripts/run_pure_eb_semianalytic.sh"),
+                subprocess.run(["bash", str(ROOT / "src/papers/bmodes/scripts/run_pure_eb.sh"),
                                 "--version", "test", "--blind", "A", "--cat-config", "unused",
                                 "--xi-reporting", "unused", "--xi-integration", "unused",
                                 "--cov-integration", "unused", "--integration-method", "adaptive_dqags",

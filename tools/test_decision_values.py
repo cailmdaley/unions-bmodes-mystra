@@ -23,12 +23,24 @@ import decision_values as dv
 import scale_cuts
 
 ROOT_DECISIONS = yaml.safe_load((ROOT / "astra.yaml").read_text())["decisions"]
-TWO_POINT_DECISIONS = yaml.safe_load((ROOT / "analyses/two_point/astra.yaml").read_text())["decisions"]
+ROOT_INPUTS = {i["id"]: i for i in yaml.safe_load((ROOT / "astra.yaml").read_text())["inputs"]}
+CAT_CONFIG = yaml.safe_load((ROOT / "src/cosmo_val/cat_config.yaml").read_text())
+REAL_SPACE_DECISIONS = yaml.safe_load((ROOT / "analyses/data_vectors/analyses/real_space/astra.yaml").read_text())["decisions"]
+
+# Tables keyed by the options of a decision other than their namesake.
+KEYED_BY = {"nz_file": "fiducial_catalog", "mask_cls": "fiducial_catalog",
+            "survey_properties": "fiducial_catalog"}
+
+FIDUCIAL_NZ = "/n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_{}.txt"
 
 # The values Paper II was computed with.
 PUBLISHED = {
     "fiducial_blind": ("blind_a", "A"),
     "fiducial_catalog": ("size_cut", "SP_v1.4.6.3"),
+    "nz_file": ("size_cut", {"blind_a": FIDUCIAL_NZ.format("A"), "blind_b": FIDUCIAL_NZ.format("B"),
+                             "blind_c": FIDUCIAL_NZ.format("C")}),
+    "mask_cls": ("size_cut", ROOT_INPUTS["footprint_masks"]["source"]),
+    "survey_properties": ("size_cut", (2894.0303815287743, 4.957279270321334, 0.3783979556382064)),
     "reporting_binning": ("bins_20", (1.0, 250.0, 20)),
     "integration_grid": ("bins_1000", (0.5, 300.0, 1000)),
     "patch_count": ("npatch_1", 1),
@@ -42,8 +54,20 @@ PUBLISHED = {
 class Tables(unittest.TestCase):
     def test_keys_are_the_spec_option_ids(self):
         for name, table in dv.TABLES.items():
-            decisions = TWO_POINT_DECISIONS if name == "patch_count" else ROOT_DECISIONS
-            self.assertEqual(set(table), set(decisions[name]["options"]), name)
+            decisions = REAL_SPACE_DECISIONS if name == "patch_count" else ROOT_DECISIONS
+            self.assertEqual(set(table), set(decisions[KEYED_BY.get(name, name)]["options"]), name)
+
+    def test_nz_files_cover_every_blind(self):
+        for blinds in dv.NZ_FILE.values():
+            self.assertEqual(set(blinds), set(ROOT_DECISIONS["fiducial_blind"]["options"]))
+
+    def test_catalog_facts_match_cat_config(self):
+        for option, version in dv.FIDUCIAL_CATALOG.items():
+            entry = CAT_CONFIG[version]
+            self.assertEqual(dv.NZ_FILE[option]["blind_a"], entry["shear"]["redshift_path"], option)
+            self.assertEqual(dv.MASK_CLS[option], entry.get("mask_cls"), option)
+            cov_th = entry["cov_th"]
+            self.assertEqual(dv.SURVEY_PROPERTIES[option], (cov_th["A"], cov_th["n_e"], cov_th["sigma_e"]), option)
 
     def test_published_values(self):
         self.assertEqual(set(PUBLISHED), set(dv.TABLES))
@@ -93,7 +117,7 @@ class Roster(unittest.TestCase):
 
     def test_xi_scan_matrix_is_the_scan_slots(self):
         matrix = yaml.safe_load(
-            (ROOT / "analyses/two_point/analyses/xi_scan/xi_scan.sweep.yaml").read_text()
+            (ROOT / "analyses/data_vectors/analyses/real_space/analyses/xi_scan/xi_scan.sweep.yaml").read_text()
         )["matrix"]
         slots = catalog_versions.Catalogs("size_cut", "applied").scan_slots
         self.assertEqual(set(matrix["version"]), set(slots))

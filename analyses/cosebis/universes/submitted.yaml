@@ -1,7 +1,0 @@
-id: submitted
-description: |
-  COSEBIs with 20 modes on the reporting grid, PTEs for both the n ≤ 6 and
-  n ≤ 20 subsets, on the production scale-cut grid of stable pairs.
-decisions:
-  mode_subsets: n_le_6_and_n_le_20
-  scale_cut_pair_grid: production_grid

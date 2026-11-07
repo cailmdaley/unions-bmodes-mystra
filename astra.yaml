@@ -48,11 +48,11 @@ inputs:
       catalogs share one n(z).
     source: "/n17data/sguerrini/UNIONS/WL/nz/v{base_version}/nz_{base_version}_{blind}.txt"
 
-  - id: redshift_distributions_legacy
+  - id: redshift_distributions_pre_som
     type: data
     description: |
       A pre-SOM n(z) that the masked (v1.4.8) and relaxed-flags
-      (v1.4.11.3) catalogs use for the theory in their pseudo-Cℓ
+      (v1.4.11.3) catalogs use for the theory in their Cℓ
       covariances and Monte Carlo pure-mode draws. Their CosmoCov
       covariances use
       [redshift_distributions](#inputs.redshift_distributions). It
@@ -79,7 +79,7 @@ inputs:
   - id: blind_check_harmonic_cov
     type: data
     description: |
-      Per-version, per-blind pseudo-Cℓ covariance FITS files for the blind-independence check.
+      Per-version, per-blind Cℓ covariance FITS files for the blind-independence check.
     source: "/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_cov_{version}_blind={blind}_powspace_nbins=32.fits"
 
   - id: blind_check_cosmocov
@@ -94,10 +94,10 @@ inputs:
       Per-version ξ± integration-grid measurements for the blind-independence check.
     source: "/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/{version}_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt"
 
-  - id: blind_check_pseudo_cl
+  - id: blind_check_cl
     type: data
     description: |
-      Per-version blind-A pseudo-Cℓ bandpowers for the blind-independence check.
+      Per-version blind-A Cℓ bandpowers for the blind-independence check.
     source: "/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_{version}_blind=A_powspace_nbins=32.fits"
 
 # -----------------------------------------------------------------------------
@@ -105,24 +105,24 @@ inputs:
 # sub-analysis outputs.
 # -----------------------------------------------------------------------------
 outputs:
-  - {id: primary_null_test_report, from: cosebis.primary_null_test_report}
+  - {id: primary_null_test_report, from: null_tests.primary_null_test_report}
 
   # ---------------------------------------------------------------------------
   # Sub-analysis results that the root tables and figures read.
   # ---------------------------------------------------------------------------
   - {id: paper_claims, from: null_tests.paper_claims}
-  - {id: bb_covariance_blind_independence_evidence, from: null_tests.bb_covariance_blind_independence_evidence}
-  - {id: tenk_grid_comparison, from: convergence.tenk_grid_comparison}
+  - {id: bb_covariance_blind_independence_evidence, from: validation.bb_covariance_blind_independence_evidence}
+  - {id: tenk_grid_comparison, from: validation.tenk_grid_comparison}
   - {id: config_space_pte_data, from: null_tests.config_space_pte_data}
   - {id: harmonic_space_pte_data, from: null_tests.harmonic_space_pte_data}
-  - {id: mock_min_pte_calibration, from: glass_mocks.mock_min_pte_calibration}
+  - {id: mock_min_pte_calibration, from: validation.mock_min_pte_calibration}
   # PTEs and χ² of the harmonic-vs-configuration COSEBI comparison, and the
   # E_n/B_n vectors behind its figures.
-  - {id: cosebis_harmonic_modes_evidence, from: cosebis.cosebis_harmonic_metrics}
-  - {id: cosebis_harmonic_modes_full_evidence, from: cosebis.cosebis_harmonic_metrics_full}
-  - {id: cosebis_harmonic_version_ptes, from: cosebis.cosebis_harmonic_version_ptes}
-  - {id: cosebis_harmonic_modes, from: cosebis.cosebis_harmonic_modes}
-  - {id: cosebis_modes_data, from: cosebis.cosebis_modes_data}
+  - {id: cosebis_harmonic_modes_evidence, from: validation.cosebis_harmonic_metrics}
+  - {id: cosebis_harmonic_modes_full_evidence, from: validation.cosebis_harmonic_metrics_full}
+  - {id: cosebis_harmonic_version_ptes, from: validation.cosebis_harmonic_version_ptes}
+  - {id: cosebis_harmonic_modes, from: validation.cosebis_harmonic_modes}
+  - {id: cosebis_modes_data, from: data_vectors.cosebis_modes_data}
 
   # ---------------------------------------------------------------------------
   # Tables and metrics.
@@ -253,22 +253,22 @@ outputs:
   # ---------------------------------------------------------------------------
 
   # Pure E/B decomposition of ξ± for the fiducial catalog.
-  - {id: fig_pure_eb_decomposition, from: pure_eb.pure_eb_data_vector_figure}
+  - {id: fig_pure_eb_decomposition, from: data_vectors.pure_eb_data_vector_figure}
 
   # COSEBI B_n / σ_n for the first 20 modes, fiducial catalog —
   # full angular range (1'–250') overlaid on fiducial cuts (12'–83'). The >4σ
   # first-mode amplitude at full range and its near-zero amplitude at fiducial
   # cuts are the visible evidence behind `ccd_scale_cosebi_pattern`.
-  - {id: fig_cosebis_fiducial, from: cosebis.fig_cosebis_data_vector}
+  - {id: fig_cosebis_fiducial, from: data_vectors.fig_cosebis_data_vector}
 
   # Cℓ^BB and Cℓ^EB normalised by uncertainty, fiducial catalog.
-  - {id: fig_cl_fiducial, from: cl_bb.cl_data_vector_figure}
+  - {id: fig_cl_fiducial, from: data_vectors.cl_data_vector_figure}
 
   # The version comparison is three figures: pure-mode ξ_±^B, harmonic Cℓ^BB and
   # COSEBI B_n across the four catalog variants.
-  - {id: fig_versions_pure_eb, from: pure_eb.pure_eb_version_comparison_figure}
-  - {id: fig_versions_cl, from: cl_bb.cl_version_comparison_figure}
-  - {id: fig_versions_cosebis, from: cosebis.cosebis_version_comparison}
+  - {id: fig_versions_pure_eb, from: data_vectors.pure_eb_version_comparison_figure}
+  - {id: fig_versions_cl, from: data_vectors.cl_version_comparison_figure}
+  - {id: fig_versions_cosebis, from: data_vectors.cosebis_version_comparison}
 
   - id: fig_pte_heatmaps
     type: figure
@@ -392,7 +392,7 @@ decisions:
     label: "Fiducial cosmology for covariance theory"
     tags: [covariance_model]
     rationale: |
-      The semi-analytical covariance needs a fixed cosmology for
+      The analytic covariance needs a fixed cosmology for
       its matter power spectrum. Planck 2018 + BAO ΛCDM is the
       community reference and is shared with the covariances of
       Papers III and IV. No alternative is exposed: the B modes are
@@ -426,11 +426,11 @@ decisions:
       blind_b:
         label: "Blind B"
         excluded: true
-        excluded_reason: "The paper reports blind A; B-mode covariances are blind-independent, shown by null_tests.bb_covariance_blind_independence_evidence."
+        excluded_reason: "The paper reports blind A; B-mode covariances are blind-independent, shown by validation.bb_covariance_blind_independence_evidence."
       blind_c:
         label: "Blind C"
         excluded: true
-        excluded_reason: "The paper reports blind A; B-mode covariances are blind-independent, shown by null_tests.bb_covariance_blind_independence_evidence."
+        excluded_reason: "The paper reports blind A; B-mode covariances are blind-independent, shown by validation.bb_covariance_blind_independence_evidence."
 
   fiducial_scale_cuts:
     label: "Scale cuts for the B-mode null tests"
@@ -529,7 +529,7 @@ decisions:
       the fiducial catalog finds the B_n amplitudes and their
       significance stable (COSEBI n ≤ 6 PTE 0.78 → 0.71 at the fiducial
       cuts; individual high modes move further, as
-      [the convergence finding](#analyses.convergence.findings.cosebis_verdicts_stable_at_1000_bins)
+      [the convergence finding](#analyses.validation.analyses.estimator_checks.findings.cosebis_verdicts_stable_at_1000_bins)
       records).
     default: bins_1000
     options:
@@ -539,7 +539,7 @@ decisions:
           One TreeCorr run per catalog variant.
       bins_10000:
         excluded: true
-        excluded_reason: "Used only as the convergence check in convergence.tenk_grid_comparison; the mock measurements and covariance exist on the 1000-bin grid."
+        excluded_reason: "Used only as the convergence check in validation.tenk_grid_comparison; the mock measurements and covariance exist on the 1000-bin grid."
         label: "10,000 bins (convergence test)"
         description: |
           Fiducial catalog only.
@@ -749,13 +749,13 @@ decisions:
     label: "Harmonic COSEBI bandpower count"
     tags: [binning]
     rationale: |
-      The harmonic COSEBI path sums W_n(ℓ) filters against pseudo-Cℓ
+      The harmonic COSEBI path sums W_n(ℓ) filters against Cℓ
       bandpowers, so its measurement, covariance and transform must share
       one bin count. Too few bins cannot resolve the filters' oscillations;
       too many make mode-coupling deconvolution unstable.
       The paper validates 96 √ℓ-spaced bins on GLASS mocks, where modes
       n ≤ 6 agree with the configuration-space path.
-      The 32 bandpowers of the [Cℓ null test](#analyses.cl_bb) do not
+      The 32 bandpowers of the [Cℓ null test](#analyses.data_vectors.analyses.harmonic_space) do not
       resolve the oscillations beyond n ≈ 4.
     default: bins_96
     options:
@@ -830,10 +830,10 @@ decisions:
       perfectly, so the minimum skews low and p_thr sits below 0.05:
       0.0058 at the fiducial 12–83′ window on 350 mocks (68% interval
       0.0044–0.0076;
-      [mock_min_pte_calibration](#analyses.glass_mocks.outputs.mock_min_pte_calibration)).
+      [mock_min_pte_calibration](#analyses.validation.analyses.glass_mocks.outputs.mock_min_pte_calibration)).
       It stays ≤ 0.0093 over every window with θ_min ≥ 5.24′ and
       θ_max ≥ 36.20′, a region containing the fiducial window with
-      margin ([scale-cut scan](#analyses.glass_mocks.outputs.mock_min_pte_scale_cut_scan));
+      margin ([scale-cut scan](#analyses.validation.analyses.glass_mocks.outputs.mock_min_pte_scale_cut_scan));
       the excursions at the plane's extremes come from few, highly
       correlated degrees of freedom at small θ and the known
       large-scale contamination at large θ_max. A single
@@ -888,7 +888,7 @@ decisions:
       Square-root spacing sits between linear binning, which
       spends most bandpowers at high ℓ, and logarithmic binning,
       which spends most at low ℓ. The
-      [harmonic-space COSEBIs](#analyses.cosebis) use 96
+      [harmonic-space COSEBIs](#analyses.validation.analyses.estimator_checks) use 96
       bandpowers in the same scheme, fine enough to resolve the
       W_n(ℓ) filter oscillations.
     default: bandpowers_32_powspace
@@ -921,7 +921,7 @@ decisions:
     label: "Shot-noise / noise-bias correction"
     tags: [estimator]
     rationale: |
-      Shape noise biases pseudo-Cℓ auto-spectra by an amount
+      Shape noise biases Cℓ auto-spectra by an amount
       that scales with the inverse galaxy density. The paper
       subtracts an analytic shot-noise contribution following
       Paper IV's implementation of the catalog-based estimator,
@@ -955,7 +955,7 @@ decisions:
         label: "Blind A for the reported PTEs"
       all_blinds_for_paper:
         excluded: true
-        excluded_reason: "The paper reports blind A; independence is tested by null_tests.bb_covariance_blind_independence_evidence."
+        excluded_reason: "The paper reports blind A; independence is tested by validation.bb_covariance_blind_independence_evidence."
         label: "All three blinds in the reported PTEs"
         description: |
           Would triple the PTE table without adding B-mode
@@ -1025,7 +1025,7 @@ decisions:
       120-digit precision, so numerics do not set the limit. Fewer
       modes would lose the high-n end of the full-range
       [COSEBI failure signature](#findings.ccd_scale_cosebi_pattern).
-      The [convergence test](#analyses.convergence) covers every
+      The [convergence test](#analyses.validation.analyses.estimator_checks) covers every
       mode the COSEBI analysis reports, so it takes the same n_max.
     default: n_max_20
     options:
@@ -1306,8 +1306,8 @@ prior_insights:
     claim: |
       The inverse of a covariance estimated from N independent
       Gaussian samples of a length-p data vector is biased; the
-      factor (N - p - 2) / (N - 1) removes the bias. A
-      semi-analytical covariance has no sampling noise and needs no
+      factor (N - p - 2) / (N - 1) removes the bias. An
+      analytic covariance has no sampling noise and needs no
       correction.
     created_at: "2026-04-25T00:00:00Z"
     evidence:
@@ -1415,7 +1415,7 @@ prior_insights:
     scope: "Cosmic-shear ξ_± on a finite interval (Schneider, Eifler & Krause 2010, A&A 520, A116)"
     notes: |
       Underwrites the logarithmic basis of the
-      [cosebis sub-analysis](#analyses.cosebis).
+      [cosebis sub-analysis](#analyses.data_vectors.analyses.cosebis).
 
   hybrideb_filter_optimisation_alternative:
     id: hybrideb_filter_optimisation_alternative
@@ -1521,7 +1521,7 @@ prior_insights:
           page: 1
     scope: "Fields sampled at catalog positions (Wolz, Alonso & Nicola 2025, JCAP 01, 028)"
     notes: |
-      The basis of the [cl_bb sub-analysis](#analyses.cl_bb)'s
+      The basis of the [harmonic_space sub-analysis](#analyses.data_vectors.analyses.harmonic_space)'s
       Cℓ^EB / Cℓ^BB bandpowers and their shot-noise correction,
       following Paper IV's implementation (spin-2 transforms via
       `ducc`, NaMaster mode-coupling decoupling).
@@ -1902,7 +1902,7 @@ prior_insights:
     claim: |
       PSF-model errors add systematics to the shear two-point
       correlation function; galaxy–PSF (τ) and PSF–PSF (ρ)
-      correlations with a semi-analytic covariance quantify that
+      correlations with an analytic covariance quantify that
       leakage on UNIONS data, and frame the assessment of the
       catalogs' PSF-leakage correction.
     created_at: "2026-10-31T00:00:00Z"
@@ -1931,29 +1931,14 @@ prior_insights:
 # -----------------------------------------------------------------------------
 analyses:
 
-  catalog:
-    path: ./analyses/catalog
+  covariances:
+    path: ./analyses/covariances
 
-  two_point:
-    path: ./analyses/two_point
-
-  pure_eb:
-    path: ./analyses/pure_eb
-
-  cosebis:
-    path: ./analyses/cosebis
-
-  cl_bb:
-    path: ./analyses/cl_bb
-
-  covariance:
-    path: ./analyses/covariance
+  data_vectors:
+    path: ./analyses/data_vectors
 
   null_tests:
     path: ./analyses/null_tests
 
-  glass_mocks:
-    path: ./analyses/glass_mocks
-
-  convergence:
-    path: ./analyses/convergence
+  validation:
+    path: ./analyses/validation
