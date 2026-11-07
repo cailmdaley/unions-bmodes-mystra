@@ -1902,7 +1902,7 @@ prior_insights:
     claim: |
       PSF-model errors add systematics to the shear two-point
       correlation function; galaxy–PSF (τ) and PSF–PSF (ρ)
-      correlations with an analytic covariance quantify that
+      correlations with a semi-analytic covariance quantify that
       leakage on UNIONS data, and frame the assessment of the
       catalogs' PSF-leakage correction.
     created_at: "2026-10-31T00:00:00Z"
