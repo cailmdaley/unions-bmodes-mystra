@@ -29,7 +29,7 @@
 #   run_cosmocov_chain.sh --version SP_v1.4.6.3_leak_corr --blind blind_a \
 #     --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g \
 #     --planck18-json <cosmology_snapshot.json> \
-#     --cat-config <cat_config.yaml> --mask-cls <mask_cls...norm.txt> \
+#     --mask-cls <mask_cls...norm.txt> \
 #     [--nz <n(z) file; default the per-version SOM n(z) by path convention>] \
 #     --cosmocov <cov binary> --libgsl <libgsl.so.23.x> \
 #     --emit processed --out-file <path>
@@ -42,7 +42,7 @@ LIBGSL=/lib64/libgsl.so.23.1.0
 
 VERSION=""; BLIND=""; MINSEP=""; MAXSEP=""; NBINS=""; GAUSSIAN=""
 # A supplied spectrum applies to SSC unless explicitly disabled.
-PLANCK18=""; CATCONFIG=""; MASKCLS=""; MASKAPPLICATION="masked"; NZ=""; EMIT=""; OUTFILE=""
+PLANCK18=""; MASKCLS=""; MASKAPPLICATION="masked"; NZ=""; EMIT=""; OUTFILE=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --version) VERSION="$2"; shift 2;;
@@ -52,7 +52,6 @@ while [ $# -gt 0 ]; do
     --nbins) NBINS="$2"; shift 2;;
     --gaussian) GAUSSIAN="$2"; shift 2;;
     --planck18-json) PLANCK18="$2"; shift 2;;
-    --cat-config) CATCONFIG="$2"; shift 2;;
     --mask-cls) MASKCLS="$2"; shift 2;;
     --mask-application) MASKAPPLICATION="$2"; shift 2;;
     --nz) NZ="$2"; shift 2;;
@@ -104,7 +103,7 @@ if [ -n "$NZ" ]; then cp "$NZ" "$SCRATCH/nz.txt"; NZ=nz.txt; fi
 echo "[cosmocov] generating .ini"
 python "$VENDOR_ROOT/workflow/scripts/generate_cosmocov_ini.py" \
   --version "$VERSION" --blind "$BLIND" \
-  --planck18-json "$PLANCK18" --cat-config "$CATCONFIG" \
+  --planck18-json "$PLANCK18" \
   --min-sep "$MINSEP" --max-sep "$MAXSEP" --nbins "$NBINS" --gaussian "$GAUSSIAN" \
   --mask-cls "$MASKCLS" ${NZ:+--nz "$NZ"} --out-ini "$INI"
 

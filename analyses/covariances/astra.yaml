@@ -1,10 +1,12 @@
 version: "0.0.14"
 name: "Covariances"
 description: |
-  Computes the covariances behind every B-mode null test: `CosmoCov` ξ_±
-  covariances on the integration and reporting grids, and NaMaster iNKA
-  covariances of the Cℓ bandpowers. It stands on its own because the
-  pure-mode, COSEBI, harmonic-space and mock branches all share these matrices.
+  Every covariance the null tests use: `CosmoCov` ξ_± covariances on the
+  integration and reporting grids, NaMaster iNKA covariances of the Cℓ
+  bandpowers, and the pure E/B and COSEBI covariances, which carry the ξ_±
+  covariance through the linear transforms of the data vectors as M C_ξ Mᵀ and
+  Tᵀ C_ξ T. Those two read the bin centres and pair counts of the
+  [ξ_± measurement](#inputs.xi_integration) and none of its shear.
 
 inputs:
   - id: footprint_masks
@@ -18,8 +20,24 @@ inputs:
 
   - id: redshift_distributions
     from: ../redshift_distributions
-    # Per-version n(z), read by the CosmoCov and iNKA covariances and by the
-    # CosmoCov runs of the [cov_scan](#analyses.cov_scan) sweep.
+    # Per-version n(z), read by the CosmoCov and iNKA covariances, by the
+    # CosmoCov runs of the [cov_scan](#analyses.cov_scan) sweep and, as the theory
+    # mean of its draws, by the Monte Carlo pure-mode covariance.
+
+  # The masked (v1.4.8) and relaxed-flags (v1.4.11.3) catalogs of
+  # pure_eb_covariance_sweep draw about a theory mean built from the pre-SOM n(z).
+  - id: redshift_distributions_pre_som
+    from: ../redshift_distributions_pre_som
+
+  # Pair counts and bin centres for the transforms; the shear columns are not read.
+  - id: xi_reporting
+    from: ../data_vectors.xi_reporting
+
+  - id: xi_integration
+    from: ../data_vectors.xi_integration
+
+  - id: xi_sweep
+    from: ../data_vectors.xi_sweep
 
 outputs:
   - id: cosmology_snapshot
@@ -40,8 +58,8 @@ outputs:
     type: data
     description: |
       Reporting-grid 20-bin Gaussian-only CosmoCov covariance for
-      the [fiducial catalog](#../decisions.fiducial_catalog) at
-      [blind A](#../decisions.fiducial_blind), with area-only geometry:
+      the [fiducial catalog](#decisions.fiducial_catalog) at
+      [blind A](#decisions.fiducial_blind), with area-only geometry:
       the Gaussian part of the [Gaussian + non-Gaussian diagnostic](#outputs.cov_reporting_ng).
       The nside-4096 spectrum is too short for CosmoCov's Gaussian
       pair-count correction, so no unused spectrum is passed here.
@@ -56,7 +74,6 @@ outputs:
         --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind}
         --min-sep 1.0 --max-sep 250.0 --nbins 20 --gaussian g
         --planck18-json {inputs.cosmology_snapshot}
-        --cat-config src/cosmo_val/cat_config.yaml
         --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_catalog} {decisions.fiducial_blind})"
         --emit processed_g --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
@@ -66,14 +83,14 @@ outputs:
     description: |
       Reporting-grid 20-bin full Gaussian + non-Gaussian
       CosmoCov covariance for the
-      [fiducial catalog](#../decisions.fiducial_catalog) at
-      [blind A](#../decisions.fiducial_blind), including
+      [fiducial catalog](#decisions.fiducial_catalog) at
+      [blind A](#decisions.fiducial_blind), including
       connected-trispectrum and super-sample-covariance terms.
       [Mask application](#decisions.mask_application) selects the SSC window
       (footprint spectrum or circular-area approximation); G remains area-only.
       It sets the non-Gaussian share of the diagonal variance
       quoted in the paper and the total-ξ_± error bars of the
-      [pure-mode data-vector figure](#../data_vectors.real_space.outputs.pure_eb_data_vector_figure),
+      [pure-mode data-vector figure](#../analyses.null_tests.outputs.pure_eb_data_vector_figure),
       but does not enter the PTEs, which use
       the [selected integration covariance](#decisions.covariance_class).
     decisions: [fiducial_catalog, fiducial_blind, mask_application, covariance_engine, reporting_binning, leakage_correction]
@@ -86,7 +103,6 @@ outputs:
         --min-sep 1.0 --max-sep 250.0 --nbins 20 --gaussian ng
         --mask-application {decisions.mask_application}
         --planck18-json {inputs.cosmology_snapshot}
-        --cat-config src/cosmo_val/cat_config.yaml
         --mask-cls "$(python src/workflow/scripts/decision_values.py mask_cls {decisions.fiducial_catalog})"
         --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_catalog} {decisions.fiducial_blind})"
         --emit processed --out-file {output}
@@ -96,8 +112,8 @@ outputs:
     type: data
     description: |
       Integration-grid 1000-bin CosmoCov covariance for the
-      [fiducial catalog](#../decisions.fiducial_catalog) at
-      [blind A](#../decisions.fiducial_blind), on 0.5–300 arcmin.
+      [fiducial catalog](#decisions.fiducial_catalog) at
+      [blind A](#decisions.fiducial_blind), on 0.5–300 arcmin.
       The [covariance class](#decisions.covariance_class) is Gaussian-only
       on this grid, with area-only geometry.
       COSEBI covariances derive from it by a linear transform;
@@ -113,7 +129,6 @@ outputs:
         --min-sep 0.5 --max-sep 300.0 --nbins 1000
         --gaussian {decisions.covariance_class}
         --planck18-json {inputs.cosmology_snapshot}
-        --cat-config src/cosmo_val/cat_config.yaml
         --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_catalog} {decisions.fiducial_blind})"
         --emit processed --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
@@ -124,7 +139,7 @@ outputs:
       Gaussian (NaMaster iNKA) covariance of the Cℓ
       bandpowers for the fiducial catalog at blind A, on the
       32-bandpower √ℓ-spaced grid of
-      [the harmonic-space data vector](#../analyses.data_vectors.analyses.harmonic_space), the prescription
+      [the harmonic-space data vector](#../analyses.data_vectors), the prescription
       Paper IV uses for its BB and EB null tests. It takes a Planck
       2018 theory spectrum plus analytic noise, with the weighted
       galaxy-count map at nside 1024 as the window.
@@ -145,10 +160,10 @@ outputs:
     description: |
       As [cl_cov_reporting](#outputs.cl_cov_reporting), on the
       √ℓ-spaced fine grid (96 bandpowers in the fiducial analysis) of
-      [cl_bandpowers_fine](#../data_vectors.harmonic_space.outputs.cl_bandpowers_fine),
+      [cl_bandpowers_fine](#../analyses.data_vectors.outputs.cl_bandpowers_fine),
       for the harmonic-space COSEBI transform. The other three
       leak-corrected catalogs' counterparts come from the
-      [cl_scan sweep](#../analyses.data_vectors.analyses.harmonic_space.analyses.cl_scan).
+      [cl_cov_scan sweep](#analyses.cl_cov_scan).
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, noise_bias_correction, leakage_correction, fiducial_cosmology]
     inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions]
     format: fits
@@ -164,6 +179,152 @@ outputs:
   - id: cov_sweep
     # Integration-grid covariances of the other catalog variants.
     from: cov_scan.cov_sweep_bundle
+
+  - id: cl_cov_sweep
+    # iNKA covariances of the other catalog variants. The fine-grid members feed
+    # [cosebis_harmonic_scan](#../analyses.validation.analyses.cosebis_harmonic_scan).
+    from: cl_cov_scan.cl_cov_sweep_bundle
+
+  - id: pure_eb_covariance
+    type: data
+    format: npz
+    description: |
+      The 120×120 covariance (six 20-bin blocks) of the pure E/B data vector
+      [pure_eb_data](#../analyses.data_vectors.outputs.pure_eb_data) for the
+      [fiducial catalog](#../decisions.fiducial_catalog) at blind A, propagated
+      from [cov_integration](#outputs.cov_integration) by the selected
+      [covariance method](#../decisions.pure_eb_covariance_method). The file
+      records that construction (and the draw count, for the Monte Carlo) so χ²
+      consumers apply the matching Hartlap treatment. The transform M weights
+      fine bins by the [measured pair counts](#inputs.xi_integration); the
+      Monte Carlo draws of ξ_± produce this covariance and nothing else.
+    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples, decomposition_method, leakage_correction]
+    inputs: [xi_reporting, xi_integration, cov_integration, redshift_distributions]
+    recipe:
+      command: >
+        bash src/papers/bmodes/scripts/run_pure_eb_covariance.sh
+        --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind "$(python src/workflow/scripts/decision_values.py fiducial_blind {decisions.fiducial_blind})"
+        --cat-config src/cosmo_val/cat_config.yaml
+        --xi-reporting {inputs.xi_reporting}
+        --xi-integration {inputs.xi_integration}
+        --cov-integration {inputs.cov_integration}
+        --integration-method {decisions.pure_eb_integration_method}
+        --integration-limits {decisions.pure_eb_integration_limits}
+        --rebinning-weights {decisions.pure_eb_rebinning_weights}
+        --covariance-method {decisions.pure_eb_covariance_method}
+        --n-samples "$(python src/workflow/scripts/decision_values.py mc_samples {decisions.mc_samples})"
+        --out-file {output}
+      resources: { cpus: 24, memory: "60GB" }
+
+  - id: pure_eb_covariance_sweep
+    type: data
+    format: tar.gz
+    description: |
+      [pure_eb_covariance](#outputs.pure_eb_covariance) for the seven
+      non-fiducial catalog versions (the other three variants with and without
+      the leakage correction, and the fiducial variant with the opposite
+      treatment), one npz each, from that version's ξ_±
+      ([xi_sweep](#inputs.xi_sweep)) and Gaussian integration covariance
+      ([cov_sweep](#outputs.cov_sweep)).
+    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples, decomposition_method, leakage_correction]
+    inputs: [xi_sweep, cov_sweep, redshift_distributions, redshift_distributions_pre_som]
+    recipe:
+      command: |
+        set -e
+        x=$(mktemp -d) && tar xzf {inputs.xi_sweep} -C $x
+        c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c
+        o=$(mktemp -d)
+        b="$(python src/workflow/scripts/decision_values.py fiducial_blind {decisions.fiducial_blind})"
+        for ver in $(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --nonfiducial); do
+          cb=covariance_"$ver"_"$b"_integration
+          bash src/papers/bmodes/scripts/run_pure_eb_covariance.sh \
+            --version "$ver" --blind "$b" \
+            --cat-config src/cosmo_val/cat_config.yaml \
+            --xi-reporting "$x/$ver"_xi_minsep=1.0_maxsep=250.0_nbins=20_npatch=1.txt \
+            --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
+            --cov-integration "$c/$cb/$cb"_processed.txt \
+            --integration-method {decisions.pure_eb_integration_method} \
+            --integration-limits {decisions.pure_eb_integration_limits} \
+            --rebinning-weights {decisions.pure_eb_rebinning_weights} \
+            --covariance-method {decisions.pure_eb_covariance_method} \
+            --n-samples "$(python src/workflow/scripts/decision_values.py mc_samples {decisions.mc_samples})" \
+            --out-file "$o/$ver"_"$b"_pure_eb_covariance.npz
+        done
+        tar czf {output} -C $o .
+      resources: { cpus: 16, memory: "60GB" }
+
+  - id: cosebis_covariance
+    type: data
+    format: npz
+    description: |
+      The COSEBI mode covariance T^T C_ξ T of
+      [cosebis_modes_data](#../analyses.data_vectors.outputs.cosebis_modes_data)
+      at both scale cuts, from [cov_integration](#outputs.cov_integration), with
+      the σ_n that normalise B_n / σ_n in the
+      [COSEBI data-vector figure](#../outputs.fig_cosebis_fiducial). T depends on
+      the [integration-grid bin centres](#inputs.xi_integration) inside each cut.
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, leakage_correction, reporting_binning, integration_grid]
+    inputs: [xi_integration, cov_integration]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/cosebis_covariance.py
+        --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
+        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
+        --xi-integration {inputs.xi_integration}
+        --cov-integration {inputs.cov_integration}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 8, memory: "16GB" }
+
+  - id: cosebis_covariance_sweep
+    type: data
+    format: tar.gz
+    description: |
+      [cosebis_covariance](#outputs.cosebis_covariance) for the three other
+      catalog versions of the
+      [COSEBI version comparison](#../outputs.fig_versions_cosebis), one npz each,
+      from that version's ξ_± ([xi_sweep](#inputs.xi_sweep)) and Gaussian
+      integration covariance ([cov_sweep](#outputs.cov_sweep)).
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, leakage_correction, reporting_binning, integration_grid]
+    inputs: [xi_sweep, cov_sweep]
+    recipe:
+      command: |
+        set -e
+        x=$(mktemp -d) && tar xzf {inputs.xi_sweep} -C $x
+        c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c
+        o=$(mktemp -d)
+        b="$(python src/workflow/scripts/decision_values.py fiducial_blind {decisions.fiducial_blind})"
+        for ver in $(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --comparison); do
+          cb=covariance_"$ver"_"$b"_integration
+          python src/papers/bmodes/scripts/cosebis_covariance.py \
+            --version "$ver" \
+            --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
+            --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
+            --cov-integration "$c/$cb/$cb"_processed.txt \
+            --scale-cut-convention {decisions.scale_cut_convention} \
+            --out-file "$o/$ver"_"$b"_cosebis_covariance.npz
+        done
+        tar czf {output} -C $o .
+      resources: { cpus: 8, memory: "16GB" }
+
+  - id: pure_eb_covariance_figure
+    type: figure
+    description: |
+      Correlation matrix of the pure E/B covariance for the [fiducial
+      catalog](#decisions.fiducial_catalog), propagated from the
+      CosmoCov ξ_± covariance, in six 20-bin blocks: ξ_+^E,
+      ξ_-^E, ξ_+^B, ξ_-^B, ξ_+^amb, ξ_-^amb. Off-diagonal correlations
+      arise from integral coupling in the pure-mode filters.
+    format: png
+    decisions: [fiducial_catalog, leakage_correction]
+    inputs: [pure_eb_covariance]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/pure_eb_covariance.py
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction}
+        --pure-eb-covariance {inputs.pure_eb_covariance}
+        --out-file {output}
+
 
 decisions:
   integration_grid:
@@ -187,6 +348,30 @@ decisions:
 
   harmonic_validation_binning:
     from: ../harmonic_validation_binning
+
+  pure_eb_integration_method:
+    from: ../pure_eb_integration_method
+
+  pure_eb_rebinning_weights:
+    from: ../pure_eb_rebinning_weights
+
+  pure_eb_integration_limits:
+    from: ../pure_eb_integration_limits
+
+  pure_eb_covariance_method:
+    from: ../pure_eb_covariance_method
+
+  mc_samples:
+    from: ../mc_samples
+
+  decomposition_method:
+    from: ../decomposition_method
+
+  mode_count:
+    from: ../mode_count
+
+  scale_cut_convention:
+    from: ../scale_cut_convention
 
   covariance_engine:
     label: "Covariance engine"
@@ -304,6 +489,9 @@ analyses:
   cov_scan:
     path: ./analyses/cov_scan
 
+  cl_cov_scan:
+    path: ./analyses/cl_cov_scan
+
 prior_insights:
 
   fang20_2dfftlog_stable_real_space_covariance:
@@ -332,3 +520,32 @@ prior_insights:
     scope: |
       Fang, Eifler & Krause 2020, MNRAS 497, 2699; validated for
       DES-Y3- and LSST-Y1-like surveys.
+
+  hartlap07_correction:
+    id: hartlap07_correction
+    claim: |
+      For an inverse covariance estimated from N independent
+      Gaussian samples on a data vector of length p, the
+      maximum-likelihood inverse is biased; the unbiased
+      estimator multiplies it by (N - p - 2) / (N - 1). For
+      analytic (theory) covariances the correction does
+      not apply because no sample uncertainty enters.
+    created_at: "2026-04-25T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361:20066170"
+        quote:
+          exact: |
+            We find that the inverse of the maximum-likelihood
+            estimator of the covariance is biased, the amount of
+            bias depending on the ratio of the number of bins
+            (data vector variables), p, to the number of data
+            sets, n. This bias inevitably leads to an -- in
+            extreme cases catastrophic -- underestimation of
+            the size of the confidence regions.
+          prefix: "Methods. We perform Monte-Carlo simulations to investigate the behaviour of estimators for the inverse covariance matrix"
+          suffix: "We report on a method to remove this bias for the idealised case of Gaussian errors and statistically independent data vectors."
+        location:
+          page: 1
+    scope: "Sample covariances of Gaussian data, not theory covariances (Hartlap et al. 2007, Eq. 17)."
+

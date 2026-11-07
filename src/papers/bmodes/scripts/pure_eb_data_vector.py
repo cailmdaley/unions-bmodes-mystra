@@ -8,7 +8,7 @@ CLI:
     python pure_eb_data_vector.py \
         --fiducial-catalog size_cut --leakage-correction applied \
         --blind blind_a --reporting-binning bins_20 \
-        --pure-eb-data <version>_<blind>_pure_eb_semianalytic.npz \
+        --pure-eb-data <pure_eb_data.npz> --pure-eb-covariance <pure_eb_covariance.npz> \
         --reporting-cov <cov_reporting_ng>/covariance_processed.txt \
         --out-file <figure.png>
 """
@@ -56,10 +56,11 @@ def _compute_joint_pte(xip_B, xim_B, cov_xip_B, cov_xim_B, cov_cross, n_samples=
     return pte, chi2, dof
 
 
-def _load_pure_eb_data(pure_eb_path, cov_path):
-    """Load pure E/B decomposition, the 6-block MC covariance, and the
+def _load_pure_eb_data(pure_eb_path, pure_eb_covariance_path, cov_path):
+    """Load pure E/B decomposition, its 6-block covariance, and the
     reporting-grid CosmoCov ξ± covariance used for the total-curve error bars."""
     dataset = np.load(pure_eb_path)
+    covariance = np.load(pure_eb_covariance_path)
     theta = dataset["theta"]
     return {
         "theta": theta,
@@ -72,8 +73,8 @@ def _load_pure_eb_data(pure_eb_path, cov_path):
         "xim_B": dataset["xim_B"],
         "xip_amb": dataset["xip_amb"],
         "xim_amb": dataset["xim_amb"],
-        "cov_pure_eb": dataset["cov_pure_eb"],
-        "hartlap_n": hartlap_samples(dataset),
+        "cov_pure_eb": covariance["cov_pure_eb"],
+        "hartlap_n": hartlap_samples(covariance),
         # Reporting (masked, non-Gaussian) CosmoCov ξ± covariance, 2×nbins
         # (xi+ / xi- blocks) — the total-signal error bars in the paper.
         "cov_xi": np.loadtxt(cov_path),
@@ -225,14 +226,15 @@ def _create_pure_eb_figure(
     return fig
 
 
-def main(version, blind, reporting, pure_eb_path, cov_path, out_file, scale_cut_convention):
+def main(version, blind, reporting, pure_eb_path, pure_eb_covariance_path, cov_path, out_file,
+         scale_cut_convention):
     fiducial_xip_scale_cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
     fiducial_xim_scale_cut = fiducial_xip_scale_cut
 
     out_file = Path(out_file)
 
     # Fiducial (leak-corrected) decomposition -> paper figure (no title)
-    data = _load_pure_eb_data(pure_eb_path, cov_path)
+    data = _load_pure_eb_data(pure_eb_path, pure_eb_covariance_path, cov_path)
     fig = _create_pure_eb_figure(
         data, fiducial_xip_scale_cut, fiducial_xim_scale_cut, title_suffix=""
     )
@@ -311,8 +313,12 @@ def _from_cli(argv=None):
     ap.add_argument(
         "--pure-eb-data",
         required=True,
-        help="Fiducial <version>_<blind>_pure_eb_semianalytic.npz "
-        "(decomposed ξ± + 6-block MC covariance)",
+        help="Fiducial pure E/B data vector npz",
+    )
+    ap.add_argument(
+        "--pure-eb-covariance",
+        required=True,
+        help="Fiducial 6-block pure E/B covariance npz",
     )
     ap.add_argument(
         "--reporting-cov",
@@ -326,7 +332,7 @@ def _from_cli(argv=None):
     add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
     main(catalogs_from(a).fiducial, a.blind, a.reporting_binning, a.pure_eb_data,
-         a.reporting_cov, a.out_file, a.scale_cut_convention)
+         a.pure_eb_covariance, a.reporting_cov, a.out_file, a.scale_cut_convention)
 
 
 if __name__ == "__main__":

@@ -36,9 +36,9 @@ def _cl(results_dir, ver, blind="A", nbins=32):
     return f"{results_dir}/cl_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
 
 
-def _cl_cov(results_dir, ver, blind="A", nbins=32):
+def _cl_cov(cov_dir, ver, blind="A", nbins=32):
     return (
-        f"{results_dir}/cl_cov_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
+        f"{cov_dir}/cl_cov_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
     )
 
 
@@ -373,6 +373,7 @@ def compute_all(
     catalogs,
     fiducial_blind,
     results_dir,
+    cov_dir,
     fiducial_version_override=None,
     fiducial_cl_path=None,
     fiducial_cl_cov_path=None,
@@ -399,7 +400,7 @@ def compute_all(
             fiducial_cl_cov_path
             if ver == fiducial_version_override
             and fiducial_cl_cov_path is not None
-            else _cl_cov(results_dir, ver, blind=fiducial_blind)
+            else _cl_cov(cov_dir, ver, blind=fiducial_blind)
         )
         for ver in versions
     }
@@ -600,6 +601,10 @@ def _from_cli(argv=None):
         "(recomputes nothing)",
     )
     ap.add_argument(
+        "--cov-dir",
+        help="Directory holding per-version cl_cov_* FITS (--emit)",
+    )
+    ap.add_argument(
         "--figure",
         choices=["fiducial", "appendix"],
         default="fiducial",
@@ -649,13 +654,14 @@ def _from_cli(argv=None):
 
     if a.emit is None:
         ap.error("one of --emit or --from-evidence is required")
-    if a.results_dir is None:
-        ap.error("--results-dir is required for --emit")
+    if a.results_dir is None or a.cov_dir is None:
+        ap.error("--results-dir and --cov-dir are required for --emit")
 
     all_matrices, all_ells, all_stats = compute_all(
         catalogs,
         a.blind,
         a.results_dir,
+        a.cov_dir,
         fiducial_version_override=a.fiducial_version,
         fiducial_cl_path=a.fiducial_cl_path,
         fiducial_cl_cov_path=a.fiducial_cl_cov_path,

@@ -1,45 +1,80 @@
 version: "0.0.14"
 name: "B-mode null tests"
 description: |
-  Turns the B-mode measurements into the paper's verdicts: χ² PTE matrices over
-  every scale-cut pair for each statistic and catalog version, the PTE tables
-  and heatmaps, the primary null test and the numbers the paper quotes. It stands on its own because it gathers
-  the results of every measurement, covariance and mock analysis.
+  Where data meet covariance. Error bars on the data vectors, χ² PTE matrices
+  over every scale-cut pair for each statistic and catalog version, the mock
+  calibration of the minimum PTE, the PTE tables and heatmaps, the primary null
+  test and the numbers the paper quotes.
 
 inputs:
-
-  - id: pure_eb_pte_per_cut
-    from: ../data_vectors.pure_eb_pte_per_cut
-
-  - id: cosebis_pte_per_cut
-    from: ../data_vectors.cosebis_pte_per_cut
-
-  - id: pure_eb_sweep
-    from: ../data_vectors.pure_eb_sweep
+  - id: xi_integration
+    from: ../data_vectors.xi_integration
 
   - id: xi_sweep
     from: ../data_vectors.xi_sweep
 
-  - id: cov_sweep
-    from: ../covariances.cov_sweep
+  - id: pure_eb_data
+    from: ../data_vectors.pure_eb_data
 
-  - id: cl_sweep
-    from: ../data_vectors.cl_sweep
+  - id: pure_eb_sweep
+    from: ../data_vectors.pure_eb_sweep
+
+  - id: cosebis_modes_data
+    from: ../data_vectors.cosebis_modes_data
 
   - id: cl_bandpowers_reporting
     from: ../data_vectors.cl_bandpowers_reporting
 
+  - id: cl_sweep
+    from: ../data_vectors.cl_sweep
+
+  - id: cosebis_modes_sweep
+    from: ../data_vectors.cosebis_modes_sweep
+
+  - id: pure_eb_covariance
+    from: ../covariances.pure_eb_covariance
+
+  - id: pure_eb_covariance_sweep
+    from: ../covariances.pure_eb_covariance_sweep
+
+  - id: cosebis_covariance
+    from: ../covariances.cosebis_covariance
+
+  - id: cosebis_covariance_sweep
+    from: ../covariances.cosebis_covariance_sweep
+
+  - id: cov_integration
+    from: ../covariances.cov_integration
+
+  - id: cov_sweep
+    from: ../covariances.cov_sweep
+
+  - id: cov_reporting_g
+    from: ../covariances.cov_reporting_g
+
+  - id: cov_reporting_ng
+    from: ../covariances.cov_reporting_ng
+
   - id: cl_cov_reporting
     from: ../covariances.cl_cov_reporting
 
-  - id: mock_min_pte_calibration
-    from: ../validation.mock_min_pte_calibration
+  - id: cl_cov_sweep
+    from: ../covariances.cl_cov_sweep
+
+  - id: mock_per_mock_statistics
+    from: ../validation.mock_per_mock_statistics
 
   - id: mock_campaign_evidence
     from: ../validation.mock_campaign_evidence
 
   - id: mock_min_pte_scale_cut_scan
     from: ../validation.mock_min_pte_scale_cut_scan
+
+  - id: mock_mean_vector_stats
+    from: ../validation.mock_mean_vector_stats
+
+  - id: mock_vs_data_noise_table
+    from: ../validation.mock_vs_data_noise_table
 
   - id: cosebis_harmonic_metrics
     from: ../validation.cosebis_harmonic_metrics
@@ -50,58 +85,243 @@ inputs:
   - id: cosebis_harmonic_version_ptes
     from: ../validation.cosebis_harmonic_version_ptes
 
-  - id: cosebis_modes_data
-    from: ../data_vectors.cosebis_modes_data
-
-  - id: mock_per_mock_statistics
-    from: ../validation.mock_per_mock_statistics
-
-  - id: mock_mean_vector_stats
-    from: ../validation.mock_mean_vector_stats
-
-  - id: mock_vs_data_noise_table
-    from: ../validation.mock_vs_data_noise_table
-
-  - id: cov_reporting_g
-    from: ../covariances.cov_reporting_g
-
-  - id: cov_reporting_ng
-    from: ../covariances.cov_reporting_ng
-
 outputs:
-  - id: primary_null_test_report
+  - id: pure_eb_data_vector_figure
+    type: figure
+    description: |
+      Pure E/B decomposition (Schneider et al. 2022) of the measured
+      ξ_+ (left) and ξ_- (right) for the [fiducial
+      catalog](#decisions.fiducial_catalog), plotted as θξ × 10⁴:
+      total (black circles), E mode (blue squares), B mode (crimson
+      crosses) and ambiguous (grey triangles). B modes should vanish
+      for pure lensing and so diagnose systematics; ambiguous modes
+      capture boundary effects from the finite angular range. Error
+      bars on the total come from the
+      [reporting-grid CosmoCov covariance](#inputs.cov_reporting_ng),
+      those on the modes from the [pure-mode covariance](#inputs.pure_eb_covariance). Grey shading
+      marks scales outside the fiducial cuts.
+    format: png
+    decisions: [fiducial_catalog, scale_cut_convention, pte_definition, leakage_correction, fiducial_blind, reporting_binning]
+    inputs: [pure_eb_data, pure_eb_covariance, cov_reporting_ng]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/pure_eb_data_vector.py
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning}
+        --pure-eb-data {inputs.pure_eb_data}
+        --pure-eb-covariance {inputs.pure_eb_covariance}
+        --reporting-cov {inputs.cov_reporting_ng}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+
+  - id: fig_cosebis_data_vector
+    type: figure
+    format: png
+    description: |
+      COSEBI B-mode amplitudes for the [fiducial
+      catalog](#decisions.fiducial_catalog), normalized by
+      uncertainty (B_n/σ_n), at the fiducial scale cuts of 12–83 arcmin
+      (filled circles) and over the full angular range of 1–250 arcmin
+      (open diamonds). Modes n > 6 are shaded; the n ≤ 6 subset captures
+      nearly all cosmological information.
+    decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention]
+    inputs: [cosebis_modes_data, cosebis_covariance]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/cosebis_data_vector.py
+        --plot-from-modes {inputs.cosebis_modes_data}
+        --covariance {inputs.cosebis_covariance}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
+
+  - id: cl_data_vector_figure
+    type: figure
+    description: |
+      C_ℓ^BB/σ (top) and C_ℓ^EB/σ (bottom) for the [fiducial
+      catalog](#decisions.fiducial_catalog). C_ℓ^BB is
+      predominantly positive across the fiducial range; C_ℓ^EB
+      scatters symmetrically around zero, suggesting that any
+      B-mode contamination is not strongly correlated with the
+      lensing signal.
+    format: png
+    decisions: [fiducial_catalog, pte_definition, leakage_correction]
+    inputs: [cl_bandpowers_reporting, cl_cov_reporting]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/cl_data_vector.py
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction}
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
+        --fiducial-cl-path {inputs.cl_bandpowers_reporting}
+        --fiducial-cl-cov-path {inputs.cl_cov_reporting}
+        --out-file {output}
+      resources: { cpus: 2, memory: "8GB" }
+
+  - id: pure_eb_version_comparison_figure
+    type: figure
+    description: |
+      Pure-mode data vectors across catalog versions: initial (red
+      circles), size-cut/fiducial (olive squares), masked (teal
+      diamonds) and relaxed-flags (purple triangles). Upper panels show
+      the total θξ_+ and θξ_-, with the pure E-mode σ as error bars;
+      lower panels the B modes ξ_±^B/σ. Rectangles span the range
+      across versions in each bin, horizontal lines mark the fiducial
+      value, and grey shading marks scales outside the fiducial cuts.
+      Only the size-cut catalog passes all statistics at the fiducial
+      scale cuts ([PTE table](#outputs.pte_table_appendix)).
+    format: png
+    decisions: [scale_cut_convention, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind, reporting_binning]
+    inputs: [pure_eb_data, pure_eb_sweep, pure_eb_covariance, pure_eb_covariance_sweep]
+    recipe:
+      command: >
+        d=$(mktemp -d) && tar xzf {inputs.pure_eb_sweep} -C $d &&
+        c=$(mktemp -d) && tar xzf {inputs.pure_eb_covariance_sweep} -C $c &&
+        python src/papers/bmodes/scripts/pure_eb_version_comparison.py
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning}
+        --results-dir $d
+        --cov-dir $c
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
+        --fiducial-pure-eb-data {inputs.pure_eb_data}
+        --fiducial-pure-eb-covariance {inputs.pure_eb_covariance}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+
+  - id: cosebis_version_comparison
+    type: figure
+    format: png
+    description: |
+      COSEBI B-mode amplitudes B_n/σ_n across catalog versions at full
+      range (upper) and fiducial cuts (lower), per version:
+      initial (red circles), size-cut/fiducial (olive squares), masked
+      (teal diamonds), and relaxed-flags (purple triangles). Rectangles
+      delineate each mode in the horizontal direction and span the range
+      of values across versions in the vertical direction; horizontal
+      lines mark the fiducial value. A light band covers n ≤ 6. Only the
+      size-cut catalog passes all statistics at the fiducial scale cuts
+      ([PTE table](#outputs.pte_table_appendix)).
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, leakage_correction, reporting_binning]
+    inputs: [cosebis_modes_data, cosebis_modes_sweep, cosebis_covariance, cosebis_covariance_sweep]
+    recipe:
+      command: >
+        m=$(mktemp -d) && c=$(mktemp -d) &&
+        tar xzf {inputs.cosebis_modes_sweep} -C $m &&
+        tar xzf {inputs.cosebis_covariance_sweep} -C $c &&
+        python src/papers/bmodes/scripts/cosebis_version_comparison.py
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --blind {decisions.fiducial_blind} --reporting-binning {decisions.reporting_binning} --mode-count {decisions.mode_count}
+        --results-dir $m
+        --cov-dir $c
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
+        --fiducial-modes-path {inputs.cosebis_modes_data}
+        --fiducial-covariance-path {inputs.cosebis_covariance}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 2, memory: "8GB" }
+
+  - id: cl_version_comparison_figure
+    type: figure
+    description: |
+      C_ℓ^BB/σ and C_ℓ^EB/σ across catalog versions: initial (red
+      circles), size-cut/fiducial (olive squares), masked (teal
+      diamonds) and relaxed-flags (purple triangles). Rectangles
+      span each bin horizontally and the range across versions
+      vertically; horizontal lines mark the fiducial value; shaded
+      bands mark multipoles outside the fiducial cuts. Only the
+      size-cut catalog passes all statistics at the fiducial scale cuts
+      ([PTE table](#outputs.pte_table_appendix)).
+    format: png
+    inputs: [cl_sweep, cl_cov_sweep, cl_bandpowers_reporting, cl_cov_reporting]
+    decisions: [pte_definition, fiducial_catalog, leakage_correction]
+    recipe:
+      command: >
+        d=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d &&
+        k=$(mktemp -d) && tar xzf {inputs.cl_cov_sweep} -C $k &&
+        python src/papers/bmodes/scripts/cl_version_comparison.py
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction}
+        --results-dir $d
+        --cov-dir $k
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
+        --fiducial-cl-path {inputs.cl_bandpowers_reporting}
+        --fiducial-cl-cov-path {inputs.cl_cov_reporting}
+        --out-file {output}
+      resources: { cpus: 2, memory: "8GB" }
+
+  - id: cosebis_first_mode_significance
     type: metric
     format: json
     description: |
-      The null test for the selected primary range and COSEBI mode subsets,
-      with the global minimum-PTE threshold and mock p-value recalibrated from
-      the stored per-mock PTE columns; the mocks are not remeasured. The
-      complete six-test, two-range evidence stays in
-      [mock_min_pte_calibration](#inputs.mock_min_pte_calibration).
-    inputs: [mock_min_pte_calibration, mock_per_mock_statistics]
-    decisions: [fiducial_scale_cuts, mode_subsets]
+      First-mode COSEBI B-mode significance B_1/σ_1 for the
+      fiducial catalog, from
+      [cosebis_modes_data](#inputs.cosebis_modes_data) and
+      [cosebis_covariance](#inputs.cosebis_covariance). The
+      `value` is the full-range (1–250 arcmin) significance, the
+      >4σ first-mode excess visible in
+      [fig_cosebis_fiducial](#../outputs.fig_cosebis_fiducial); the
+      JSON also carries the fiducial-cut significance, below 1σ.
+    inputs: [cosebis_modes_data, cosebis_covariance]
     recipe:
       command: >
-        python src/papers/bmodes/scripts/primary_null_test_report.py
-        --calibration {inputs.mock_min_pte_calibration}
-        --per-mock-statistics {inputs.mock_per_mock_statistics}
-        --fiducial-scale-cuts {decisions.fiducial_scale_cuts}
-        --mode-subsets {decisions.mode_subsets}
+        python src/papers/bmodes/scripts/emit_cosebis_first_mode_significance.py
+        --cosebis-modes-npz {inputs.cosebis_modes_data}
+        --cosebis-covariance-npz {inputs.cosebis_covariance}
         --out-file {output}
-      resources: { cpus: 1, memory: "2GB" }
 
-  - id: paper_claims
-    type: table
-    format: csv
+  - id: pure_eb_pte_per_cut
+    type: data
     description: |
-      The table the paper's text reads its quoted numbers from: one row per
-      macro of [pte_summary_macros](#outputs.pte_summary_macros), with its
-      name, display text and numeric value where it has one.
-    inputs: [pte_summary_macros]
+      ξ_+^B, ξ_-^B and joint ξ_tot^B χ² PTE matrices for the
+      fiducial catalog (blind A) over every (θ_min, θ_max) index pair
+      of the 20-bin `geomspace(1', 250', 21)` grid; the COSEBI
+      [scale-cut pair grid](#../analyses.data_vectors) is a subset of it.
+      The χ² applies the [Hartlap finite-sample
+      correction](#../decisions.pure_eb_covariance_method) when the
+      covariance is a Monte Carlo estimate and none when it is exact.
+    format: npz
+    decisions: [fiducial_catalog, fiducial_blind, pte_blind_strategy, pte_definition, leakage_correction]
+    inputs: [pure_eb_data, pure_eb_covariance]
     recipe:
-      command: >-
-        python src/papers/bmodes/scripts/paper_claims.py extract
-        {inputs.pte_summary_macros} {output}
+      command: >
+        python src/papers/bmodes/scripts/calculate_pure_eb_ptes.py
+        --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind "$(python src/workflow/scripts/decision_values.py fiducial_blind {decisions.fiducial_blind})"
+        --pure-eb-data {inputs.pure_eb_data}
+        --pure-eb-covariance {inputs.pure_eb_covariance}
+        --npatch 1
+        --out-file {output}
+
+  - id: cosebis_pte_per_cut
+    # Fiducial-catalog COSEBI PTE matrices at blind A over all stable scale-cut
+    # pairs of `geomspace(1', 250', 21)`, for n <= 6 and n <= 20. Read by the
+    # configuration-space PTE products and the mock minimum-PTE calibration.
+    from: cosebis_pte_grid.cosebis_pte_matrix
+
+  - id: cl_pte_per_cut
+    type: data
+    description: |
+      Cℓ^BB null-test PTEs for all eight catalog variants (four
+      catalogs, with and without leakage correction) over a grid of
+      (ℓ_min, ℓ_max) bandpower ranges, using the iNKA Gaussian
+      bandpower covariance from the
+      [covariances sub-analysis](#../analyses.covariances). The
+      [adopted 300 < ℓ < 1600
+      cut](#decisions.fiducial_scale_cuts) is one cell of the
+      grid, which the
+      [harmonic-space PTE heatmap](#outputs.fig_cl_pte_heatmap)
+      shows.
+    format: npz
+    inputs: [cl_sweep, cl_cov_sweep, cl_bandpowers_reporting, cl_cov_reporting]
+    decisions: [pte_blind_strategy, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
+    recipe:
+      command: >
+        d=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d &&
+        k=$(mktemp -d) && tar xzf {inputs.cl_cov_sweep} -C $k &&
+        python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --blind {decisions.fiducial_blind}
+        --results-dir $d
+        --cov-dir $k
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
+        --fiducial-cl-path {inputs.cl_bandpowers_reporting}
+        --fiducial-cl-cov-path {inputs.cl_cov_reporting}
+        --emit matrices
+        --out-file {output}
+      resources: { cpus: 2, memory: "8GB" }
 
   - id: pure_eb_ptes
     type: data
@@ -110,7 +330,7 @@ outputs:
       (θ_min, θ_max) scale-cut grid) for the seven catalog versions of
       [pure_eb_sweep](#inputs.pure_eb_sweep), one
       `{ver}_A_pure_eb_ptes.npz` each, computed as
-      [pure_eb_pte_per_cut](#inputs.pure_eb_pte_per_cut) is, with the
+      [pure_eb_pte_per_cut](#outputs.pure_eb_pte_per_cut) is, with the
       [covariance-dependent Hartlap
       treatment](#../decisions.pure_eb_covariance_method), from that
       version's data vector and pure-mode covariance. Feeds the
@@ -118,19 +338,22 @@ outputs:
       heatmaps](#outputs.fig_pte_heatmaps).
     format: tar.gz
     decisions: [fiducial_catalog, fiducial_blind, pte_blind_strategy, pte_definition, leakage_correction]
-    inputs: [pure_eb_sweep, cov_sweep]
+    inputs: [pure_eb_sweep, pure_eb_covariance_sweep]
     recipe:
-      command: >
-        p=$(mktemp -d) && tar xzf {inputs.pure_eb_sweep} -C $p &&
-        c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c &&
-        o=$(mktemp -d) &&
-        bash src/papers/bmodes/scripts/run_pure_eb_ptes_sweep.sh
-        --versions "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --nonfiducial)" --blind "$(python src/workflow/scripts/decision_values.py fiducial_blind {decisions.fiducial_blind})"
-        --cat-config src/cosmo_val/cat_config.yaml
-        --pure-eb-sweep-dir $p
-        --cov-sweep-dir $c
-        --out $o
-        && tar czf {output} -C $o .
+      command: |
+        set -e
+        d=$(mktemp -d) && tar xzf {inputs.pure_eb_sweep} -C $d
+        c=$(mktemp -d) && tar xzf {inputs.pure_eb_covariance_sweep} -C $c
+        o=$(mktemp -d)
+        b="$(python src/workflow/scripts/decision_values.py fiducial_blind {decisions.fiducial_blind})"
+        for ver in $(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --nonfiducial); do
+          python src/papers/bmodes/scripts/calculate_pure_eb_ptes.py \
+            --version "$ver" --blind "$b" \
+            --pure-eb-data "$d/$ver"_pure_eb_data.npz \
+            --pure-eb-covariance "$c/$ver"_"$b"_pure_eb_covariance.npz \
+            --npatch 1 --out "$o"
+        done
+        tar czf {output} -C $o .
       resources: { cpus: 4, memory: "16GB" }
 
   - id: cosebis_ptes
@@ -145,9 +368,9 @@ outputs:
       PTE matrices over the (θ_min, θ_max) pair grid of
       `geomspace(1', 250', 21)`, for all four catalog versions with and
       without leakage correction, with the values at the
-      [adopted 12'–83' cut](#../decisions.fiducial_scale_cuts) and over
+      [adopted 12'–83' cut](#decisions.fiducial_scale_cuts) and over
       the full range. The adopted-cut values are read from grid cells,
-      so the [θ-cut convention](#../decisions.scale_cut_convention)
+      so the [θ-cut convention](#decisions.scale_cut_convention)
       changes the cut recorded here but none of the PTEs.
       Feeds the config-space columns of the per-version PTE table
       and the configuration-space PTE heatmaps.
@@ -181,27 +404,114 @@ outputs:
       Cℓ^BB χ² PTE matrices over the (ℓ_min, ℓ_max) pair grid of the
       32 bandpowers spanning 8 ≤ ℓ ≤ 2048, for all four catalog
       versions with and without leakage correction, with the values at
-      the [adopted 300 < ℓ < 1600 cut](#../decisions.fiducial_scale_cuts)
+      the [adopted 300 < ℓ < 1600 cut](#decisions.fiducial_scale_cuts)
       and over the full range.
       Feeds the harmonic column of the per-version PTE table and
       the Cℓ^BB PTE heatmap.
     inputs:
       - cl_sweep
+      - cl_cov_sweep
       - cl_bandpowers_reporting
       - cl_cov_reporting
     decisions: [pte_blind_strategy, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
     recipe:
       command: >
         d_cl=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d_cl &&
+        d_cov=$(mktemp -d) && tar xzf {inputs.cl_cov_sweep} -C $d_cov &&
         python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
         --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --blind {decisions.fiducial_blind}
         --results-dir $d_cl
+        --cov-dir $d_cov
         --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --fiducial-cl-path {inputs.cl_bandpowers_reporting}
         --fiducial-cl-cov-path {inputs.cl_cov_reporting}
         --emit evidence
         --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
+
+  - id: mock_min_pte_calibration
+    type: metric
+    format: json
+    description: |
+      Calibration of the min-PTE criterion on the clean realisations,
+      at the fiducial cuts (top level) and over the full range
+      (`full_range`): the data's minimum PTE across the six
+      statistics, the fraction of clean mocks at or below it (one- and
+      two-sided), and the min-PTE threshold for a 5% global
+      false-alarm rate, each with a 68% interval (Wilson for
+      fractions, bootstrap for thresholds). The fiducial observed PTEs
+      are taken from the pure-mode and COSEBI matrices at bins 9–15
+      (edge indices 9/16) and C_ℓ^BB at 300 < ℓ < 1600; `full_range`
+      uses the [0, 19] matrix cells and all 32 C_ℓ bands (1–250 arcmin
+      / 8≤ℓ≤2048). The mock PTEs use the covariance of the matching
+      window, with a Hartlap factor on the pure modes only under the
+      `monte_carlo`
+      [covariance method](#../analyses.validation.analyses.glass_mocks.decisions.pure_eb_covariance_method).
+    inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut]
+    decisions: [scale_cut_convention, reporting_binning]
+    recipe:
+      command: >
+        python src/workflow/scripts/mock_min_pte_calibration.py
+        --per-mock-statistics {inputs.mock_per_mock_statistics}
+        --pure-eb-pte {inputs.pure_eb_pte_per_cut}
+        --cosebis-pte {inputs.cosebis_pte_per_cut}
+        --cl-pte {inputs.cl_pte_per_cut}
+        --reporting-binning {decisions.reporting_binning}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 1, memory: "8GB" }
+
+  - id: mock_min_pte_figure
+    type: figure
+    format: png
+    description: |
+      Cumulative distribution of the minimum PTE over the six statistics
+      at the fiducial cuts, across the 350 GLASS realizations. Gray
+      dashed lines mark the 5% quantile, which calibrates the adopted
+      threshold p_thr = 0.01 (solid gray lines; [global PTE
+      threshold](#decisions.pte_threshold)), chosen to be
+      conservative across nearly all scale cuts. Red lines mark the
+      minimum PTE of the data, which 11% of realizations fall at or
+      below. The dotted curve shows the expectation for six independent
+      tests. The mocks generally follow this expectation because of two
+      effects that largely cancel: correlations between the statistics
+      raise the minimum PTE, while the slightly underestimated
+      configuration-space covariance lowers it.
+    inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut]
+    decisions: [scale_cut_convention, pte_threshold, reporting_binning]
+    recipe:
+      command: >
+        python src/workflow/scripts/mock_min_pte_calibration.py
+        --per-mock-statistics {inputs.mock_per_mock_statistics}
+        --pure-eb-pte {inputs.pure_eb_pte_per_cut}
+        --cosebis-pte {inputs.cosebis_pte_per_cut}
+        --cl-pte {inputs.cl_pte_per_cut}
+        --reporting-binning {decisions.reporting_binning}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --pte-threshold {decisions.pte_threshold}
+        --emit figure --out-file {output}
+      resources: { cpus: 1, memory: "8GB" }
+
+  - id: primary_null_test_report
+    type: metric
+    format: json
+    description: |
+      The null test for the selected primary range and COSEBI mode subsets,
+      with the global minimum-PTE threshold and mock p-value recalibrated from
+      the stored per-mock PTE columns; the mocks are not remeasured. The
+      complete six-test, two-range evidence stays in
+      [mock_min_pte_calibration](#outputs.mock_min_pte_calibration).
+    inputs: [mock_min_pte_calibration, mock_per_mock_statistics]
+    decisions: [fiducial_scale_cuts, mode_subsets]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/primary_null_test_report.py
+        --calibration {inputs.mock_min_pte_calibration}
+        --per-mock-statistics {inputs.mock_per_mock_statistics}
+        --fiducial-scale-cuts {decisions.fiducial_scale_cuts}
+        --mode-subsets {decisions.mode_subsets}
+        --out-file {output}
+      resources: { cpus: 1, memory: "2GB" }
 
   - id: pte_table_appendix
     type: table
@@ -362,7 +672,7 @@ outputs:
 
       - the six headline PTEs and the version-comparison numbers,
         with pure-mode scale cuts resolved from the
-        [scale-cut convention](#../decisions.scale_cut_convention) and
+        [scale-cut convention](#decisions.scale_cut_convention) and
         rounded to integer arcmin, which gives 12 and 83 under either
         reading;
       - the harmonic/configuration COSEBI cross-check PTEs
@@ -372,7 +682,7 @@ outputs:
         [full-range twin](#inputs.cosebis_harmonic_metrics_full);
       - the GLASS mock-calibrated global minimum-PTE criterion at both
         windows: mock count, global p-values, the adopted
-        [global PTE threshold](#../decisions.pte_threshold)
+        [global PTE threshold](#decisions.pte_threshold)
         (`\mockMinPteThreshold`), the raw calibration floor
         (`\mockMinPteFloor`) and the observed minima;
       - from [mock_campaign_evidence](#inputs.mock_campaign_evidence), the
@@ -389,10 +699,11 @@ outputs:
         largest PTE shift induced by the object-wise PSF-leakage
         correction (`\leakCorrMaxPteShift`);
       - the survey row (`\surveyArea`, `\surveyNeff`, `\surveySigmaE`) of the
-        [fiducial catalog](#../decisions.fiducial_catalog);
+        [fiducial catalog](#decisions.fiducial_catalog);
       - the COSEBI first-mode significance B₁/σ₁ at both windows
         (`\cosebisFirstModeSignificance{Full,Fid}`) from
-        [cosebis_modes_data](#inputs.cosebis_modes_data);
+        [cosebis_modes_data](#inputs.cosebis_modes_data) and
+        [cosebis_covariance](#inputs.cosebis_covariance);
       - the full-range analytic/empirical σ comparison
         (`\mockCosebisFirstModeTighter`, `\mockCosebisFirstModeSignificance`,
         `\mockPureLargeThetaTighter`) from
@@ -415,6 +726,7 @@ outputs:
       - cosebis_harmonic_metrics
       - cosebis_harmonic_metrics_full
       - cosebis_modes_data
+      - cosebis_covariance
       - mock_per_mock_statistics
       - mock_mean_vector_stats
       - mock_vs_data_noise_table
@@ -435,6 +747,7 @@ outputs:
         --pte-threshold {decisions.pte_threshold}
         --survey-properties {decisions.fiducial_catalog}
         --cosebis-modes-data {inputs.cosebis_modes_data}
+        --cosebis-covariance {inputs.cosebis_covariance}
         --mock-per-mock-statistics {inputs.mock_per_mock_statistics}
         --mock-mean-vector-stats {inputs.mock_mean_vector_stats}
         --mock-noise-table {inputs.mock_vs_data_noise_table}
@@ -442,6 +755,19 @@ outputs:
         --cov-reporting-ng {inputs.cov_reporting_ng}
         --emit macros
         --out-file {output}
+
+  - id: paper_claims
+    type: table
+    format: csv
+    description: |
+      The table the paper's text reads its quoted numbers from: one row per
+      macro of [pte_summary_macros](#outputs.pte_summary_macros), with its
+      name, display text and numeric value where it has one.
+    inputs: [pte_summary_macros]
+    recipe:
+      command: >-
+        python src/papers/bmodes/scripts/paper_claims.py extract
+        {inputs.pte_summary_macros} {output}
 
 decisions:
   fiducial_scale_cuts:
@@ -462,13 +788,13 @@ decisions:
       `geomspace(1', 250', 21)` reporting bins for ξ_+^B, ξ_-^B and
       COSEBI B_n, so the
       [adopted 12'–83' fiducial cut
-      ](#../decisions.fiducial_scale_cuts) selects the same window in
+      ](#decisions.fiducial_scale_cuts) selects the same window in
       every panel: bins 9–15, spanning edges 9–16. The pure-mode
       matrices index a cut by its first and last bin, (9, 15), and the
       COSEBI matrices by its edges, (9, 16). The COSEBI panels show 190
       of the 210 pure-mode cuts: the single-bin cuts, which include the
       four [unstable pairs
-      ](#../decisions.scale_cut_pair_grid), are NaN tiles. The
+      ](#decisions.scale_cut_pair_grid), are NaN tiles. The
       harmonic-space composite uses its own (ℓ_min, ℓ_max)
       bandpower-pair grid over 8 ≤ ℓ ≤ 2048, which has no cell-by-cell
       correspondence with the θ grid.
@@ -509,7 +835,7 @@ decisions:
       recalibrating its minimum from the selected stored mock PTE columns;
       the complete reference products and mode-vector figures retain both subsets.
       Larger subsets are unavailable because the
-      [mode count](#../decisions.mode_count) is 20.
+      [mode count](#decisions.mode_count) is 20.
     default: n_le_6_and_n_le_20
     options:
       n_le_6_and_n_le_20:
@@ -523,11 +849,6 @@ decisions:
         label: "n ≤ 20 only"
         description: |
           Drops the cosmologically informative subset.
-
-analyses:
-
-  cosebis_pte_scan:
-    path: ./analyses/cosebis_pte_scan
 
 prior_insights:
 
@@ -583,3 +904,11 @@ prior_insights:
     scope: |
       COSEBI B-mode analysis of KiDS-450, DES-SV and CFHTLenS
       (Asgari et al. 2019a, §4); same n_max = 20 as Paper II.
+
+analyses:
+
+  cosebis_pte_scan:
+    path: ./analyses/cosebis_pte_scan
+
+  cosebis_pte_grid:
+    path: ./analyses/cosebis_pte_grid

@@ -11,6 +11,8 @@ tools/test_decision_values.py keeps the keys equal to the spec's option ids.
 
 `NZ_FILE`, `MASK_CLS` and `SURVEY_PROPERTIES` are facts about the catalogs from
 Paper I, keyed by `fiducial_catalog` and, for the n(z), by `fiducial_blind`.
+`SURVEY_PROPERTIES` covers every catalog version CosmoCov runs on; a version and
+its leakage-corrected twin share one entry, read by `survey_properties`.
 
 Shell recipes read a value through the CLI, one key per decision it depends on:
 
@@ -75,6 +77,13 @@ SURVEY_PROPERTIES = {
     "masked": SurveyProperties(2517.021356326454, 4.983323636055024, 0.3797397825805285),
     "relaxed_flags": SurveyProperties(2894.0303815287743, 6.2581259680050625, 0.380499698062307),
 }
+
+
+def survey_properties(version):
+    """The survey scale of a catalog version, with or without `_leak_corr`."""
+    catalogs = {cat_version: option for option, cat_version in FIDUCIAL_CATALOG.items()}
+    return SURVEY_PROPERTIES[catalogs[version.removesuffix("_leak_corr")]]
+
 
 REPORTING_BINNING = {
     "bins_20": Grid(1.0, 250.0, 20),

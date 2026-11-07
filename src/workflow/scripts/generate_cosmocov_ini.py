@@ -2,7 +2,7 @@
 
 Cosmology is read from the frozen ``planck18.json`` snapshot (the
 cosmology_snapshot output — source of truth is sp_validation.cosmology.PLANCK18);
-survey (area, n_eff, sigma_e) from the catalog config's per-version ``cov_th``;
+survey (area, n_eff, sigma_e) from ``decision_values.survey_properties``;
 n(z) from ``--nz`` when given, otherwise via the path convention of
 ``build_redshift_path``; the footprint mask power spectrum is passed explicitly
 (empty string for the unmasked variant).
@@ -10,7 +10,6 @@ n(z) from ``--nz`` when given, otherwise via the path convention of
     python generate_cosmocov_ini.py \
         --version SP_v1.4.6.3_leak_corr --blind blind_a \
         --planck18-json <cosmology_snapshot>/planck18.json \
-        --cat-config <cosmo_val/cat_config.yaml> \
         --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g \
         --mask-cls <mask_cls_footprint_nside_4096_norm.txt> \
         --out-ini <path/to/covariance.ini>
@@ -21,9 +20,7 @@ import json
 import os
 import re
 
-import yaml
-
-from decision_values import FIDUCIAL_BLIND
+from decision_values import FIDUCIAL_BLIND, survey_properties
 
 
 def build_redshift_path(version, blind):
@@ -101,7 +98,6 @@ def main(argv=None):
     ap.add_argument("--version", required=True)
     ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__, required=True)
     ap.add_argument("--planck18-json", required=True)
-    ap.add_argument("--cat-config", required=True)
     ap.add_argument("--min-sep", required=True, help="tmin arcmin (string, e.g. 0.5)")
     ap.add_argument("--max-sep", required=True, help="tmax arcmin (string, e.g. 300.0)")
     ap.add_argument("--nbins", required=True, help="ntheta (string, e.g. 1000)")
@@ -119,11 +115,7 @@ def main(argv=None):
 
     with open(a.planck18_json) as f:
         cosmo = json.load(f)
-    with open(a.cat_config) as f:
-        cat_config = yaml.safe_load(f)
-
-    base_version = a.version.replace("_leak_corr", "")
-    cov_th = cat_config[base_version]["cov_th"]
+    survey = survey_properties(a.version)
 
     ng_value = "1" if a.gaussian == "ng" else "0"
 
@@ -134,9 +126,9 @@ def main(argv=None):
         n_s=cosmo["n_s"],
         Omega_b=cosmo["Omega_b"],
         h=cosmo["h"],
-        area=cov_th["A"],
-        sigma_e=cov_th["sigma_e"],
-        n_e=cov_th["n_e"],
+        area=survey.area,
+        sigma_e=survey.sigma_e_combined,
+        n_e=survey.n_eff,
         nz=a.nz or build_redshift_path(a.version, a.blind),
         # A blank value makes CosmoCov's sscanf reuse the previous n(z) path.
         # A nonexistent filename selects its actual area-only/analytic window.

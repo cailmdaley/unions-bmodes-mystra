@@ -58,7 +58,7 @@ sys.path.insert(
     0, str(Path(__file__).resolve().parents[2] / "papers" / "bmodes" / "scripts")
 )
 from calculate_pure_eb_ptes import calculate_ptes  # noqa: E402
-from gather_pure_eb_chunks import _load_xi, data_vector  # noqa: E402
+from pure_eb_transform import data_vector, load_xi as _load_xi  # noqa: E402
 from decision_values import REPORTING_BINNING  # noqa: E402
 from scale_cuts import resolve_fiducial_bin_window  # noqa: E402
 from pure_eb_scan_variants import (  # noqa: E402
@@ -86,7 +86,7 @@ def _rebuild_data_npz(variant, donor_npz, gg, gg_int, out_path, *, min_sep, max_
     covariance but not its data vector -- the data vector is exactly what such
     a variant changes.  So the borrowed ``<donor>__data.npz`` is copied with
     its six mode blocks replaced by this variant's own, computed through
-    ``gather_pure_eb_chunks.data_vector``: the same function the bundle's own
+    ``pure_eb_transform.data_vector``: the same function the bundle's own
     data vector came from, so the two differ only in the variant's parameters.
 
     Returns the recomputed six-tuple, so the caller can check the shared code
@@ -332,7 +332,7 @@ def main() -> None:
                 # vector is precisely what an aliased variant changes. Running
                 # calculate_ptes on it as-is would report the donor's PTE under
                 # this variant's name, so the vector is rebuilt here from the
-                # measured xi -- through gather_pure_eb_chunks.data_vector, the
+                # measured xi -- through pure_eb_transform.data_vector, the
                 # same function that produced the stored one -- and written
                 # beside the borrowed covariance.
                 #
@@ -390,7 +390,7 @@ def main() -> None:
                 version=f"scan_{variant.name}",
                 blind="A",
                 pure_eb_data=str(data_cov),
-                cov_integration=args.cov_integration,
+                pure_eb_covariance=str(data_cov),
                 npatch=args.npatch,
                 out_file=str(pte_path),
             )

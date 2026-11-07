@@ -22,8 +22,8 @@ description: |
   changes none of these, so the corrected and uncorrected variants of
   a catalog receive identical CosmoCov inputs. The gathered result
   feeds the catalog-version pure-mode and COSEBI PTEs, among them the
-  [pure-mode sweep](#../../data_vectors.real_space.outputs.pure_eb_sweep) and the
-  [COSEBI comparison](#../../data_vectors.cosebis.outputs.cosebis_version_comparison).
+  [pure-mode sweep](#../../analyses.data_vectors.outputs.pure_eb_sweep) and the
+  [COSEBI comparison](#../../analyses.null_tests.outputs.cosebis_version_comparison).
 tags:
 - sweep
 inputs:
@@ -65,7 +65,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -90,7 +90,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -115,7 +115,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.6.3)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.6.3)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -140,7 +140,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -165,7 +165,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -190,7 +190,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB
@@ -215,7 +215,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --cat-config src/cosmo_val/cat_config.yaml --emit processed --out-file {output}
+      bash src/workflow/scripts/run_cosmocov_chain.sh --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr)" --blind {decisions.fiducial_blind} --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian {decisions.covariance_class} --planck18-json {inputs.cosmology_snapshot} --emit processed --out-file {output}
     resources:
       cpus: 4
       memory: 16GB

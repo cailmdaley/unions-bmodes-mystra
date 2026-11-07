@@ -1,75 +1,425 @@
 version: "0.0.14"
 name: "Validation"
 description: |
-  The evidence that the null tests can be trusted: 350 GLASS mocks hold the
-  estimators, covariances and PTE convention against systematics-free
-  simulations, and the estimator checks test the adopted estimators against
-  finer grids, another basis and the other n(z) blinds.
+  The evidence that the null tests can be trusted. Checks that the results do
+  not depend on how the adopted estimators are computed: the pure-mode and COSEBI
+  results are remade from a 10,000-bin ξ_± measurement of the fiducial catalog,
+  with both grids scored against the 1,000-bin covariance, since no 10,000-bin
+  CosmoCov block exists and changing it with the grid would mix the two effects.
+  COSEBIs are computed from harmonic-space bandpowers and compared with those
+  from ξ_±, which shows that null-test sensitivity is set by the filter functions
+  rather than the basis. The B-mode covariances are compared across the n(z)
+  blinds, which supports using one blind throughout. The
+  [GLASS mocks](#analyses.glass_mocks) hold the estimators, covariances and PTE
+  convention against 350 systematics-free simulations.
 
 inputs:
   - id: xi_reporting
     from: ../data_vectors.xi_reporting
+
   - id: xi_integration
     from: ../data_vectors.xi_integration
+
   - id: xi_sweep
     from: ../data_vectors.xi_sweep
+
   - id: pure_eb_data
     from: ../data_vectors.pure_eb_data
-  - id: pure_eb_pte_per_cut
-    from: ../data_vectors.pure_eb_pte_per_cut
+
+  - id: pure_eb_covariance
+    from: ../covariances.pure_eb_covariance
+
+  - id: cosebis_covariance
+    from: ../covariances.cosebis_covariance
+
   - id: cosebis_modes_data
     from: ../data_vectors.cosebis_modes_data
-  - id: cosebis_pte_per_cut
-    from: ../data_vectors.cosebis_pte_per_cut
+
   - id: cl_bandpowers_fine
     from: ../data_vectors.cl_bandpowers_fine
+
   - id: cl_sweep
     from: ../data_vectors.cl_sweep
-  - id: cl_pte_per_cut
-    from: ../data_vectors.cl_pte_per_cut
+
+  - id: cl_cov_sweep
+    from: ../covariances.cl_cov_sweep
+
   - id: cosmology_snapshot
     from: ../covariances.cosmology_snapshot
+
   - id: cov_integration
     from: ../covariances.cov_integration
+
   - id: cov_sweep
     from: ../covariances.cov_sweep
+
   - id: cl_cov_reporting
     from: ../covariances.cl_cov_reporting
+
   - id: cl_cov_fine
     from: ../covariances.cl_cov_fine
+
   - id: redshift_distributions
     from: ../redshift_distributions
+
   - id: blind_check_pure_eb
     from: ../blind_check_pure_eb
+
   - id: blind_check_harmonic_cov
     from: ../blind_check_harmonic_cov
+
   - id: blind_check_cosmocov
     from: ../blind_check_cosmocov
+
   - id: blind_check_xi
     from: ../blind_check_xi
+
   - id: blind_check_cl
     from: ../blind_check_cl
 
+  - id: tenk_xi_staging
+    type: data
+    description: |
+      TreeCorr ξ± of the leakage-corrected size-cut catalog on the
+      10,000-bin convergence grid, computed outside the pipeline by
+      a multi-node MPI run. The run uses 50 TreeCorr patches only to
+      share the work between nodes, despite the `npatch=1` in the
+      file name; no jackknife enters.
+    source: "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/production_out/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt"
+
 outputs:
+  - id: xi_integration_convergence
+    type: data
+    description: |
+      TreeCorr ξ_± on a 10,000-bin grid over [0.5', 300'] for the
+      leakage-corrected size-cut catalog, used to test the
+      convergence of the pure modes and COSEBIs against the
+      1000-bin integration grid.
+    format: txt
+    decisions: []
+    inputs: [tenk_xi_staging]
+    recipe:
+      # Adopts the text dump of the 10,000-bin run; nothing is computed here.
+      # producers/run_10k_xi_barehost.sbatch is the run itself.
+      command: |
+        cp -f {inputs.tenk_xi_staging} {output}
+      resources: { cpus: 1, memory: "2GB" }
+
+  - id: tenk_grid_comparison
+    when: [leakage_correction.applied]
+    type: metric
+    format: json
+    description: |
+      Per reporting bin (ξ_±^B, ξ_±^amb) and per COSEBI mode
+      (n = 1 … 20, both scale cuts): the value on the 1,000-bin and
+      10,000-bin integration grids, their difference, and that
+      difference in units of the fiducial analytic σ, plus the χ²/PTE
+      on each grid: the fiducial window (12'–83') for the pure modes,
+      both scale cuts at n ≤ 6 and n ≤ 20 for the COSEBIs. For the
+      COSEBIs it also carries all four combinations of integration
+      grid × COSEBI interval.
+
+      Both grids are scored with the same 1,000-bin covariance: the
+      pure-mode matrix
+      [pure_eb_covariance](#inputs.pure_eb_covariance)
+      and the T^T C_ξ T mode covariance
+      [cosebis_covariance](#inputs.cosebis_covariance). Both grids
+      are TreeCorr runs over the same catalog on the same
+      [0.5', 300'] extent, so sample variance cancels and every
+      difference is numerical.
+      This cross-check is available only for corrected shear: the
+      10,000-bin measurement exists only for the leak-corrected catalog.
+
+      Sanity checks: pair counts summed into each reporting bin on
+      both grids (totals agree to 4e-6; per-bin sums differ because
+      the one fine bin straddling each reporting edge is assigned
+      whole, up to 3.0% of a reporting bin at 1,000 bins and 0.3% at
+      10,000), and the effective COSEBI interval each grid's
+      bin selection produces. The fiducial window is bins (9, 15)
+      on both grids.
+    decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, mode_count, decomposition_method, pte_definition, leakage_correction, reporting_binning, integration_grid]
+    inputs: [xi_reporting, xi_integration, xi_integration_convergence, pure_eb_data, pure_eb_covariance, cosebis_modes_data, cosebis_covariance]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/tenk_grid_convergence.py
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
+        --xi-reporting {inputs.xi_reporting}
+        --xi-1k {inputs.xi_integration}
+        --xi-10k {inputs.xi_integration_convergence}
+        --pure-eb-baseline {inputs.pure_eb_data}
+        --pure-eb-covariance {inputs.pure_eb_covariance}
+        --cosebis-baseline {inputs.cosebis_modes_data}
+        --cosebis-covariance {inputs.cosebis_covariance}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --integration-method {decisions.pure_eb_integration_method}
+        --rebinning-weights {decisions.pure_eb_rebinning_weights}
+        --integration-limits {decisions.pure_eb_integration_limits}
+        --out-file {output}
+      resources: { cpus: 16, memory: "150GB" }
+
+  - id: cosebis_harmonic_modes
+    type: data
+    format: npz
+    description: |
+      COSEBI E_n, B_n and covariance at both scale cuts from two
+      paths: the harmonic path, summing the FFT-log W_n(ℓ) filters
+      against the fine Cℓ bandpowers
+      ([cl_bandpowers_fine](#inputs.cl_bandpowers_fine); 96 bins in
+      the paper, set by
+      [harmonic_validation_binning](#decisions.harmonic_validation_binning))
+      and propagating their covariance linearly, and the configuration
+      path of [cosebis_modes_data](#inputs.cosebis_modes_data). PTEs
+      are in
+      [cosebis_harmonic_metrics](#outputs.cosebis_harmonic_metrics).
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition, leakage_correction, reporting_binning, integration_grid, mode_count]
+    inputs: [cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
+        --angular-range fiducial --blind {decisions.fiducial_blind}
+        --harmonic-validation-binning {decisions.harmonic_validation_binning}
+        --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
+        --fiducial-cl-path {inputs.cl_bandpowers_fine}
+        --fiducial-cl-cov-path {inputs.cl_cov_fine}
+        --fiducial-xi-path {inputs.xi_integration}
+        --fiducial-cov-path {inputs.cov_integration}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 8, memory: "16GB" }
+
+  - id: cosebis_harmonic_metrics
+    type: metric
+    format: json
+    description: |
+      COSEBI B-mode χ² and PTEs over n ≤ 6, the modes validated on the
+      GLASS mocks, at the fiducial scale cuts for the harmonic and
+      configuration paths of
+      [cosebis_harmonic_modes](#outputs.cosebis_harmonic_modes),
+      quoted in the
+      [harmonic/configuration COSEBI table](#../outputs.cosebis_harmonic_config).
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
+    inputs: [cosebis_harmonic_modes]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --angular-range fiducial
+        --metrics-from-modes {inputs.cosebis_harmonic_modes}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
+
+  - id: cosebis_harmonic_metrics_full
+    type: metric
+    format: json
+    description: |
+      [cosebis_harmonic_metrics](#outputs.cosebis_harmonic_metrics)
+      over the full angular range: the n ≤ 6 failure of both paths
+      behind the
+      [filter-function finding](#../findings.filter_functions_set_sensitivity).
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
+    inputs: [cosebis_harmonic_modes]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --angular-range full
+        --metrics-from-modes {inputs.cosebis_harmonic_modes}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
+
+  - id: cosebis_harmonic_version_ptes
+    # Harmonic-path COSEBI B-mode PTEs of the non-fiducial catalog versions,
+    # for the `cosebis_harmonic_config` table.
+    from: cosebis_harmonic_scan.cosebis_harmonic_version_ptes
+
+  - id: fig_harmonic_config_cosebis_full
+    type: figure
+    format: png
+    description: |
+      COSEBI E_n (top row) and B_n/σ_n (bottom row) for the [fiducial
+      catalog](#decisions.fiducial_catalog), computed from
+      configuration-space ξ_± (filled circles) and harmonic-space
+      bandpowers (open squares). Modes n > 6 are shaded; for n ≤ 6,
+      where the cosmological information is concentrated, we confirm
+      consistency between the two paths on GLASS simulations.
+    decisions: [fiducial_catalog, scale_cut_convention]
+    inputs:
+      - cosebis_harmonic_modes
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --angular-range full
+        --figure-from-modes {inputs.cosebis_harmonic_modes}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
+
+  - id: bb_covariance_blind_independence_evidence
+    type: figure
+    format: png
+    description: |
+      Per-bin ratios of the covariance diagonals of blinds B and C to
+      blind A, for the B-mode block and, as the reference, the E-mode
+      block: pure E/B over the 20 reporting bins, COSEBIs (n ≤ 20) on
+      the full 1'–250' range and harmonic Cℓ over the 32 bandpowers, on
+      the [catalog version](#decisions.bb_blind_check_version) chosen
+      for the check. Supports the [blind-A fiducial
+      choice](#decisions.fiducial_blind); it does not enter the
+      headline figures. The covariances are read from fixed per-blind
+      files, so the [Monte-Carlo sample
+      count](#decisions.mc_samples) only sizes the ±√(2/N) reference
+      band drawn on the ξ_± panels.
+    decisions: [bb_blind_check_version, reporting_binning, integration_grid, mode_count, mc_samples]
+    inputs:
+      - blind_check_pure_eb
+      - blind_check_harmonic_cov
+      - blind_check_cosmocov
+      - blind_check_xi
+      - blind_check_cl
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/bb_covariance_blind_independence.py
+        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --mc-samples {decisions.mc_samples}
+        --version {decisions.bb_blind_check_version}
+        --pure-eb-template '{inputs.blind_check_pure_eb}'
+        --harmonic-template '{inputs.blind_check_harmonic_cov}'
+        --cov-integration-template '{inputs.blind_check_cosmocov}'
+        --xi-template '{inputs.blind_check_xi}'
+        --cl-template '{inputs.blind_check_cl}'
+        --out-file {output}
+
   - {id: mock_per_mock_statistics, from: glass_mocks.mock_per_mock_statistics}
-  - {id: mock_min_pte_calibration, from: glass_mocks.mock_min_pte_calibration}
-  - {id: mock_min_pte_figure, from: glass_mocks.mock_min_pte_figure}
   - {id: mock_min_pte_scale_cut_scan, from: glass_mocks.mock_min_pte_scale_cut_scan}
   - {id: mock_campaign_evidence, from: glass_mocks.mock_campaign_evidence}
   - {id: mock_validation_figure, from: glass_mocks.mock_validation_figure}
   - {id: mock_mean_vector_stats, from: glass_mocks.mock_mean_vector_stats}
   - {id: mock_vs_data_noise_table, from: glass_mocks.mock_vs_data_noise_table}
-  - {id: tenk_grid_comparison, from: estimator_checks.tenk_grid_comparison}
-  - {id: fig_harmonic_config_cosebis_full, from: estimator_checks.fig_harmonic_config_cosebis_full}
-  - {id: cosebis_harmonic_metrics, from: estimator_checks.cosebis_harmonic_metrics}
-  - {id: cosebis_harmonic_metrics_full, from: estimator_checks.cosebis_harmonic_metrics_full}
-  - {id: cosebis_harmonic_version_ptes, from: estimator_checks.cosebis_harmonic_version_ptes}
-  - {id: bb_covariance_blind_independence_evidence, from: estimator_checks.bb_covariance_blind_independence_evidence}
+
+decisions:
+  pte_definition:
+    from: ../pte_definition
+  decomposition_method:
+    from: ../decomposition_method
+  leakage_correction:
+    from: ../leakage_correction
+  fiducial_catalog:
+    from: ../fiducial_catalog
+  fiducial_blind:
+    from: ../fiducial_blind
+  scale_cut_convention:
+    from: ../scale_cut_convention
+  pure_eb_integration_method:
+    from: ../pure_eb_integration_method
+  pure_eb_rebinning_weights:
+    from: ../pure_eb_rebinning_weights
+  pure_eb_integration_limits:
+    from: ../pure_eb_integration_limits
+  mode_count:
+    from: ../mode_count
+  integration_grid:
+    from: ../integration_grid
+  reporting_binning:
+    from: ../reporting_binning
+  harmonic_validation_binning:
+    from: ../harmonic_validation_binning
+  mc_samples:
+    from: ../mc_samples
+  bb_blind_check_version:
+    label: "Catalog for the blind-independence check"
+    tags: [data_selection]
+    rationale: |
+      The B-mode covariance of a null signal is shape noise, plus a
+      small E-to-B mask leakage in harmonic space, and neither reason
+      for its blind independence is specific to a catalog version, so
+      one version suffices for the [BB-covariance blind-independence
+      check](#outputs.bb_covariance_blind_independence_evidence).
+      It uses the fiducial leak-corrected v1.4.6.3 catalog, for which
+      the GLASS mock suite was built. B-mode covariance ratios are
+      expected to sit closer to unity across blinds than E-mode ratios;
+      a Monte Carlo pure-mode covariance adds sampling scatter to both.
+    default: size_cut_v1463
+    options:
+      size_cut_v1463:
+        label: "Size-cut v1.4.6.3"
+        description: |
+          Per-blind covariances on the fiducial leak-corrected
+          catalog, matching the adopted mock suite.
+      mock_version_v146:
+        label: "Mock version v1.4.6"
+        description: |
+          Per-blind covariances at v1.4.6, the catalog version of
+          the excluded GLASS mock suite.
+        excluded: true
+        excluded_reason: |
+          v1.4.6 is not one of the paper's four catalog versions, and
+          its [mock suite](#analyses.glass_mocks.decisions.mock_suite) sits on
+          a mask that is not the data's footprint; the check follows
+          the adopted v1.4.6.3 suite.
+
+findings:
+
+  pure_modes_converged_at_1000_bins:
+    label: "Pure modes converged at 1,000 bins"
+    claim: |
+      The adopted pure-mode chain is converged on the 1,000-bin
+      integration grid: refining to 10,000 bins leaves the
+      fiducial-window PTEs essentially unchanged, and the coherent
+      positive ξ_-^B offset that drives the window's ξ_-^B PTE is not
+      a grid artifact.
+    notes: |
+      Refining to 10,000 bins moves ξ_±^B by at most 0.12 σ in any of
+      the seven fiducial-window bins (0.40 σ over all 20 bins, in the
+      168' bin near the operator's upper edge) and the ambiguous modes
+      by at most 0.054 σ anywhere. PTEs: ξ_+^B 0.823 → 0.842, ξ_-^B
+      0.0193 → 0.0213, joint 0.0387 → 0.0435. The residual per-bin
+      motion is sign-alternating, not coherent.
+    created_at: "2026-09-13T00:00:00Z"
+    evidence:
+      - id: ev1
+        artifact: tenk_grid_comparison
+        quote:
+          exact: '"pte": 0.8420537855782536'
+
+  cosebis_verdicts_stable_at_1000_bins:
+    label: "COSEBI B_n and their significance stable on a 10,000-bin grid"
+    claim: |
+      Repeating the COSEBI calculation on a 10,000-bin grid for the
+      fiducial catalog finds the B_n amplitudes and their significance
+      to be stable: with each grid on its own bin selection, the n ≤ 6
+      modes move by at most 0.64 σ and no PTE verdict changes, while
+      individual higher modes (n ≥ 10) shift by up to 1.37 σ.
+    notes: |
+      n ≤ 6 shifts are at most 0.56 σ at the fiducial cuts and
+      0.64 σ over the full range. PTEs: fiducial n ≤ 6 0.777 → 0.715,
+      n ≤ 20 0.943 → 0.748; full range n ≤ 6 1.37×10⁻⁵ → 1.55×10⁻⁵,
+      n ≤ 20 1.08×10⁻⁴ → 4.12×10⁻⁴. Modes shifting by 1.0–1.37 σ are
+      n = 13–16 and 20 at the fiducial cuts (largest n = 15) and
+      n = 10–12 and 20 over the full range.
+
+      Each grid's edge-based bin selection lands on a slightly
+      different θ interval (12.053′–82.141′ at 1,000 bins,
+      12.003′–82.800′ at 10,000), so the comparison above changes
+      interval and resolution together. Recomputing each grid over
+      the other's interval, as closely as its nodes allow, moves the
+      n ≤ 6 modes by up to 0.74 σ at the fiducial cuts and 1.27 σ
+      over the full range, and any mode by up to 1.18 σ and 2.05 σ.
+      Fiducial PTEs stay within 0.60–0.95; full-range PTEs rise to
+      6.4×10⁻⁴–1.06×10⁻³ (n ≤ 6) and 0.011–0.012 (n ≤ 20, just above
+      the 0.01 threshold, though n ≤ 6 still fails). Shifts are in
+      units of the 1,000-bin σ (the only mode covariance), not a
+      significance of the difference.
+    created_at: "2026-09-13T00:00:00Z"
+    evidence:
+      - id: ev1
+        artifact: tenk_grid_comparison
+        quote:
+          exact: '"pte": 0.7145810240685493'
 
 analyses:
 
+  cosebis_harmonic_scan:
+    path: ./analyses/cosebis_harmonic_scan
+
   glass_mocks:
     path: ./analyses/glass_mocks
-
-  estimator_checks:
-    path: ./analyses/estimator_checks

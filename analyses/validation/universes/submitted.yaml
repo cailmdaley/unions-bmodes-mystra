@@ -1,10 +1,11 @@
 id: submitted
 description: |
-  The GLASS mock suite and the estimator checks. Every decision is made in a
-  child or inherited from the root.
-decisions: {}
+  Convergence of the pure-mode chain and the 20-mode COSEBI vector, remade on the
+  10,000-bin integration grid and scored against the 1000-bin covariance, the
+  harmonic COSEBI comparison, and the blind-independence check on the fiducial
+  v1.4.6.3 catalog, with the GLASS mock suite as its one sub-analysis.
+decisions:
+  bb_blind_check_version: size_cut_v1463
 analyses:
   glass_mocks:
-    universe: submitted
-  estimator_checks:
     universe: submitted

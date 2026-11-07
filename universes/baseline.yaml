@@ -43,7 +43,7 @@ analyses:
     universe: baseline
   data_vectors:
     universe: baseline
-  null_tests:
-    universe: baseline
   validation:
+    universe: baseline
+  null_tests:
     universe: baseline

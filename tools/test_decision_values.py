@@ -7,7 +7,6 @@ stales nothing; these tests are what hold it. Run on the laptop with PyYAML:
 """
 import ast
 import re
-import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -25,7 +24,7 @@ import scale_cuts
 ROOT_DECISIONS = yaml.safe_load((ROOT / "astra.yaml").read_text())["decisions"]
 ROOT_INPUTS = {i["id"]: i for i in yaml.safe_load((ROOT / "astra.yaml").read_text())["inputs"]}
 CAT_CONFIG = yaml.safe_load((ROOT / "src/cosmo_val/cat_config.yaml").read_text())
-REAL_SPACE_DECISIONS = yaml.safe_load((ROOT / "analyses/data_vectors/analyses/real_space/astra.yaml").read_text())["decisions"]
+REAL_SPACE_DECISIONS = yaml.safe_load((ROOT / "analyses/data_vectors/astra.yaml").read_text())["decisions"]
 
 # Tables keyed by the options of a decision other than their namesake.
 KEYED_BY = {"nz_file": "fiducial_catalog", "mask_cls": "fiducial_catalog",
@@ -68,6 +67,15 @@ class Tables(unittest.TestCase):
             self.assertEqual(dv.MASK_CLS[option], entry.get("mask_cls"), option)
             cov_th = entry["cov_th"]
             self.assertEqual(dv.SURVEY_PROPERTIES[option], (cov_th["A"], cov_th["n_e"], cov_th["sigma_e"]), option)
+
+    def test_every_cosmocov_version_has_survey_properties(self):
+        for fiducial in dv.FIDUCIAL_CATALOG:
+            for leakage in ("applied", "uncorrected"):
+                catalogs = catalog_versions.Catalogs(fiducial, leakage)
+                for version in [catalogs.fiducial, *map(catalogs.scan_version, catalogs.scan_slots)]:
+                    cov_th = CAT_CONFIG[version.removesuffix("_leak_corr")]["cov_th"]
+                    self.assertEqual(dv.survey_properties(version),
+                                     (cov_th["A"], cov_th["n_e"], cov_th["sigma_e"]), version)
 
     def test_published_values(self):
         self.assertEqual(set(PUBLISHED), set(dv.TABLES))
@@ -117,7 +125,7 @@ class Roster(unittest.TestCase):
 
     def test_xi_scan_matrix_is_the_scan_slots(self):
         matrix = yaml.safe_load(
-            (ROOT / "analyses/data_vectors/analyses/real_space/analyses/xi_scan/xi_scan.sweep.yaml").read_text()
+            (ROOT / "analyses/data_vectors/analyses/xi_scan/xi_scan.sweep.yaml").read_text()
         )["matrix"]
         slots = catalog_versions.Catalogs("size_cut", "applied").scan_slots
         self.assertEqual(set(matrix["version"]), set(slots))
@@ -131,16 +139,6 @@ class Plumbing(unittest.TestCase):
         self.assertTrue(calls)
         for call in calls:
             self.assertEqual(call.args[-1].id, "integration", call.lineno)
-
-    def test_sweep_drivers_refuse_an_empty_version_list(self):
-        for driver in ("run_pure_eb_sweep.sh", "run_pure_eb_ptes_sweep.sh"):
-            args = ["--versions", "", "--n-samples", "2000", "--integration-method", "m",
-                    "--integration-limits", "l", "--rebinning-weights", "w",
-                    "--covariance-method", "c"] if driver == "run_pure_eb_sweep.sh" else ["--versions", ""]
-            run = subprocess.run(["bash", str(ROOT / "src/papers/bmodes/scripts" / driver), *args],
-                                 capture_output=True, text=True)
-            self.assertEqual(run.returncode, 2, run.stderr)
-            self.assertIn("--versions is required", run.stderr)
 
 
 class NoAnalysisConfig(unittest.TestCase):

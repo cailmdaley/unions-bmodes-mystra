@@ -1,59 +1,409 @@
 version: "0.0.14"
 name: "Data vectors"
 description: |
-  The three representations of the B-mode signal the null tests act on:
-  correlation functions and pure E/B modes in real space, COSEBIs, and power
-  spectra in harmonic space. Each is measured for the fiducial catalog and
-  across catalog versions, with the fiducial PTEs over scale cuts that the mock
-  calibration and the null tests both read.
+  The measured statistics the null tests act on. ξ_± and Cℓ are measured from
+  the shear catalogs: TreeCorr ξ_±(θ) on a 20-bin reporting grid and a 1000-bin
+  integration grid, and catalog-based Cℓ bandpowers on the 32-bandpower and fine
+  grids. Pure E/B modes and COSEBIs are linear transforms of ξ_±: the Schneider
+  et al. (2022) decomposition into pure E, pure B and ambiguous modes, and the
+  discrete E_n and B_n, whose filters are built for a given angular range. Each
+  is computed for the fiducial catalog and across catalog versions.
 
 inputs:
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
+
   - id: shapepipe_v145_rerun
     from: ../shapepipe_v145_rerun
-  - id: redshift_distributions
-    from: ../redshift_distributions
-  - id: redshift_distributions_pre_som
-    from: ../redshift_distributions_pre_som
-  - id: cov_integration
-    from: ../covariances.cov_integration
-  - id: cov_reporting_ng
-    from: ../covariances.cov_reporting_ng
-  - id: cov_sweep
-    from: ../covariances.cov_sweep
-  - id: cl_cov_reporting
-    from: ../covariances.cl_cov_reporting
 
 outputs:
-  - {id: xi_reporting, from: real_space.xi_reporting}
-  - {id: xi_integration, from: real_space.xi_integration}
-  - {id: xi_sweep, from: real_space.xi_sweep}
-  - {id: pure_eb_data, from: real_space.pure_eb_data}
-  - {id: pure_eb_data_vector_figure, from: real_space.pure_eb_data_vector_figure}
-  - {id: pure_eb_covariance_figure, from: real_space.pure_eb_covariance_figure}
-  - {id: pure_eb_version_comparison_figure, from: real_space.pure_eb_version_comparison_figure}
-  - {id: pure_eb_pte_per_cut, from: real_space.pure_eb_pte_per_cut}
-  - {id: pure_eb_sweep, from: real_space.pure_eb_sweep}
-  - {id: cosebis_modes_data, from: cosebis.cosebis_modes_data}
-  - {id: fig_cosebis_data_vector, from: cosebis.fig_cosebis_data_vector}
-  - {id: cosebis_version_comparison, from: cosebis.cosebis_version_comparison}
-  - {id: cosebis_pte_per_cut, from: cosebis.cosebis_pte_per_cut}
-  - {id: cosebis_first_mode_significance, from: cosebis.cosebis_first_mode_significance}
-  - {id: cl_bandpowers_reporting, from: harmonic_space.cl_bandpowers_reporting}
-  - {id: cl_bandpowers_fine, from: harmonic_space.cl_bandpowers_fine}
-  - {id: cl_sweep, from: harmonic_space.cl_sweep}
-  - {id: cl_data_vector_figure, from: harmonic_space.cl_data_vector_figure}
-  - {id: cl_version_comparison_figure, from: harmonic_space.cl_version_comparison_figure}
-  - {id: cl_pte_per_cut, from: harmonic_space.cl_pte_per_cut}
+  - id: xi_reporting
+    type: data
+    description: |
+      TreeCorr ξ_±(θ) of the fiducial catalog on the reporting grid:
+      20 logarithmic bins over [1', 250']. These are the bins the
+      pure modes are reported in, and the total ξ_± shown beside
+      them.
+    format: txt
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    decisions: [fiducial_catalog, reporting_binning, patch_count, leakage_correction]
+    recipe:
+      # --ver is the catalog version; its `_leak_corr` form reads the
+      # leakage-corrected ellipticity columns of the same catalog.
+      command: >
+        python src/workflow/scripts/run_2pcf.py
+        --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --min-sep 1.0 --max-sep 250.0 --nbins 20 --npatch 1
+        --cat-config src/cosmo_val/cat_config.yaml
+        --no-fits --out-file {output}
+      resources: { cpus: 24, memory: "30GB" }
+
+  - id: xi_integration
+    type: data
+    description: |
+      TreeCorr ξ_±(θ) of the fiducial catalog on the integration
+      grid: 1000 logarithmic bins over [0.5', 300'], the input to
+      the pure-mode and COSEBI integrals. The range extends beyond
+      the reporting grid to reduce edge effects in the pure-mode
+      boundary functions S_± and V_±.
+    format: txt
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    decisions: [fiducial_catalog, integration_grid, patch_count, leakage_correction]
+    recipe:
+      command: >
+        python src/workflow/scripts/run_2pcf.py
+        --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1
+        --cat-config src/cosmo_val/cat_config.yaml
+        --no-fits --out-file {output}
+      resources: { cpus: 24, memory: "30GB" }
+
+  - id: xi_sweep
+    # The ξ_± of the catalog-version scan, read by the pure-mode and COSEBI
+    # version comparisons.
+    from: xi_scan.xi_sweep_bundle
+
+  - id: pure_eb_data
+    type: data
+    description: |
+      Pure E/B data vectors ξ_±^{E,B,amb} for the fiducial catalog on the
+      20-bin reporting grid, with the total ξ_± beside them: the Schneider et
+      al. (2022) transform of [xi_reporting](#outputs.xi_reporting) and
+      [xi_integration](#outputs.xi_integration). Their covariance is
+      [pure_eb_covariance](#../analyses.covariances.outputs.pure_eb_covariance).
+    format: npz
+    decisions: [fiducial_catalog, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, decomposition_method, leakage_correction]
+    inputs: [xi_reporting, xi_integration]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/pure_eb_modes.py
+        --xi-reporting {inputs.xi_reporting}
+        --xi-integration {inputs.xi_integration}
+        --integration-method {decisions.pure_eb_integration_method}
+        --integration-limits {decisions.pure_eb_integration_limits}
+        --rebinning-weights {decisions.pure_eb_rebinning_weights}
+        --out-file {output}
+      resources: { cpus: 8, memory: "16GB" }
+
+  - id: pure_eb_sweep
+    type: data
+    description: |
+      Pure E/B data vectors for the seven non-fiducial catalog versions (the
+      other three variants with and without the leakage correction, and the
+      fiducial variant with the opposite treatment), one npz each, built as
+      [pure_eb_data](#outputs.pure_eb_data) is from that version's ξ_±
+      ([xi_sweep](#outputs.xi_sweep)).
+    format: tar.gz
+    decisions: [fiducial_catalog, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, decomposition_method, leakage_correction]
+    inputs: [xi_sweep]
+    recipe:
+      command: |
+        set -e
+        x=$(mktemp -d) && tar xzf {inputs.xi_sweep} -C $x
+        o=$(mktemp -d)
+        for ver in $(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --nonfiducial); do
+          python src/papers/bmodes/scripts/pure_eb_modes.py \
+            --xi-reporting "$x/$ver"_xi_minsep=1.0_maxsep=250.0_nbins=20_npatch=1.txt \
+            --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
+            --integration-method {decisions.pure_eb_integration_method} \
+            --integration-limits {decisions.pure_eb_integration_limits} \
+            --rebinning-weights {decisions.pure_eb_rebinning_weights} \
+            --out-file "$o/$ver"_pure_eb_data.npz
+        done
+        tar czf {output} -C $o .
+      resources: { cpus: 8, memory: "16GB" }
+
+  - id: cosebis_modes_data
+    type: data
+    format: npz
+    description: |
+      COSEBI E_n and B_n (n = 1 … 20) for the
+      [fiducial catalog](#../decisions.fiducial_catalog) at both scale
+      cuts, computed from [xi_integration](#outputs.xi_integration). Their
+      covariance is
+      [cosebis_covariance](#../analyses.covariances.outputs.cosebis_covariance).
+    decisions: [fiducial_catalog, mode_count, scale_cut_convention, leakage_correction, reporting_binning, integration_grid]
+    inputs: [xi_integration]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/cosebis_data_vector.py
+        --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
+        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
+        --xi-integration {inputs.xi_integration}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 8, memory: "16GB" }
+
+  - id: cosebis_modes_sweep
+    type: data
+    format: tar.gz
+    description: |
+      [cosebis_modes_data](#outputs.cosebis_modes_data) for the three other
+      catalog versions of the
+      [COSEBI version comparison](#../outputs.fig_versions_cosebis), one npz
+      each, from that version's ξ_± ([xi_sweep](#outputs.xi_sweep)).
+    decisions: [fiducial_catalog, mode_count, scale_cut_convention, leakage_correction, reporting_binning, integration_grid]
+    inputs: [xi_sweep]
+    recipe:
+      command: |
+        set -e
+        x=$(mktemp -d) && tar xzf {inputs.xi_sweep} -C $x
+        o=$(mktemp -d)
+        for ver in $(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --comparison); do
+          python src/papers/bmodes/scripts/cosebis_data_vector.py \
+            --version "$ver" \
+            --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
+            --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
+            --scale-cut-convention {decisions.scale_cut_convention} \
+            --out-file "$o/$ver"_cosebis_modes.npz
+        done
+        tar czf {output} -C $o .
+      resources: { cpus: 8, memory: "16GB" }
+
+  - id: cl_bandpowers_reporting
+    type: data
+    description: |
+      Cℓ^EE, Cℓ^EB and Cℓ^BB bandpowers of the fiducial
+      catalog at blind A on the
+      [32-bandpower √ℓ-spaced grid](#decisions.bandpower_binning)
+      over 8 ≤ ℓ ≤ 2048, decoupled and noise-bias-corrected.
+      They are the data vector of the
+      [Cℓ figure](#../outputs.fig_cl_fiducial).
+    format: fits
+    decisions: [fiducial_catalog, fiducial_blind, estimator_choice, bandpower_binning, noise_bias_correction, leakage_correction]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    recipe:
+      command: >
+        python src/workflow/scripts/generate_cl.py
+        --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
+        --cat-config src/cosmo_val/cat_config.yaml
+        --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind}
+        --out-file {output}
+      resources: { cpus: 12, memory: "32GB" }
+
+  - id: cl_bandpowers_fine
+    type: data
+    description: |
+      The same bandpowers on the √ℓ-spaced grid of the
+      [harmonic-space COSEBI
+      transform](#decisions.harmonic_validation_binning),
+      96 bandpowers in the fiducial analysis, fine enough to resolve the
+      oscillations of its W_n(ℓ) filters.
+    format: fits
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, estimator_choice, noise_bias_correction, leakage_correction]
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    recipe:
+      command: >
+        python src/workflow/scripts/generate_cl.py
+        --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
+        --cat-config src/cosmo_val/cat_config.yaml
+        --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind}
+        --out-file {output}
+      resources: { cpus: 12, memory: "32GB" }
+
+  - id: cl_sweep
+    # Bandpowers of the other catalog variants. The fine-grid members feed [cosebis_harmonic_scan](#../analyses.validation.analyses.cosebis_harmonic_scan).
+    from: cl_scan.cl_sweep_bundle
+
+decisions:
+  fiducial_catalog:
+    from: ../fiducial_catalog
+  fiducial_blind:
+    from: ../fiducial_blind
+  leakage_correction:
+    from: ../leakage_correction
+  reporting_binning:
+    from: ../reporting_binning
+  integration_grid:
+    from: ../integration_grid
+  mode_count:
+    from: ../mode_count
+  scale_cut_convention:
+    from: ../scale_cut_convention
+  pure_eb_integration_method:
+    from: ../pure_eb_integration_method
+  pure_eb_rebinning_weights:
+    from: ../pure_eb_rebinning_weights
+  pure_eb_integration_limits:
+    from: ../pure_eb_integration_limits
+  decomposition_method:
+    from: ../decomposition_method
+  harmonic_validation_binning:
+    from: ../harmonic_validation_binning
+  bandpower_binning:
+    from: ../bandpower_binning
+  noise_bias_correction:
+    from: ../noise_bias_correction
+  patch_count:
+    label: "TreeCorr patch decomposition"
+    tags: [covariance_model]
+    rationale: |
+      For a ξ_± measurement, patches matter only through a
+      jackknife covariance. The
+      [covariances sub-analysis](#../analyses.covariances) is
+      semi-analytic (CosmoCov), so the measurement runs on a single
+      patch; the jackknife was only a development cross-check, which
+      the paper reports agrees with the semi-analytic ξ_± covariance
+      at the ten-percent level over the fiducial range.
+    default: npatch_1
+    options:
+      npatch_1:
+        label: "1 patch"
+        description: |
+          Single-patch TreeCorr; no jackknife covariance.
+      npatch_120:
+        label: "120 patches"
+        description: |
+          Enables a spatial-jackknife covariance.
+        excluded: true
+        excluded_reason: |
+          The reported configuration-space PTEs use the CosmoCov
+          covariance, not a jackknife.
+
+  estimator_choice:
+    label: "Cℓ estimator"
+    tags: [estimator]
+    rationale: |
+      The Wolz et al. (2025) catalog-based estimator evaluates
+      spin-2 spherical-harmonic transforms directly at source
+      positions through the `ducc` library (Reinecke et al.
+      2023), avoiding the pixelization artifacts of map-based
+      pseudo-Cℓ. Paper IV measures its cosmic-shear spectra with
+      the same estimator, so the null tests match the inference.
+      Map-based pseudo-Cℓ, as used by DES and HSC, is the
+      standard alternative.
+    default: wolz25_catalog_based
+    options:
+      wolz25_catalog_based:
+        label: "Wolz et al. 2025 catalog-based"
+        description: |
+          Spin-2 transforms at source positions via `ducc`, with
+          NaMaster-decoupled bandpowers and analytic shot-noise
+          subtraction.
+        insights: [wolz25_catalog_based_pseudo_cl, hivon02_master_mode_coupling_deconvolution, alonso19_namaster_unbiased_spin2_pseudo_cl, reinecke23_sht_on_arbitrary_grids]
+      map_based_pseudo_cl:
+        excluded: true
+        excluded_reason: "Not implemented here: the measurement recipes run only the catalog estimator, the GLASS mock spectra that validate it use the same one, and the iNKA covariance fails in the Monte-Carlo noise mode that matches the map estimator's noise subtraction."
+        label: "Map-based pseudo-Cℓ on HEALPix"
+        insights: [hivon02_master_mode_coupling_deconvolution, alonso19_namaster_unbiased_spin2_pseudo_cl]
+        description: |
+          Shapes binned into HEALPix pixels before the transform,
+          which introduces pixel-window and aliasing effects near
+          the pixel scale.
+
+prior_insights:
+
+  wolz25_catalog_based_pseudo_cl:
+    id: wolz25_catalog_based_pseudo_cl
+    claim: |
+      The catalog-based pseudo-Cℓ estimator measures power
+      spectra of fields sampled at arbitrary source positions,
+      without pixelized maps; subtracting the discrete mask's
+      shot noise analytically makes it immune to pixelization
+      and aliasing and unbiased against noise uncorrelated
+      between sources.
+    created_at: "2026-04-25T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1088/1475-7516/2025/01/028"
+        quote:
+          exact: |
+            We present a formalism to extract the angular
+            power spectrum of fields sampled at a finite
+            number of points with arbitrary positions -- a
+            common situation for several catalog-based
+            astrophysical probes -- through a simple extension
+            of the standard pseudo-$C_\ell$ algorithm.
+          prefix: "Abstract."
+          suffix: "A key complication in this case is the need to handle the shot noise component of the associated discrete angular mask"
+        location:
+          page: 1
+      - id: ev2
+        doi: "10.1088/1475-7516/2025/01/028"
+        quote:
+          exact: |
+            The resulting estimator is immune to small-scale
+            pixelization effects and aliasing, and, more
+            interestingly, unbiased against the contribution
+            from measurement noise uncorrelated between
+            different sources.
+          prefix: "We show that this problem can be solved easily by estimating this contribution analytically and subtracting it."
+          suffix: "We demonstrate the validity of the method in the context of cosmic shear datasets"
+        location:
+          page: 1
+    scope: |
+      Wolz, Alonso & Nicola 2025, JCAP 01, 028; the basis of the
+      [harmonic-space](#outputs.cl_bandpowers_reporting) estimator and its shot-noise
+      correction.
+
+  hivon02_master_mode_coupling_deconvolution:
+    id: hivon02_master_mode_coupling_deconvolution
+    claim: |
+      MASTER describes the mode coupling from incomplete sky
+      coverage analytically through the harmonic transform of the
+      sky window and corrects for it to obtain an unbiased C_ℓ.
+      Both estimators considered here decouple their bandpowers
+      this way.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1086/338126"
+        quote:
+          exact: "The harmonic mode-mode coupling induced by the incomplete sky coverage is described analytically by the SHT of the sky window and corrected for in order to obtain an unbiased estimate of the"
+        location:
+          page: 2
+    scope: |
+      Hivon et al. 2002, ApJ 567, 2; derived for CMB temperature
+      maps. NaMaster (Alonso et al. 2019) provides the spin-2
+      implementation used here.
+
+  alonso19_namaster_unbiased_spin2_pseudo_cl:
+    id: alonso19_namaster_unbiased_spin2_pseudo_cl
+    claim: |
+      NaMaster provides a unified pseudo-Cℓ framework for any pair of
+      spin-0 or spin-2 fields, and its validation suite recovers the
+      input power spectra with no detectable bias in complex
+      scenarios.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1093/mnras/stz093"
+        quote:
+          exact: "provides a unified framework to compute angular cross-power spectra of any pair of spin-0 or spin-2 fields"
+        location:
+          page: 1
+      - id: ev2
+        doi: "10.1093/mnras/stz093"
+        quote:
+          exact: "use it to show that the code is able to recover the input power spectra in the most complex scenarios with no detectable bias."
+        location:
+          page: 1
+    scope: |
+      Alonso, Sanchez & Slosar 2019, MNRAS 484, 4127; validated on
+      maps, extended to catalogs by Wolz et al. 2025. Paper II uses
+      it to decouple the bandpowers.
+
+  reinecke23_sht_on_arbitrary_grids:
+    id: reinecke23_sht_on_arbitrary_grids
+    claim: |
+      The `ducc` nonuniform-FFT code performs spherical harmonic
+      transforms efficiently on completely arbitrary point sets,
+      which is what makes evaluating spin-2 transforms directly at
+      the tens of millions of UNIONS source positions practical.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/202346717"
+        quote:
+          exact: "This publicly available code enables de facto efficient spherical harmonic transforms on completely arbitrary grids, and it might be applied in other areas as well."
+        location:
+          page: 1
+    scope: |
+      Reinecke, Belkner & Carron 2023, A&A 678, A165, motivated by
+      CMB lensing; applied to catalog pseudo-Cℓ by Wolz et al. 2025.
 
 analyses:
 
-  real_space:
-    path: ./analyses/real_space
+  xi_scan:
+    path: ./analyses/xi_scan
 
-  cosebis:
-    path: ./analyses/cosebis
-
-  harmonic_space:
-    path: ./analyses/harmonic_space
+  cl_scan:
+    path: ./analyses/cl_scan

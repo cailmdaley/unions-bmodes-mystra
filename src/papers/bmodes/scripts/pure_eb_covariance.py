@@ -78,7 +78,6 @@ def _cov_to_corr(covariance):
 
 def main(version, pure_eb_path, out_file):
 
-    # Load precomputed pure E/B data
     dataset = np.load(pure_eb_path)
 
     theta = dataset["theta"]
@@ -185,16 +184,15 @@ def _from_cli(argv=None):
     )
     add_catalog_arguments(ap)
     ap.add_argument(
-        "--pure-eb-data",
+        "--pure-eb-covariance",
         required=True,
-        help="Fiducial <version>_<blind>_pure_eb_semianalytic.npz "
-        "(provides the 6-block cov_pure_eb)",
+        help="Fiducial 6-block pure E/B covariance npz",
     )
     ap.add_argument(
         "--out-file", required=True, help="Output PNG path (lc {output})"
     )
     a = ap.parse_args(argv)
-    main(catalogs_from(a).fiducial, a.pure_eb_data, a.out_file)
+    main(catalogs_from(a).fiducial, a.pure_eb_covariance, a.out_file)
 
 
 if __name__ == "__main__":

@@ -50,7 +50,7 @@ analyses:
     universe: submitted
   data_vectors:
     universe: submitted
-  null_tests:
-    universe: submitted
   validation:
+    universe: submitted
+  null_tests:
     universe: submitted

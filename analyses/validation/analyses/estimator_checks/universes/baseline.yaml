@@ -1,8 +1,0 @@
-id: baseline
-description: |
-  Convergence of the pure-mode chain and the 20-mode COSEBI vector, remade
-  on the 10,000-bin integration grid and scored against the 1000-bin
-  covariance, the harmonic COSEBI comparison, and the blind-independence check
-  on the fiducial v1.4.6.3 catalog.
-decisions:
-  bb_blind_check_version: size_cut_v1463

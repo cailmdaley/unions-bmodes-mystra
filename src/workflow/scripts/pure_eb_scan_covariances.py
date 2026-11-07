@@ -4,9 +4,9 @@ The scan's only heavy stage, and one output per variant so the four run in
 parallel on separate nodes rather than serially inside a single job.  It
 produces the two MC-propagated pure-mode covariances the comparison needs:
 
-* ``<variant>__data.npz`` -- the data's own pure-mode vectors and 120x120
-  covariance, from ``run_pure_eb.sh``.  The twin of
-  ``pure_eb_data``, and the artifact the variant's DATA PTE is
+* ``<variant>__data.npz`` -- the data's own pure-mode vectors, from
+  ``pure_eb_modes.py``, with their 120x120 covariance, from
+  ``run_pure_eb_covariance.sh``.  The artifact the variant's DATA PTE is
   computed from downstream.
 * ``<variant>__mockmatched.npz`` -- the same propagation at the mock suite's
   own noise, from ``mock_matched_pure_eb_cov.py``.  The twin of
@@ -42,6 +42,8 @@ import tarfile
 import tempfile
 import time
 from pathlib import Path
+
+import numpy as np
 
 from pure_eb_scan_variants import BY_NAME, NAMES
 
@@ -128,10 +130,26 @@ def main() -> None:
             )
 
             data_out = staging / f"{variant.name}__data.npz"
+            modes_out = staging / f"{variant.name}__modes.npz"
+            _run(
+                [
+                    sys.executable,
+                    "src/papers/bmodes/scripts/pure_eb_modes.py",
+                    "--xi-reporting", args.xi_reporting,
+                    "--xi-integration", args.xi_integration,
+                    "--integration-method", variant.integration_method,
+                    "--integration-limits", variant.integration_limits,
+                    "--rebinning-weights", variant.rebinning_weights,
+                    *geometry_flag,
+                    *local_flag,
+                    "--out-file", str(modes_out),
+                ],
+                f"{variant.name} / data vector",
+            )
             _run(
                 [
                     "bash",
-                    "src/papers/bmodes/scripts/run_pure_eb.sh",
+                    "src/papers/bmodes/scripts/run_pure_eb_covariance.sh",
                     "--version", FIDUCIAL_VERSION,
                     "--blind", FIDUCIAL_BLIND,
                     "--cat-config", CAT_CONFIG,
@@ -151,6 +169,10 @@ def main() -> None:
                 ],
                 f"{variant.name} / data covariance",
             )
+            with np.load(modes_out) as modes, np.load(data_out) as covariance:
+                bundle = {**modes, **covariance}
+            np.savez(data_out, **bundle)
+            modes_out.unlink()
 
             mock_out = staging / f"{variant.name}__mockmatched.npz"
             _run(

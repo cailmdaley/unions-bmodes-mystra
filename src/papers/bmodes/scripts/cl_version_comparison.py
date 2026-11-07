@@ -42,14 +42,15 @@ def _cl(results_dir, ver, blind="A", nbins=32):
     return f"{results_dir}/cl_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
 
 
-def _cl_cov(results_dir, ver, blind="A", nbins=32):
+def _cl_cov(cov_dir, ver, blind="A", nbins=32):
     return (
-        f"{results_dir}/cl_cov_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
+        f"{cov_dir}/cl_cov_{ver}_blind={blind}_powspace_nbins={nbins}.fits"
     )
 
 
 def _resolve_cl_paths(
     results_dir,
+    cov_dir,
     ver,
     fiducial_version=None,
     fiducial_cl_path=None,
@@ -72,13 +73,14 @@ def _resolve_cl_paths(
         return fiducial_cl_path, fiducial_cl_cov_path
     return (
         _cl(results_dir, ver, blind, nbins),
-        _cl_cov(results_dir, ver, blind, nbins),
+        _cl_cov(cov_dir, ver, blind, nbins),
     )
 
 
 def main(
     catalogs,
     results_dir,
+    cov_dir,
     out_dir=None,
     fiducial_version=None,
     fiducial_cl_path=None,
@@ -125,6 +127,7 @@ def main(
 
         cl_path, cl_cov_path = _resolve_cl_paths(
             results_dir,
+            cov_dir,
             version,
             fiducial_version,
             fiducial_cl_path,
@@ -381,9 +384,14 @@ def _from_cli(argv=None):
     ap.add_argument(
         "--results-dir",
         required=True,
-        help="COSMO_VAL output dir with per-version cl_* / cl_cov_* FITS",
+        help="Directory holding per-version cl_* FITS",
     )
-    ap.add_argument("--out", default=None, help="Output directory (legacy dir mode)")
+    ap.add_argument(
+        "--cov-dir",
+        required=True,
+        help="Directory holding per-version cl_cov_* FITS",
+    )
+    ap.add_argument("--out", default=None, help="Output directory")
     ap.add_argument(
         "--out-file",
         default=None,
@@ -420,6 +428,7 @@ def _from_cli(argv=None):
     main(
         catalogs_from(a),
         a.results_dir,
+        a.cov_dir,
         a.out,
         fiducial_version=a.fiducial_version,
         fiducial_cl_path=a.fiducial_cl_path,

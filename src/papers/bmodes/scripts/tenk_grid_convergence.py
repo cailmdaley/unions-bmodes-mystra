@@ -10,7 +10,7 @@ What is compared
   linear-transform operator evaluated on the fine grid, then collapsed to the
   20 reporting bins under the ``pure_eb_rebinning_weights`` rule.  The 10,000-bin
   vector is built by the very function the baseline output uses
-  (``gather_pure_eb_chunks.data_vector``), so the only difference between the
+  (``pure_eb_transform.data_vector``), so the only difference between the
   two sides is the grid.  The published pointwise ``dqags`` estimator is not
   exercised here.
 * **COSEBIs** B_n, n ≤ ``nmodes``, at both scale cuts, with the mode integrals
@@ -40,12 +40,13 @@ try:
 except Exception:  # pragma: no cover - compute mode does not need a display stack
     _HAS_MPL = False
 
-from gather_pure_eb_chunks import _load_xi, data_vector
 from pure_mode_covariance import hartlap_samples
 from pure_eb_transform import (
     add_integration_limits_argument,
     add_integration_method_argument,
     add_rebinning_weights_argument,
+    data_vector,
+    load_xi,
 )
 from scale_cuts import (
     add_scale_cut_convention_argument,
@@ -78,8 +79,8 @@ def _chi2_pte(data, cov, n_eff):
 
 
 def _fine_grid(path, nbins, min_sep, max_sep):
-    """``_load_xi`` plus the log bin edges TreeCorr used for that grid."""
-    gg = _load_xi(path, nbins)
+    """``load_xi`` plus the log bin edges TreeCorr used for that grid."""
+    gg = load_xi(path, nbins)
     edges = np.logspace(np.log10(min_sep), np.log10(max_sep), nbins + 1)
     gg["left_edges"] = edges[:-1]
     gg["right_edges"] = edges[1:]
@@ -173,7 +174,9 @@ def compute(
     xi_1k,
     xi_10k,
     pure_eb_baseline,
+    pure_eb_covariance,
     cosebis_baseline,
+    cosebis_covariance,
     out_file,
     scale_cut_convention,
     integration_method,
@@ -184,7 +187,7 @@ def compute(
     min_sep_int, max_sep_int, nbins_1k = integration
     nbins_10k = INTEGRATION_GRID["bins_10000"].nbins
 
-    gg = _load_xi(xi_reporting, nbins)
+    gg = load_xi(xi_reporting, nbins)
     gg_1k = _fine_grid(xi_1k, nbins_1k, min_sep_int, max_sep_int)
     gg_10k = _fine_grid(xi_10k, nbins_10k, min_sep_int, max_sep_int)
 
@@ -271,7 +274,8 @@ def compute(
 
     # ---- pure modes --------------------------------------------------------
     base = np.load(pure_eb_baseline)
-    cov_pure = base["cov_pure_eb"]
+    base_cov = np.load(pure_eb_covariance)
+    cov_pure = base_cov["cov_pure_eb"]
     dv_kwargs = dict(
         min_sep=min_sep,
         max_sep=max_sep,
@@ -320,7 +324,7 @@ def compute(
 
     # Fiducial-window PTEs, both grids, the 1,000-bin covariance for both, with
     # the Hartlap factor that covariance artifact records (None: exact).
-    n_eff_mc = hartlap_samples(base)
+    n_eff_mc = hartlap_samples(base_cov)
     win = slice(first_bin, last_bin + 1)
     pure_ptes = {}
     for key in ("xip_B", "xim_B"):
@@ -354,6 +358,7 @@ def compute(
 
     # ---- COSEBIs -----------------------------------------------------------
     cos_base = np.load(cosebis_baseline, allow_pickle=True)
+    cos_cov = np.load(cosebis_covariance)
     scale_cuts = {
         "fiducial": resolve_fiducial_scale_cuts(reporting, scale_cut_convention),
         "full": (
@@ -371,7 +376,7 @@ def compute(
                 f"{stored_cut}; the two sides would not be comparable."
             )
         Bn_1k = np.asarray(cos_base[f"{key}_Bn"])
-        cov_B = np.asarray(cos_base[f"{key}_cov"])[nmodes:, nmodes:]
+        cov_B = np.asarray(cos_cov[f"{key}_cov"])[nmodes:, nmodes:]
         sigma_B = np.sqrt(np.diag(cov_B))
         print(f"COSEBIs on the 10,000-bin grid, {key} cut {cut}...")
         _, Bn_10k, interval_10k, bins_10k = _cosebis_Bn(gg_10k, nmodes, cut)
@@ -659,7 +664,9 @@ def _from_cli(argv=None):
     ap.add_argument("--xi-1k", help="1,000-bin integration-grid TreeCorr dump")
     ap.add_argument("--xi-10k", help="10,000-bin integration-grid TreeCorr dump")
     ap.add_argument("--pure-eb-baseline", help="Baseline pure_eb_data NPZ")
+    ap.add_argument("--pure-eb-covariance", help="Pure E/B covariance NPZ")
     ap.add_argument("--cosebis-baseline", help="Baseline cosebis_modes_data NPZ")
+    ap.add_argument("--cosebis-covariance", help="COSEBI covariance NPZ")
     ap.add_argument("--plot-from-json", help="Render mode: the computed JSON")
     ap.add_argument(
         "--plot-cosebis-from-json",
@@ -680,7 +687,7 @@ def _from_cli(argv=None):
         return
     required = ("fiducial_catalog", "leakage_correction", "reporting_binning", "integration_grid",
                 "mode_count", "xi_reporting", "xi_1k", "xi_10k", "pure_eb_baseline",
-                "cosebis_baseline")
+                "pure_eb_covariance", "cosebis_baseline", "cosebis_covariance")
     missing = [f"--{r.replace('_', '-')}" for r in required if not getattr(a, r)]
     if missing:
         ap.error(f"compute mode needs {', '.join(missing)}")
@@ -693,7 +700,9 @@ def _from_cli(argv=None):
         xi_1k=a.xi_1k,
         xi_10k=a.xi_10k,
         pure_eb_baseline=a.pure_eb_baseline,
+        pure_eb_covariance=a.pure_eb_covariance,
         cosebis_baseline=a.cosebis_baseline,
+        cosebis_covariance=a.cosebis_covariance,
         out_file=a.out_file,
         scale_cut_convention=a.scale_cut_convention,
         integration_method=a.integration_method,

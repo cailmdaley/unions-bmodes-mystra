@@ -1,6 +1,0 @@
-id: baseline
-description: |
-  Harmonic-space null test with the Wolz et al. (2025) catalog-based
-  estimator.
-decisions:
-  estimator_choice: wolz25_catalog_based

@@ -13,7 +13,7 @@ version: '1.0'
 name: COSEBI PTE-matrix catalog-version scan
 description: |
   The COSEBI PTE matrix of
-  [cosebis_pte_per_cut](#../inputs.cosebis_pte_per_cut) for the seven
+  [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut) for the seven
   other catalog versions: three leak-corrected and four uncorrected in
   the fiducial analysis. Only ξ_± and its covariance differ from member
   to member; the scale-cut grid and modes are shared. The gathered
@@ -53,7 +53,7 @@ outputs:
     COSEBI E_n and B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20,
     over the stable scale-cut pairs of `geomspace(1', 250', 21)` for
     catalog version `SP_v1.4.5` at blind A: the per-version analogue
-    of [cosebis_pte_per_cut](#../inputs.cosebis_pte_per_cut).
+    of [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut).
   inputs:
   - xi_sweep
   - cov_sweep
@@ -90,7 +90,7 @@ outputs:
     COSEBI E_n and B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20,
     over the stable scale-cut pairs of `geomspace(1', 250', 21)` for
     catalog version `SP_v1.4.5_leak_corr` at blind A: the per-version analogue
-    of [cosebis_pte_per_cut](#../inputs.cosebis_pte_per_cut).
+    of [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut).
   inputs:
   - xi_sweep
   - cov_sweep
@@ -127,7 +127,7 @@ outputs:
     COSEBI E_n and B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20,
     over the stable scale-cut pairs of `geomspace(1', 250', 21)` for
     catalog version `SP_v1.4.6.3` at blind A: the per-version analogue
-    of [cosebis_pte_per_cut](#../inputs.cosebis_pte_per_cut).
+    of [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut).
   inputs:
   - xi_sweep
   - cov_sweep
@@ -164,7 +164,7 @@ outputs:
     COSEBI E_n and B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20,
     over the stable scale-cut pairs of `geomspace(1', 250', 21)` for
     catalog version `SP_v1.4.8` at blind A: the per-version analogue
-    of [cosebis_pte_per_cut](#../inputs.cosebis_pte_per_cut).
+    of [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut).
   inputs:
   - xi_sweep
   - cov_sweep
@@ -201,7 +201,7 @@ outputs:
     COSEBI E_n and B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20,
     over the stable scale-cut pairs of `geomspace(1', 250', 21)` for
     catalog version `SP_v1.4.8_leak_corr` at blind A: the per-version analogue
-    of [cosebis_pte_per_cut](#../inputs.cosebis_pte_per_cut).
+    of [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut).
   inputs:
   - xi_sweep
   - cov_sweep
@@ -238,7 +238,7 @@ outputs:
     COSEBI E_n and B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20,
     over the stable scale-cut pairs of `geomspace(1', 250', 21)` for
     catalog version `SP_v1.4.11.3` at blind A: the per-version analogue
-    of [cosebis_pte_per_cut](#../inputs.cosebis_pte_per_cut).
+    of [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut).
   inputs:
   - xi_sweep
   - cov_sweep
@@ -275,7 +275,7 @@ outputs:
     COSEBI E_n and B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20,
     over the stable scale-cut pairs of `geomspace(1', 250', 21)` for
     catalog version `SP_v1.4.11.3_leak_corr` at blind A: the per-version analogue
-    of [cosebis_pte_per_cut](#../inputs.cosebis_pte_per_cut).
+    of [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut).
   inputs:
   - xi_sweep
   - cov_sweep
@@ -313,7 +313,7 @@ outputs:
     [config_space_pte_data](#../outputs.config_space_pte_data) and
     available as [cosebis_ptes](#../outputs.cosebis_ptes). The fiducial
     version is not a member; its matrix is
-    [cosebis_pte_per_cut](#../inputs.cosebis_pte_per_cut).
+    [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut).
   inputs:
   - cosebis_ptes_sp_v1p4p5
   - cosebis_ptes_sp_v1p4p5_leak_corr

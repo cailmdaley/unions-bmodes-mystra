@@ -1,12 +1,7 @@
 id: baseline
 description: |
-  The three data-vector representations. Every decision is made in a child
-  or inherited from the root.
-decisions: {}
-analyses:
-  real_space:
-    universe: baseline
-  cosebis:
-    universe: baseline
-  harmonic_space:
-    universe: baseline
+  TreeCorr ξ± on the 20-bin reporting grid and the 1000-bin integration grid, in
+  a single patch, with the Wolz et al. (2025) catalog-based Cℓ estimator.
+decisions:
+  patch_count: npatch_1
+  estimator_choice: wolz25_catalog_based

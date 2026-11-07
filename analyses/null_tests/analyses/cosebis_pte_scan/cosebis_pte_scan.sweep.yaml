@@ -3,7 +3,7 @@ version: "1.0"
 name: "COSEBI PTE-matrix catalog-version scan"
 description: |
   The COSEBI PTE matrix of
-  [cosebis_pte_per_cut](#../inputs.cosebis_pte_per_cut) for the seven
+  [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut) for the seven
   other catalog versions: three leak-corrected and four uncorrected in
   the fiducial analysis. Only ξ_± and its covariance differ from member
   to member; the scale-cut grid and modes are shared. The gathered
@@ -62,7 +62,7 @@ template:
     COSEBI E_n and B_n, with their χ² and PTEs at n ≤ 6 and n ≤ 20,
     over the stable scale-cut pairs of `geomspace(1', 250', 21)` for
     catalog version `${version}` at blind A: the per-version analogue
-    of [cosebis_pte_per_cut](#../inputs.cosebis_pte_per_cut).
+    of [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut).
   inputs: [xi_sweep, cov_sweep]
   decisions: [fiducial_catalog, fiducial_blind, scale_cut_pair_grid, pte_definition, leakage_correction, reporting_binning, integration_grid, mode_count]
   recipe:
@@ -90,7 +90,7 @@ gather:
     [config_space_pte_data](#../outputs.config_space_pte_data) and
     available as [cosebis_ptes](#../outputs.cosebis_ptes). The fiducial
     version is not a member; its matrix is
-    [cosebis_pte_per_cut](#../inputs.cosebis_pte_per_cut).
+    [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut).
   decisions: [fiducial_catalog, leakage_correction]
   recipe:
     command: >

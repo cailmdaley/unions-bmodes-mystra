@@ -1,12 +1,11 @@
 """Parameter-plumbing regression tests; run in the project environment on Slurm.
 
 These use small synthetic arrays and process stubs, not the GLASS ensemble.
-The real-recipe default-output comparison is tools/prove_decision_identity.py.
+Without `sp_validation` the module skips.
 """
 
+import importlib.util
 import json
-import io
-import zlib
 import os
 from pathlib import Path
 import subprocess
@@ -16,6 +15,9 @@ import unittest
 from unittest.mock import patch
 
 import numpy as np
+
+if importlib.util.find_spec("sp_validation") is None:
+    raise unittest.SkipTest("needs the project environment")
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "src/papers/bmodes/scripts"), str(ROOT / "src/workflow/scripts")]
@@ -28,7 +30,6 @@ import generate_cl as cl
 import generate_cl_cov as cl_cov
 import merge_cosebis_pte_rows as merge
 import primary_null_test_report as reporting
-import prove_decision_identity as identity
 
 
 class DecisionWiringTests(unittest.TestCase):
@@ -130,78 +131,6 @@ class DecisionWiringTests(unittest.TestCase):
         import harmonic_config_cosebis_comparison as harmonic
         self.assertEqual(harmonic._RELIABLE_MODE_MAX_BY_NBINS[128], 6)
 
-    def test_identity_gate_and_explicit_renames(self):
-        self.assertEqual(identity.old_name("baseline/glass_mocks/.mock_xi_fine.manifest.json"),
-                         "baseline/glass_mocks/.mock_xi_fine.manifest.json")
-        self.assertEqual(identity.old_name("baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p5_fine.fits"),
-                         "baseline/cl_bb/cl_scan/pseudo_cl_sp_v1p4p5_leak_corr_nbins96.fits")
-        self.assertEqual(identity.old_name("covariance_SP_v1.4.5_A_integration/covariance_SP_v1.4.5_A_integration_processed.txt"),
-                         "covariance_SP_v1.4.5_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.5_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt")
-        self.assertLess(identity.array_delta(np.array([1.]), np.array([1.+1e-13])), 1e-12)
-        with self.assertRaises(ValueError):
-            identity.array_delta(np.array([1.]), np.array([1.+1e-10]))
-        with self.assertRaises(ValueError):
-            identity.array_delta(np.array([1]), np.array([2]))
-        self.assertLess(identity.array_delta(np.array([1.]), np.array([1.+1e-5]), 1e-4), 1e-4)
-        with self.assertRaises(ValueError):
-            identity.array_delta(np.array([1.]), np.array([1.+1e-3]), 1e-4)
-        with self.assertRaises(ValueError):
-            identity.array_delta(np.array([1]), np.array([2]), 1e-4)
-        self.assertNotIn("baseline/data_vectors/real_space/pure_eb_data.npz", identity.ARCH_UNCHANGED)
-        with tempfile.TemporaryDirectory() as tmp:
-            tmp = Path(tmp)
-            for tree in ["before", "results"]:
-                directory = tmp / tree / "baseline/checker"
-                directory.mkdir(parents=True)
-                (directory / ".output.manifest.json").write_text("{}")
-                (directory / "output.txt").write_text("1.0 2.0\n")
-            targets = tmp / "reruns.txt"
-            targets.write_text("baseline/checker.output\n")
-            out = tmp / "identity.csv"
-            argv = ["prove_decision_identity.py", "--before", str(tmp / "before"),
-                    "--results", str(tmp / "results"), "--out", str(out), "--rerun-targets", str(targets)]
-            with patch.object(sys, "argv", argv), self.assertRaises(SystemExit) as exit_:
-                identity.main()
-            self.assertEqual(exit_.exception.code, 0)
-            self.assertIn("checker/output.txt", out.read_text())
-            targets.write_text("baseline/checker.missing\n")
-            with patch.object(sys, "argv", argv), self.assertRaisesRegex(ValueError, "missing from identity proof"):
-                identity.main()
-
-    def test_identity_multiblock_treecorr_text(self):
-        old = b"## main\n# x y\n1.0 2.0\n## cov\n3.0 0.0 0.0\n"
-        new = old.replace(b"3.0 0.0", b"3.000000000000001 0.0")
-        self.assertLess(identity.compare(old, new, "xi.txt")[1], 1e-12)
-        with self.assertRaises(ValueError):
-            identity.compare(old, new.replace(b"# x y", b"# y x"), "xi.txt")
-        with self.assertRaises(ValueError):
-            identity.compare(old, new.replace(b"1.0 2.0", b"1.0 2.1"), "xi.txt")
-        with self.assertRaises(ValueError):
-            identity.compare(b"1e15 1e-5\n", b"1e15 2e-5\n", "xi.txt")
-
-    def test_identity_provenance_ignores_only_generated_timestamp(self):
-        def npz(timestamp, version):
-            output = io.BytesIO()
-            np.savez(output, x=np.array([1.]), provenance=json.dumps(dict(generated=timestamp, version=version)))
-            return output.getvalue()
-        a = npz("yesterday", "v1")
-        self.assertEqual(identity.compare(a, npz("today", "v1"), "statistics.npz")[1], 0)
-        with self.assertRaises(ValueError):
-            identity.compare(a, npz("today", "v2"), "statistics.npz")
-
-    def test_identity_pdf_keeps_drawing_commands_and_font_programs_exact(self):
-        def pdf(subset, date, drawing=b"1 2 m", font=b"MyFont"):
-            stream = zlib.compress(b"/FontName /" + subset + b"+" + font + b" def\n" + drawing)
-            return (b"%PDF-1.4\n%test\n1 0 obj\n<< /FontName /" + subset + b"+" + font
-                    + b" /CreationDate (" + date + b") >>\nendobj\n2 0 obj\n<< /Filter /FlateDecode /Length "
-                    + str(len(stream)).encode() + b" >>\nstream\n" + stream
-                    + b"\nendstream\nendobj\ntrailer\n<< /Size 3 /Root 1 0 R >>\n")
-        a = pdf(b"ABCDEF", b"yesterday")
-        self.assertEqual(identity.compare(a, pdf(b"GHIJKL", b"today"), "figure.pdf")[0], "pdf_payload_identical")
-        for changes in [dict(drawing=b"1 3 m"), dict(font=b"OtherFont")]:
-            with self.assertRaises(ValueError):
-                identity.compare(a, pdf(b"GHIJKL", b"today", **changes), "figure.pdf")
-
     def test_mc_option_reaches_all_chunks(self):
         import calculate_pure_eb_ptes as ptes
         with tempfile.TemporaryDirectory() as tmp:
@@ -217,7 +146,7 @@ class DecisionWiringTests(unittest.TestCase):
                 np.savez(artifact, cov_pure_eb=np.eye(12), **vectors, **record)
                 matrices = dict(xip_B=np.zeros((2, 2)), xim_B=np.zeros((2, 2)), combined=np.zeros((2, 2)))
                 with patch.object(ptes, "calculate_eb_statistics", return_value=dict(pte_matrices=matrices)) as stats:
-                    ptes.calculate_ptes("test", "A", artifact, None, 1, out_file=tmp / "ptes.npz")
+                    ptes.calculate_ptes("test", "A", artifact, artifact, 1, out_file=tmp / "ptes.npz")
                     self.assertEqual(stats.call_args.kwargs["n_samples"],
                                      ptes.NO_HARTLAP_N if count is None else count)
         with tempfile.TemporaryDirectory() as tmp:
@@ -226,19 +155,19 @@ class DecisionWiringTests(unittest.TestCase):
             python.write_text(f"#!{sys.executable}\n" + '''import json, pathlib, sys
 args = sys.argv[2:]
 def get(flag): return args[args.index(flag)+1]
-out = pathlib.Path(get("--out")); out.mkdir(parents=True, exist_ok=True)
 if pathlib.Path(sys.argv[1]).name == "precompute_pure_eb_chunk.py":
+    out = pathlib.Path(get("--out")); out.mkdir(parents=True, exist_ok=True)
     (out / ("pure_eb_chunk_"+get("--chunk-id")+".npz")).write_text(get("--n-samples"))
 else:
     chunks = pathlib.Path(get("--chunks-dir"))
     values = [int(p.read_text()) for p in sorted(chunks.glob("*.npz"))]
-    (out / (get("--version")+"_"+get("--blind")+"_pure_eb_semianalytic.npz")).write_text(json.dumps(values))
+    pathlib.Path(get("--out-file")).write_text(json.dumps(values))
 ''')
             python.chmod(0o755)
             env = dict(os.environ, PATH=f"{tmp}:{os.environ['PATH']}")
             for option, expected in MC_SAMPLES.items():
                 output = tmp / f"{option}.npz"
-                subprocess.run(["bash", str(ROOT / "src/papers/bmodes/scripts/run_pure_eb.sh"),
+                subprocess.run(["bash", str(ROOT / "src/papers/bmodes/scripts/run_pure_eb_covariance.sh"),
                                 "--version", "test", "--blind", "A", "--cat-config", "unused",
                                 "--xi-reporting", "unused", "--xi-integration", "unused",
                                 "--cov-integration", "unused", "--integration-method", "adaptive_dqags",
@@ -254,8 +183,6 @@ else:
             cosmology = tmp / "cosmology.json"
             cosmology.write_text(json.dumps(dict(Omega_m=.3, Omega_v=.7, sigma_8=.8,
                                                  n_s=.96, Omega_b=.05, h=.7)))
-            catalog = tmp / "catalog.yaml"
-            catalog.write_text("test:\n  cov_th: {A: 100, sigma_e: 0.3, n_e: 5}\n")
             mask = tmp / "mask.txt"
             mask.write_text("0 1\n")
             binary = tmp / "cosmocov"
@@ -270,11 +197,11 @@ pathlib.Path(f"cov_tmp_ssss_{pm}_cov_Ntheta{ini['ntheta']}_Ntomo1_{i}").write_te
                 for treatment in [None, "masked", "unmasked"]:
                     output = tmp / f"{cls}_{treatment}.txt"
                     subprocess.run(["bash", str(ROOT / "src/workflow/scripts/run_cosmocov_chain.sh"),
-                                    "--version", "test", "--blind", "blind_a", "--min-sep", "1",
+                                    "--version", "SP_v1.4.6.3", "--blind", "blind_a", "--min-sep", "1",
                                     "--max-sep", "250", "--nbins", "3", "--gaussian", cls,
                                     *(["--mask-application", treatment] if treatment else []),
                                     "--mask-cls", str(mask),
-                                    "--planck18-json", str(cosmology), "--cat-config", str(catalog),
+                                    "--planck18-json", str(cosmology),
                                     "--cosmocov", str(binary), "--libgsl", str(mask),
                                     "--emit", "blocks", "--out-file", str(output)], check=True)
                     footprint = "mask_cls.txt" if treatment != "unmasked" and ng == "1" else "no_footprint_mask"

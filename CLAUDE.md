@@ -9,9 +9,10 @@ belongs to Papers III and IV.
 
 - `astra.yaml`: root decisions, findings, prior insights and re-exports of the
   report's outputs.
-- `analyses/**/astra.yaml`: the sub-analyses, four at the top with `data_vectors`
-  and `validation` holding their children in `analyses/<sub>/analyses/`. README
-  explains the split.
+- `analyses/**/astra.yaml`: the sub-analyses, four at the top, flat apart from
+  `validation/glass_mocks` and the scans, which sit in `analyses/<sub>/analyses/`.
+  README explains the split: every covariance lives in `covariances`,
+  `data_vectors` reads no covariance, and data meet covariance in `null_tests`.
 - `<scan>.sweep.yaml`: scan declarations, in each scan's own directory. The
   sibling `astra.yaml` is generated from each; edit the declaration and regenerate
   with `sweep_expand.py` from the `astra-sweep` practice.
@@ -51,9 +52,8 @@ uv run --no-project --with pyyaml python tools/check_decisions.py
 uv run --no-project --with pyyaml python tools/check_links.py
 uv run --no-project --with pyyaml python tools/check_reachable.py
 uv run --no-project --with pyyaml python tools/check_recipe_flags.py
-uv run --no-project python tools/check_report_links.py
-uv run --no-project python tools/test_report_links.py
-uv run --no-project --with pyyaml --with numpy python tools/test_decision_values.py
+uv run --no-project --with pyyaml python tools/check_report_links.py
+uv run --no-project --with pyyaml --with numpy python -m unittest discover -s tools -p 'test_*.py'
 myst build && uv run --no-project python tools/check_report_build.py
 ```
 

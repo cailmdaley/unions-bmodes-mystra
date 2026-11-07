@@ -103,6 +103,7 @@ def generate_macros(
     mock_scale_cut_scan_path: Path = None,
     survey=None,
     cosebis_modes_path: Path = None,
+    cosebis_covariance_path: Path = None,
     mock_per_mock_statistics_path: Path = None,
     mock_mean_vector_stats_path: Path = None,
     mock_noise_table_path: Path = None,
@@ -592,12 +593,13 @@ def generate_macros(
         import numpy as np
 
         cosebis_modes = np.load(cosebis_modes_path)
+        cosebis_cov = np.load(cosebis_covariance_path)
         first_mode = {
             "full_range_significance": float(
-                cosebis_modes["full_Bn"][0] / cosebis_modes["full_sigma_B"][0]
+                cosebis_modes["full_Bn"][0] / cosebis_cov["full_sigma_B"][0]
             ),
             "fiducial_cut_significance": float(
-                cosebis_modes["fiducial_Bn"][0] / cosebis_modes["fiducial_sigma_B"][0]
+                cosebis_modes["fiducial_Bn"][0] / cosebis_cov["fiducial_sigma_B"][0]
             ),
         }
         macros.append(
@@ -1016,7 +1018,12 @@ def _from_cli(argv=None):
     ap.add_argument(
         "--cosebis-modes-data",
         default=None,
-        help="Absolute path to cosebis_modes_data.npz (config-space COSEBIs; B_1/sigma_1)",
+        help="Absolute path to cosebis_modes_data.npz (config-space COSEBIs; B_1)",
+    )
+    ap.add_argument(
+        "--cosebis-covariance",
+        default=None,
+        help="Absolute path to cosebis_covariance.npz (sigma_1)",
     )
     ap.add_argument(
         "--mock-per-mock-statistics",
@@ -1111,6 +1118,7 @@ def _from_cli(argv=None):
             ),
             survey=a.survey_properties,
             cosebis_modes_path=_optional_path(a.cosebis_modes_data),
+            cosebis_covariance_path=_optional_path(a.cosebis_covariance),
             mock_per_mock_statistics_path=_optional_path(a.mock_per_mock_statistics),
             mock_mean_vector_stats_path=_optional_path(a.mock_mean_vector_stats),
             mock_noise_table_path=_optional_path(a.mock_noise_table),

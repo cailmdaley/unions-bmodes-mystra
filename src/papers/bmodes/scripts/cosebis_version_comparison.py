@@ -1,8 +1,8 @@
-"""COSEBIS version comparison claim.
+"""COSEBI B_n / sigma_n across catalog versions, at the fiducial cut and full range.
 
-Visualizes B-mode COSEBIS across catalog versions.
-Produces figures at fiducial scale cut and full range.
-Statistical evidence (PTEs) is in cosebis_pte_matrix.
+Each version's modes come from the modes bundle and its sigma_n from the
+covariance bundle, so the figure computes nothing. Statistical evidence (PTEs)
+is in cosebis_pte_matrix.
 """
 
 import argparse
@@ -10,8 +10,6 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-import treecorr
-from numerics import compute_chi2_pte
 from plotting_utils import (
     ERRORBAR_DEFAULTS,
     FIG_WIDTH_FULL,
@@ -29,9 +27,8 @@ from print_width import savefig_at_width
 STACKED_PRINT_WIDTH = 0.88 * FIG_WIDTH_FULL
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
 
-from sp_validation.b_modes import calculate_cosebis
 from catalog_versions import add_catalog_arguments, catalogs_from
-from decision_values import FIDUCIAL_BLIND, INTEGRATION_GRID, MODE_COUNT, REPORTING_BINNING
+from decision_values import FIDUCIAL_BLIND, MODE_COUNT, REPORTING_BINNING
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -141,28 +138,26 @@ def _create_stacked_bmode_figure(
     return fig
 
 
-def _xi_integration(results_dir, ver):
-    return f"{results_dir}/{ver}_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt"
+def _modes_npz(results_dir, ver):
+    return f"{results_dir}/{ver}_cosebis_modes.npz"
 
 
-def _cov_integration(cov_dir, ver, blind):
-    base = f"covariance_{ver}_{blind}_integration"
-    return f"{cov_dir}/{base}/{base}_processed.txt"
+def _covariance_npz(cov_dir, ver, blind):
+    return f"{cov_dir}/{ver}_{blind}_cosebis_covariance.npz"
 
 
 def main(
     catalogs,
     blind,
     nmodes,
-    integration,
     reporting,
     results_dir,
     cov_dir,
     out_file,
     scale_cut_convention,
     fiducial_version=None,
-    fiducial_xi_path=None,
-    fiducial_cov_path=None,
+    fiducial_modes_path=None,
+    fiducial_covariance_path=None,
 ):
     # Leak-corrected, non-ecut versions
     versions = catalogs.comparison
@@ -171,18 +166,18 @@ def main(
     # Fiducial version whose inputs may be overridden with explicit paths
     fiducial_version = fiducial_version or catalogs.fiducial
 
-    # Per-version integration-grid xi and Gaussian covariance (canonical trees),
-    # with explicit-path overrides for the fiducial version when provided.
-    xi_paths_list = [
-        fiducial_xi_path
-        if v == fiducial_version and fiducial_xi_path
-        else _xi_integration(results_dir, v)
+    # Per-version modes and covariance, with explicit-path overrides for the
+    # fiducial version.
+    modes_paths = [
+        fiducial_modes_path
+        if v == fiducial_version and fiducial_modes_path
+        else _modes_npz(results_dir, v)
         for v in versions
     ]
-    cov_paths_list = [
-        fiducial_cov_path
-        if v == fiducial_version and fiducial_cov_path
-        else _cov_integration(cov_dir, v, blind)
+    covariance_paths = [
+        fiducial_covariance_path
+        if v == fiducial_version and fiducial_covariance_path
+        else _covariance_npz(cov_dir, v, blind)
         for v in versions
     ]
 
@@ -197,8 +192,6 @@ def main(
         "full": full_scale_cut,
     }
 
-    min_sep_int, max_sep_int, nbins_int = integration
-
     # Color/marker assignment: pair by parent version if ecut versions present
     has_ecut = any("_ecut" in v for v in versions)
     if has_ecut:
@@ -212,16 +205,13 @@ def main(
     else:
         colors = sns.husl_palette(len(versions), l=0.4)
 
-    # Compute COSEBIS for visualization - need to build datasets first to get fiducial_idx
     all_datasets = {}
-    # Collect PTEs across scale cuts
-    all_ptes = {v: {} for v in versions}
 
-    for scale_key, scale_cut in scale_cuts.items():
+    for scale_key in scale_cuts:
         datasets = []
 
-        for i, (version, xi_path, cov_path) in enumerate(
-            zip(versions, xi_paths_list, cov_paths_list)
+        for i, (version, modes_path, covariance_path) in enumerate(
+            zip(versions, modes_paths, covariance_paths)
         ):
             if has_ecut:
                 parent = version.split("_ecut")[0].replace("_leak_corr", "")
@@ -234,32 +224,8 @@ def main(
                 marker = MARKER_STYLES[i] if i < len(MARKER_STYLES) else "o"
                 fillstyle = "full"
 
-            gg = treecorr.GGCorrelation(
-                min_sep=min_sep_int,
-                max_sep=max_sep_int,
-                nbins=nbins_int,
-                sep_units="arcmin",
-            )
-            gg.read(xi_path)
-
-            results = calculate_cosebis(
-                gg,
-                nmodes=nmodes,
-                scale_cuts=[scale_cut],
-                cov_path=cov_path,
-            )
-
-            cosebis_result = results[scale_cut]
-            Bn = cosebis_result["Bn"]
-            cov = cosebis_result["cov"]
-            cov_B = cov[nmodes:, nmodes:]
-            sigma_B = np.sqrt(np.diag(cov_B))
-
-            # PTEs
-            chi2, pte, dof = compute_chi2_pte(Bn, cov_B)
-            all_ptes[version][f"pte_B_{scale_key}"] = float(pte)
-            all_ptes[version][f"chi2_B_{scale_key}"] = float(chi2)
-            all_ptes[version][f"dof_B_{scale_key}"] = int(dof)
+            Bn = np.load(modes_path, allow_pickle=True)[f"{scale_key}_Bn"]
+            sigma_B = np.load(covariance_path, allow_pickle=True)[f"{scale_key}_sigma_B"]
 
             datasets.append(
                 {
@@ -314,17 +280,16 @@ def _from_cli(argv=None):
     add_catalog_arguments(ap)
     ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__, required=True)
     ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
-    ap.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__, required=True)
     ap.add_argument("--mode-count", type=MODE_COUNT.__getitem__, required=True)
     ap.add_argument(
         "--results-dir",
         required=True,
-        help="COSMO_VAL output dir with per-version integration-grid xi_pm .txt dumps",
+        help="Directory holding per-version <version>_cosebis_modes.npz files",
     )
     ap.add_argument(
         "--cov-dir",
         required=True,
-        help="COSMO_INFERENCE data/covariance dir with per-version 1000-bin Gaussian covariances",
+        help="Directory holding per-version <version>_<blind>_cosebis_covariance.npz files",
     )
     ap.add_argument(
         "--out-file",
@@ -334,20 +299,18 @@ def _from_cli(argv=None):
     ap.add_argument(
         "--fiducial-version",
         default=None,
-        help="Version whose xi/cov inputs may be overridden by --fiducial-xi-path "
-        "and --fiducial-cov-path (default: the fiducial version)",
+        help="Version whose inputs may be overridden by --fiducial-modes-path "
+        "and --fiducial-covariance-path (default: the fiducial version)",
     )
     ap.add_argument(
-        "--fiducial-xi-path",
+        "--fiducial-modes-path",
         default=None,
-        help="Explicit path to the fiducial version's 1000-bin integration-grid "
-        "xi (e.g. lc output), overriding the canonical-tree path pattern",
+        help="The fiducial version's cosebis_modes_data npz",
     )
     ap.add_argument(
-        "--fiducial-cov-path",
+        "--fiducial-covariance-path",
         default=None,
-        help="Explicit path to the fiducial version's Gaussian integration "
-        "covariance (e.g. lc output), overriding the canonical-tree path pattern",
+        help="The fiducial version's cosebis_covariance npz",
     )
     add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
@@ -355,15 +318,14 @@ def _from_cli(argv=None):
         catalogs_from(a),
         a.blind,
         a.mode_count,
-        a.integration_grid,
         a.reporting_binning,
         a.results_dir,
         a.cov_dir,
         a.out_file,
         a.scale_cut_convention,
         fiducial_version=a.fiducial_version,
-        fiducial_xi_path=a.fiducial_xi_path,
-        fiducial_cov_path=a.fiducial_cov_path,
+        fiducial_modes_path=a.fiducial_modes_path,
+        fiducial_covariance_path=a.fiducial_covariance_path,
     )
 
 

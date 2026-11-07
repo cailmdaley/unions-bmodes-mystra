@@ -12,6 +12,7 @@ which is how recipes name a version:
     python catalog_versions.py size_cut applied
     python catalog_versions.py size_cut applied --scan-version SP_v1.4.8 [--fine-grid]
     python catalog_versions.py size_cut applied --nonfiducial
+    python catalog_versions.py size_cut applied --comparison
 """
 
 import argparse
@@ -98,10 +99,14 @@ def _from_cli(argv=None):
     ap.add_argument("--scan-version", help="Resolve a fixed scan slot's catalogue")
     ap.add_argument("--fine-grid", action="store_true")
     ap.add_argument("--nonfiducial", action="store_true", help="List the non-fiducial versions")
+    ap.add_argument("--comparison", action="store_true",
+                    help="List the non-fiducial versions of the comparison figures")
     a = ap.parse_args(argv)
     catalogs = Catalogs(a.catalog, a.leakage)
     if a.nonfiducial:
         print("\n".join(catalogs.nonfiducial))
+    elif a.comparison:
+        print("\n".join(v for v in catalogs.comparison if v != catalogs.fiducial))
     elif a.scan_version:
         print(catalogs.scan_version(a.scan_version, a.fine_grid))
     else:

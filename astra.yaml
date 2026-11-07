@@ -113,14 +113,15 @@ outputs:
   - {id: paper_claims, from: null_tests.paper_claims}
   - {id: bb_covariance_blind_independence_evidence, from: validation.bb_covariance_blind_independence_evidence}
   - {id: tenk_grid_comparison, from: validation.tenk_grid_comparison}
-  - {id: mock_min_pte_calibration, from: validation.mock_min_pte_calibration}
+  - {id: mock_min_pte_calibration, from: null_tests.mock_min_pte_calibration}
+  - {id: mock_campaign_evidence, from: validation.mock_campaign_evidence}
 
   # ---------------------------------------------------------------------------
   # Tables and metrics.
   # ---------------------------------------------------------------------------
   - {id: pte_table_appendix, from: null_tests.pte_table_appendix}
   - {id: pte_table_tex, from: null_tests.pte_table_tex}
-  - {id: cosebis_first_mode_significance, from: data_vectors.cosebis_first_mode_significance}
+  - {id: cosebis_first_mode_significance, from: null_tests.cosebis_first_mode_significance}
   - {id: nu_penalty_verdicts, from: null_tests.nu_penalty_verdicts}
   - {id: cosebis_harmonic_config, from: null_tests.cosebis_harmonic_config}
   # ---------------------------------------------------------------------------
@@ -128,22 +129,22 @@ outputs:
   # ---------------------------------------------------------------------------
 
   # Pure E/B decomposition of ξ± for the fiducial catalog.
-  - {id: fig_pure_eb_decomposition, from: data_vectors.pure_eb_data_vector_figure}
+  - {id: fig_pure_eb_decomposition, from: null_tests.pure_eb_data_vector_figure}
 
   # COSEBI B_n / σ_n for the first 20 modes, fiducial catalog —
   # full angular range (1'–250') overlaid on fiducial cuts (12'–83'). The >4σ
   # first-mode amplitude at full range and its near-zero amplitude at fiducial
   # cuts are the visible evidence behind `ccd_scale_cosebi_pattern`.
-  - {id: fig_cosebis_fiducial, from: data_vectors.fig_cosebis_data_vector}
+  - {id: fig_cosebis_fiducial, from: null_tests.fig_cosebis_data_vector}
 
   # Cℓ^BB and Cℓ^EB normalised by uncertainty, fiducial catalog.
-  - {id: fig_cl_fiducial, from: data_vectors.cl_data_vector_figure}
+  - {id: fig_cl_fiducial, from: null_tests.cl_data_vector_figure}
 
   # The version comparison is three figures: pure-mode ξ_±^B, harmonic Cℓ^BB and
   # COSEBI B_n across the four catalog variants.
-  - {id: fig_versions_pure_eb, from: data_vectors.pure_eb_version_comparison_figure}
-  - {id: fig_versions_cl, from: data_vectors.cl_version_comparison_figure}
-  - {id: fig_versions_cosebis, from: data_vectors.cosebis_version_comparison}
+  - {id: fig_versions_pure_eb, from: null_tests.pure_eb_version_comparison_figure}
+  - {id: fig_versions_cl, from: null_tests.cl_version_comparison_figure}
+  - {id: fig_versions_cosebis, from: null_tests.cosebis_version_comparison}
 
   - {id: fig_pte_heatmaps, from: null_tests.fig_pte_heatmaps}
   - {id: fig_cl_pte_heatmap, from: null_tests.fig_cl_pte_heatmap}
@@ -369,7 +370,7 @@ decisions:
       the fiducial catalog finds the B_n amplitudes and their
       significance stable (COSEBI n ≤ 6 PTE 0.78 → 0.71 at the fiducial
       cuts; individual high modes move further, as
-      [the convergence finding](#analyses.validation.analyses.estimator_checks.findings.cosebis_verdicts_stable_at_1000_bins)
+      [the convergence finding](#analyses.validation.findings.cosebis_verdicts_stable_at_1000_bins)
       records).
     default: bins_1000
     options:
@@ -595,7 +596,7 @@ decisions:
       too many make mode-coupling deconvolution unstable.
       The paper validates 96 √ℓ-spaced bins on GLASS mocks, where modes
       n ≤ 6 agree with the configuration-space path.
-      The 32 bandpowers of the [Cℓ null test](#analyses.data_vectors.analyses.harmonic_space) do not
+      The 32 bandpowers of the [Cℓ null test](#analyses.data_vectors.outputs.cl_bandpowers_reporting) do not
       resolve the oscillations beyond n ≈ 4.
     default: bins_96
     options:
@@ -670,7 +671,7 @@ decisions:
       perfectly, so the minimum skews low and p_thr sits below 0.05:
       0.0058 at the fiducial 12–83′ window on 350 mocks (68% interval
       0.0044–0.0076;
-      [mock_min_pte_calibration](#analyses.validation.analyses.glass_mocks.outputs.mock_min_pte_calibration)).
+      [mock_min_pte_calibration](#outputs.mock_min_pte_calibration)).
       It stays ≤ 0.0093 over every window with θ_min ≥ 5.24′ and
       θ_max ≥ 36.20′, a region containing the fiducial window with
       margin ([scale-cut scan](#analyses.validation.analyses.glass_mocks.outputs.mock_min_pte_scale_cut_scan));
@@ -728,7 +729,7 @@ decisions:
       Square-root spacing sits between linear binning, which
       spends most bandpowers at high ℓ, and logarithmic binning,
       which spends most at low ℓ. The
-      [harmonic-space COSEBIs](#analyses.validation.analyses.estimator_checks) use 96
+      [harmonic-space COSEBIs](#analyses.validation.outputs.cosebis_harmonic_modes) use 96
       bandpowers in the same scheme, fine enough to resolve the
       W_n(ℓ) filter oscillations.
     default: bandpowers_32_powspace
@@ -865,7 +866,7 @@ decisions:
       120-digit precision, so numerics do not set the limit. Fewer
       modes would lose the high-n end of the full-range
       [COSEBI failure signature](#findings.ccd_scale_cosebi_pattern).
-      The [convergence test](#analyses.validation.analyses.estimator_checks) covers every
+      The [convergence test](#analyses.validation.outputs.tenk_grid_comparison) covers every
       mode the COSEBI analysis reports, so it takes the same n_max.
     default: n_max_20
     options:
@@ -1036,6 +1037,57 @@ findings:
       - id: ev4
         artifact: fig_versions_pure_eb
     scope: "Four ShapePipe v1.4 leakage-corrected variants at the fiducial cuts."
+
+  mock_ptes_skew_low_by_ng_term:
+    id: mock_ptes_skew_low_by_ng_term
+    label: "Configuration-space PTEs skew mildly low; C_ℓ^BB PTEs are uniform"
+    claim: |
+      On the clean realizations the C_ℓ^BB PTEs are uniform, while the
+      configuration-space PTEs skew mildly low because the analytic σ
+      there is slightly smaller than the mock scatter, which raises χ²
+      by the inverse square of their ratio. Calibrating the passing
+      threshold p_thr on the same realizations partially absorbs this
+      skew.
+    notes: |
+      350 GLASS v1.4.6.3_v2 realisations against the mock-matched
+      reference covariance
+      ([mock_campaign_evidence](#outputs.mock_campaign_evidence)).
+      ⟨χ²⟩/ν: B_{n≤6} 1.105, B_{n≤20} 1.073, ξ_+^B 1.197, ξ_-^B
+      1.131, ξ_tot^B 1.148, C_ℓ^BB 0.987 (the paper's 1.07–1.20 for
+      configuration space). KS p-values for PTE uniformity: B_{n≤6}
+      2.7×10⁻³, B_{n≤20} 9.2×10⁻⁵, ξ_+^B 2.4×10⁻⁹, ξ_-^B 1.4×10⁻⁴,
+      ξ_tot^B 2.8×10⁻¹⁰, C_ℓ^BB 0.79.
+
+      The configuration-space excess has the size of the non-Gaussian
+      term the Gaussian covariance omits, a comparison of size that the
+      paper does not make into an attribution: on the 20-bin reporting
+      grid the (G+NG)/G diagonal ratio inside 12′–83′ averages 1.102
+      (ξ_+) and 1.105 (ξ_-), a non-Gaussian share of 9% of the diagonal
+      variance there and 7% over all bins.
+
+      p_thr is set so a clean sample fails 5% of the time; the paper
+      adopts p_thr = 0.01, conservative for nearly all scale-cut
+      combinations, against a calibrated 0.006 at the fiducial cuts
+      ([mock_min_pte_calibration](#outputs.mock_min_pte_calibration)).
+      The observed minimum, ξ_-^B at 0.0193, sits at or above the
+      minimum of 38 of 350 clean realisations (10.9% one-sided; 58,
+      16.6%, two-sided); the 5% threshold is 0.0058 one-sided and
+      0.0034 two-sided.
+    created_at: "2026-08-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        artifact: mock_campaign_evidence
+        quote:
+          exact: '"chi2_mean": 8.379664071517078'
+      - id: ev2
+        artifact: mock_campaign_evidence
+        quote:
+          exact: '"pvalue": 0.7939539191651337'
+      - id: ev3
+        artifact: mock_min_pte_calibration
+        quote:
+          exact: '"threshold_one_sided": 0.005773478384709811'
+    scope: "v1.4.6.3_v2 suite, mock-matched reference covariances, adopted scale cuts, adopted estimators."
 
 # -----------------------------------------------------------------------------
 # Prior insights: quote evidence from the literature. Covers the three
@@ -1255,7 +1307,7 @@ prior_insights:
     scope: "Cosmic-shear ξ_± on a finite interval (Schneider, Eifler & Krause 2010, A&A 520, A116)"
     notes: |
       Underwrites the logarithmic basis of the
-      [cosebis sub-analysis](#analyses.data_vectors.analyses.cosebis).
+      [COSEBI data vector](#analyses.data_vectors.outputs.cosebis_modes_data).
 
   hybrideb_filter_optimisation_alternative:
     id: hybrideb_filter_optimisation_alternative
@@ -1361,7 +1413,7 @@ prior_insights:
           page: 1
     scope: "Fields sampled at catalog positions (Wolz, Alonso & Nicola 2025, JCAP 01, 028)"
     notes: |
-      The basis of the [harmonic_space sub-analysis](#analyses.data_vectors.analyses.harmonic_space)'s
+      The basis of the [harmonic-space measurement](#analyses.data_vectors.outputs.cl_bandpowers_reporting)'s
       Cℓ^EB / Cℓ^BB bandpowers and their shot-noise correction,
       following Paper IV's implementation (spin-2 transforms via
       `ducc`, NaMaster mode-coupling decoupling).
@@ -1777,8 +1829,8 @@ analyses:
   data_vectors:
     path: ./analyses/data_vectors
 
-  null_tests:
-    path: ./analyses/null_tests
-
   validation:
     path: ./analyses/validation
+
+  null_tests:
+    path: ./analyses/null_tests

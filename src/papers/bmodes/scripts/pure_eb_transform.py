@@ -736,3 +736,100 @@ class AveragedPureEBTransform:
             + LOCAL_TERM_COEFFS[name][1] * (xim - local_means[name][1])
             for name, values in zip(REFERENCE_ORDER, averaged)
         )
+
+
+def load_xi(path, nbins):
+    """Load ξ± from a TreeCorr text dump."""
+    data = np.loadtxt(path, comments="#", max_rows=nbins)
+    loaded = {"meanr": data[:, 1], "xip": data[:, 3], "xim": data[:, 4]}
+    # TreeCorr's ASCII header is
+    # r_nom meanr meanlogr xip xim xip_im xim_im sigma_xip sigma_xim weight npairs
+    if data.shape[1] > 10:
+        loaded["npairs"] = data[:, 10]
+    return loaded
+
+
+def data_vector(
+    gg,
+    gg_int,
+    *,
+    min_sep,
+    max_sep,
+    nbins,
+    integration_method,
+    rebinning_weights,
+    integration_limits,
+    geometry=None,
+    local_from_eval_grid=False,
+):
+    """The pure-mode data vector, from the measured reporting/integration xi.
+
+    *gg* / *gg_int* are the dicts :func:`load_xi` returns.  Returns the
+    six-tuple in ``REFERENCE_ORDER``.
+    """
+
+    transform = build_transform(
+        gg,
+        gg_int,
+        min_sep=min_sep,
+        max_sep=max_sep,
+        nbins=nbins,
+        integration_method=integration_method,
+        rebinning_weights=rebinning_weights,
+        integration_limits=integration_limits,
+        geometry=geometry,
+        local_from_eval_grid=local_from_eval_grid,
+    )
+    if isinstance(transform, AveragedPureEBTransform):
+        return transform(gg_int["xip"], gg_int["xim"], gg["xip"], gg["xim"])
+    return transform(gg["xip"], gg["xim"], gg_int["xip"], gg_int["xim"])
+
+
+def build_transform(
+    gg,
+    gg_int,
+    *,
+    min_sep,
+    max_sep,
+    nbins,
+    integration_method,
+    rebinning_weights,
+    integration_limits,
+    geometry=None,
+    local_from_eval_grid=False,
+):
+    """The pure-mode transform the decisions select, built on the data grids."""
+    geometry = geometry_for(integration_method, geometry)
+    theta_window = resolve_integration_limits(integration_limits, geometry)
+    check_rebinning_weights(rebinning_weights, geometry)
+    if geometry == "averaged":
+        if rebinning_weights == "npairs" and "npairs" not in gg_int:
+            raise ValueError(
+                "the integration xi has no npairs column; --rebinning-weights "
+                "npairs weights the fine-to-reporting average by pair counts"
+            )
+        edges = np.logspace(np.log10(min_sep), np.log10(max_sep), nbins + 1)
+        return AveragedPureEBTransform(
+            integration_method,
+            left_edges=edges[:-1],
+            right_edges=edges[1:],
+            theta_int=gg_int["meanr"],
+            rebinning_weights=rebinning_weights,
+            npairs=gg_int.get("npairs"),
+            theta_window=theta_window,
+            local_from_eval_grid=local_from_eval_grid,
+        )
+    return PureEBTransform(
+        integration_method,
+        theta=gg["meanr"],
+        theta_int=gg_int["meanr"],
+        tmin=min_sep,
+        tmax=max_sep,
+        # As in precompute_pure_eb_chunk: the single-grid operator evaluates
+        # at nodes, so the pointwise operator chain snaps to the nearest node.
+        snap_eval=integration_method == "fixed_operator",
+        # The hybrid corner: the integral term is still the snapped
+        # operator's, but the local 0.5*(xi_p +/- xi_m) term is read from
+        # the reporting-grid draw rather than from one fine node.
+        local_from_eval_grid=local_from_eval_grid,
+    )

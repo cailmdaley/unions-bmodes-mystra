@@ -1,11 +1,8 @@
-"""COSEBIs data vector claim.
-
-Single-panel figure showing B-mode COSEBIS for each catalog version.
-Overplots fiducial and full angular range scale cuts.
+"""COSEBI E_n and B_n, and the paper's B_n / sigma_n figure.
 
 Two single-file modes:
-- compute: --xi-integration/--cov-integration --out-file <npz>  (E_n/B_n + covariance)
-- render:  --plot-from-modes <npz> --out-file <png>             (paper figure, 300 dpi)
+- compute: --xi-integration --out-file <npz>                             (E_n/B_n at both cuts)
+- render:  --plot-from-modes <npz> --covariance <npz> --out-file <png>   (paper figure, 300 dpi)
 """
 
 import argparse
@@ -25,33 +22,10 @@ from plotting_utils import (
 from print_width import savefig_at_width
 from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
 
-from sp_validation.b_modes import calculate_cosebis
-from catalog_versions import catalogs_from
-from decision_values import FIDUCIAL_CATALOG, INTEGRATION_GRID, MODE_COUNT, REPORTING_BINNING
+from cosebis_transform import cosebis_modes
+from decision_values import INTEGRATION_GRID, MODE_COUNT, REPORTING_BINNING
 
 plt.style.use(PAPER_MPLSTYLE)
-
-
-def _compute_cosebis_datasets(gg, cov_path, nmodes, scale_cuts):
-    """Compute COSEBIS B-modes for given scale cuts.
-
-    Returns dict with normalized B_n / sigma_n for each scale cut.
-    """
-    datasets = {}
-    for scale_key, scale_cut in scale_cuts.items():
-        results = calculate_cosebis(
-            gg,
-            nmodes=nmodes,
-            scale_cuts=[scale_cut],
-            cov_path=cov_path,
-        )
-        cosebis_result = results[scale_cut]
-        Bn = cosebis_result["Bn"]
-        cov = cosebis_result["cov"]
-        cov_B = cov[nmodes:, nmodes:]
-        sigma_B = np.sqrt(np.diag(cov_B))
-        datasets[scale_key] = {"Bn_normalized": Bn / sigma_B}
-    return datasets
 
 
 def _create_single_panel_bmode_figure(datasets, nmodes, scale_cuts, title=None):
@@ -138,16 +112,17 @@ def _create_single_panel_bmode_figure(datasets, nmodes, scale_cuts, title=None):
     return fig
 
 
-def _plot_from_modes(modes_npz, out_file):
-    """Render the paper data-vector figure from an already-computed modes NPZ."""
+def _plot_from_modes(modes_npz, covariance_npz, out_file):
+    """Render the paper data-vector figure from the modes and their covariance."""
     d = np.load(modes_npz, allow_pickle=True)
+    cov = np.load(covariance_npz, allow_pickle=True)
     nmodes = int(d["nmodes"])
     scale_cuts = {}
     datasets = {}
     for scale_key in ("fiducial", "full"):
         scale_cuts[scale_key] = tuple(float(v) for v in d[f"{scale_key}_scale_cut"])
         datasets[scale_key] = {
-            "Bn_normalized": d[f"{scale_key}_Bn"] / d[f"{scale_key}_sigma_B"]
+            "Bn_normalized": d[f"{scale_key}_Bn"] / cov[f"{scale_key}_sigma_B"]
         }
     fig = _create_single_panel_bmode_figure(datasets, nmodes, scale_cuts, title=None)
     savefig_at_width(fig, out_file, FIG_WIDTH_SINGLE, dpi=300)
@@ -155,20 +130,15 @@ def _plot_from_modes(modes_npz, out_file):
     print(f"Saved figure to {out_file}")
 
 
-def main(version, nmodes, integration, reporting, xi_integration, cov_integration, out_file,
-         scale_cut_convention):
-
-    fiducial_scale_cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
-    full_scale_cut = (reporting.min_sep, reporting.max_sep)
+def main(version, nmodes, integration, reporting, xi_integration, out_file, scale_cut_convention):
 
     scale_cuts = {
-        "fiducial": fiducial_scale_cut,
-        "full": full_scale_cut,
+        "fiducial": resolve_fiducial_scale_cuts(reporting, scale_cut_convention),
+        "full": (reporting.min_sep, reporting.max_sep),
     }
 
     min_sep_int, max_sep_int, nbins_int = integration
 
-    # Load the fiducial fine-binned 2PCF once (integration grid)
     gg = treecorr.GGCorrelation(
         min_sep=min_sep_int,
         max_sep=max_sep_int,
@@ -177,32 +147,13 @@ def main(version, nmodes, integration, reporting, xi_integration, cov_integratio
     )
     gg.read(xi_integration)
 
-    # Compute the E_n / B_n data vectors + T^T C_xi T mode covariance at both
-    # scale cuts.
     npz_payload = {"nmodes": nmodes, "version": version}
-    datasets = {}
     for scale_key, scale_cut in scale_cuts.items():
-        results = calculate_cosebis(
-            gg,
-            nmodes=nmodes,
-            scale_cuts=[scale_cut],
-            cov_path=cov_integration,
-        )
-        r = results[scale_cut]
-        En = r["En"]
-        Bn = r["Bn"]
-        cov = r["cov"]
-        sigma_E = np.sqrt(np.diag(cov[:nmodes, :nmodes]))
-        sigma_B = np.sqrt(np.diag(cov[nmodes:, nmodes:]))
-        datasets[scale_key] = {"Bn_normalized": Bn / sigma_B}
+        En, Bn = cosebis_modes(gg, nmodes, scale_cut)
         npz_payload[f"{scale_key}_En"] = En
         npz_payload[f"{scale_key}_Bn"] = Bn
-        npz_payload[f"{scale_key}_cov"] = cov
-        npz_payload[f"{scale_key}_sigma_E"] = sigma_E
-        npz_payload[f"{scale_key}_sigma_B"] = sigma_B
         npz_payload[f"{scale_key}_scale_cut"] = np.array(scale_cut)
 
-    # Primary data artifact (cosebis_modes_data): exactly one file at out_file.
     with open(out_file, "wb") as f:
         np.savez(f, **npz_payload)
     print(f"Saved COSEBI modes data to {out_file}")
@@ -211,24 +162,23 @@ def main(version, nmodes, integration, reporting, xi_integration, cov_integratio
 def _from_cli(argv=None):
 
     ap = argparse.ArgumentParser(
-        description="COSEBI E_n/B_n data vector (NPZ) + paper figure for the fiducial catalog."
+        description="COSEBI E_n/B_n data vector (NPZ) and paper figure."
     )
-    ap.add_argument("--fiducial-catalog", choices=FIDUCIAL_CATALOG)
-    ap.add_argument("--leakage-correction", choices=["applied", "uncorrected"])
+    ap.add_argument("--version", help="Catalog version the modes are measured on")
     ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__)
     ap.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__)
     ap.add_argument("--mode-count", type=MODE_COUNT.__getitem__)
     ap.add_argument(
         "--xi-integration",
-        help="Fiducial fine-binned (1000-bin) TreeCorr xi_pm .txt dump",
-    )
-    ap.add_argument(
-        "--cov-integration",
-        help="Fiducial 1000-bin Gaussian covariance (processed .txt) for the T^T C_xi T transform",
+        help="Fine-binned (1000-bin) TreeCorr xi_pm .txt dump",
     )
     ap.add_argument(
         "--plot-from-modes",
-        help="Plot-only mode: render the paper figure from an already-computed modes NPZ",
+        help="Plot-only mode: render the paper figure from a modes NPZ",
+    )
+    ap.add_argument(
+        "--covariance",
+        help="Plot-only mode: the COSEBI covariance NPZ that sets sigma_n",
     )
     ap.add_argument(
         "--out-file",
@@ -238,15 +188,14 @@ def _from_cli(argv=None):
     add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
     if a.plot_from_modes:
-        _plot_from_modes(a.plot_from_modes, a.out_file)
+        _plot_from_modes(a.plot_from_modes, a.covariance, a.out_file)
         return
-    required = ("xi_integration", "cov_integration", "fiducial_catalog", "leakage_correction",
-                "reporting_binning", "integration_grid", "mode_count")
+    required = ("xi_integration", "version", "reporting_binning", "integration_grid", "mode_count")
     missing = [f"--{r.replace('_', '-')}" for r in required if getattr(a, r) is None]
     if missing:
         ap.error(f"compute mode needs {', '.join(missing)}")
-    main(catalogs_from(a).fiducial, a.mode_count, a.integration_grid, a.reporting_binning,
-         a.xi_integration, a.cov_integration, a.out_file, a.scale_cut_convention)
+    main(a.version, a.mode_count, a.integration_grid, a.reporting_binning,
+         a.xi_integration, a.out_file, a.scale_cut_convention)
 
 
 if __name__ == "__main__":

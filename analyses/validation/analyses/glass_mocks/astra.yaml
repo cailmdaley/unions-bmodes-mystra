@@ -64,17 +64,8 @@ inputs:
   - id: cov_integration
     from: ../cov_integration
 
-  - id: pure_eb_data
-    from: ../pure_eb_data
-
-  - id: pure_eb_pte_per_cut
-    from: ../pure_eb_pte_per_cut
-
-  - id: cosebis_pte_per_cut
-    from: ../cosebis_pte_per_cut
-
-  - id: cl_pte_per_cut
-    from: ../cl_pte_per_cut
+  - id: pure_eb_covariance
+    from: ../pure_eb_covariance
 
   - id: cl_cov_reporting
     from: ../cl_cov_reporting
@@ -254,7 +245,7 @@ outputs:
       the exact M C_ξ Mᵀ with the same M, built from the data's pair
       counts, or the same Monte Carlo chain with the same six-block
       ordering and the same deterministic seeds as
-      [pure_eb_data](#inputs.pure_eb_data),
+      [pure_eb_covariance](#inputs.pure_eb_covariance),
       only the input covariance differs. The mocks' noise enters
       only through
       [cov_integration_mockmatched](#inputs.cov_integration_mockmatched),
@@ -297,7 +288,7 @@ outputs:
       masks, and the covariance triple, scale cuts and any skipped
       realisations. The campaign's σ, χ² and PTE summaries derive from
       this file.
-    inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, mock_xi_fine, glass_mock_cl, xi_integration, cov_integration, pure_eb_data, cl_cov_reporting, cov_integration_mockmatched, pure_cov_mockmatched, cl_cov_mockmatched]
+    inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, mock_xi_fine, glass_mock_cl, xi_integration, cov_integration, pure_eb_covariance, cl_cov_reporting, cov_integration_mockmatched, pure_cov_mockmatched, cl_cov_mockmatched]
     decisions: [reference_covariance, mock_suite, scale_cut_convention, fiducial_catalog, fiducial_blind, pte_definition, integration_grid]
     recipe:
       command: >
@@ -309,7 +300,7 @@ outputs:
         --cl-dir "$(dirname "$(printf '%s\n' "{inputs.glass_mock_cl}" | head -n1)")"
         --cosebis-xi-grid {inputs.xi_integration}
         --cosebis-cov {inputs.cov_integration}
-        --pure-cov {inputs.pure_eb_data}
+        --pure-cov {inputs.pure_eb_covariance}
         --cl-cov {inputs.cl_cov_reporting}
         --cosebis-cov-mockmatched {inputs.cov_integration_mockmatched}
         --pure-cov-mockmatched {inputs.pure_cov_mockmatched}
@@ -320,74 +311,11 @@ outputs:
         --emit-stats {output}
       resources: { cpus: 1, memory: "16GB" }
 
-  - id: mock_min_pte_calibration
-    type: metric
-    format: json
-    description: |
-      Calibration of the min-PTE criterion on the clean realisations,
-      at the fiducial cuts (top level) and over the full range
-      (`full_range`): the data's minimum PTE across the six
-      statistics, the fraction of clean mocks at or below it (one- and
-      two-sided), and the min-PTE threshold for a 5% global
-      false-alarm rate, each with a 68% interval (Wilson for
-      fractions, bootstrap for thresholds). The fiducial observed PTEs
-      are taken from the pure-mode and COSEBI matrices at bins 9–15
-      (edge indices 9/16) and C_ℓ^BB at 300 < ℓ < 1600; `full_range`
-      uses the [0, 19] matrix cells and all 32 C_ℓ bands (1–250 arcmin
-      / 8≤ℓ≤2048). The mock PTEs use the covariance of the matching
-      window, with a Hartlap factor on the pure modes only under the
-      `monte_carlo`
-      [covariance method](#decisions.pure_eb_covariance_method).
-    inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut]
-    decisions: [reference_covariance, mock_suite, scale_cut_convention, reporting_binning]
-    recipe:
-      command: >
-        python src/workflow/scripts/mock_min_pte_calibration.py
-        --per-mock-statistics {inputs.mock_per_mock_statistics}
-        --pure-eb-pte {inputs.pure_eb_pte_per_cut}
-        --cosebis-pte {inputs.cosebis_pte_per_cut}
-        --cl-pte {inputs.cl_pte_per_cut}
-        --reporting-binning {decisions.reporting_binning}
-        --scale-cut-convention {decisions.scale_cut_convention}
-        --out-file {output}
-      resources: { cpus: 1, memory: "8GB" }
-
-  - id: mock_min_pte_figure
-    type: figure
-    format: png
-    description: |
-      Cumulative distribution of the minimum PTE over the six statistics
-      at the fiducial cuts, across the 350 GLASS realizations. Gray
-      dashed lines mark the 5% quantile, which calibrates the adopted
-      threshold p_thr = 0.01 (solid gray lines; [global PTE
-      threshold](#../../decisions.pte_threshold)), chosen to be
-      conservative across nearly all scale cuts. Red lines mark the
-      minimum PTE of the data, which 11% of realizations fall at or
-      below. The dotted curve shows the expectation for six independent
-      tests. The mocks generally follow this expectation because of two
-      effects that largely cancel: correlations between the statistics
-      raise the minimum PTE, while the slightly underestimated
-      configuration-space covariance lowers it.
-    inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut]
-    decisions: [reference_covariance, mock_suite, scale_cut_convention, pte_threshold, reporting_binning]
-    recipe:
-      command: >
-        python src/workflow/scripts/mock_min_pte_calibration.py
-        --per-mock-statistics {inputs.mock_per_mock_statistics}
-        --pure-eb-pte {inputs.pure_eb_pte_per_cut}
-        --cosebis-pte {inputs.cosebis_pte_per_cut}
-        --cl-pte {inputs.cl_pte_per_cut}
-        --reporting-binning {decisions.reporting_binning}
-        --scale-cut-convention {decisions.scale_cut_convention}
-        --pte-threshold {decisions.pte_threshold}
-        --emit figure --out-file {output}
-      resources: { cpus: 1, memory: "8GB" }
-
   - id: mock_min_pte_scale_cut_scan
     type: metric
     format: json
     description: |
-      [mock_min_pte_calibration](#outputs.mock_min_pte_calibration) as
+      [mock_min_pte_calibration](#../../analyses.null_tests.outputs.mock_min_pte_calibration) as
       a function of the scale cut: the same 5%-quantile threshold on
       the per-realisation minimum PTE, evaluated on all 210 windows of
       the reporting grid `geomspace(1', 250', 21)` rather than at the
@@ -408,7 +336,7 @@ outputs:
       The windows are always the reporting grid's own bin edges (the
       [grid_bin_edges](#decisions.scale_cut_convention) convention),
       so the fiducial cell (edge indices 9, 16) is the window
-      [mock_min_pte_calibration](#outputs.mock_min_pte_calibration)
+      [mock_min_pte_calibration](#../../analyses.null_tests.outputs.mock_min_pte_calibration)
       calibrates at; the two thresholds agree to machine precision.
       Under `rounded_arcmin` (12.0'/83.0') that cell would not be the
       fiducial window.
@@ -419,9 +347,9 @@ outputs:
       them, against 0.41 across the 190 windows of two bins or more,
       which span 0.23–0.59). On those 190 windows the calibrated
       threshold lies below the adopted
-      [p_thr = 0.01](#../../decisions.pte_threshold) on 148, and its 68%
+      [p_thr = 0.01](#decisions.pte_threshold) on 148, and its 68%
       bootstrap interval lies wholly above it on 10.
-    inputs: [mock_per_mock_statistics, mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration, pure_eb_data, cov_integration_mockmatched, pure_cov_mockmatched]
+    inputs: [mock_per_mock_statistics, mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration, pure_eb_covariance, cov_integration_mockmatched, pure_cov_mockmatched]
     decisions: [reference_covariance, mock_suite, pte_definition, integration_grid]
     recipe:
       command: >
@@ -431,7 +359,7 @@ outputs:
         --mock-pure-eb-modes {inputs.mock_pure_eb_modes}
         --cosebis-xi-grid {inputs.xi_integration}
         --covariance {inputs.cov_integration}
-        --pure-covariance {inputs.pure_eb_data}
+        --pure-covariance {inputs.pure_eb_covariance}
         --covariance-mockmatched {inputs.cov_integration_mockmatched}
         --pure-covariance-mockmatched {inputs.pure_cov_mockmatched}
         --reference-covariance {decisions.reference_covariance}
@@ -1017,57 +945,6 @@ findings:
       - id: ev1
         artifact: mock_xi_validation_stats
 
-  mock_ptes_skew_low_by_ng_term:
-    id: mock_ptes_skew_low_by_ng_term
-    label: "Configuration-space PTEs skew mildly low; C_ℓ^BB PTEs are uniform"
-    claim: |
-      On the clean realizations the C_ℓ^BB PTEs are uniform, while the
-      configuration-space PTEs skew mildly low because the analytic σ
-      there is slightly smaller than the mock scatter, which raises χ²
-      by the inverse square of their ratio. Calibrating the passing
-      threshold p_thr on the same realizations partially absorbs this
-      skew.
-    notes: |
-      350 GLASS v1.4.6.3_v2 realisations against the mock-matched
-      reference covariance
-      ([mock_campaign_evidence](#outputs.mock_campaign_evidence)).
-      ⟨χ²⟩/ν: B_{n≤6} 1.105, B_{n≤20} 1.073, ξ_+^B 1.197, ξ_-^B
-      1.131, ξ_tot^B 1.148, C_ℓ^BB 0.987 (the paper's 1.07–1.20 for
-      configuration space). KS p-values for PTE uniformity: B_{n≤6}
-      2.7×10⁻³, B_{n≤20} 9.2×10⁻⁵, ξ_+^B 2.4×10⁻⁹, ξ_-^B 1.4×10⁻⁴,
-      ξ_tot^B 2.8×10⁻¹⁰, C_ℓ^BB 0.79.
-
-      The configuration-space excess has the size of the non-Gaussian
-      term the Gaussian covariance omits, a comparison of size that the
-      paper does not make into an attribution: on the 20-bin reporting
-      grid the (G+NG)/G diagonal ratio inside 12′–83′ averages 1.102
-      (ξ_+) and 1.105 (ξ_-), a non-Gaussian share of 9% of the diagonal
-      variance there and 7% over all bins.
-
-      p_thr is set so a clean sample fails 5% of the time; the paper
-      adopts p_thr = 0.01, conservative for nearly all scale-cut
-      combinations, against a calibrated 0.006 at the fiducial cuts
-      ([mock_min_pte_calibration](#outputs.mock_min_pte_calibration)).
-      The observed minimum, ξ_-^B at 0.0193, sits at or above the
-      minimum of 38 of 350 clean realisations (10.9% one-sided; 58,
-      16.6%, two-sided); the 5% threshold is 0.0058 one-sided and
-      0.0034 two-sided.
-    created_at: "2026-08-31T00:00:00Z"
-    evidence:
-      - id: ev1
-        artifact: mock_campaign_evidence
-        quote:
-          exact: '"chi2_mean": 8.379664071517078'
-      - id: ev2
-        artifact: mock_campaign_evidence
-        quote:
-          exact: '"pvalue": 0.7939539191651337'
-      - id: ev3
-        artifact: mock_min_pte_calibration
-        quote:
-          exact: '"threshold_one_sided": 0.005773478384709811'
-    scope: "v1.4.6.3_v2 suite, mock-matched reference covariances, adopted scale cuts, adopted estimators."
-
   mocks_are_over_constraining:
     id: mocks_are_over_constraining
     label: "Mock galaxy density 17% above the data's"
@@ -1207,7 +1084,7 @@ findings:
     notes: |
       The paper puts the non-Gaussian share of the ξ_± diagonal
       variance within the fiducial cuts at about 9% (see
-      [mock_ptes_skew_low_by_ng_term](#findings.mock_ptes_skew_low_by_ng_term)).
+      [mock_ptes_skew_low_by_ng_term](#../../findings.mock_ptes_skew_low_by_ng_term)).
 
       Across the 350 GLASS v1.4.6.3_v2 realisations, against the
       mock-matched reference covariance, the mean χ² exceeds ν for
@@ -1243,7 +1120,7 @@ findings:
       sharing a data vector stay well below unity. This is why the
       minimum PTE over the six skews low and its threshold is
       calibrated on the mocks
-      ([pte_threshold](#../../decisions.pte_threshold)).
+      ([pte_threshold](#decisions.pte_threshold)).
     notes: |
       χ² Pearson correlations across the 350 v1.4.6.3_v2 realisations
       (`correlations.chi2.pearson` in `mock_campaign_evidence`).

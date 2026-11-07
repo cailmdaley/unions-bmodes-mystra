@@ -243,8 +243,12 @@ def _create_version_comparison_figure(
     return fig
 
 
-def _pure_eb_npz(results_dir, ver, blind):
-    return f"{results_dir}/{ver}_{blind}_pure_eb_semianalytic.npz"
+def _pure_eb_npz(results_dir, ver):
+    return f"{results_dir}/{ver}_pure_eb_data.npz"
+
+
+def _pure_eb_covariance_npz(cov_dir, ver, blind):
+    return f"{cov_dir}/{ver}_{blind}_pure_eb_covariance.npz"
 
 
 def main(
@@ -252,10 +256,12 @@ def main(
     blind,
     reporting,
     results_dir,
+    cov_dir,
     out_file,
     scale_cut_convention,
     fiducial_version=None,
     fiducial_pure_eb_data=None,
+    fiducial_pure_eb_covariance=None,
 ):
     version_labels = catalogs.labels
     # Leak-corrected, non-ecut versions
@@ -264,12 +270,18 @@ def main(
     # Fiducial version whose NPZ may be overridden with an explicit path
     fiducial_version = fiducial_version or catalogs.fiducial
 
-    # Per-version pure E/B NPZ paths reconstructed from the results dir, with an
-    # explicit-path override for the fiducial version when provided.
+    # Per-version data vector and covariance NPZ paths reconstructed from the
+    # two dirs, with explicit-path overrides for the fiducial version.
     data_paths = [
         fiducial_pure_eb_data
         if v == fiducial_version and fiducial_pure_eb_data
-        else _pure_eb_npz(results_dir, v, blind)
+        else _pure_eb_npz(results_dir, v)
+        for v in versions
+    ]
+    covariance_paths = [
+        fiducial_pure_eb_covariance
+        if v == fiducial_version and fiducial_pure_eb_covariance
+        else _pure_eb_covariance_npz(cov_dir, v, blind)
         for v in versions
     ]
 
@@ -306,7 +318,9 @@ def main(
     # Load data for all versions
     datasets = []
 
-    for i, (version, data_path) in enumerate(zip(versions, data_paths)):
+    for i, (version, data_path, covariance_path) in enumerate(
+        zip(versions, data_paths, covariance_paths)
+    ):
         if has_ecut:
             parent = version.split("_ecut")[0].replace("_leak_corr", "")
             color = parent_color_map[parent]
@@ -330,7 +344,7 @@ def main(
         # B-mode data
         xip_B = data["xip_B"]
         xim_B = data["xim_B"]
-        cov_pure_eb = data["cov_pure_eb"]
+        cov_pure_eb = np.load(covariance_path)["cov_pure_eb"]
 
         # Use E-mode errors for total xi (E dominates signal, good proxy for visualization)
         # Blocks: 0=xip_E, 1=xim_E, 2=xip_B, 3=xim_B, 4=xip_amb, 5=xim_amb
@@ -425,8 +439,12 @@ def _from_cli(argv=None):
     ap.add_argument(
         "--results-dir",
         required=True,
-        help="Directory holding per-version "
-        "<version>_<blind>_pure_eb_semianalytic.npz files",
+        help="Directory holding per-version <version>_pure_eb_data.npz files",
+    )
+    ap.add_argument(
+        "--cov-dir",
+        required=True,
+        help="Directory holding per-version <version>_<blind>_pure_eb_covariance.npz files",
     )
     ap.add_argument(
         "--out-file", required=True, help="Output PNG path (lc {output})"
@@ -443,6 +461,11 @@ def _from_cli(argv=None):
         help="Explicit path to the fiducial version's pure E/B NPZ (e.g. lc "
         "output), overriding the reconstructed results-dir path",
     )
+    ap.add_argument(
+        "--fiducial-pure-eb-covariance",
+        default=None,
+        help="Explicit path to the fiducial version's pure E/B covariance NPZ",
+    )
     add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
     main(
@@ -450,10 +473,12 @@ def _from_cli(argv=None):
         a.blind,
         a.reporting_binning,
         a.results_dir,
+        a.cov_dir,
         a.out_file,
         a.scale_cut_convention,
         fiducial_version=a.fiducial_version,
         fiducial_pure_eb_data=a.fiducial_pure_eb_data,
+        fiducial_pure_eb_covariance=a.fiducial_pure_eb_covariance,
     )
 
 

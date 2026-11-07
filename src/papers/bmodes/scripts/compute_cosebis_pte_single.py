@@ -190,7 +190,7 @@ def main(
     # Default to the runner's per-task width, NOT the machine's: sched_getaffinity
     # would report the whole node, since nothing narrows a task's affinity to its
     # slot. OMP_NUM_THREADS carries the width (see run_2pcf.py,
-    # run_pure_eb.sh). It is read from the environment rather than
+    # run_pure_eb_covariance.sh). It is read from the environment rather than
     # taken as a recipe argument because how wide a task runs is a scheduling
     # choice, not part of what it computes: artifacts go stale on the recipe
     # command string, so a core count in the command would invalidate a
