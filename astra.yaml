@@ -550,10 +550,11 @@ decisions:
     rationale: |
       The Schneider (2022) transform, as implemented in
       `cosmo_numba`, lays a degree-5 local interpolant through the
-      integrand samples, so it is meant to be a fixed linear map on
-      ξ_±. How the interpolant is integrated decides whether it is.
-      QUADPACK's `dqags` subdivides adaptively, and the subdivision
-      depends on the sampled values, so the map is weakly non-linear:
+      integrand samples. The interpolant depends linearly on the
+      samples, so the transform is a fixed linear map on ξ_± as long
+      as the integration rule does not depend on the data. QUADPACK's
+      `dqags` subdivides adaptively according to the sampled values,
+      so under it the map is weakly non-linear:
       on noisy input the quadrature error correlates with the noise
       and rectifies into a spurious signal, the ≈ −0.6 σ mean ξ_+^B
       residual at θ < 3' on the GLASS mocks.
