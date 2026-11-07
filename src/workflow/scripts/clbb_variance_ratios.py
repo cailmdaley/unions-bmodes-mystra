@@ -4,7 +4,7 @@ Two ratios, both against the data's own NaMaster iNKA BB covariance and both
 over the harmonic reporting cut 300 <= l <= 1600 (the 17 bandpowers whose
 powspace edges fall entirely inside it):
 
-* the **machinery** ratio — the diagonal of the mock-matched BB covariance,
+* the **machinery** ratio — the diagonal of the reference BB covariance,
   the paper's own covariance primitive pointed at a mock catalogue, over the
   diagonal of the data's.  This is what the covariance chain predicts the
   mocks' scatter should be, with no rescale hand-fed anywhere;
@@ -98,7 +98,7 @@ def build_ratios(cov_mock, cov_data, bandpowers, ell):
 
 def _parser(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--cl-cov-mockmatched", required=True)
+    parser.add_argument("--cl-cov-reference", required=True)
     parser.add_argument("--cl-cov-data", required=True)
     parser.add_argument("--cl-files", required=True, help="glob for the per-mock Cl blocks")
     parser.add_argument("--out-file", required=True)
@@ -109,13 +109,13 @@ def main(argv=None):
     args = _parser(argv)
     bandpowers, ell, n_files = load_mock_bandpowers(args.cl_files)
     result = build_ratios(
-        load_bb_covariance(args.cl_cov_mockmatched),
+        load_bb_covariance(args.cl_cov_reference),
         load_bb_covariance(args.cl_cov_data),
         bandpowers,
         ell,
     )
     result["sources"] = {
-        "cl_cov_mockmatched": str(args.cl_cov_mockmatched),
+        "cl_cov_reference": str(args.cl_cov_reference),
         "cl_cov_data": str(args.cl_cov_data),
         "cl_files": f"{n_files} files matching {args.cl_files}",
     }

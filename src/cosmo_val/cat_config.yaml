@@ -393,6 +393,47 @@ SP_v1.4.6_glass_mock:
     e1_col: e1
     e2_col: e2
     path: unions_shapepipe_star_2024_v1.4.a.fits
+SP_v1.4.6.3_glass_mock_v2:
+  subdir: /n17data/UNIONS/WL/v1.4.x
+  pipeline: SP
+  colour: darkgreen
+  getdist_colour: 0.0, 0.7, 0.0
+  ls: dashed
+  marker: d
+  cov_th:
+    A: 2894.0303815287743
+    n_e: 5.793082
+    n_psf: 0.752316232272063
+    sigma_e: 0.3792561
+  mask: /home/guerrini/sp_validation/cosmo_inference/data/mask/mask_map_footprint_nside_4096.fits
+  psf:
+    PSF_flag: HSM_FLAG_PSF
+    PSF_size: HSM_T_PSF
+    star_flag: HSM_FLAG_STAR
+    star_size: HSM_T_STAR
+    hdu: 1
+    path: unions_shapepipe_psf_2024_v1.4.a.fits
+    ra_col: RA
+    dec_col: Dec
+    e1_PSF_col: HSM_G1_PSF
+    e1_star_col: HSM_G1_STAR
+    e2_PSF_col: HSM_G2_PSF
+    e2_star_col: HSM_G2_STAR
+  shear:
+    R: 1.0
+    path: /n09data/guerrini/glass_mock_v1.4.6.3_v2/results/unions_glass_sim_00001_4096.fits
+    redshift_path: /n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_A.txt
+    w_col: w
+    e1_col: e1
+    e1_PSF_col: e1_PSF
+    e2_col: e2
+    e2_PSF_col: e2_PSF
+  star:
+    ra_col: RA
+    dec_col: Dec
+    e1_col: e1
+    e2_col: e2
+    path: unions_shapepipe_star_2024_v1.4.a.fits
 SP_v1.4.5_intermediate:
   subdir: /n17data/murray/unions_cats
   pipeline: SP
@@ -484,8 +525,6 @@ SP_v1.4.6.3:
   ls: dotted
   marker: ^
   mask: /home/guerrini/sp_validation/cosmo_inference/data/mask/mask_map_footprint_nside_4096.fits
-  # Footprint mask power spectrum (nside 4096, apodised, normalised) that CosmoCov reads.
-  mask_cls: /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_nside_4096_norm.txt
   cov_th:
     A: 2894.0303815287743
     n_e: 4.957279270321334

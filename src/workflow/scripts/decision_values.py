@@ -9,10 +9,14 @@ argparse `type=` for that decision's flag:
 Excluded options stay in the tables, so a table always covers its decision.
 tools/test_decision_values.py keeps the keys equal to the spec's option ids.
 
-`NZ_FILE`, `MASK_CLS` and `SURVEY_PROPERTIES` are facts about the catalogs from
-Paper I, keyed by `fiducial_catalog` and, for the n(z), by `fiducial_blind`.
-`SURVEY_PROPERTIES` covers every catalog version CosmoCov runs on; a version and
-its leakage-corrected twin share one entry, read by `survey_properties`.
+`NZ_FILE` and `SURVEY_PROPERTIES` are facts about the catalogs from Paper I, keyed
+by `fiducial_catalog` and, for the n(z), by `fiducial_blind`. `SURVEY_PROPERTIES`
+covers every catalog version CosmoCov runs on; a version and its leakage-corrected
+twin share one entry, read by `survey_properties`.
+
+`REFERENCE_COVARIANCE` and `REFERENCE_CATALOG` are the two forms a
+`reference_covariance` option takes: CosmoCov builds the covariance at a noise
+level, and NaMaster reads a catalogue.
 
 Shell recipes read a value through the CLI, one key per decision it depends on:
 
@@ -62,15 +66,6 @@ NZ_FILE = {
     }.items()
 }
 
-# Footprint mask power spectrum (nside 4096, normalised); only the fiducial
-# catalog has one.
-MASK_CLS = {
-    "size_cut": "/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_nside_4096_norm.txt",
-    "initial": None,
-    "masked": None,
-    "relaxed_flags": None,
-}
-
 SURVEY_PROPERTIES = {
     "size_cut": SurveyProperties(2894.0303815287743, 4.957279270321334, 0.3783979556382064),
     "initial": SurveyProperties(2894.0303815287743, 6.477062501504287, 0.39740419232655594),
@@ -84,6 +79,26 @@ def survey_properties(version):
     catalogs = {cat_version: option for option, cat_version in FIDUCIAL_CATALOG.items()}
     return SURVEY_PROPERTIES[catalogs[version.removesuffix("_leak_corr")]]
 
+
+# The survey scale behind each reference covariance. The mock-matched entry keeps
+# the data's area and sets the suite's noise: the mocks' galaxy count over that
+# area, and their total shape dispersion.
+REFERENCE_COVARIANCE = {
+    "mockmatched": SurveyProperties(SURVEY_PROPERTIES["size_cut"].area, 5.7930820, 0.3792561),
+    "data_covariance": SURVEY_PROPERTIES["size_cut"],
+}
+
+# The cat_config entry the NaMaster covariance of each option reads. The
+# mock-matched entry is realisation 00001 of the suite.
+REFERENCE_CATALOG = {
+    "mockmatched": "SP_v1.4.6.3_glass_mock_v2",
+    "data_covariance": "SP_v1.4.6.3_leak_corr",
+}
+
+BB_BLIND_CHECK_VERSION = {
+    "size_cut_v1463": "SP_v1.4.6.3_leak_corr",
+    "mock_version_v146": "SP_v1.4.6_leak_corr",
+}
 
 REPORTING_BINNING = {
     "bins_20": Grid(1.0, 250.0, 20),
@@ -115,8 +130,10 @@ TABLES = {
     "fiducial_blind": FIDUCIAL_BLIND,
     "fiducial_catalog": FIDUCIAL_CATALOG,
     "nz_file": NZ_FILE,
-    "mask_cls": MASK_CLS,
     "survey_properties": SURVEY_PROPERTIES,
+    "reference_covariance": REFERENCE_COVARIANCE,
+    "reference_catalog": REFERENCE_CATALOG,
+    "bb_blind_check_version": BB_BLIND_CHECK_VERSION,
     "reporting_binning": REPORTING_BINNING,
     "integration_grid": INTEGRATION_GRID,
     "patch_count": PATCH_COUNT,

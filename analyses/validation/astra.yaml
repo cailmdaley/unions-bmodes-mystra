@@ -62,49 +62,40 @@ inputs:
   - id: redshift_distributions
     from: ../redshift_distributions
 
-  - id: blind_check_pure_eb
-    from: ../blind_check_pure_eb
+  - id: blind_cov_sweep
+    from: ../covariances.blind_cov_sweep
 
-  - id: blind_check_harmonic_cov
-    from: ../blind_check_harmonic_cov
+  - id: cl_bandpowers_reporting
+    from: ../data_vectors.cl_bandpowers_reporting
 
-  - id: blind_check_cosmocov
-    from: ../blind_check_cosmocov
+  - id: xi_10000_bins
+    from: ../data_vectors.xi_10000_bins
 
-  - id: blind_check_xi
-    from: ../blind_check_xi
+  - id: cov_integration_reference
+    from: ../covariances.cov_integration_reference
 
-  - id: blind_check_cl
-    from: ../blind_check_cl
+  - id: cov_reporting_reference
+    from: ../covariances.cov_reporting_reference
 
-  - id: tenk_xi_staging
-    type: data
-    description: |
-      TreeCorr ξ± of the leakage-corrected size-cut catalog on the
-      10,000-bin convergence grid, computed outside the pipeline by
-      a multi-node MPI run. The run uses 50 TreeCorr patches only to
-      share the work between nodes, despite the `npatch=1` in the
-      file name; no jackknife enters.
-    source: "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/production_out/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt"
+  - id: cl_cov_reference
+    from: ../covariances.cl_cov_reference
+
+  - id: pure_eb_covariance_reference
+    from: ../covariances.pure_eb_covariance_reference
+
+  - id: shapepipe_v14_catalogs
+    from: ../shapepipe_v14_catalogs
+
+  - id: glass_mock_catalogs
+    from: ../glass_mock_catalogs
+
+  - id: glass_mock_xi_reporting
+    from: ../glass_mock_xi_reporting
+
+  - id: glass_mock_cl
+    from: ../glass_mock_cl
 
 outputs:
-  - id: xi_integration_convergence
-    type: data
-    description: |
-      TreeCorr ξ_± on a 10,000-bin grid over [0.5', 300'] for the
-      leakage-corrected size-cut catalog, used to test the
-      convergence of the pure modes and COSEBIs against the
-      1000-bin integration grid.
-    format: txt
-    decisions: []
-    inputs: [tenk_xi_staging]
-    recipe:
-      # Adopts the text dump of the 10,000-bin run; nothing is computed here.
-      # producers/run_10k_xi_barehost.sbatch is the run itself.
-      command: |
-        cp -f {inputs.tenk_xi_staging} {output}
-      resources: { cpus: 1, memory: "2GB" }
-
   - id: tenk_grid_comparison
     when: [leakage_correction.applied]
     type: metric
@@ -138,14 +129,14 @@ outputs:
       bin selection produces. The fiducial window is bins (9, 15)
       on both grids.
     decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, mode_count, decomposition_method, pte_definition, leakage_correction, reporting_binning, integration_grid]
-    inputs: [xi_reporting, xi_integration, xi_integration_convergence, pure_eb_data, pure_eb_covariance, cosebis_modes_data, cosebis_covariance]
+    inputs: [xi_reporting, xi_integration, xi_10000_bins, pure_eb_data, pure_eb_covariance, cosebis_modes_data, cosebis_covariance]
     recipe:
       command: >
         python src/papers/bmodes/scripts/tenk_grid_convergence.py
         --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
         --xi-reporting {inputs.xi_reporting}
         --xi-1k {inputs.xi_integration}
-        --xi-10k {inputs.xi_integration_convergence}
+        --xi-10k {inputs.xi_10000_bins}
         --pure-eb-baseline {inputs.pure_eb_data}
         --pure-eb-covariance {inputs.pure_eb_covariance}
         --cosebis-baseline {inputs.cosebis_modes_data}
@@ -233,7 +224,7 @@ outputs:
     # for the `cosebis_harmonic_config` table.
     from: cosebis_harmonic_scan.cosebis_harmonic_version_ptes
 
-  - id: fig_harmonic_config_cosebis_full
+  - id: cosebis_harmonic_figure
     type: figure
     format: png
     description: |
@@ -264,29 +255,27 @@ outputs:
       block: pure E/B over the 20 reporting bins, COSEBIs (n ≤ 20) on
       the full 1'–250' range and harmonic Cℓ over the 32 bandpowers, on
       the [catalog version](#decisions.bb_blind_check_version) chosen
-      for the check. Supports the [blind-A fiducial
-      choice](#decisions.fiducial_blind); it does not enter the
-      headline figures. The covariances are read from fixed per-blind
-      files, so the [Monte-Carlo sample
-      count](#decisions.mc_samples) only sizes the ±√(2/N) reference
-      band drawn on the ξ_± panels.
+      for the check. The covariances come from the
+      [blind scan](#inputs.blind_cov_sweep), the COSEBI filters from the
+      [integration-grid ξ_±](#inputs.xi_integration) and the multipoles
+      from the [bandpowers](#inputs.cl_bandpowers_reporting). Supports the
+      [blind-A fiducial choice](#decisions.fiducial_blind); it does not
+      enter the headline figures. The [Monte-Carlo sample
+      count](#decisions.mc_samples) sizes the ±√(2/N) reference band drawn
+      on the ξ_± panels.
     decisions: [bb_blind_check_version, reporting_binning, integration_grid, mode_count, mc_samples]
     inputs:
-      - blind_check_pure_eb
-      - blind_check_harmonic_cov
-      - blind_check_cosmocov
-      - blind_check_xi
-      - blind_check_cl
+      - blind_cov_sweep
+      - xi_integration
+      - cl_bandpowers_reporting
     recipe:
       command: >
+        d=$(mktemp -d) && tar xzf {inputs.blind_cov_sweep} -C $d &&
         python src/papers/bmodes/scripts/bb_covariance_blind_independence.py
         --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --mc-samples {decisions.mc_samples}
-        --version {decisions.bb_blind_check_version}
-        --pure-eb-template '{inputs.blind_check_pure_eb}'
-        --harmonic-template '{inputs.blind_check_harmonic_cov}'
-        --cov-integration-template '{inputs.blind_check_cosmocov}'
-        --xi-template '{inputs.blind_check_xi}'
-        --cl-template '{inputs.blind_check_cl}'
+        --covariance-dir $d
+        --xi-integration {inputs.xi_integration}
+        --cl-bandpowers {inputs.cl_bandpowers_reporting}
         --out-file {output}
 
   - {id: mock_per_mock_statistics, from: glass_mocks.mock_per_mock_statistics}
@@ -326,36 +315,7 @@ decisions:
   mc_samples:
     from: ../mc_samples
   bb_blind_check_version:
-    label: "Catalog for the blind-independence check"
-    tags: [data_selection]
-    rationale: |
-      The B-mode covariance of a null signal is shape noise, plus a
-      small E-to-B mask leakage in harmonic space, and neither reason
-      for its blind independence is specific to a catalog version, so
-      one version suffices for the [BB-covariance blind-independence
-      check](#outputs.bb_covariance_blind_independence_evidence).
-      It uses the fiducial leak-corrected v1.4.6.3 catalog, for which
-      the GLASS mock suite was built. B-mode covariance ratios are
-      expected to sit closer to unity across blinds than E-mode ratios;
-      a Monte Carlo pure-mode covariance adds sampling scatter to both.
-    default: size_cut_v1463
-    options:
-      size_cut_v1463:
-        label: "Size-cut v1.4.6.3"
-        description: |
-          Per-blind covariances on the fiducial leak-corrected
-          catalog, matching the adopted mock suite.
-      mock_version_v146:
-        label: "Mock version v1.4.6"
-        description: |
-          Per-blind covariances at v1.4.6, the catalog version of
-          the excluded GLASS mock suite.
-        excluded: true
-        excluded_reason: |
-          v1.4.6 is not one of the paper's four catalog versions, and
-          its [mock suite](#analyses.glass_mocks.decisions.mock_suite) sits on
-          a mask that is not the data's footprint; the check follows
-          the adopted v1.4.6.3 suite.
+    from: ../bb_blind_check_version
 
 findings:
 

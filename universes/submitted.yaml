@@ -44,6 +44,9 @@ decisions:
   reporting_binning: bins_20
   decomposition_method: schneider22_integral_transform
   mode_count: n_max_20
+  reference_covariance: mockmatched
+  mock_suite: v1_4_6_3_v2
+  bb_blind_check_version: size_cut_v1463
 
 analyses:
   covariances:

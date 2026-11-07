@@ -11,6 +11,7 @@ Compares:
 """
 
 import argparse
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,7 +20,13 @@ from astropy.io import fits
 from plotting_utils import PAPER_MPLSTYLE
 
 from sp_validation.b_modes import calculate_cosebis
-from decision_values import INTEGRATION_GRID, MC_SAMPLES, MODE_COUNT, REPORTING_BINNING
+from decision_values import (
+    FIDUCIAL_BLIND,
+    INTEGRATION_GRID,
+    MC_SAMPLES,
+    MODE_COUNT,
+    REPORTING_BINNING,
+)
 
 plt.style.use(PAPER_MPLSTYLE)
 
@@ -397,8 +404,7 @@ def main(
     """Run the BB-covariance blind-independence cross-check.
 
     ``pure_eb_paths`` / ``harmonic_paths`` / ``cov_integration_paths`` are dicts
-    keyed by blind (A/B/C). All paths are absolute; the per-blind mock-version
-    covariances are read directly, so the check is self-contained.
+    keyed by blind (A/B/C).
     """
     # Load pure E/B covariances for all blinds
     pure_eb_data = {}
@@ -528,42 +534,32 @@ def main(
 
 def _from_cli(argv=None):
     ap = argparse.ArgumentParser(
-        description="BB-covariance blind-independence cross-check (mock version)."
+        description="BB-covariance blind-independence cross-check."
     )
     ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
     ap.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__, required=True)
     ap.add_argument("--mode-count", type=MODE_COUNT.__getitem__, required=True)
     ap.add_argument("--mc-samples", type=MC_SAMPLES.__getitem__, required=True)
-    versions = {
-        "mock_version_v146": "SP_v1.4.6_leak_corr",
-        "size_cut_v1463": "SP_v1.4.6.3_leak_corr",
-    }
-    ap.add_argument("--version", required=True, choices=versions)
-    ap.add_argument("--pure-eb-template", required=True)
-    ap.add_argument("--harmonic-template", required=True)
-    ap.add_argument("--cov-integration-template", required=True)
-    ap.add_argument("--xi-template", required=True)
-    ap.add_argument("--cl-template", required=True)
+    ap.add_argument(
+        "--covariance-dir",
+        required=True,
+        help="The blind scan's covariances, named per blind (blind_a, blind_b, blind_c)",
+    )
+    ap.add_argument("--xi-integration", required=True, help="ξ± on the integration grid")
+    ap.add_argument("--cl-bandpowers", required=True, help="Cℓ bandpowers, for their ℓ")
     ap.add_argument("--out-file", required=True, help="Output PNG path (lc {output})")
     a = ap.parse_args(argv)
 
-    version = versions[a.version]
-    pure_eb_paths = {b: a.pure_eb_template.format(version=version, blind=b) for b in BLINDS}
-    harmonic_paths = {b: a.harmonic_template.format(version=version, blind=b) for b in BLINDS}
-    cov_integration_paths = {
-        b: a.cov_integration_template.format(version=version, blind=b) for b in BLINDS
-    }
-    xi_integration_path = a.xi_template.format(version=version)
-    cl_path = a.cl_template.format(version=version)
-
+    directory = Path(a.covariance_dir)
+    options = {blind: option for option, blind in FIDUCIAL_BLIND.items()}
     main(
         integration=a.integration_grid,
         n_samples=a.mc_samples,
-        pure_eb_paths=pure_eb_paths,
-        harmonic_paths=harmonic_paths,
-        xi_integration_path=xi_integration_path,
-        cov_integration_paths=cov_integration_paths,
-        cl_path=cl_path,
+        pure_eb_paths={b: directory / f"pure_eb_covariance_{o}.npz" for b, o in options.items()},
+        harmonic_paths={b: directory / f"cl_cov_{o}.fits" for b, o in options.items()},
+        xi_integration_path=a.xi_integration,
+        cov_integration_paths={b: directory / f"cov_integration_{o}.txt" for b, o in options.items()},
+        cl_path=a.cl_bandpowers,
         nmodes=a.mode_count,
         theta_min=a.reporting_binning.min_sep,
         theta_max=a.reporting_binning.max_sep,

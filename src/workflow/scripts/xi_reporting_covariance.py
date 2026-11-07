@@ -1,26 +1,18 @@
-"""The mock-matched analytic xi_pm covariance, on the 20-bin reporting grid.
+"""The reference xi_pm covariance on the 20-bin reporting grid.
 
-The campaign's reference covariance is the CosmoCov run built at the *suite's*
-noise level rather than the catalogue's (``SP_v1.4.6.3_mockv2``, source_n_gal
-5.79308 arcmin^-2, sigma_e 0.37926) -- holding the mocks against the data
-covariance measures the suite's 17% galaxy excess instead of anything about
-the covariance.  That run exists only on the 1000-bin integration grid, which
-is the grid every downstream transform wants; the raw xi_pm check wants the
-20 reporting bins the suite reports on.
+CosmoCov builds the reference covariance on the 1000-bin integration grid, the
+grid every downstream transform wants; the raw xi_pm check wants the 20
+reporting bins.
 
 This binds the two: Cov_reporting = B Cov_fine B^T, with B the fine-to-
 reporting averaging operator applied to xi_+ and xi_- alike.  TreeCorr's
 20-bin xi_pm is a pair-weighted average within each bin, so the default
 weighting is the pair density a uniform field gives, w_i ~ theta_r^2 -
 theta_l^2 over the fine bins falling inside each reporting bin.  The
-unweighted operator -- the ``pointwise`` rebin the published pure-mode chain
-applies to the *input* xi_pm -- is written alongside as ``cov_pointwise`` so
-the choice is visible and cheap to check; the two agree closely, neighbouring
-fine bins being almost perfectly correlated.
-
-The fine grid is the covariance's own (0.5' to 300', 1000 log bins), not the
-xi ensemble's (0.5' to 500'); reading it off the covariance's declared
-min/max/nbins is what keeps the two from silently disagreeing.
+unweighted operator -- the ``pointwise`` rebin the pure-mode chain applies to
+the *input* xi_pm -- is written alongside as ``cov_pointwise`` so the choice is
+visible and cheap to check; the two agree closely, neighbouring fine bins being
+almost perfectly correlated.
 """
 
 from __future__ import annotations
@@ -29,6 +21,8 @@ import argparse
 import json
 
 import numpy as np
+
+from decision_values import INTEGRATION_GRID, REPORTING_BINNING
 
 
 def binning_matrix(left_edges, right_edges, fine_edges, weighting):
@@ -69,28 +63,28 @@ def rebin(cov_fine, operator):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--covariance", required=True,
-                        help="The fine-grid mock-matched CosmoCov matrix.")
-    parser.add_argument("--reporting-ensemble", required=True,
-                        help="Supplies the reporting bin edges.")
-    parser.add_argument("--fine-min-sep", type=float, default=0.5)
-    parser.add_argument("--fine-max-sep", type=float, default=300.0)
-    parser.add_argument("--fine-nbins", type=int, default=1000)
+                        help="The fine-grid reference CosmoCov matrix.")
+    parser.add_argument("--reporting-binning", required=True,
+                        type=REPORTING_BINNING.__getitem__)
+    parser.add_argument("--integration-grid", required=True,
+                        type=INTEGRATION_GRID.__getitem__)
     parser.add_argument("--out-file", required=True)
     args = parser.parse_args()
 
     cov_fine = np.loadtxt(args.covariance)
-    expected = 2 * args.fine_nbins
+    fine = args.integration_grid
+    expected = 2 * fine.nbins
     if cov_fine.shape != (expected, expected):
         raise SystemExit(
             f"{args.covariance} is {cov_fine.shape}, not the "
             f"{expected}x{expected} the declared fine grid implies."
         )
 
-    ensemble = np.load(args.reporting_ensemble, allow_pickle=False)
-    left = np.asarray(ensemble["left_edges"], dtype=float)
-    right = np.asarray(ensemble["right_edges"], dtype=float)
-    fine_edges = np.logspace(np.log10(args.fine_min_sep),
-                             np.log10(args.fine_max_sep), args.fine_nbins + 1)
+    grid = args.reporting_binning
+    edges = np.geomspace(grid.min_sep, grid.max_sep, grid.nbins + 1)
+    left, right = edges[:-1], edges[1:]
+    fine_edges = np.logspace(np.log10(fine.min_sep),
+                             np.log10(fine.max_sep), fine.nbins + 1)
 
     cov = rebin(cov_fine, binning_matrix(left, right, fine_edges, "pairs"))
     cov_pointwise = rebin(cov_fine,
@@ -108,9 +102,7 @@ def main():
         right_edges=right,
         provenance=json.dumps({
             "covariance": args.covariance,
-            "fine_grid": {"min_sep": args.fine_min_sep,
-                          "max_sep": args.fine_max_sep,
-                          "nbins": args.fine_nbins},
+            "fine_grid": fine._asdict(),
             "weighting": "pairs",
         }),
     )

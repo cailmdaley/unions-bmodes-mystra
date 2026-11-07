@@ -175,10 +175,10 @@ def load_inputs(args):
     fine_order = reindex(fine)
     pure_order = reindex(pure)
 
-    with np.load(args.resolved_pure_covariance, allow_pickle=False) as data:
+    with np.load(args.pure_covariance, allow_pickle=False) as data:
         if "cov_pure_eb" not in data:
             raise SystemExit(
-                f"{args.resolved_pure_covariance} has no cov_pure_eb key"
+                f"{args.pure_covariance} has no cov_pure_eb key"
             )
         pure_cov = np.asarray(data["cov_pure_eb"], dtype=float)
         pure_hartlap_n = hartlap_samples(data)
@@ -193,7 +193,7 @@ def load_inputs(args):
         sep_units="arcmin",
     )
     gg.read(str(args.cosebis_xi_grid))
-    cov_xipm = np.asarray(np.loadtxt(args.cosebis_covariance), dtype=float)
+    cov_xipm = np.asarray(np.loadtxt(args.covariance), dtype=float)
     n_xi = len(gg.meanr)
     if cov_xipm.shape != (2 * n_xi, 2 * n_xi):
         raise SystemExit(
@@ -516,31 +516,20 @@ def _parse_args(argv=None):
     parser.add_argument(
         "--covariance",
         type=Path,
-        help=(
-            "xi_pm covariance on the fine grid, transformed to COSEBI space. "
-            "The 'fiducial' reference covariance."
-        ),
-    )
-    parser.add_argument("--pure-covariance", type=Path)
-    parser.add_argument(
-        "--covariance-mockmatched",
-        type=Path,
-        help="xi_pm covariance regenerated at the mocks' galaxy count.",
+        help="Reference xi_pm covariance on the fine grid, transformed to COSEBI space.",
     )
     parser.add_argument(
-        "--pure-covariance-mockmatched",
-        type=Path,
-        help="Pure-mode MC covariance regenerated at the mocks' galaxy count.",
+        "--pure-covariance", type=Path, help="Reference pure-mode covariance."
     )
     parser.add_argument(
         "--reference-covariance",
         choices=("data_covariance", "mockmatched"),
-        default="data_covariance",
+        required=True,
         help=(
-            "Which covariance pair the mock scatter is compared against, the "
-            "same choice mock_campaign_analysis.py makes.  There is no C_l "
-            "member here: the harmonic PTEs are read from the per-mock "
-            "statistics npz, so they already carry that file's own choice."
+            "The reference_covariance selection behind the two covariances, "
+            "recorded in the output.  There is no C_l member: the harmonic "
+            "PTEs are read from the per-mock statistics npz, so they already "
+            "carry that file's own selection."
         ),
     )
     parser.add_argument(
@@ -828,23 +817,13 @@ def main(argv=None):
         _plot(_load_scan(args.from_scan), args.out_file, args)
         return
 
-    # The declared `reference_covariance` decision picks the pair, exactly as
-    # it does in mock_campaign_analysis.py.
-    if args.reference_covariance == "mockmatched":
-        args.cosebis_covariance = args.covariance_mockmatched
-        args.resolved_pure_covariance = args.pure_covariance_mockmatched
-    else:
-        args.cosebis_covariance = args.covariance
-        args.resolved_pure_covariance = args.pure_covariance
     required = {
         "--per-mock-statistics": args.per_mock_statistics,
         "--mock-xi-fine": args.mock_xi_fine,
         "--mock-pure-eb-modes": args.mock_pure_eb_modes,
         "--cosebis-xi-grid": args.cosebis_xi_grid,
-        f"--covariance[-mockmatched] ({args.reference_covariance})":
-            args.cosebis_covariance,
-        f"--pure-covariance[-mockmatched] ({args.reference_covariance})":
-            args.resolved_pure_covariance,
+        "--covariance": args.covariance,
+        "--pure-covariance": args.pure_covariance,
     }
     missing = [name for name, value in required.items() if value is None]
     if missing:
@@ -913,8 +892,8 @@ def main(argv=None):
             "mock_xi_fine": str(args.mock_xi_fine),
             "mock_pure_eb_modes": str(args.mock_pure_eb_modes),
             "reference_covariance": args.reference_covariance,
-            "covariance": str(args.cosebis_covariance),
-            "pure_covariance": str(args.resolved_pure_covariance),
+            "covariance": str(args.covariance),
+            "pure_covariance": str(args.pure_covariance),
             "cosebis_xi_grid": str(args.cosebis_xi_grid),
         },
         "windows": windows,

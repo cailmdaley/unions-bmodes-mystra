@@ -31,6 +31,8 @@
 #     --planck18-json <cosmology_snapshot.json> \
 #     --mask-cls <mask_cls...norm.txt> \
 #     [--nz <n(z) file; default the per-version SOM n(z) by path convention>] \
+#     [--reference-covariance <option setting the survey block; default the
+#      version's own survey properties>] \
 #     --cosmocov <cov binary> --libgsl <libgsl.so.23.x> \
 #     --emit processed --out-file <path>
 set -euo pipefail
@@ -42,7 +44,7 @@ LIBGSL=/lib64/libgsl.so.23.1.0
 
 VERSION=""; BLIND=""; MINSEP=""; MAXSEP=""; NBINS=""; GAUSSIAN=""
 # A supplied spectrum applies to SSC unless explicitly disabled.
-PLANCK18=""; MASKCLS=""; MASKAPPLICATION="masked"; NZ=""; EMIT=""; OUTFILE=""
+PLANCK18=""; MASKCLS=""; MASKAPPLICATION="masked"; NZ=""; REFERENCE=""; EMIT=""; OUTFILE=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --version) VERSION="$2"; shift 2;;
@@ -55,11 +57,12 @@ while [ $# -gt 0 ]; do
     --mask-cls) MASKCLS="$2"; shift 2;;
     --mask-application) MASKAPPLICATION="$2"; shift 2;;
     --nz) NZ="$2"; shift 2;;
+    --reference-covariance) REFERENCE="$2"; shift 2;;
     --cosmocov) COSMOCOV="$2"; shift 2;;
     --libgsl) LIBGSL="$2"; shift 2;;
     --emit) EMIT="$2"; shift 2;;
     --out-file) OUTFILE="$2"; shift 2;;
-    -h|--help) sed -n '2,34p' "${BASH_SOURCE[0]}"; exit 0;;
+    -h|--help) sed -n '2,36p' "${BASH_SOURCE[0]}"; exit 0;;
     *) echo "unknown arg: $1" >&2; exit 2;;
   esac
 done
@@ -105,7 +108,8 @@ python "$VENDOR_ROOT/workflow/scripts/generate_cosmocov_ini.py" \
   --version "$VERSION" --blind "$BLIND" \
   --planck18-json "$PLANCK18" \
   --min-sep "$MINSEP" --max-sep "$MAXSEP" --nbins "$NBINS" --gaussian "$GAUSSIAN" \
-  --mask-cls "$MASKCLS" ${NZ:+--nz "$NZ"} --out-ini "$INI"
+  --mask-cls "$MASKCLS" ${NZ:+--nz "$NZ"} \
+  ${REFERENCE:+--reference-covariance "$REFERENCE"} --out-ini "$INI"
 
 # The binary resolves libgsl.so.23 out of here; nothing else sees it.
 HOSTLIBS="$SCRATCH/hostlibs"

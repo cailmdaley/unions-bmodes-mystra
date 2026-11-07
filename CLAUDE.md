@@ -22,6 +22,7 @@ belongs to Papers III and IV.
 - `index.md`: the report, which is the accepted paper's text with values and
   figures bound to outputs.
 - `src/`: analysis code, vendored from `sp_validation`.
+- `producers/`: the host MPI job behind `xi_10000_bins`, which `lc` cannot run.
 - `tools/`: repository checks and the mirror sync.
 
 ## Conventions
@@ -29,8 +30,10 @@ belongs to Papers III and IV.
 - `index.md` is the authority for numbers, scope and wording. Preserve the
   paper's hedges.
 - The root re-exports and computes nothing.
-- The spec describes the science. Inputs are data and analysis products, never
-  code. Prose says what is true now, with no history or tooling talk.
+- The spec describes the science. Inputs are data, never code. Prose says what is
+  true now, with no history or tooling talk.
+- Inputs are what came from outside this analysis, and sit at the root; anything
+  it made is an output with a recipe.
 - Each decision reads as a timeless account of a scientific choice: the
   rationale says what is at stake and why the default is preferred, each option
   says what it does on its own terms, and a label or option id names the
@@ -40,9 +43,9 @@ belongs to Papers III and IV.
   A decision with one is a documented fixed choice. Excluded options carry a
   reason a scientist would accept.
 - `src/workflow/scripts/decision_values.py` maps options to the values scripts
-  compute with, including a catalog's n(z) file, mask spectrum and survey
-  properties, which recipes read through it and never as spec inputs;
-  `numerics.py` holds the shared null-test numerics.
+  compute with, including a catalog's n(z) file and survey properties and the
+  noise and catalog of each reference covariance, which recipes read through it
+  and never as spec inputs; `numerics.py` holds the shared null-test numerics.
 
 ## Checks
 

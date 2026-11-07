@@ -8,6 +8,7 @@ stales nothing; these tests are what hold it. Run on the laptop with PyYAML:
 import ast
 import re
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -19,16 +20,17 @@ sys.path[:0] = [str(ROOT / "src/papers/bmodes/scripts"), str(ROOT / "src/workflo
 
 import catalog_versions
 import decision_values as dv
+import generate_cosmocov_ini
+import mock_vs_data_noise_table
 import scale_cuts
 
 ROOT_DECISIONS = yaml.safe_load((ROOT / "astra.yaml").read_text())["decisions"]
-ROOT_INPUTS = {i["id"]: i for i in yaml.safe_load((ROOT / "astra.yaml").read_text())["inputs"]}
 CAT_CONFIG = yaml.safe_load((ROOT / "src/cosmo_val/cat_config.yaml").read_text())
 REAL_SPACE_DECISIONS = yaml.safe_load((ROOT / "analyses/data_vectors/astra.yaml").read_text())["decisions"]
 
 # Tables keyed by the options of a decision other than their namesake.
-KEYED_BY = {"nz_file": "fiducial_catalog", "mask_cls": "fiducial_catalog",
-            "survey_properties": "fiducial_catalog"}
+KEYED_BY = {"nz_file": "fiducial_catalog", "survey_properties": "fiducial_catalog",
+            "reference_catalog": "reference_covariance"}
 
 FIDUCIAL_NZ = "/n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_{}.txt"
 
@@ -38,8 +40,10 @@ PUBLISHED = {
     "fiducial_catalog": ("size_cut", "SP_v1.4.6.3"),
     "nz_file": ("size_cut", {"blind_a": FIDUCIAL_NZ.format("A"), "blind_b": FIDUCIAL_NZ.format("B"),
                              "blind_c": FIDUCIAL_NZ.format("C")}),
-    "mask_cls": ("size_cut", ROOT_INPUTS["footprint_masks"]["source"]),
     "survey_properties": ("size_cut", (2894.0303815287743, 4.957279270321334, 0.3783979556382064)),
+    "reference_covariance": ("mockmatched", (2894.0303815287743, 5.793082, 0.3792561)),
+    "reference_catalog": ("mockmatched", "SP_v1.4.6.3_glass_mock_v2"),
+    "bb_blind_check_version": ("size_cut_v1463", "SP_v1.4.6.3_leak_corr"),
     "reporting_binning": ("bins_20", (1.0, 250.0, 20)),
     "integration_grid": ("bins_1000", (0.5, 300.0, 1000)),
     "patch_count": ("npatch_1", 1),
@@ -64,7 +68,6 @@ class Tables(unittest.TestCase):
         for option, version in dv.FIDUCIAL_CATALOG.items():
             entry = CAT_CONFIG[version]
             self.assertEqual(dv.NZ_FILE[option]["blind_a"], entry["shear"]["redshift_path"], option)
-            self.assertEqual(dv.MASK_CLS[option], entry.get("mask_cls"), option)
             cov_th = entry["cov_th"]
             self.assertEqual(dv.SURVEY_PROPERTIES[option], (cov_th["A"], cov_th["n_e"], cov_th["sigma_e"]), option)
 
@@ -76,6 +79,10 @@ class Tables(unittest.TestCase):
                     cov_th = CAT_CONFIG[version.removesuffix("_leak_corr")]["cov_th"]
                     self.assertEqual(dv.survey_properties(version),
                                      (cov_th["A"], cov_th["n_e"], cov_th["sigma_e"]), version)
+
+    def test_reference_catalogs_are_in_cat_config(self):
+        for option, version in dv.REFERENCE_CATALOG.items():
+            self.assertIn(version.removesuffix("_leak_corr"), CAT_CONFIG, option)
 
     def test_published_values(self):
         self.assertEqual(set(PUBLISHED), set(dv.TABLES))
@@ -109,6 +116,41 @@ class Tables(unittest.TestCase):
         self.assertEqual(scale_cuts.resolve_fiducial_scale_cuts(grid, "rounded_arcmin"), (12.0, 83.0))
         for convention in scale_cuts.CONVENTIONS:
             self.assertEqual(scale_cuts.resolve_fiducial_bin_window(grid, convention), (9, 15))
+
+
+class ReferenceNoise(unittest.TestCase):
+    RECORDED_INI = ROOT / "analyses/covariances/results/baseline/cov_integration_g/covariance.ini"
+
+    def ini(self, tmp, *flags):
+        generate_cosmocov_ini.main([
+            "--version", "SP_v1.4.6.3_leak_corr", "--blind", "blind_a",
+            "--planck18-json", str(ROOT / "analyses/covariances/results/baseline/cosmology_snapshot/planck18.json"),
+            "--min-sep", "0.5", "--max-sep", "300.0", "--nbins", "1000", "--gaussian", "g",
+            "--mask-cls", "/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_nside_4096_norm.txt",
+            "--nz", dv.NZ_FILE["size_cut"]["blind_a"], "--out-ini", f"{tmp}/covariance.ini", *flags,
+        ])
+        return Path(tmp, "covariance.ini").read_text().splitlines()
+
+    def test_data_option_is_the_recorded_ini(self):
+        recorded = self.RECORDED_INI.read_text().splitlines()
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(self.ini(tmp), recorded)
+            self.assertEqual(self.ini(tmp, "--reference-covariance", "data_covariance"), recorded)
+
+    def test_mock_option_changes_only_the_noise(self):
+        recorded = self.RECORDED_INI.read_text().splitlines()
+        with tempfile.TemporaryDirectory() as tmp:
+            changed = [new for new, old in zip(self.ini(tmp, "--reference-covariance", "mockmatched"), recorded)
+                       if new != old]
+        self.assertEqual(changed, ["sigma_e : 0.3792561", "source_n_gal : 5.793082", "lens_n_gal : 5.793082"])
+
+    def test_noise_table_ratios(self):
+        audit = dict(data_galaxies=61378891, data_area_deg2=2750.65, mock_galaxies=60423575, mock_area_deg2=2709.91)
+        mock = mock_vs_data_noise_table.build_rows(
+            dv.REFERENCE_COVARIANCE["data_covariance"], dv.REFERENCE_COVARIANCE["mockmatched"], audit)[1]
+        self.assertEqual(f"{mock['noise_power_ratio_to_data']:.6g}", "0.85961")
+        self.assertEqual(f"{mock['bb_variance_ratio_to_data']:.6g}", "0.738929")
+        self.assertEqual(mock["galaxies_from_n_gal_convention"], 60355279)
 
 
 class Roster(unittest.TestCase):

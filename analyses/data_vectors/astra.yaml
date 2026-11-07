@@ -3,8 +3,8 @@ name: "Data vectors"
 description: |
   The measured statistics the null tests act on. ξ_± and Cℓ are measured from
   the shear catalogs: TreeCorr ξ_±(θ) on a 20-bin reporting grid and a 1000-bin
-  integration grid, and catalog-based Cℓ bandpowers on the 32-bandpower and fine
-  grids. Pure E/B modes and COSEBIs are linear transforms of ξ_±: the Schneider
+  integration grid, with one 10,000-bin run for the convergence check, and
+  catalog-based Cℓ bandpowers on the 32-bandpower and fine grids. Pure E/B modes and COSEBIs are linear transforms of ξ_±: the Schneider
   et al. (2022) decomposition into pure E, pure B and ambiguous modes, and the
   discrete E_n and B_n, whose filters are built for a given angular range. Each
   is computed for the fiducial catalog and across catalog versions.
@@ -56,6 +56,29 @@ outputs:
         --no-fits --out-file {output}
       resources: { cpus: 24, memory: "30GB" }
 
+  - id: xi_10000_bins
+    type: data
+    description: |
+      TreeCorr ξ_±(θ) of the leakage-corrected size-cut catalog on a
+      10,000-bin grid over [0.5', 300'], for the
+      [convergence check](#../analyses.validation.outputs.tenk_grid_comparison)
+      of the 1000-bin integration grid. It is an expensive multi-node MPI run,
+      three nodes with 15 ranks of 12 threads, 180 cores for about four hours,
+      because bins this fine blow up TreeCorr's pair traversal. The run uses 50
+      TreeCorr patches only to share the work between nodes, and no jackknife
+      enters.
+    format: txt
+    when: [leakage_correction.applied]
+    decisions: []
+    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    recipe:
+      # A host job, not a recipe `lc` can run: the container's OpenMPI cannot start
+      # under candide's Slurm, and `lc` has no way to hand a recipe an allocation
+      # across nodes. Submit it from the project root, on the host.
+      command: >
+        sbatch --wait producers/run_10k_xi_barehost.sbatch {output}
+      resources: { cpus: 180 }
+
   - id: xi_sweep
     # The ξ_± of the catalog-version scan, read by the pure-mode and COSEBI
     # version comparisons.
@@ -99,7 +122,8 @@ outputs:
         set -e
         x=$(mktemp -d) && tar xzf {inputs.xi_sweep} -C $x
         o=$(mktemp -d)
-        for ver in $(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --nonfiducial); do
+        versions=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --nonfiducial)
+        for ver in $versions; do
           python src/papers/bmodes/scripts/pure_eb_modes.py \
             --xi-reporting "$x/$ver"_xi_minsep=1.0_maxsep=250.0_nbins=20_npatch=1.txt \
             --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
@@ -147,7 +171,8 @@ outputs:
         set -e
         x=$(mktemp -d) && tar xzf {inputs.xi_sweep} -C $x
         o=$(mktemp -d)
-        for ver in $(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --comparison); do
+        versions=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --comparison)
+        for ver in $versions; do
           python src/papers/bmodes/scripts/cosebis_data_vector.py \
             --version "$ver" \
             --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \

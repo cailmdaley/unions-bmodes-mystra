@@ -14,16 +14,18 @@ figure's **Provenance** control shows the decisions behind it.
 
 ## How the analysis is organised
 
-`astra.yaml` holds the shared inputs and decisions and the paper's findings, and
+`astra.yaml` holds the inputs, the shared decisions and the paper's findings, and
 re-exports each figure, table and metric the paper reports from the sub-analysis
-that computes it, and computes nothing itself. The tree under `analyses/` reads in
-the order of the argument: the covariances, the data vectors they belong to, the
-validation behind both, and the null tests where they meet.
+that computes it, and computes nothing itself. The inputs are what came from
+outside this analysis: the shear catalogs of Paper I, the n(z) and the GLASS suite
+of Paper III. Everything the analysis made is an output. The tree under `analyses/`
+reads in the order of the argument: the covariances, the data vectors they belong
+to, the validation behind both, and the null tests where they meet.
 
 | Sub-analysis | What it does |
 |---|---|
-| `covariances` | Every covariance: `CosmoCov` ξ±, NaMaster Cℓ, and the pure E/B (M C Mᵀ) and COSEBI (Tᵀ C T) covariances |
-| `data_vectors` | ξ± and Cℓ measured from the catalogs, and pure E/B modes and COSEBIs as linear transforms of ξ± |
+| `covariances` | Every covariance: `CosmoCov` ξ±, NaMaster Cℓ, and the pure E/B (M C Mᵀ) and COSEBI (Tᵀ C T) covariances; the reference covariances the mocks are held against; the scan over n(z) blinds; and the footprint power spectrum |
+| `data_vectors` | ξ± and Cℓ measured from the catalogs, including the 10,000-bin ξ± of the convergence check, and pure E/B modes and COSEBIs as linear transforms of ξ± |
 | `validation` | The evidence that the null tests can be trusted: the estimators against a 10,000-bin grid, COSEBIs from harmonic-space bandpowers against those from ξ±, and the B-mode covariances across n(z) blinds |
 | `validation/glass_mocks` | Validation of estimators and covariances on 350 GLASS mocks, and the per-mock statistics |
 | `null_tests` | Where data meet covariance: data-vector figures with their error bars, PTE matrices over scale cuts and catalog versions, the mock calibration of the minimum PTE, the PTE tables and heatmaps, the primary null test, and the numbers the paper quotes |
@@ -31,18 +33,24 @@ validation behind both, and the null tests where they meet.
 `data_vectors` reads no covariance. `covariances` reads the ξ± bin centres and pair
 counts from `data_vectors`, which the pure E/B and COSEBI transforms are built on,
 and none of the shear. Data flows one way: from `data_vectors` through
-`covariances` and `validation` to `null_tests`. `validation/glass_mocks` keeps
-`pure_cov_mockmatched`, the mock-matched covariance it tests the machinery with.
+`covariances` and `validation` to `null_tests`.
+
+`reference_covariance` governs the covariances the GLASS mocks are held against.
+They are the fiducial recipes under one decision: CosmoCov at the noise an option
+sets, and NaMaster on the catalog an option names, realisation 00001 of the suite
+under `mockmatched`. They stay apart from the data covariances, which the null
+tests read under either selection.
 
 Each scan repeats one measurement across catalog versions, mock realisations or
 scale cuts, and gathers the members into a single product. A scan sits in
 `analyses/` beneath the sub-analysis it serves, declared in a `*.sweep.yaml` file
 from which the sibling `astra.yaml` is generated.
 
-A catalog's n(z) file, mask power spectrum, area, n_eff and σ_e are facts from
-Paper I, not steps of this analysis. They live in the option tables of
+A catalog's n(z) file, area, n_eff and σ_e are facts from Paper I, not steps of
+this analysis. They live in the option tables of
 `src/workflow/scripts/decision_values.py`, selected by `fiducial_catalog` and
-`fiducial_blind`, and recipes read them through that table.
+`fiducial_blind`, and recipes read them through that table, as they do the noise
+and catalog of each `reference_covariance` option.
 
 Code in `src/` is vendored from `sp_validation`; the recipe on each output names
 the exact command.
@@ -71,6 +79,11 @@ quoted value. `mc_samples` acts only under the Monte Carlo covariance.
 produces the stale outputs on a cluster allocated with `lc compute`. The catalogs
 are UNIONS-internal, at `/n17data/UNIONS/WL/` on candide, and are not public.
 
+One output stays outside `lc`. `xi_10000_bins` is a three-node MPI job that has to
+run on the host, because the container's OpenMPI cannot start under candide's
+Slurm: its recipe submits `producers/run_10k_xi_barehost.sbatch` from the project
+root.
+
 The results under `results/` were made by `lc` on candide, last on 4 November
 2026, and each manifest records the commit and recipe that made them. Recipes and
 scripts have since been rewritten to take decisions as typed flags, without a
@@ -89,6 +102,13 @@ file names and hold the covariances too, and `pure_eb_covariance`,
 `cosebis_modes_sweep` and `cl_cov_sweep` have no record yet.
 `tools/split_recorded_covariances.py` makes the first three pairs from recorded
 files; the report's copies were made that way.
+
+`cov_integration_reference`, `cl_cov_reference`, `footprint_power_spectrum`,
+`mock_footprint_audit` and `blind_cov_sweep` have no record in the tree either:
+their recorded files sit on candide, and the results that read them were made from
+those. `footprint_power_spectrum.py` and `mock_footprint_audit.py` have not
+reproduced them, and `run_2pcf_highres.py` has not reproduced the recorded
+`xi_10000_bins`.
 
 Code is not a declared input, so editing a script does not mark outputs stale;
 each output's manifest records the commit that made it. `CosmoCov` and its GSL

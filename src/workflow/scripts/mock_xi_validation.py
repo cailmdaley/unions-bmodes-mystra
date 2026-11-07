@@ -18,12 +18,11 @@ Three rows over two columns (xi_+ | xi_-):
     3. sigma_emp / sigma_ana -- the covariance-amplitude check, with the
        +-1/sqrt(2(N-1)) sampling error of an N-realisation standard deviation.
 
-sigma_ana is the *mock-matched* analytic sigma -- the CosmoCov run built at
-the suite's own n_gal and sigma_e, rebinned to the reporting grid.  Holding
-the mocks against the data covariance instead would measure the suite's 17%
-galaxy excess rather than anything about the covariance, which is why
-``reference_covariance`` is mockmatched throughout this campaign.  The stats
-output also carries the pure shape-noise sigma the ensemble's own measured
+sigma_ana is the analytic sigma of the reference covariance, rebinned to the
+reporting grid: under ``reference_covariance: mockmatched`` the CosmoCov run
+built at the suite's own n_gal and sigma_e.  Holding the mocks against the data
+covariance instead would measure the suite's 17% galaxy excess rather than
+anything about the covariance.  The stats output also carries the pure shape-noise sigma the ensemble's own measured
 pair counts imply, and the galaxy count those pair counts imply under a
 uniform-density footprint.
 
@@ -262,7 +261,7 @@ def main():
     parser.add_argument("--reporting-ensemble", required=True)
     parser.add_argument("--theory", required=True)
     parser.add_argument("--covariance", required=True,
-                        help="The mock-matched reporting-grid covariance npz.")
+                        help="The reference reporting-grid covariance npz.")
     parser.add_argument("--sigma-e-component", type=float, default=0.26817,
                         help="The suite's per-component ellipticity dispersion.")
     parser.add_argument("--area-deg2", type=float, default=2894.0304,

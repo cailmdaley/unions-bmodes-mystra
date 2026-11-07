@@ -113,7 +113,7 @@ outputs:
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
 
-  - id: fig_cosebis_data_vector
+  - id: cosebis_data_vector_figure
     type: figure
     format: png
     description: |
@@ -185,7 +185,7 @@ outputs:
         --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
 
-  - id: cosebis_version_comparison
+  - id: cosebis_version_comparison_figure
     type: figure
     format: png
     description: |
@@ -270,7 +270,7 @@ outputs:
       ξ_+^B, ξ_-^B and joint ξ_tot^B χ² PTE matrices for the
       fiducial catalog (blind A) over every (θ_min, θ_max) index pair
       of the 20-bin `geomspace(1', 250', 21)` grid; the COSEBI
-      [scale-cut pair grid](#../analyses.data_vectors) is a subset of it.
+      [scale-cut pair grid](#decisions.scale_cut_pair_grid) is a subset of it.
       The χ² applies the [Hartlap finite-sample
       correction](#../decisions.pure_eb_covariance_method) when the
       covariance is a Monte Carlo estimate and none when it is exact.
@@ -303,7 +303,7 @@ outputs:
       [adopted 300 < ℓ < 1600
       cut](#decisions.fiducial_scale_cuts) is one cell of the
       grid, which the
-      [harmonic-space PTE heatmap](#outputs.fig_cl_pte_heatmap)
+      [harmonic-space PTE heatmap](#outputs.cl_pte_heatmap_figure)
       shows.
     format: npz
     inputs: [cl_sweep, cl_cov_sweep, cl_bandpowers_reporting, cl_cov_reporting]
@@ -335,7 +335,7 @@ outputs:
       treatment](#../decisions.pure_eb_covariance_method), from that
       version's data vector and pure-mode covariance. Feeds the
       per-version [PTE
-      heatmaps](#outputs.fig_pte_heatmaps).
+      heatmaps](#outputs.pte_heatmaps_figure).
     format: tar.gz
     decisions: [fiducial_catalog, fiducial_blind, pte_blind_strategy, pte_definition, leakage_correction]
     inputs: [pure_eb_sweep, pure_eb_covariance_sweep]
@@ -346,7 +346,8 @@ outputs:
         c=$(mktemp -d) && tar xzf {inputs.pure_eb_covariance_sweep} -C $c
         o=$(mktemp -d)
         b="$(python src/workflow/scripts/decision_values.py fiducial_blind {decisions.fiducial_blind})"
-        for ver in $(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --nonfiducial); do
+        versions=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --nonfiducial)
+        for ver in $versions; do
           python src/papers/bmodes/scripts/calculate_pure_eb_ptes.py \
             --version "$ver" --blind "$b" \
             --pure-eb-data "$d/$ver"_pure_eb_data.npz \
@@ -540,7 +541,7 @@ outputs:
         --out-file {output}
 
   - id: pte_table_tex
-    type: data
+    type: table
     format: tex
     description: |
       LaTeX version of the [PTE table](#outputs.pte_table_appendix),
@@ -616,7 +617,7 @@ outputs:
         --harmonic-version-ptes {inputs.cosebis_harmonic_version_ptes}
         --out-file {output}
 
-  - id: fig_pte_heatmaps
+  - id: pte_heatmaps_figure
     type: figure
     format: png
     description: |
@@ -641,7 +642,7 @@ outputs:
         --pte-threshold {decisions.pte_threshold}
         --out-file {output}
 
-  - id: fig_cl_pte_heatmap
+  - id: cl_pte_heatmap_figure
     type: figure
     format: png
     description: |

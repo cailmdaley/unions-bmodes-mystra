@@ -1,13 +1,10 @@
-"""Tabulate the mock-versus-data noise budget from the artifacts that fix it.
+"""Tabulate the mock-versus-data noise budget.
 
-Every number here is read or derived from three files and nothing else:
-
-* the two CosmoCov ini files — the data catalogue's survey entry and the
-  `SP_v1.4.6.3_mockv2` entry generated at the mocks' own noise — which carry
-  the area convention, the galaxy count in density clothing (`source_n_gal`)
-  and the total ellipticity dispersion (`sigma_e`);
-* the nside-4096 footprint audit, which measures the two catalogues' occupied
-  sky and their raw row counts.
+Each row reads the survey scale of one `reference_covariance` option from
+`decision_values.REFERENCE_COVARIANCE`, which carries the area convention, the
+galaxy count in density clothing (`n_eff`) and the total ellipticity dispersion,
+and the nside-4096 footprint audit, which measures the two catalogues' occupied
+sky and their raw row counts.
 
 The derived columns are the whole argument of the density finding.  Shape
 noise per galaxy is σ_e²/2 per component, so the noise *power* of a catalogue
@@ -25,23 +22,9 @@ import math
 import re
 from pathlib import Path
 
+from decision_values import REFERENCE_COVARIANCE
+
 ARCMIN2_PER_DEG2 = 3600.0
-
-_INI_KEYS = ("area", "sigma_e", "source_n_gal")
-
-
-def read_cosmocov_ini(path):
-    """Pull the survey block's area, sigma_e and source_n_gal out of an ini."""
-
-    values = {}
-    for line in Path(path).read_text().splitlines():
-        match = re.match(r"\s*([A-Za-z_]+)\s*:\s*([0-9.eE+-]+)\s*$", line)
-        if match and match.group(1) in _INI_KEYS and match.group(1) not in values:
-            values[match.group(1)] = float(match.group(2))
-    missing = [key for key in _INI_KEYS if key not in values]
-    if missing:
-        raise KeyError(f"{path} declares no {missing}")
-    return values
 
 
 def read_footprint_audit(path):
@@ -66,30 +49,30 @@ def read_footprint_audit(path):
     return result
 
 
-def build_rows(data_ini, mock_ini, audit):
+def build_rows(data, mock, audit):
     """One row per catalogue, with the ratios taken against the data row."""
 
     def count(entry):
-        # source_n_gal is a galaxy count wearing density units: the count
-        # divided by the fixed area convention.  Multiplying it back out is
-        # the convention-free reading.
-        return entry["source_n_gal"] * entry["area"] * ARCMIN2_PER_DEG2
+        # n_eff is a galaxy count wearing density units: the count divided by
+        # the fixed area convention.  Multiplying it back out is the
+        # convention-free reading.
+        return entry.n_eff * entry.area * ARCMIN2_PER_DEG2
 
     def noise_power(entry):
-        return (entry["sigma_e"] / math.sqrt(2.0)) ** 2 / count(entry)
+        return (entry.sigma_e_combined / math.sqrt(2.0)) ** 2 / count(entry)
 
-    reference = noise_power(data_ini)
+    reference = noise_power(data)
     rows = []
     for label, entry, galaxies, area in (
         (
             "UNIONS v1.4.6.3 leak-corrected catalogue",
-            data_ini,
+            data,
             audit["data_galaxies"],
             audit["data_area_deg2"],
         ),
         (
             "GLASS v1.4.6.3_v2 mock suite",
-            mock_ini,
+            mock,
             audit["mock_galaxies"],
             audit["mock_area_deg2"],
         ),
@@ -101,9 +84,9 @@ def build_rows(data_ini, mock_ini, audit):
                 "galaxies_counted": galaxies,
                 "galaxies_from_n_gal_convention": round(count(entry)),
                 "occupied_area_deg2": area,
-                "area_convention_deg2": entry["area"],
-                "n_eff_arcmin2": entry["source_n_gal"],
-                "sigma_e_per_component": entry["sigma_e"] / math.sqrt(2.0),
+                "area_convention_deg2": entry.area,
+                "n_eff_arcmin2": entry.n_eff,
+                "sigma_e_per_component": entry.sigma_e_combined / math.sqrt(2.0),
                 "noise_power_ratio_to_data": ratio,
                 "bb_variance_ratio_to_data": ratio**2,
             }
@@ -113,8 +96,6 @@ def build_rows(data_ini, mock_ini, audit):
 
 def _parser(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--cosmocov-ini-data", required=True)
-    parser.add_argument("--cosmocov-ini-mock", required=True)
     parser.add_argument("--footprint-audit", required=True)
     parser.add_argument("--out-file", required=True)
     return parser.parse_args(argv)
@@ -124,8 +105,8 @@ def main(argv=None):
     args = _parser(argv)
     audit = read_footprint_audit(args.footprint_audit)
     rows = build_rows(
-        read_cosmocov_ini(args.cosmocov_ini_data),
-        read_cosmocov_ini(args.cosmocov_ini_mock),
+        REFERENCE_COVARIANCE["data_covariance"],
+        REFERENCE_COVARIANCE["mockmatched"],
         audit,
     )
     out_path = Path(args.out_file)

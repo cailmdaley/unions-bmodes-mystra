@@ -14,11 +14,7 @@ The three covariance conventions are intentionally kept separate:
   one the covariance artifact records (its Monte Carlo draw count, or none for
   the exact M C Mᵀ; ``pure_mode_covariance.hartlap_samples``).
 * C_l^BB: the stored 32 x 32 covariance is selected with the same powspace
-  bin-edge logic as the paper scripts; no Hartlap factor is applied.  Where a
-  BB covariance computed directly on a mock catalogue exists it is passed on
-  ``--cl-cov-mockmatched`` and used as-is; otherwise ``--cl-cov-scale``
-  rescales the stored data covariance by the squared data/mock galaxy-count
-  ratio, which is exact for BB because these mocks carry no B signal.
+  bin-edge logic as the paper scripts; no Hartlap factor is applied.
 
 Compute and reporting are separate invocations, because they are separate
 artifacts:
@@ -33,10 +29,9 @@ artifacts:
   writes exactly one file.  They recompute nothing: every number they report is
   a function of the stored arrays.
 
-``--reference-covariance`` selects the covariance triple through the declared
-``reference_covariance`` decision: ``data_covariance`` uses the covariances passed on
-the base flags, ``mockmatched`` the ``*-mockmatched`` companions.  Per-mock
-products arrive as stacked ensembles.
+``--cosebis-cov``, ``--pure-cov`` and ``--cl-cov`` are the reference covariances
+the ``reference_covariance`` decision selects.  Per-mock products arrive as
+stacked ensembles.
 """
 
 from __future__ import annotations
@@ -105,22 +100,6 @@ PURE_THETA_BY_CONVENTION = dict(COSEBI_THETA_BY_CONVENTION)
 PURE_THETA_MIN, PURE_THETA_MAX = PURE_THETA_BY_CONVENTION["grid_bin_edges"]
 ELL_MIN = 300.0
 ELL_MAX = 1600.0
-# These two are galaxy COUNTS in disguise, not measured sky densities.  Both are
-# a catalogue's galaxy count divided by the same fiducial 2894 deg^2 area
-# convention: 4.9573 arcmin^-2 is the data's 51.65M weight-effective galaxies and
-# 3.3697 arcmin^-2 is the v1.4.6 GLASS suite's 35 078 729 unit-weight galaxies.
-# The mock and data catalogues occupy the same sky, so the shared area cancels
-# and only their ratio is physical: it is the count ratio 51.65M / 35.08M =
-# 1.4711, i.e. the v1.4.6 suite is that much NOISIER than the data.  Neither
-# number is the density at which GLASS was asked to sample (the v1.4.6 suite
-# covers ~2.6e3 deg^2 of sky, so its density there is ~3.7 arcmin^-2), and
-# neither applies to the v1.4.6.3_v2 suite, whose 60 423 575 galaxies make it
-# QUIETER than the data by the same kind of ratio (51.65/60.42 = 0.855).  The v2
-# suite's C_l^BB reference is a directly computed mock covariance passed on
-# --cl-cov-mockmatched, not a rescale of the data's.
-FIDUCIAL_NEFF = 4.957279270321334
-MOCK_NEFF = 3.369700396483938
-MOCKMATCHED_CL_COV_SCALE = (FIDUCIAL_NEFF / MOCK_NEFF) ** 2
 STAT_TEX = {
     "B_n<=6": r"$B_{n\leq 6}$",
     "B_n<=20": r"$B_{n\leq 20}$",
@@ -140,12 +119,7 @@ def _normalise_ids(ids):
 
 
 def _default_paths():
-    repo = "/automnt/n17data/cdaley/unions/code/sp_validation"
     analysis = "results/glass_mock"
-    cov_base = f"{repo}/cosmo_inference/data/covariance"
-    cosebis_cov_base = (
-        "covariance_SP_v1.4.6.3_leak_corr_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked"
-    )
     return {
         "cl_dir": "/n09data/guerrini/glass_mock_v1.4.6/results",
         "pseudo_cl_dir": analysis,
@@ -153,16 +127,6 @@ def _default_paths():
             "/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/"
             "SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_"
             "nbins=1000_npatch=1.txt"
-        ),
-        "cosebis_cov": f"{cov_base}/{cosebis_cov_base}/{cosebis_cov_base}_processed.txt",
-        "pure_cov": (
-            "/automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/"
-            "results/paper_plots/intermediate/"
-            "SP_v1.4.6.3_leak_corr_A_pure_eb_semianalytic.npz"
-        ),
-        "cl_cov": (
-            "/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/"
-            "pseudo_cl_cov_SP_v1.4.6.3_leak_corr_blind=A_powspace_nbins=32.fits"
         ),
     }
 
@@ -372,20 +336,11 @@ def _load_pure_covariance(path: str | Path, theta: np.ndarray):
     }
 
 
-def _load_cl_covariance(path: str | Path, ell: np.ndarray, scale=1.0):
+def _load_cl_covariance(path: str | Path, ell: np.ndarray):
     with fits.open(path) as hdul:
         covariance = _native(hdul["COVAR_BB_BB"].data)
     if covariance.shape != (32, 32):
         raise ValueError(f"Expected 32x32 C_l BB covariance, found {covariance.shape}")
-    if not np.isfinite(scale) or scale <= 0:
-        raise ValueError(
-            f"C_l covariance scale must be positive and finite, found {scale}"
-        )
-    # Mock matching assumes the BB covariance is noise dominated, so the
-    # stored fiducial BB covariance is scaled by (sigma_e^2 / nbar) ratio^2.
-    # Mixed signal-noise pieces would carry one power only; with BB signal=0,
-    # the remaining caveat is mask-coupled EE×BB structure.
-    covariance *= float(scale)
     mask = ell_bin_mask(ell, ELL_MIN, ELL_MAX)
     if int(mask.sum()) != 17:
         warnings.warn(
@@ -394,7 +349,6 @@ def _load_cl_covariance(path: str | Path, ell: np.ndarray, scale=1.0):
         )
     return {
         "full": covariance,
-        "scale": float(scale),
         "mask": mask,
         "cut": covariance[np.ix_(mask, mask)],
         "ell_low": get_powspace_bin_edges(ell)[0],
@@ -803,7 +757,6 @@ def compute_statistics(
     cl_cov,
     out_path,
     label="fiducial",
-    cl_cov_scale=1.0,
 ):
     """The compute pass.
 
@@ -858,10 +811,7 @@ def compute_statistics(
         f"skipped={len(skipped)}",
         flush=True,
     )
-    print(
-        f"Covariance mode={label}, C_l BB covariance scale={float(cl_cov_scale):.8g}",
-        flush=True,
-    )
+    print(f"Covariance mode={label}", flush=True)
 
     first_pure = _load_pure(pure_ensemble, index_of["pure"][complete_ids[0]])
     pure_integration_limits = first_pure.get("integration_limits")
@@ -888,7 +838,7 @@ def compute_statistics(
         ),
     }
     first_cl = _load_cl(_path_for("cl", cl_dir, complete_ids[0]))
-    cl_covariances = _load_cl_covariance(cl_cov, first_cl["ell"], scale=cl_cov_scale)
+    cl_covariances = _load_cl_covariance(cl_cov, first_cl["ell"])
     covariances = {
         "pure": pure_covariances,
         "cosebis": cosebis_covariances,
@@ -1002,26 +952,6 @@ def compute_statistics(
             "pure_eb_covariance": str(pure_cov),
             "pure_eb_hartlap_n": pure_covariances["hartlap_n"],
             "cl_bb_covariance": str(cl_cov),
-            "cl_cov_scale": float(cl_cov_scale),
-            # The count-ratio constants describe the fallback rescale only, and
-            # are omitted when a directly computed mock covariance was used --
-            # reporting them there would attach a v1.4.6-suite number to a run
-            # that never applied it.
-            **(
-                {}
-                if cl_cov_scale == 1.0
-                else {
-                    "mockmatching_noise_density_ratio": FIDUCIAL_NEFF / MOCK_NEFF,
-                    "mockmatching_noise_variance_ratio": MOCKMATCHED_CL_COV_SCALE,
-                    "cl_cov_scale_description": (
-                        "Full stored C_l BB covariance multiplied by the supplied "
-                        "noise variance ratio. This is exact for the noise-noise "
-                        "term only; mixed signal-noise terms would scale by one "
-                        "power, but BB has zero signal here, leaving only "
-                        "mask-coupled EE×BB caveat terms."
-                    ),
-                }
-            ),
         },
         "cosebi_scale_conventions": stored_scale_metadata,
         "pure_eb_input_grid": {
@@ -1273,33 +1203,13 @@ def _parser(argv=None):
     parser.add_argument("--cl-dir", default=defaults["cl_dir"])
     parser.add_argument("--pseudo-cl-dir", default=defaults["pseudo_cl_dir"])
     parser.add_argument("--cosebis-xi-grid", default=defaults["cosebis_xi_grid"])
-    parser.add_argument("--cosebis-cov", default=defaults["cosebis_cov"])
-    parser.add_argument("--pure-cov", default=defaults["pure_cov"])
-    parser.add_argument("--cl-cov", default=defaults["cl_cov"])
-    parser.add_argument(
-        "--cl-cov-scale",
-        type=float,
-        default=1.0,
-        help="Multiplicative scale for the stored C_l BB covariance (default: 1).",
-    )
+    parser.add_argument("--cosebis-cov", help="Reference ξ± covariance.")
+    parser.add_argument("--pure-cov", help="Reference pure-E/B covariance.")
+    parser.add_argument("--cl-cov", help="Reference C_l bandpower covariance.")
     parser.add_argument(
         "--label",
         default="fiducial",
         help="Covariance suite label written to evidence.json (e.g. fiducial/mockmatched).",
-    )
-    parser.add_argument(
-        "--reference-covariance",
-        choices=("data_covariance", "mockmatched"),
-        default="data_covariance",
-        help=(
-            "Which analytic covariance the mock scatter is compared against: "
-            "'data_covariance' = the paper's own covariance at the real catalog's "
-            "n_eff (--cosebis-cov/--pure-cov/--cl-cov as given); "
-            "'mockmatched' = the same CosmoCov/MC chain regenerated at the "
-            "mocks' n_eff (--cosebis-cov-mockmatched/--pure-cov-mockmatched), "
-            "with the stored C_l^BB covariance rescaled by the noise-variance "
-            f"ratio {MOCKMATCHED_CL_COV_SCALE:.6g}."
-        ),
     )
     parser.add_argument(
         "--scale-cut-convention",
@@ -1310,62 +1220,7 @@ def _parser(argv=None):
             "pipeline cut at) or 'rounded_arcmin' (what the paper text prints)."
         ),
     )
-    parser.add_argument(
-        "--cl-cov-mockmatched",
-        help=(
-            "C_l^BB covariance computed directly on a mock catalogue "
-            "(mockmatched only).  When given it is used unscaled; without it "
-            "the data covariance is rescaled by the squared count ratio."
-        ),
-    )
-    parser.add_argument(
-        "--cosebis-cov-mockmatched",
-        help="ξ± covariance regenerated at the mocks' galaxy count (mockmatched only).",
-    )
-    parser.add_argument(
-        "--pure-cov-mockmatched",
-        help="Pure-EB MC covariance regenerated at the mocks' galaxy count.",
-    )
     return parser.parse_args(argv)
-
-
-def _resolve_reference_covariance(args):
-    """Return (cosebis_cov, pure_cov, cl_cov, cl_cov_scale, label) for the selection."""
-
-    if args.reference_covariance == "data_covariance":
-        return (
-            args.cosebis_cov,
-            args.pure_cov,
-            args.cl_cov,
-            args.cl_cov_scale,
-            args.label,
-        )
-    missing = [
-        name
-        for name, value in (
-            ("--cosebis-cov-mockmatched", args.cosebis_cov_mockmatched),
-            ("--pure-cov-mockmatched", args.pure_cov_mockmatched),
-        )
-        if not value
-    ]
-    if missing:
-        raise SystemExit(
-            "--reference-covariance mockmatched requires " + ", ".join(missing)
-        )
-    # A directly computed mock C_l^BB covariance, where one exists, replaces the
-    # count-ratio rescale of the data covariance: it is a measurement of the
-    # mock's own noise rather than an extrapolation from the data's.
-    if args.cl_cov_mockmatched:
-        cl_cov, cl_cov_scale = args.cl_cov_mockmatched, 1.0
-    else:
-        cl_cov, cl_cov_scale = args.cl_cov, MOCKMATCHED_CL_COV_SCALE
-    return (
-        args.cosebis_cov_mockmatched,
-        args.pure_cov_mockmatched,
-        cl_cov,
-        cl_cov_scale,
-        args.label,
-    )
 
 
 def _apply_scale_cut_convention(convention):
@@ -1395,14 +1250,14 @@ def _standalone_main(argv=None):
                 ("--cosebis-ensemble", args.cosebis_ensemble),
                 ("--cosebis-ensemble-full", args.cosebis_ensemble_full),
                 ("--pure-ensemble", args.pure_ensemble),
+                ("--cosebis-cov", args.cosebis_cov),
+                ("--pure-cov", args.pure_cov),
+                ("--cl-cov", args.cl_cov),
             )
             if not value
         ]
         if missing:
             raise SystemExit("--emit-stats requires " + ", ".join(missing))
-        cosebis_cov, pure_cov, cl_cov, cl_cov_scale, label = (
-            _resolve_reference_covariance(args)
-        )
         compute_statistics(
             cosebis_ensemble_path=args.cosebis_ensemble,
             cosebis_ensemble_full_path=args.cosebis_ensemble_full,
@@ -1411,12 +1266,11 @@ def _standalone_main(argv=None):
             cl_dir=args.cl_dir,
             pseudo_cl_dir=args.pseudo_cl_dir,
             cosebis_xi_grid=args.cosebis_xi_grid,
-            cosebis_cov=cosebis_cov,
-            pure_cov=pure_cov,
-            cl_cov=cl_cov,
+            cosebis_cov=args.cosebis_cov,
+            pure_cov=args.pure_cov,
+            cl_cov=args.cl_cov,
             out_path=args.emit_stats,
-            label=label,
-            cl_cov_scale=cl_cov_scale,
+            label=args.label,
         )
         return
 

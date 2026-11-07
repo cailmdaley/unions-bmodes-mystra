@@ -89,22 +89,23 @@ def main():
             if not command:
                 continue
             command = "\n".join(l for l in command.splitlines() if not l.lstrip().startswith("#"))
-            for script, args in calls(" ".join(command.split())):
-                path = Path(script)
-                if not path.exists():
-                    print(f"{spec}: {output['id']}: no such script {script}")
-                    bad += 1
-                    continue
-                flags, required = python_flags(path) if script.endswith(".py") else shell_flags(path)
-                if flags is None or (not flags and script.endswith(".py")):
-                    continue
-                used = set(FLAG.findall(args))
-                problems = sorted(used - flags) + [f"missing {f}" for f in sorted(required - used)]
-                key = (script, tuple(problems))
-                if problems and key not in seen:
-                    seen.add(key)
-                    print(f"{spec}: {output['id']}: {script}: {', '.join(problems)}")
-                    bad += 1
+            for line in command.replace("\\\n", " ").splitlines():
+                for script, args in calls(" ".join(line.split())):
+                    path = Path(script)
+                    if not path.exists():
+                        print(f"{spec}: {output['id']}: no such script {script}")
+                        bad += 1
+                        continue
+                    flags, required = python_flags(path) if script.endswith(".py") else shell_flags(path)
+                    if flags is None or (not flags and script.endswith(".py")):
+                        continue
+                    used = set(FLAG.findall(args))
+                    problems = sorted(used - flags) + [f"missing {f}" for f in sorted(required - used)]
+                    key = (script, tuple(problems))
+                    if problems and key not in seen:
+                        seen.add(key)
+                        print(f"{spec}: {output['id']}: {script}: {', '.join(problems)}")
+                        bad += 1
     print(f"recipe flags: {bad} problem(s)")
     sys.exit(bool(bad))
 

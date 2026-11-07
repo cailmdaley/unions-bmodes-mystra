@@ -20,7 +20,7 @@ description: |
   [cosebis_ptes](#../outputs.cosebis_ptes) is read, with the fiducial
   matrix, by
   [config_space_pte_data](#../outputs.config_space_pte_data), behind
-  the [PTE composite figure](#../outputs.fig_pte_heatmaps) and the
+  the [PTE composite figure](#../outputs.pte_heatmaps_figure) and the
   [PTE table](#../outputs.pte_table_appendix).
 tags:
 - sweep

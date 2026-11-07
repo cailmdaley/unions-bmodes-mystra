@@ -2,8 +2,8 @@
 
 Cosmology is read from the frozen ``planck18.json`` snapshot (the
 cosmology_snapshot output — source of truth is sp_validation.cosmology.PLANCK18);
-survey (area, n_eff, sigma_e) from ``decision_values.survey_properties``;
-n(z) from ``--nz`` when given, otherwise via the path convention of
+survey (area, n_eff, sigma_e) from ``decision_values.survey_properties``, or
+from the ``reference_covariance`` option ``--reference-covariance`` names; n(z) from ``--nz`` when given, otherwise via the path convention of
 ``build_redshift_path``; the footprint mask power spectrum is passed explicitly
 (empty string for the unmasked variant).
 
@@ -20,7 +20,7 @@ import json
 import os
 import re
 
-from decision_values import FIDUCIAL_BLIND, survey_properties
+from decision_values import FIDUCIAL_BLIND, REFERENCE_COVARIANCE, survey_properties
 
 
 def build_redshift_path(version, blind):
@@ -110,12 +110,18 @@ def main(argv=None):
         default=None,
         help="n(z) file (default: the per-version SOM n(z) by path convention)",
     )
+    ap.add_argument(
+        "--reference-covariance",
+        type=REFERENCE_COVARIANCE.__getitem__,
+        help="reference_covariance option setting the survey block "
+        "(default: the catalog's own survey properties)",
+    )
     ap.add_argument("--out-ini", required=True)
     a = ap.parse_args(argv)
 
     with open(a.planck18_json) as f:
         cosmo = json.load(f)
-    survey = survey_properties(a.version)
+    survey = a.reference_covariance or survey_properties(a.version)
 
     ng_value = "1" if a.gaussian == "ng" else "0"
 
