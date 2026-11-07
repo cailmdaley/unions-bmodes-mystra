@@ -34,7 +34,7 @@ artifacts:
   a function of the stored arrays.
 
 ``--reference-covariance`` selects the covariance triple through the declared
-``reference_covariance`` decision: ``fiducial`` uses the covariances passed on
+``reference_covariance`` decision: ``data_covariance`` uses the covariances passed on
 the base flags, ``mockmatched`` the ``*-mockmatched`` companions.  Per-mock
 products arrive as stacked ensembles.
 """
@@ -1289,11 +1289,11 @@ def _parser(argv=None):
     )
     parser.add_argument(
         "--reference-covariance",
-        choices=("fiducial", "mockmatched"),
-        default="fiducial",
+        choices=("data_covariance", "mockmatched"),
+        default="data_covariance",
         help=(
             "Which analytic covariance the mock scatter is compared against: "
-            "'fiducial' = the paper's own covariance at the real catalog's "
+            "'data_covariance' = the paper's own covariance at the real catalog's "
             "n_eff (--cosebis-cov/--pure-cov/--cl-cov as given); "
             "'mockmatched' = the same CosmoCov/MC chain regenerated at the "
             "mocks' n_eff (--cosebis-cov-mockmatched/--pure-cov-mockmatched), "
@@ -1332,7 +1332,7 @@ def _parser(argv=None):
 def _resolve_reference_covariance(args):
     """Return (cosebis_cov, pure_cov, cl_cov, cl_cov_scale, label) for the selection."""
 
-    if args.reference_covariance == "fiducial":
+    if args.reference_covariance == "data_covariance":
         return (
             args.cosebis_cov,
             args.pure_cov,

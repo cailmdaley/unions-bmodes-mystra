@@ -213,7 +213,7 @@ decisions:
     default: cosmocov
     options:
       cosmocov:
-        label: "CosmoCov (fiducial; configuration-space)"
+        label: "CosmoCov (configuration-space)"
         insights: [fang20_2dfftlog_stable_real_space_covariance]
         description: |
           Analytic configuration-space covariance code of Krause
@@ -224,7 +224,7 @@ decisions:
           [catalog versions](#outputs.cov_sweep), each through
           `run_cosmocov_chain.sh`.
       namaster_inka:
-        label: "NaMaster iNKA (fiducial; harmonic-space)"
+        label: "NaMaster iNKA (harmonic-space)"
         excluded: true
         excluded_reason: "iNKA supplies the harmonic covariance, not an alternative implementation of the configuration-space CosmoCov covariance."
         description: |
@@ -263,7 +263,7 @@ decisions:
     default: gaussian_only
     options:
       gaussian_only:
-        label: "Gaussian only (fiducial for null tests)"
+        label: "Gaussian only"
         description: |
           Gaussian CosmoCov terms on both grids; NaMaster iNKA
           is Gaussian by construction.
@@ -293,7 +293,7 @@ decisions:
     default: masked
     options:
       masked:
-        label: "Footprint SSC window (fiducial)"
+        label: "Footprint SSC window"
         description: |
           The fiducial v1.4.6.3 footprint spectrum in the reporting diagnostic.
           Gaussian terms remain area-only.

@@ -536,7 +536,7 @@ def _from_cli(argv=None):
     ap.add_argument("--mc-samples", type=MC_SAMPLES.__getitem__, required=True)
     versions = {
         "mock_version_v146": "SP_v1.4.6_leak_corr",
-        "fiducial_version_v1463": "SP_v1.4.6.3_leak_corr",
+        "size_cut_v1463": "SP_v1.4.6.3_leak_corr",
     }
     ap.add_argument("--version", required=True, choices=versions)
     ap.add_argument("--pure-eb-template", required=True)

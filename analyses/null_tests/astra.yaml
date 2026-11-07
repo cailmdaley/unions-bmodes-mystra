@@ -311,10 +311,10 @@ decisions:
       the GLASS mock suite was built. B-mode covariance ratios are
       expected to sit closer to unity across blinds than E-mode ratios;
       a Monte Carlo pure-mode covariance adds sampling scatter to both.
-    default: fiducial_version_v1463
+    default: size_cut_v1463
     options:
-      fiducial_version_v1463:
-        label: "Fiducial size-cut v1.4.6.3"
+      size_cut_v1463:
+        label: "Size-cut v1.4.6.3"
         description: |
           Per-blind covariances on the fiducial leak-corrected
           catalog, matching the adopted mock suite.
@@ -351,7 +351,7 @@ decisions:
     default: aligned_with_cosebis_subset
     options:
       aligned_with_cosebis_subset:
-        label: "Aligned θ-grids with COSEBI subset (fiducial)"
+        label: "Aligned θ-grids with COSEBI subset"
       independent_grids:
         label: "Independent grids per statistic"
         excluded: true

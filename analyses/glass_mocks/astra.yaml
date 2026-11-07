@@ -480,7 +480,7 @@ outputs:
       window, per θ bin for ξ_±^B, and per ℓ band for the 17 fiducial
       C_ℓ^BB bands, with the fiducial cut shaded. Under
       `reference_covariance: mockmatched` it tests the analytic
-      covariance amplitude; under `fiducial` it shows the effect of
+      covariance amplitude; under `data_covariance` it shows the effect of
       the galaxy-count mismatch.
     inputs: [mock_per_mock_statistics]
     decisions: [reference_covariance]
@@ -820,7 +820,7 @@ decisions:
       galaxies occupy, a choice worth about 5% of the sample-variance
       term that the mock-matched rebuild inherits.
 
-      `mockmatched` is the default. `fiducial` is a diagnostic: it holds
+      `mockmatched` is the default. `data_covariance` is a diagnostic: it holds
       the six statistics and the scale-cut scan against the data
       covariances, so their σ ratios show the galaxy-count mismatch. The
       raw ξ_± check uses the mock-matched covariance under either
@@ -833,8 +833,8 @@ decisions:
           The fiducial covariance machinery rerun at the mocks' own
           noise (the CosmoCov run, its pure-mode propagation, and the
           mock-catalogue NaMaster covariance).
-      fiducial:
-        label: "Fiducial data covariance"
+      data_covariance:
+        label: "Data covariance"
         description: |
           The fiducial v1.4.6.3 leak-corrected covariances at blind A,
           unmodified; diagnostic only, since it measures the
@@ -1228,7 +1228,7 @@ findings:
       just below for C_ℓ^BB, 16.78 against 17, whose PTEs pass a KS
       test of uniformity at p = 0.79. A mean χ² above ν makes the
       reported PTEs lower than the true tail probabilities. The
-      `fiducial` selection of
+      `data_covariance` selection of
       [reference_covariance](#decisions.reference_covariance) would
       lower these means by the galaxy-count difference rather than
       any covariance error; it is not run on this suite.

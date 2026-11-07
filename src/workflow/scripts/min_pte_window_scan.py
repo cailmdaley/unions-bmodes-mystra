@@ -534,8 +534,8 @@ def _parse_args(argv=None):
     )
     parser.add_argument(
         "--reference-covariance",
-        choices=("fiducial", "mockmatched"),
-        default="fiducial",
+        choices=("data_covariance", "mockmatched"),
+        default="data_covariance",
         help=(
             "Which covariance pair the mock scatter is compared against, the "
             "same choice mock_campaign_analysis.py makes.  There is no C_l "

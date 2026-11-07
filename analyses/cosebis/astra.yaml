@@ -252,7 +252,7 @@ decisions:
     default: n_le_6_and_n_le_20
     options:
       n_le_6_and_n_le_20:
-        label: "Both subsets (fiducial)"
+        label: "Both subsets"
         insights: [asgari12_few_cosebis_modes_saturate_information, asgari19a_cosebis_nmax20_for_systematics]
       n_le_6_only:
         label: "n ≤ 6 only"
@@ -284,13 +284,13 @@ decisions:
     default: production_grid
     options:
       production_grid:
-        label: "Stable index pairs of geomspace(1', 250', 21) (fiducial)"
+        label: "Stable index pairs of geomspace(1', 250', 21)"
         description: |
           206 pairs: all 210 edge pairs minus the four unstable ones.
-      single_fiducial_pair:
+      single_pair:
         excluded: true
         excluded_reason: "Full-range PTE reporting and mock calibration require the full-range cell absent from this grid."
-        label: "Single fiducial pair only (i=9, j=16)"
+        label: "Single pair only (i=9, j=16)"
         description: |
           Only the
           [adopted 12'–83' fiducial cut](#../decisions.fiducial_scale_cuts);

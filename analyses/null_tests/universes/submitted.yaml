@@ -3,5 +3,5 @@ description: |
   Null-test PTE matrices on the shared scale-cut grid, with the
   blind-independence check on the fiducial v1.4.6.3 catalog.
 decisions:
-  bb_blind_check_version: fiducial_version_v1463
+  bb_blind_check_version: size_cut_v1463
   scale_cut_pair_grid_alignment: aligned_with_cosebis_subset

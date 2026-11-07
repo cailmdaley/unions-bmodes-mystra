@@ -112,7 +112,7 @@ decisions:
     default: npatch_1
     options:
       npatch_1:
-        label: "1 patch (fiducial)"
+        label: "1 patch"
         description: |
           Single-patch TreeCorr; no jackknife covariance.
       npatch_120:

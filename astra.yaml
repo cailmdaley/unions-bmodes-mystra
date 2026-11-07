@@ -362,7 +362,7 @@ decisions:
     default: size_cut
     options:
       size_cut:
-        label: "Size-cut (v1.4.6.3, fiducial)"
+        label: "Size-cut (v1.4.6.3)"
         description: |
           Size cut r_h,gal/r_h,psf > 0.707 on the 2894 deg²
           footprint, including the v1.4.6.3 PSF-size fix.
@@ -534,7 +534,7 @@ decisions:
     default: bins_1000
     options:
       bins_1000:
-        label: "1000 bins (fiducial)"
+        label: "1000 bins"
         description: |
           One TreeCorr run per catalog variant.
       bins_10000:
@@ -760,12 +760,12 @@ decisions:
     default: bins_96
     options:
       bins_96:
-        label: "96 √ℓ-linear bandpowers (fiducial)"
+        label: "96 √ℓ-linear bandpowers"
       bins_128:
         label: "128 √ℓ-linear bandpowers"
         description: "Finer bins than the 96 validated on the mocks."
       bins_32:
-        label: "32 √ℓ-linear bandpowers (cl_bb fiducial)"
+        label: "32 √ℓ-linear bandpowers"
         excluded: true
         excluded_reason: "Cannot resolve W_n(ℓ) beyond n ≈ 4."
 
@@ -783,7 +783,7 @@ decisions:
     default: n_2000
     options:
       n_2000:
-        label: "2000 (fiducial)"
+        label: "2000"
       n_1000:
         label: "1000"
       n_5000:
@@ -806,7 +806,7 @@ decisions:
     default: chi2_tail
     options:
       chi2_tail:
-        label: "χ² tail probability (fiducial)"
+        label: "χ² tail probability"
         insights: [stebbins96_scalar_perturbations_give_no_bmodes, higher_order_lensing_bmodes_negligible]
       anderson_darling:
         label: "Anderson-Darling"
@@ -870,7 +870,7 @@ decisions:
     default: applied
     options:
       applied:
-        label: "Applied (fiducial)"
+        label: "Applied"
         insights: [guerrini25_psf_errors_contaminate_xi]
       uncorrected:
         label: "Uncorrected"
@@ -894,7 +894,7 @@ decisions:
     default: bandpowers_32_powspace
     options:
       bandpowers_32_powspace:
-        label: "32 √ℓ-spaced over 8 ≤ ℓ ≤ 2048 (fiducial)"
+        label: "32 √ℓ-spaced over 8 ≤ ℓ ≤ 2048"
       bandpowers_96_powspace:
         excluded: true
         excluded_reason: "Used for the harmonic COSEBI transform, not the BB null test; the mock Cℓ spectra and covariance exist only at 32 bands."
@@ -931,7 +931,7 @@ decisions:
     default: analytic_shot_noise
     options:
       analytic_shot_noise:
-        label: "Analytic shot-noise subtraction (as in Paper IV; fiducial)"
+        label: "Analytic shot-noise subtraction"
         insights: [wolz25_catalog_based_pseudo_cl]
       mc_noise_bias:
         excluded: true
@@ -952,7 +952,7 @@ decisions:
     default: blind_a_for_paper
     options:
       blind_a_for_paper:
-        label: "Blind A for the reported PTEs (fiducial)"
+        label: "Blind A for the reported PTEs"
       all_blinds_for_paper:
         excluded: true
         excluded_reason: "The paper reports blind A; independence is tested by null_tests.bb_covariance_blind_independence_evidence."
@@ -974,7 +974,7 @@ decisions:
     default: bins_20
     options:
       bins_20:
-        label: "20 log bins over [1', 250'] (fiducial)"
+        label: "20 log bins over [1', 250']"
         description: |
           The binning of the paper and of Paper III.
       bins_40:
@@ -1004,7 +1004,7 @@ decisions:
     default: schneider22_integral_transform
     options:
       schneider22_integral_transform:
-        label: "Schneider et al. 2022 integral transform (fiducial)"
+        label: "Schneider et al. 2022 integral transform"
         insights: [pure_mode_decomposition_unique_on_finite_interval, schneider22_pure_modes_direct_from_xi, guinot26_cosmo_numba_precision]
       cosebi_reconstruction:
         label: "COSEBI-coefficient reconstruction"
@@ -1030,7 +1030,7 @@ decisions:
     default: n_max_20
     options:
       n_max_20:
-        label: "20 modes (fiducial)"
+        label: "20 modes"
         insights: [asgari19a_cosebis_nmax20_for_systematics]
       n_max_15:
         excluded: true

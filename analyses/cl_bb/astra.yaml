@@ -185,7 +185,7 @@ decisions:
     default: wolz25_catalog_based
     options:
       wolz25_catalog_based:
-        label: "Wolz et al. 2025 catalog-based (fiducial)"
+        label: "Wolz et al. 2025 catalog-based"
         description: |
           Spin-2 transforms at source positions via `ducc`, with
           NaMaster-decoupled bandpowers and analytic shot-noise

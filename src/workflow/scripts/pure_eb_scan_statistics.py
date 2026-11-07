@@ -218,11 +218,11 @@ def main() -> None:
     parser.add_argument("--cov-integration", required=True)
     parser.add_argument(
         "--reference-covariance",
-        choices=("fiducial", "mockmatched"),
+        choices=("data_covariance", "mockmatched"),
         required=True,
         help=(
             "Which of the variant's two covariances the mock chi2/PTE run "
-            "against: 'fiducial' is the data's own, 'mockmatched' the same "
+            "against: 'data_covariance' is the data's own, 'mockmatched' the same "
             "propagation at the mocks' noise."
         ),
     )
