@@ -20,6 +20,7 @@ decisions:
   fiducial_scale_cuts: adopted
   # Edges 9 and 16 of geomspace(1', 250', 21), which the text prints rounded.
   scale_cut_convention: grid_bin_edges
+  scale_cut_pair_grid: production_grid
   # Each statistic tested against the nominal 0.05. The threshold sets the PTE
   # heatmap colour scale and the quoted threshold value.
   pte_threshold: nominal_0p05

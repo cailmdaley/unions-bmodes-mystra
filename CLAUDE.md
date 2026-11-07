@@ -7,7 +7,8 @@ belongs to Papers III and IV.
 
 ## Layout
 
-- `astra.yaml`: root decisions, findings, prior insights and report outputs.
+- `astra.yaml`: root decisions, findings, prior insights and re-exports of the
+  report's outputs.
 - `analyses/**/astra.yaml`: the sub-analyses, four at the top with `data_vectors`
   and `validation` holding their children in `analyses/<sub>/analyses/`. README
   explains the split.
@@ -26,6 +27,8 @@ belongs to Papers III and IV.
 
 - `index.md` is the authority for numbers, scope and wording. Preserve the
   paper's hedges.
+- The root re-exports and computes nothing, except `cosebis_harmonic_config`,
+  which reads both `null_tests` and `validation`.
 - The spec describes the science. Inputs are data and analysis products, never
   code. Prose says what is true now, with no history or tooling talk.
 - Each decision reads as a timeless account of a scientific choice: the

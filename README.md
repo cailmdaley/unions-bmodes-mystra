@@ -14,8 +14,11 @@ figure's **Provenance** control shows the decisions behind it.
 
 ## How the analysis is organised
 
-`astra.yaml` holds the shared inputs and decisions, the paper's findings and its
-figures and tables. The tree under `analyses/` reads in the order of the argument:
+`astra.yaml` holds the shared inputs and decisions and the paper's findings, and
+re-exports each figure, table and metric the paper reports from the sub-analysis
+that computes it. It computes one output itself: `cosebis_harmonic_config` reads
+both `null_tests` and `validation`, and `null_tests` reads `validation`, so neither
+can hold it. The tree under `analyses/` reads in the order of the argument:
 the covariances, the three data vectors they serve, the null tests on those data
 vectors, and the validation behind both.
 
@@ -24,9 +27,9 @@ vectors, and the validation behind both.
 | `covariances` | `CosmoCov` ξ± and NaMaster Cℓ covariances |
 | `data_vectors` | The three representations of the B-mode signal |
 | `data_vectors/real_space` | TreeCorr ξ± on the reporting and integration grids, and the pure E/B decomposition, localised in angular separation |
-| `data_vectors/cosebis` | COSEBI modes from ξ± |
+| `data_vectors/cosebis` | COSEBI modes from ξ± and the first-mode significance B₁/σ₁ |
 | `data_vectors/harmonic_space` | Catalog-based Cℓ^BB and Cℓ^EB |
-| `null_tests` | PTE matrices over scale cuts, the primary null test, and the numbers the paper quotes |
+| `null_tests` | PTE matrices over scale cuts and catalog versions, the PTE tables and heatmaps, the primary null test, and the numbers the paper quotes |
 | `validation` | The evidence that the null tests can be trusted |
 | `validation/glass_mocks` | Validation of estimators and covariances on 350 GLASS mocks, and the PTE threshold |
 | `validation/estimator_checks` | The adopted estimators against a 10,000-bin grid, COSEBIs from harmonic-space bandpowers against those from ξ±, and the B-mode covariances across n(z) blinds |
@@ -34,6 +37,12 @@ vectors, and the validation behind both.
 `data_vectors` and `validation` hold no computation of their own: each declares
 what its children read and re-exports what the rest of the tree reads. Data flows
 one way, from covariances through data vectors and validation to the null tests.
+
+Significance lives in `null_tests`, with two exceptions in `data_vectors`. The
+fiducial PTE matrices over scale cuts (`pure_eb_pte_per_cut`, `cosebis_pte_per_cut`
+and `cl_pte_per_cut`) sit with their data vectors because the mock calibration in
+`validation` reads them and `null_tests` reads `validation`. The first-mode
+significance B₁/σ₁ is a property of the COSEBI measurement itself.
 
 Each scan repeats one measurement across catalog versions, mock realisations or
 scale cuts, and gathers the members into a single product. A scan sits in

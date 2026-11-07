@@ -4,7 +4,8 @@ description: |
   The three representations of the B-mode signal the null tests act on:
   correlation functions and pure E/B modes in real space, COSEBIs, and power
   spectra in harmonic space. Each is measured for the fiducial catalog and
-  across catalog versions, with its PTEs over scale cuts.
+  across catalog versions, with the fiducial PTEs over scale cuts that the mock
+  calibration and the null tests both read.
 
 inputs:
   - id: shapepipe_v14_catalogs
@@ -34,12 +35,12 @@ outputs:
   - {id: pure_eb_covariance_figure, from: real_space.pure_eb_covariance_figure}
   - {id: pure_eb_version_comparison_figure, from: real_space.pure_eb_version_comparison_figure}
   - {id: pure_eb_pte_per_cut, from: real_space.pure_eb_pte_per_cut}
-  - {id: pure_eb_ptes, from: real_space.pure_eb_ptes}
+  - {id: pure_eb_sweep, from: real_space.pure_eb_sweep}
   - {id: cosebis_modes_data, from: cosebis.cosebis_modes_data}
   - {id: fig_cosebis_data_vector, from: cosebis.fig_cosebis_data_vector}
   - {id: cosebis_version_comparison, from: cosebis.cosebis_version_comparison}
   - {id: cosebis_pte_per_cut, from: cosebis.cosebis_pte_per_cut}
-  - {id: cosebis_ptes, from: cosebis.cosebis_ptes}
+  - {id: cosebis_first_mode_significance, from: cosebis.cosebis_first_mode_significance}
   - {id: cl_bandpowers_reporting, from: harmonic_space.cl_bandpowers_reporting}
   - {id: cl_bandpowers_fine, from: harmonic_space.cl_bandpowers_fine}
   - {id: cl_sweep, from: harmonic_space.cl_sweep}

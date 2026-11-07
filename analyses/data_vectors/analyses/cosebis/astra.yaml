@@ -1,8 +1,8 @@
 version: "0.0.14"
 name: "COSEBIs"
 description: |
-  Compresses ξ_± into the discrete COSEBI modes E_n and B_n and tests B_n
-  against zero for the fiducial catalog, across catalog versions and over the
+  Compresses ξ_± into the discrete COSEBI modes E_n and B_n, for the fiducial
+  catalog and across catalog versions, and evaluates the fiducial B_n over the
   grid of scale cuts. COSEBIs stand on their own because their filters are
   built for a given angular range, so every scale cut is a fresh computation.
 
@@ -61,15 +61,29 @@ outputs:
         --out-file {output}
       resources: { cpus: 1, memory: "4GB" }
 
+  - id: cosebis_first_mode_significance
+    type: metric
+    format: json
+    description: |
+      First-mode COSEBI B-mode significance B_1/σ_1 for the
+      fiducial catalog, from
+      [cosebis_modes_data](#outputs.cosebis_modes_data). The
+      `value` is the full-range (1–250 arcmin) significance, the
+      >4σ first-mode excess visible in
+      [fig_cosebis_fiducial](#../../outputs.fig_cosebis_fiducial); the
+      JSON also carries the fiducial-cut significance, below 1σ.
+    inputs: [cosebis_modes_data]
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/emit_cosebis_first_mode_significance.py
+        --cosebis-modes-npz {inputs.cosebis_modes_data}
+        --out-file {output}
+
   - id: cosebis_pte_per_cut
     # Fiducial-catalog COSEBI PTE matrices at blind A over all stable scale-cut
     # pairs of `geomspace(1', 250', 21)`, for n <= 6 and n <= 20. Read by the
     # configuration-space PTE products and the mock minimum-PTE calibration.
     from: cosebis_pte_grid.cosebis_pte_matrix
-
-  - id: cosebis_ptes
-    # The same PTE matrices for the seven other catalog versions.
-    from: cosebis_pte_scan.cosebis_ptes_bundle
 
   - id: cosebis_version_comparison
     type: figure
@@ -116,43 +130,13 @@ decisions:
   mode_count:
     from: ../../mode_count
   scale_cut_pair_grid:
-    label: "COSEBI PTE scale-cut grid"
-    tags: [scale_cuts]
-    rationale: |
-      The COSEBI PTE matrix is evaluated on every [i_min, i_max] pair
-      of edges of the 20-bin `geomspace(1', 250', 21)` reporting
-      grid,
-      to show sensitivity to the scale cut in the
-      [PTE composite figure](#../../outputs.fig_pte_heatmaps); its
-      fiducial and full-range cells feed the
-      [PTE table](#../../outputs.pte_table_appendix) and the mock
-      calibration. Four single-bin pairs, (9, 10), (10, 11), (11, 12)
-      and (13, 14), are excluded because the polynomial-root
-      construction of T_{±n}(θ) fails on them. The figure shows only
-      cuts spanning at least two bins, 190 of the 206.
-    default: production_grid
-    options:
-      production_grid:
-        label: "Stable index pairs of geomspace(1', 250', 21)"
-        description: |
-          206 pairs: all 210 edge pairs minus the four unstable ones.
-      single_pair:
-        excluded: true
-        excluded_reason: "Full-range PTE reporting and mock calibration require the full-range cell absent from this grid."
-        label: "Single pair only (i=9, j=16)"
-        description: |
-          Only the
-          [adopted 12'–83' fiducial cut](#../../decisions.fiducial_scale_cuts);
-          no scale-cut sensitivity.
+    from: ../../scale_cut_pair_grid
   integration_grid:
     from: ../../integration_grid
   reporting_binning:
     from: ../../reporting_binning
 
 analyses:
-
-  cosebis_pte_scan:
-    path: ./analyses/cosebis_pte_scan
 
   cosebis_pte_grid:
     path: ./analyses/cosebis_pte_grid

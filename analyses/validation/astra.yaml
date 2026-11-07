@@ -63,6 +63,7 @@ outputs:
   - {id: mock_vs_data_noise_table, from: glass_mocks.mock_vs_data_noise_table}
   - {id: tenk_grid_comparison, from: estimator_checks.tenk_grid_comparison}
   - {id: cosebis_harmonic_modes, from: estimator_checks.cosebis_harmonic_modes}
+  - {id: fig_harmonic_config_cosebis_full, from: estimator_checks.fig_harmonic_config_cosebis_full}
   - {id: cosebis_harmonic_metrics, from: estimator_checks.cosebis_harmonic_metrics}
   - {id: cosebis_harmonic_metrics_full, from: estimator_checks.cosebis_harmonic_metrics_full}
   - {id: cosebis_harmonic_version_ptes, from: estimator_checks.cosebis_harmonic_version_ptes}

@@ -101,14 +101,14 @@ inputs:
     source: "/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_{version}_blind=A_powspace_nbins=32.fits"
 
 # -----------------------------------------------------------------------------
-# Top-level outputs: the reported figures, tables and metrics, each built from
-# sub-analysis outputs.
+# Top-level outputs: the reported figures, tables and metrics, re-exported from
+# the sub-analyses that compute them.
 # -----------------------------------------------------------------------------
 outputs:
   - {id: primary_null_test_report, from: null_tests.primary_null_test_report}
 
   # ---------------------------------------------------------------------------
-  # Sub-analysis results that the root tables and figures read.
+  # Sub-analysis results that the report and the findings read.
   # ---------------------------------------------------------------------------
   - {id: paper_claims, from: null_tests.paper_claims}
   - {id: bb_covariance_blind_independence_evidence, from: validation.bb_covariance_blind_independence_evidence}
@@ -127,45 +127,13 @@ outputs:
   # ---------------------------------------------------------------------------
   # Tables and metrics.
   # ---------------------------------------------------------------------------
-  - id: pte_table_appendix
-    type: table
-    format: csv
-    # Columns: `version` (Initial / Size_cuts / Masked / Relaxed_flags),
-    # `version_full` (catalog version), `cut` (Fiducial / Full_range), and the six
-    # statistics `cosebis_n6`, `cosebis_n20`, `xip_B`, `xim_B`, `xitot_B`, `cl_BB`.
-    # Configuration-space cells come from config_space_pte_data, the cl_BB column
-    # from harmonic_space_pte_data.
-    description: |
-      B-mode PTE values across catalog versions at fiducial and
-      full-range scale cuts. Fiducial scale cuts are 12–83 arcmin in
-      configuration space and 300 < ℓ < 1600 in harmonic space; the full
-      range is 1–250 arcmin / 8 ≤ ℓ ≤ 2048. A row passes the null test
-      when its minimum PTE is at least p_thr = 0.01; only the fiducial
-      catalog at the adopted cuts passes.
-    inputs: [config_space_pte_data, harmonic_space_pte_data]
-    decisions: [fiducial_catalog, leakage_correction]
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/generate_paper_macros.py
-        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction}
-        --config-space-evidence {inputs.config_space_pte_data}
-        --harmonic-space-evidence {inputs.harmonic_space_pte_data}
-        --emit table
-        --out-file {output}
+  - {id: pte_table_appendix, from: null_tests.pte_table_appendix}
+  - {id: pte_table_tex, from: null_tests.pte_table_tex}
+  - {id: cosebis_first_mode_significance, from: data_vectors.cosebis_first_mode_significance}
+  - {id: nu_penalty_verdicts, from: null_tests.nu_penalty_verdicts}
 
-  - id: pte_table_tex
-    type: data
-    format: tex
-    description: |
-      LaTeX version of the [PTE table](#outputs.pte_table_appendix),
-      with an added column for each row's minimum PTE.
-    inputs: [pte_table_appendix]
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/generate_pte_table_tex.py
-        --pte-csv {inputs.pte_table_appendix}
-        --out-file {output}
-
+  # Computed here because it reads both null_tests and validation, and null_tests
+  # reads validation.
   - id: cosebis_harmonic_config
     type: table
     format: csv
@@ -199,57 +167,8 @@ outputs:
         --harmonic-version-ptes {inputs.cosebis_harmonic_version_ptes}
         --out-file {output}
 
-  - id: cosebis_first_mode_significance
-    type: metric
-    format: json
-    description: |
-      First-mode COSEBI B-mode significance B_1/σ_1 for the
-      fiducial catalog, from
-      [cosebis_modes_data](#outputs.cosebis_modes_data). The
-      `value` is the full-range (1–250 arcmin) significance, the
-      >4σ first-mode excess visible in
-      [fig_cosebis_fiducial](#outputs.fig_cosebis_fiducial); the
-      JSON also carries the fiducial-cut significance, below 1σ.
-    inputs: [cosebis_modes_data]
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/emit_cosebis_first_mode_significance.py
-        --cosebis-modes-npz {inputs.cosebis_modes_data}
-        --out-file {output}
-
-  - id: nu_penalty_verdicts
-    type: table
-    format: csv
-    description: |
-      The ν → ν−2 penalty for treating the two scale-cut boundaries
-      as fitted parameters, applied across the whole
-      [PTE table](#outputs.pte_table_appendix).
-      One row per catalog version × statistic × cut (4 × 6 × 2 = 48).
-      χ²_obs is recovered from each stored PTE and re-evaluated at
-      ν−2; ν counts θ bins for ξ_±^B (twice that for ξ_tot^B; 7 at
-      the fiducial cut), COSEBI modes (6 or 20), or bandpowers for
-      C_ℓ^BB (17 at the fiducial cut).
-
-      Columns: `version`, `version_full`, `cut`, `statistic`, `nu`,
-      `nu_penalized`, `chi2`, `pte`, `pte_penalized`, `pte_decrease`,
-      `passes`, `passes_penalized`, `verdict_change` (the last three
-      against a fixed 0.05 level, not the
-      [adopted p_thr](#decisions.pte_threshold)).
-    decisions: [scale_cut_convention, pte_definition, reporting_binning, leakage_correction]
-    inputs:
-      - config_space_pte_data
-      - harmonic_space_pte_data
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/emit_nu_penalty_verdicts.py
-        --config-space-evidence {inputs.config_space_pte_data}
-        --harmonic-space-evidence {inputs.harmonic_space_pte_data}
-        --reporting-binning {decisions.reporting_binning} --leakage-correction {decisions.leakage_correction}
-        --scale-cut-convention {decisions.scale_cut_convention}
-        --out-file {output}
-
   # ---------------------------------------------------------------------------
-  # Figures. Most are sub-analysis figures.
+  # Figures.
   # ---------------------------------------------------------------------------
 
   # Pure E/B decomposition of ξ± for the fiducial catalog.
@@ -270,74 +189,9 @@ outputs:
   - {id: fig_versions_cl, from: data_vectors.cl_version_comparison_figure}
   - {id: fig_versions_cosebis, from: data_vectors.cosebis_version_comparison}
 
-  - id: fig_pte_heatmaps
-    type: figure
-    format: png
-    description: |
-      Configuration-space PTE maps for all four catalog versions.
-      Columns show ξ_+^B, ξ_-^B, and COSEBI B_n (n ≤ 6) PTEs as a
-      function of angular scale cuts; rows show different catalog
-      versions. Solid blue cells indicate PTE < p_thr ([global PTE
-      threshold](#decisions.pte_threshold)); whites and reds indicate
-      consistency with zero. Black squares mark the adopted cuts (12–83
-      arcmin). The size cut (fiducial versus initial) expands the
-      acceptance region, while stellar masking contracts it.
-    decisions: [scale_cut_convention, pte_threshold, fiducial_catalog, leakage_correction, reporting_binning]
-    inputs:
-      - config_space_pte_data
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/config_space_pte_matrices.py
-        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning}
-        --from-evidence {inputs.config_space_pte_data}
-        --figure appendix
-        --scale-cut-convention {decisions.scale_cut_convention}
-        --pte-threshold {decisions.pte_threshold}
-        --out-file {output}
-
-  - id: fig_cl_pte_heatmap
-    type: figure
-    format: png
-    description: |
-      Harmonic-space C_ℓ^BB PTE maps for all four catalog versions.
-      Solid blue cells indicate failing PTEs ([global PTE
-      threshold](#decisions.pte_threshold)); whites and reds indicate
-      consistency with zero. The initial and relaxed-flags catalogs show
-      widespread failures across multipole ranges; the fiducial and
-      masked catalogs pass across nearly all multipole combinations.
-    decisions: [pte_threshold, fiducial_catalog, leakage_correction]
-    inputs:
-      - harmonic_space_pte_data
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py
-        --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction}
-        --from-evidence {inputs.harmonic_space_pte_data}
-        --figure appendix
-        --pte-threshold {decisions.pte_threshold}
-        --out-file {output}
-
-  - id: fig_harmonic_config_cosebis_full
-    type: figure
-    format: png
-    description: |
-      COSEBI E_n (top row) and B_n/σ_n (bottom row) for the [fiducial
-      catalog](#decisions.fiducial_catalog), computed from
-      configuration-space ξ_± (filled circles) and harmonic-space
-      bandpowers (open squares). Modes n > 6 are shaded; for n ≤ 6,
-      where the cosmological information is concentrated, we confirm
-      consistency between the two paths on GLASS simulations.
-    decisions: [fiducial_catalog, scale_cut_convention]
-    inputs:
-      - cosebis_harmonic_modes
-    recipe:
-      command: >
-        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
-        --angular-range full
-        --figure-from-modes {inputs.cosebis_harmonic_modes}
-        --scale-cut-convention {decisions.scale_cut_convention}
-        --out-file {output}
-      resources: { cpus: 1, memory: "4GB" }
+  - {id: fig_pte_heatmaps, from: null_tests.fig_pte_heatmaps}
+  - {id: fig_cl_pte_heatmap, from: null_tests.fig_cl_pte_heatmap}
+  - {id: fig_harmonic_config_cosebis_full, from: validation.fig_harmonic_config_cosebis_full}
 
 # -----------------------------------------------------------------------------
 # Top-level decisions: the choices shared across the analysis (catalog,
@@ -518,6 +372,36 @@ decisions:
           computed configuration-space COSEBI fiducial χ²/PTE from
           3.25/0.78 to 4.679/0.586 and the harmonic one from
           4.58/0.60 to 4.637/0.591.
+
+  scale_cut_pair_grid:
+    label: "COSEBI PTE scale-cut grid"
+    tags: [scale_cuts]
+    rationale: |
+      The COSEBI PTE matrix is evaluated on every [i_min, i_max] pair
+      of edges of the 20-bin `geomspace(1', 250', 21)` reporting
+      grid,
+      to show sensitivity to the scale cut in the
+      [PTE composite figure](#outputs.fig_pte_heatmaps); its
+      fiducial and full-range cells feed the
+      [PTE table](#outputs.pte_table_appendix) and the mock
+      calibration. Four single-bin pairs, (9, 10), (10, 11), (11, 12)
+      and (13, 14), are excluded because the polynomial-root
+      construction of T_{±n}(θ) fails on them. The figure shows only
+      cuts spanning at least two bins, 190 of the 206.
+    default: production_grid
+    options:
+      production_grid:
+        label: "Stable index pairs of geomspace(1', 250', 21)"
+        description: |
+          206 pairs: all 210 edge pairs minus the four unstable ones.
+      single_pair:
+        excluded: true
+        excluded_reason: "Full-range PTE reporting and mock calibration require the full-range cell absent from this grid."
+        label: "Single pair only (i=9, j=16)"
+        description: |
+          Only the
+          [adopted 12'–83' fiducial cut](#decisions.fiducial_scale_cuts);
+          no scale-cut sensitivity.
 
   integration_grid:
     label: "ξ± integration grid for B-mode filters"

@@ -187,6 +187,28 @@ outputs:
     # for the `cosebis_harmonic_config` table.
     from: cosebis_harmonic_scan.cosebis_harmonic_version_ptes
 
+  - id: fig_harmonic_config_cosebis_full
+    type: figure
+    format: png
+    description: |
+      COSEBI E_n (top row) and B_n/σ_n (bottom row) for the [fiducial
+      catalog](#decisions.fiducial_catalog), computed from
+      configuration-space ξ_± (filled circles) and harmonic-space
+      bandpowers (open squares). Modes n > 6 are shaded; for n ≤ 6,
+      where the cosmological information is concentrated, we confirm
+      consistency between the two paths on GLASS simulations.
+    decisions: [fiducial_catalog, scale_cut_convention]
+    inputs:
+      - cosebis_harmonic_modes
+    recipe:
+      command: >
+        python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
+        --angular-range full
+        --figure-from-modes {inputs.cosebis_harmonic_modes}
+        --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
+
   - id: bb_covariance_blind_independence_evidence
     type: figure
     format: png

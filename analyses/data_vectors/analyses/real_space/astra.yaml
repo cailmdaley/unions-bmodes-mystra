@@ -270,36 +270,6 @@ outputs:
         && tar czf {output} -C $o .
       resources: { cpus: 16, memory: "60GB" }
 
-  - id: pure_eb_ptes
-    type: data
-    description: |
-      Pure-mode PTE matrices (ξ_+^B, ξ_-^B, joint ξ_tot^B over the
-      (θ_min, θ_max) scale-cut grid) for the seven catalog versions of
-      [pure_eb_sweep](#outputs.pure_eb_sweep), one
-      `{ver}_A_pure_eb_ptes.npz` each, computed as
-      [pure_eb_pte_per_cut](#outputs.pure_eb_pte_per_cut) is, with the
-      [covariance-dependent Hartlap
-      treatment](#decisions.pure_eb_covariance_method), from that
-      version's data vector and pure-mode covariance. Feeds the
-      per-version [PTE
-      heatmaps](#../../outputs.fig_pte_heatmaps).
-    format: tar.gz
-    decisions: [fiducial_catalog, fiducial_blind, pte_blind_strategy, pte_definition, leakage_correction]
-    inputs: [pure_eb_sweep, cov_sweep]
-    recipe:
-      command: >
-        p=$(mktemp -d) && tar xzf {inputs.pure_eb_sweep} -C $p &&
-        c=$(mktemp -d) && tar xzf {inputs.cov_sweep} -C $c &&
-        o=$(mktemp -d) &&
-        bash src/papers/bmodes/scripts/run_pure_eb_ptes_sweep.sh
-        --versions "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --nonfiducial)" --blind "$(python src/workflow/scripts/decision_values.py fiducial_blind {decisions.fiducial_blind})"
-        --cat-config src/cosmo_val/cat_config.yaml
-        --pure-eb-sweep-dir $p
-        --cov-sweep-dir $c
-        --out $o
-        && tar czf {output} -C $o .
-      resources: { cpus: 4, memory: "16GB" }
-
 decisions:
   pte_definition:
     from: ../../pte_definition

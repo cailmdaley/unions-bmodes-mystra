@@ -2,5 +2,4 @@ id: baseline
 description: |
   COSEBIs with 20 modes on the reporting grid, with PTEs on the production
   scale-cut grid of stable pairs.
-decisions:
-  scale_cut_pair_grid: production_grid
+decisions: {}

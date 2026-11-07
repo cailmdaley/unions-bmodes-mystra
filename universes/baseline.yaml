@@ -16,6 +16,7 @@ decisions:
   fiducial_blind: blind_a
   fiducial_scale_cuts: adopted
   scale_cut_convention: grid_bin_edges
+  scale_cut_pair_grid: production_grid
   pte_threshold: calibrated_0p01
   integration_grid: bins_1000
   # The operator and its geometry are described on the root decision's option.
