@@ -27,8 +27,7 @@ belongs to Papers III and IV.
 
 - `index.md` is the authority for numbers, scope and wording. Preserve the
   paper's hedges.
-- The root re-exports and computes nothing, except `cosebis_harmonic_config`,
-  which reads both `null_tests` and `validation`.
+- The root re-exports and computes nothing.
 - The spec describes the science. Inputs are data and analysis products, never
   code. Prose says what is true now, with no history or tooling talk.
 - Each decision reads as a timeless account of a scientific choice: the

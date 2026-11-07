@@ -113,16 +113,7 @@ outputs:
   - {id: paper_claims, from: null_tests.paper_claims}
   - {id: bb_covariance_blind_independence_evidence, from: validation.bb_covariance_blind_independence_evidence}
   - {id: tenk_grid_comparison, from: validation.tenk_grid_comparison}
-  - {id: config_space_pte_data, from: null_tests.config_space_pte_data}
-  - {id: harmonic_space_pte_data, from: null_tests.harmonic_space_pte_data}
   - {id: mock_min_pte_calibration, from: validation.mock_min_pte_calibration}
-  # PTEs and χ² of the harmonic-vs-configuration COSEBI comparison, and the
-  # E_n/B_n vectors behind its figures.
-  - {id: cosebis_harmonic_modes_evidence, from: validation.cosebis_harmonic_metrics}
-  - {id: cosebis_harmonic_modes_full_evidence, from: validation.cosebis_harmonic_metrics_full}
-  - {id: cosebis_harmonic_version_ptes, from: validation.cosebis_harmonic_version_ptes}
-  - {id: cosebis_harmonic_modes, from: validation.cosebis_harmonic_modes}
-  - {id: cosebis_modes_data, from: data_vectors.cosebis_modes_data}
 
   # ---------------------------------------------------------------------------
   # Tables and metrics.
@@ -131,42 +122,7 @@ outputs:
   - {id: pte_table_tex, from: null_tests.pte_table_tex}
   - {id: cosebis_first_mode_significance, from: data_vectors.cosebis_first_mode_significance}
   - {id: nu_penalty_verdicts, from: null_tests.nu_penalty_verdicts}
-
-  # Computed here because it reads both null_tests and validation, and null_tests
-  # reads validation.
-  - id: cosebis_harmonic_config
-    type: table
-    format: csv
-    description: |
-      COSEBI B-mode PTEs computed two ways — from ξ± in
-      configuration space and from Cℓ bandpowers in harmonic space —
-      for the four catalog versions at fiducial and full-range cuts.
-      The [PTE table](#outputs.pte_table_appendix) carries only the
-      configuration-space COSEBIs; this table adds the harmonic path.
-      Columns: `version` (initial / size_cuts / masked /
-      relaxed_flags), `path` (harmonic / config), `cut` (fiducial /
-      full_range), `pte`, `chi2`, `dof`; `chi2` and `dof` are filled
-      only for the harmonic path, a χ²(ν=6) test. Configuration-space
-      values come from
-      [config_space_pte_data](#outputs.config_space_pte_data).
-    inputs:
-      - config_space_pte_data
-      - cosebis_harmonic_modes_evidence
-      - cosebis_harmonic_modes_full_evidence
-      - cosebis_harmonic_version_ptes
-    decisions: [leakage_correction]
-    recipe:
-      # The fiducial catalog's harmonic PTEs come from the two metrics outputs,
-      # the other three catalogs' from the harmonic COSEBI scan.
-      command: >
-        python src/papers/bmodes/scripts/emit_cosebis_harmonic_config.py
-        --leakage-correction {decisions.leakage_correction}
-        --config-space-evidence {inputs.config_space_pte_data}
-        --cosebis-evidence {inputs.cosebis_harmonic_modes_evidence}
-        --cosebis-evidence-full {inputs.cosebis_harmonic_modes_full_evidence}
-        --harmonic-version-ptes {inputs.cosebis_harmonic_version_ptes}
-        --out-file {output}
-
+  - {id: cosebis_harmonic_config, from: null_tests.cosebis_harmonic_config}
   # ---------------------------------------------------------------------------
   # Figures.
   # ---------------------------------------------------------------------------

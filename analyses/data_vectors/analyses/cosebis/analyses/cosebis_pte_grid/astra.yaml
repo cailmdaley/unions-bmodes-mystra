@@ -20,7 +20,7 @@ description: |
   assembles the rows into
   [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut). That matrix
   is read by
-  [config_space_pte_data](#../../../outputs.config_space_pte_data), behind
+  [config_space_pte_data](#../../../null_tests.outputs.config_space_pte_data), behind
   the [PTE composite figure](#../../../outputs.fig_pte_heatmaps) and the
   [PTE table](#../../../outputs.pte_table_appendix), and by the
   [mock minimum-PTE calibration](#../../../outputs.mock_min_pte_calibration).

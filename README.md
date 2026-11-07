@@ -16,9 +16,8 @@ figure's **Provenance** control shows the decisions behind it.
 
 `astra.yaml` holds the shared inputs and decisions and the paper's findings, and
 re-exports each figure, table and metric the paper reports from the sub-analysis
-that computes it. It computes one output itself: `cosebis_harmonic_config` reads
-both `null_tests` and `validation`, and `null_tests` reads `validation`, so neither
-can hold it. The tree under `analyses/` reads in the order of the argument:
+that computes it, and computes nothing itself. The tree under `analyses/` reads in
+the order of the argument:
 the covariances, the three data vectors they serve, the null tests on those data
 vectors, and the validation behind both.
 

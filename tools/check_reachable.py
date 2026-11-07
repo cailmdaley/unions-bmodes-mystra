@@ -20,9 +20,6 @@ KEEP = {
         "primary_null_test_report",  # the primary-report selection the README documents
         "bb_covariance_blind_independence_evidence",  # §3.7 blind-independence statement
         "tenk_grid_comparison",  # evidence for the integration-grid convergence findings
-        "harmonic_space_pte_data",  # the matrices behind the Cℓ heatmap and the PTE table
-        "cosebis_harmonic_modes",  # the E_n/B_n vectors behind the harmonic-configuration figure
-        "cosebis_modes_data",  # the COSEBI data vector behind the report's figures and macros
     },
 }
 

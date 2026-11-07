@@ -28,7 +28,6 @@ inputs:
 outputs:
   - {id: xi_reporting, from: real_space.xi_reporting}
   - {id: xi_integration, from: real_space.xi_integration}
-  - {id: xi_integration_convergence, from: real_space.xi_integration_convergence}
   - {id: xi_sweep, from: real_space.xi_sweep}
   - {id: pure_eb_data, from: real_space.pure_eb_data}
   - {id: pure_eb_data_vector_figure, from: real_space.pure_eb_data_vector_figure}

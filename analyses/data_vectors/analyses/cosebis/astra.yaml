@@ -5,6 +5,9 @@ description: |
   catalog and across catalog versions, and evaluates the fiducial B_n over the
   grid of scale cuts. COSEBIs stand on their own because their filters are
   built for a given angular range, so every scale cut is a fresh computation.
+  Like pure E/B, the COSEBI map is linear in ξ_±, so the step that makes the
+  modes carries the ξ_± covariance through with them, which is why this analysis
+  reads C_ξ.
 
 inputs:
   - id: xi_integration

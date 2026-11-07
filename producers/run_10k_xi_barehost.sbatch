@@ -1,5 +1,5 @@
 #!/bin/bash
-# The 10,000-bin xi_pm run behind data_vectors.xi_integration_convergence: TreeCorr
+# The 10,000-bin xi_pm run behind validation.estimator_checks.xi_integration_convergence: TreeCorr
 # on the leakage-corrected size-cut catalog over 0.5'-300', split across MPI
 # ranks with npatch = 50. It runs outside the analysis's container because the
 # measurement needs multi-node MPI, and it writes to the staging directory that

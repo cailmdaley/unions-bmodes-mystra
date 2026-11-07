@@ -47,6 +47,9 @@ inputs:
   - id: cosebis_harmonic_metrics_full
     from: ../validation.cosebis_harmonic_metrics_full
 
+  - id: cosebis_harmonic_version_ptes
+    from: ../validation.cosebis_harmonic_version_ptes
+
   - id: cosebis_modes_data
     from: ../data_vectors.cosebis_modes_data
 
@@ -268,6 +271,39 @@ outputs:
         --harmonic-space-evidence {inputs.harmonic_space_pte_data}
         --reporting-binning {decisions.reporting_binning} --leakage-correction {decisions.leakage_correction}
         --scale-cut-convention {decisions.scale_cut_convention}
+        --out-file {output}
+
+  - id: cosebis_harmonic_config
+    type: table
+    format: csv
+    description: |
+      COSEBI B-mode PTEs computed two ways — from ξ± in
+      configuration space and from Cℓ bandpowers in harmonic space —
+      for the four catalog versions at fiducial and full-range cuts.
+      The [PTE table](#outputs.pte_table_appendix) carries only the
+      configuration-space COSEBIs; this table adds the harmonic path.
+      Columns: `version` (initial / size_cuts / masked /
+      relaxed_flags), `path` (harmonic / config), `cut` (fiducial /
+      full_range), `pte`, `chi2`, `dof`; `chi2` and `dof` are filled
+      only for the harmonic path, a χ²(ν=6) test. Configuration-space
+      values come from
+      [config_space_pte_data](#outputs.config_space_pte_data).
+    inputs:
+      - config_space_pte_data
+      - cosebis_harmonic_metrics
+      - cosebis_harmonic_metrics_full
+      - cosebis_harmonic_version_ptes
+    decisions: [leakage_correction]
+    recipe:
+      # The fiducial catalog's harmonic PTEs come from the two metrics outputs,
+      # the other three catalogs' from the harmonic COSEBI scan.
+      command: >
+        python src/papers/bmodes/scripts/emit_cosebis_harmonic_config.py
+        --leakage-correction {decisions.leakage_correction}
+        --config-space-evidence {inputs.config_space_pte_data}
+        --cosebis-evidence {inputs.cosebis_harmonic_metrics}
+        --cosebis-evidence-full {inputs.cosebis_harmonic_metrics_full}
+        --harmonic-version-ptes {inputs.cosebis_harmonic_version_ptes}
         --out-file {output}
 
   - id: fig_pte_heatmaps

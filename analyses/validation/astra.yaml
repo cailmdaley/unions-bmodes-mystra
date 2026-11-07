@@ -11,8 +11,6 @@ inputs:
     from: ../data_vectors.xi_reporting
   - id: xi_integration
     from: ../data_vectors.xi_integration
-  - id: xi_integration_convergence
-    from: ../data_vectors.xi_integration_convergence
   - id: xi_sweep
     from: ../data_vectors.xi_sweep
   - id: pure_eb_data
@@ -62,7 +60,6 @@ outputs:
   - {id: mock_mean_vector_stats, from: glass_mocks.mock_mean_vector_stats}
   - {id: mock_vs_data_noise_table, from: glass_mocks.mock_vs_data_noise_table}
   - {id: tenk_grid_comparison, from: estimator_checks.tenk_grid_comparison}
-  - {id: cosebis_harmonic_modes, from: estimator_checks.cosebis_harmonic_modes}
   - {id: fig_harmonic_config_cosebis_full, from: estimator_checks.fig_harmonic_config_cosebis_full}
   - {id: cosebis_harmonic_metrics, from: estimator_checks.cosebis_harmonic_metrics}
   - {id: cosebis_harmonic_metrics_full, from: estimator_checks.cosebis_harmonic_metrics_full}

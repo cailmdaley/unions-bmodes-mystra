@@ -5,11 +5,11 @@ description: |
   every configuration-space statistic, and decomposes them into pure E, pure B
   and ambiguous modes with the Schneider et al. (2022) transform. The fiducial
   catalog is measured on a 20-bin reporting grid and a 1000-bin integration
-  grid, the other catalog versions in a [scan](#outputs.xi_sweep)
-  over both grids, and a 10,000-bin run tests the integration grid's
-  convergence. The pure modes carry a propagated covariance and B-mode χ² PTEs
-  over every window of reporting bins, which localizes any B modes in angular
-  separation.
+  grid, and the other catalog versions in a [scan](#outputs.xi_sweep) over both
+  grids. ξ_± is a catalog measurement and reads no covariance. Pure E/B is a
+  linear transform, so the step that makes the modes carries the ξ_± covariance
+  through with them, which is why this analysis reads C_ξ. The B-mode χ² PTEs
+  over every window of reporting bins localize any B modes in angular separation.
 
 inputs:
   - id: shapepipe_v14_catalogs
@@ -17,16 +17,6 @@ inputs:
 
   - id: shapepipe_v145_rerun
     from: ../shapepipe_v145_rerun
-
-  - id: tenk_xi_staging
-    type: data
-    description: |
-      TreeCorr ξ± of the leakage-corrected size-cut catalog on the
-      10,000-bin convergence grid, computed outside the pipeline by
-      a multi-node MPI run. The run uses 50 TreeCorr patches only to
-      share the work between nodes, despite the `npatch=1` in the
-      file name; no jackknife enters.
-    source: "/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/production_out/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt"
 
   - id: cov_integration
     from: ../cov_integration
@@ -86,23 +76,6 @@ outputs:
         --cat-config src/cosmo_val/cat_config.yaml
         --no-fits --out-file {output}
       resources: { cpus: 24, memory: "30GB" }
-
-  - id: xi_integration_convergence
-    type: data
-    description: |
-      TreeCorr ξ_± on a 10,000-bin grid over [0.5', 300'] for the
-      leakage-corrected size-cut catalog, used to test the
-      convergence of the pure modes and COSEBIs against the
-      1000-bin integration grid.
-    format: txt
-    decisions: []
-    inputs: [tenk_xi_staging]
-    recipe:
-      # Adopts the text dump of the 10,000-bin run; nothing is computed here.
-      # producers/run_10k_xi_barehost.sbatch is the run itself.
-      command: |
-        cp -f {inputs.tenk_xi_staging} {output}
-      resources: { cpus: 1, memory: "2GB" }
 
   - id: xi_sweep
     # The ξ_± of the catalog-version scan, read by the pure-mode and COSEBI
