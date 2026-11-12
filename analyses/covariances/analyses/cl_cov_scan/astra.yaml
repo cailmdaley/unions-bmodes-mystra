@@ -28,8 +28,6 @@ tags:
 inputs:
 - id: redshift_distributions
   from: ../redshift_distributions
-- id: redshift_distributions_pre_som
-  from: ../redshift_distributions_pre_som
 - id: shapepipe_v14_catalogs
   from: ../shapepipe_v14_catalogs
 decisions:
@@ -57,7 +55,6 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - redshift_distributions
-  - redshift_distributions_pre_som
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -81,7 +78,6 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - redshift_distributions
-  - redshift_distributions_pre_som
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -105,7 +101,6 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - redshift_distributions
-  - redshift_distributions_pre_som
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -129,7 +124,6 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - redshift_distributions
-  - redshift_distributions_pre_som
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -153,7 +147,6 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - redshift_distributions
-  - redshift_distributions_pre_som
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -177,7 +170,6 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - redshift_distributions
-  - redshift_distributions_pre_som
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -201,7 +193,6 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - redshift_distributions
-  - redshift_distributions_pre_som
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -225,7 +216,6 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - redshift_distributions
-  - redshift_distributions_pre_som
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -249,7 +239,6 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - redshift_distributions
-  - redshift_distributions_pre_som
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -273,7 +262,6 @@ outputs:
   inputs:
   - shapepipe_v14_catalogs
   - redshift_distributions
-  - redshift_distributions_pre_som
   decisions:
   - fiducial_catalog
   - fiducial_blind

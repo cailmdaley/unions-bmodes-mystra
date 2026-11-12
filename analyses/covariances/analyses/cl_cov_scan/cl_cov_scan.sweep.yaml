@@ -16,12 +16,9 @@ description: |
 tags: [sweep]
 
 inputs:
-  # Theory n(z): the SOM tree for v1.4.5 and v1.4.6.3,
-  # the pre-SOM file for v1.4.8 and v1.4.11.3.
+  # The theory n(z), one for every version.
   - id: redshift_distributions
     from: ../redshift_distributions
-  - id: redshift_distributions_pre_som
-    from: ../redshift_distributions_pre_som
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
 decisions:
@@ -67,7 +64,7 @@ template:
     iNKA Gaussian covariance of the Cℓ bandpowers for catalog version
     `${version}` on the `${grid}` √ℓ-spaced bandpower grid at blind A, computed
     as for the fiducial catalog.
-  inputs: [shapepipe_v14_catalogs, redshift_distributions, redshift_distributions_pre_som]
+  inputs: [shapepipe_v14_catalogs, redshift_distributions]
   decisions: [fiducial_catalog, fiducial_blind, noise_bias_correction, "${grid_decision}", fiducial_cosmology, leakage_correction]
   recipe:
     command: >

@@ -37,32 +37,14 @@ inputs:
   - id: redshift_distributions
     type: data
     description: |
-      SOM-calibrated photometric n(z), one per blind (A / B / C)
-      and per base catalog version; the relaxed-flags catalog
-      (v1.4.11.3) uses the v1.4.6 one. The leakage correction acts on
-      ellipticities, not photometry, so corrected and uncorrected
-      catalogs share one n(z).
-    source: "/n17data/sguerrini/UNIONS/WL/nz/v{base_version}/nz_SP_v{base_version}_{blind}.txt"
-
-  - id: redshift_distributions_pre_som
-    type: data
-    description: |
-      A pre-SOM n(z) that the masked (v1.4.8) and relaxed-flags
-      (v1.4.11.3) catalogs use for the theory in their Cℓ
-      covariances and Monte Carlo pure-mode draws. Their CosmoCov
-      covariances use
-      [redshift_distributions](#inputs.redshift_distributions). It
-      enters only the catalog-version comparisons; every fiducial
-      result uses the SOM n(z).
-    source: "/n17data/mkilbing/astro/data/CFIS/v1.0/nz/dndz_SP_A.txt"
-
-  - id: shapepipe_comprehensive_catalog
-    type: data
-    description: |
-      The comprehensive ShapePipe v1.4 catalog from Paper I, before any
-      galaxy selection, with the per-object flags of the spatial masks.
-      The survey footprint is reconstructed from these flags.
-    source: "/n17data/UNIONS/WL/v1.4.x/unions_shapepipe_comprehensive_struc_2024_v1.X.c.hdf5"
+      The fiducial catalog's SOM-calibrated photometric n(z), one per
+      blind (A / B / C). Every catalog version uses it: the n(z) enters
+      theory and covariances, never the measured data vectors, and the
+      B-mode covariance
+      of a null signal is shape noise in configuration space and moves
+      by under 0.5% between n(z) in harmonic space
+      ([bmode_null_tests_insensitive_to_blinding](#findings.bmode_null_tests_insensitive_to_blinding)).
+    source: "/n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_{blind}.txt"
 
   - id: glass_mock_catalogs
     type: data
@@ -83,15 +65,22 @@ inputs:
     type: data
     description: |
       Sacha Guerrini's 20-bin TreeCorr ξ_± per realisation on the
-      reporting grid. It defines the reporting bins of the pure-E/B
-      transform, whose Schneider (2022) integrals run over the fine ξ_±.
+      reporting grid, taken as delivered; the fine ξ_± are recomputed
+      here from the [catalogues](#inputs.glass_mock_catalogs). It
+      defines the reporting bins of the pure-E/B transform, whose
+      Schneider (2022) integrals run over the fine ξ_±.
     source: "/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/xi_glass_mock_*_4096_nbins=20.fits"
 
   - id: glass_mock_cl
     type: data
     description: |
-      Cℓ bandpowers per GLASS realisation (EE and BB among
-      the rows); the BB row is the campaign's sixth statistic.
+      Sacha Guerrini's NaMaster Cℓ bandpowers per GLASS realisation,
+      on the data's 32 √ℓ-spaced bands (rows ℓ, EE, EB, BE, BB), taken
+      as delivered rather than recomputed from the
+      [catalogues](#inputs.glass_mock_catalogs). Their BB row is every
+      mock Cℓ^BB result: the harmonic column of the per-realisation
+      campaign, the Cℓ panels of the mock-validation figure, and the
+      measured mock-to-data BB variance ratio.
     source: "/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/cl_glass_mock_*_4096.npy"
 
 # -----------------------------------------------------------------------------

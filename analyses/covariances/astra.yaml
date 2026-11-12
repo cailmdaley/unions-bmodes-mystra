@@ -16,23 +16,13 @@ inputs:
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
 
-  - id: shapepipe_comprehensive_catalog
-    from: ../shapepipe_comprehensive_catalog
-
   # Realisation 00001 is the catalog of the mock-matched Cℓ covariance.
   - id: glass_mock_catalogs
     from: ../glass_mock_catalogs
 
   - id: redshift_distributions
     from: ../redshift_distributions
-    # Per-version n(z), read by the CosmoCov and iNKA covariances, by the
-    # CosmoCov runs of the [cov_scan](#outputs.cov_sweep) sweep and, as the theory
-    # mean of its draws, by the Monte Carlo pure-mode covariance.
-
-  # The masked (v1.4.8) and relaxed-flags (v1.4.11.3) catalogs of
-  # pure_eb_covariance_sweep draw about a theory mean built from the pre-SOM n(z).
-  - id: redshift_distributions_pre_som
-    from: ../redshift_distributions_pre_som
+    # The theory of the CosmoCov and iNKA covariances, for every catalog version.
 
   # Pair counts and bin centres for the transforms; the shear columns are not read.
   - id: xi_reporting
@@ -59,27 +49,6 @@ outputs:
       command: >
         python -c "import json; from sp_validation.cosmology import PLANCK18; d = dict(PLANCK18); d['Omega_v'] = 1 - PLANCK18['Omega_m']; json.dump(d, open('{output}', 'w'), indent=2)"
 
-  - id: footprint_power_spectrum
-    type: data
-    format: txt
-    description: |
-      Power spectrum of the 2894 deg² survey footprint (HEALPix nside
-      4096, normalised). The footprint is reconstructed from the catalog,
-      with no external mask: its pixels are those holding an object that
-      passes the spatial cuts of the
-      [comprehensive catalog](#inputs.shapepipe_comprehensive_catalog).
-      CosmoCov uses the spectrum only for the super-sample window of the
-      [reporting-grid non-Gaussian covariance](#outputs.cov_reporting_ng);
-      the Gaussian covariances behind the PTEs depend on the survey area
-      alone.
-    inputs: [shapepipe_comprehensive_catalog]
-    recipe:
-      command: >
-        python src/workflow/scripts/footprint_power_spectrum.py
-        --comprehensive-catalog {inputs.shapepipe_comprehensive_catalog}
-        --out-file {output}
-      resources: { cpus: 8, memory: "32GB" }
-
   - id: cov_reporting_g
     type: data
     description: |
@@ -87,8 +56,6 @@ outputs:
       the [fiducial catalog](#decisions.fiducial_catalog) at
       [blind A](#decisions.fiducial_blind), with area-only geometry:
       the Gaussian part of the [Gaussian + non-Gaussian diagnostic](#outputs.cov_reporting_ng).
-      The nside-4096 spectrum is too short for CosmoCov's Gaussian
-      pair-count correction, so no unused spectrum is passed here.
       Together they give the non-Gaussian share of the ξ_±
       diagonal variance quoted in the paper.
     decisions: [fiducial_catalog, fiducial_blind, covariance_engine, reporting_binning, leakage_correction]
@@ -100,7 +67,7 @@ outputs:
         --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind}
         --min-sep 1.0 --max-sep 250.0 --nbins 20 --gaussian g
         --planck18-json {inputs.cosmology_snapshot}
-        --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_catalog} {decisions.fiducial_blind})"
+        --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_blind})"
         --emit processed_g --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
 
@@ -111,26 +78,24 @@ outputs:
       CosmoCov covariance for the
       [fiducial catalog](#decisions.fiducial_catalog) at
       [blind A](#decisions.fiducial_blind), including
-      connected-trispectrum and super-sample-covariance terms.
-      [Mask application](#decisions.mask_application) selects the SSC window
-      (footprint spectrum or circular-area approximation); G remains area-only.
+      connected-trispectrum and super-sample-covariance terms. The
+      super-sample term uses CosmoCov's circular window of the survey
+      area, and the Gaussian part the area alone.
       It sets the non-Gaussian share of the diagonal variance
       quoted in the paper and the total-ξ_± error bars of the
       [pure-mode data-vector figure](#../analyses.null_tests.outputs.pure_eb_data_vector_figure),
       but does not enter the PTEs, which use
       the [selected integration covariance](#decisions.covariance_class).
-    decisions: [fiducial_catalog, fiducial_blind, mask_application, covariance_engine, reporting_binning, leakage_correction]
-    inputs: [cosmology_snapshot, footprint_power_spectrum, redshift_distributions]
+    decisions: [fiducial_catalog, fiducial_blind, covariance_engine, reporting_binning, leakage_correction]
+    inputs: [cosmology_snapshot, redshift_distributions]
     format: txt
     recipe:
       command: >
         bash src/workflow/scripts/run_cosmocov_chain.sh
         --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind}
         --min-sep 1.0 --max-sep 250.0 --nbins 20 --gaussian ng
-        --mask-application {decisions.mask_application}
         --planck18-json {inputs.cosmology_snapshot}
-        --mask-cls {inputs.footprint_power_spectrum}
-        --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_catalog} {decisions.fiducial_blind})"
+        --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_blind})"
         --emit processed --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
 
@@ -155,7 +120,7 @@ outputs:
         --min-sep 0.5 --max-sep 300.0 --nbins 1000
         --gaussian {decisions.covariance_class}
         --planck18-json {inputs.cosmology_snapshot}
-        --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_catalog} {decisions.fiducial_blind})"
+        --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_blind})"
         --emit processed --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
 
@@ -186,7 +151,7 @@ outputs:
         --gaussian {decisions.covariance_class}
         --reference-covariance {decisions.reference_covariance}
         --planck18-json {inputs.cosmology_snapshot}
-        --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_catalog} {decisions.fiducial_blind})"
+        --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_blind})"
         --emit processed --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
 
@@ -360,7 +325,7 @@ outputs:
       ([xi_sweep](#inputs.xi_sweep)) and Gaussian integration covariance
       ([cov_sweep](#outputs.cov_sweep)).
     decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples, decomposition_method, leakage_correction]
-    inputs: [xi_sweep, cov_sweep, redshift_distributions, redshift_distributions_pre_som]
+    inputs: [xi_sweep, cov_sweep, redshift_distributions]
     recipe:
       command: |
         set -e
@@ -605,33 +570,6 @@ decisions:
           CosmoCov's connected-trispectrum and super-sample terms,
           evaluated in the fixed 20-bin diagnostic only.
           The harmonic-space iNKA covariance remains Gaussian.
-
-  mask_application:
-    label: "Footprint window in non-Gaussian covariance"
-    tags: [covariance_model]
-    rationale: |
-      This decision governs only [the reporting G+NG diagnostic](#outputs.cov_reporting_ng):
-      it changes the quoted non-Gaussian share and the total-ξ_± error bars
-      drawn from that covariance, not any PTE. Non-Gaussian integration/version
-      covariances are excluded as intractable.
-      The spectrum enters only the super-sample term here; without it
-      that term uses a circular window of the survey area. CosmoCov's
-      Gaussian mask correction needs a longer spectrum than the
-      nside-4096 ones provide (21,600 multipoles at 1′ against 12,288),
-      so all Gaussian covariances, including the mock reference, use the
-      survey area alone.
-    default: masked
-    options:
-      masked:
-        label: "Footprint SSC window"
-        description: |
-          The fiducial v1.4.6.3 footprint spectrum in the reporting diagnostic.
-          Gaussian terms remain area-only.
-      unmasked:
-        label: "Circular-area SSC window"
-        description: |
-          CosmoCov's analytic circular-area SSC window, with no footprint file.
-          Gaussian terms remain area-only.
 
 analyses:
 

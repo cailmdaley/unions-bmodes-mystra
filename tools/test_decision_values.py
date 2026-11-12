@@ -29,7 +29,7 @@ CAT_CONFIG = yaml.safe_load((ROOT / "src/cosmo_val/cat_config.yaml").read_text()
 REAL_SPACE_DECISIONS = yaml.safe_load((ROOT / "analyses/data_vectors/astra.yaml").read_text())["decisions"]
 
 # Tables keyed by the options of a decision other than their namesake.
-KEYED_BY = {"nz_file": "fiducial_catalog", "survey_properties": "fiducial_catalog",
+KEYED_BY = {"nz_file": "fiducial_blind", "survey_properties": "fiducial_catalog",
             "reference_catalog": "reference_covariance"}
 
 FIDUCIAL_NZ = "/n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_{}.txt"
@@ -38,8 +38,7 @@ FIDUCIAL_NZ = "/n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_{}.txt"
 PUBLISHED = {
     "fiducial_blind": ("blind_a", "A"),
     "fiducial_catalog": ("size_cut", "SP_v1.4.6.3"),
-    "nz_file": ("size_cut", {"blind_a": FIDUCIAL_NZ.format("A"), "blind_b": FIDUCIAL_NZ.format("B"),
-                             "blind_c": FIDUCIAL_NZ.format("C")}),
+    "nz_file": ("blind_a", FIDUCIAL_NZ.format("A")),
     "survey_properties": ("size_cut", (2894.0303815287743, 4.957279270321334, 0.3783979556382064)),
     "reference_covariance": ("mockmatched", (2894.0303815287743, 5.793082, 0.3792561)),
     "reference_catalog": ("mockmatched", "SP_v1.4.6.3_glass_mock_v2"),
@@ -60,14 +59,10 @@ class Tables(unittest.TestCase):
             decisions = REAL_SPACE_DECISIONS if name == "patch_count" else ROOT_DECISIONS
             self.assertEqual(set(table), set(decisions[KEYED_BY.get(name, name)]["options"]), name)
 
-    def test_nz_files_cover_every_blind(self):
-        for blinds in dv.NZ_FILE.values():
-            self.assertEqual(set(blinds), set(ROOT_DECISIONS["fiducial_blind"]["options"]))
-
     def test_catalog_facts_match_cat_config(self):
         for option, version in dv.FIDUCIAL_CATALOG.items():
             entry = CAT_CONFIG[version]
-            self.assertEqual(dv.NZ_FILE[option]["blind_a"], entry["shear"]["redshift_path"], option)
+            self.assertEqual(dv.NZ_FILE["blind_a"], entry["shear"]["redshift_path"], option)
             cov_th = entry["cov_th"]
             self.assertEqual(dv.SURVEY_PROPERTIES[option], (cov_th["A"], cov_th["n_e"], cov_th["sigma_e"]), option)
 
@@ -121,24 +116,29 @@ class Tables(unittest.TestCase):
 class ReferenceNoise(unittest.TestCase):
     RECORDED_INI = ROOT / "analyses/covariances/results/baseline/cov_integration_g/covariance.ini"
 
+    def recorded(self):
+        # The recorded run named the footprint spectrum, which CosmoCov does not
+        # apply to the Gaussian terms on this grid, so its covariance is the same.
+        return [("c_footprint_file : no_footprint_mask" if line.startswith("c_footprint_file") else line)
+                for line in self.RECORDED_INI.read_text().splitlines()]
+
     def ini(self, tmp, *flags):
         generate_cosmocov_ini.main([
             "--version", "SP_v1.4.6.3_leak_corr", "--blind", "blind_a",
             "--planck18-json", str(ROOT / "analyses/covariances/results/baseline/cosmology_snapshot/planck18.json"),
             "--min-sep", "0.5", "--max-sep", "300.0", "--nbins", "1000", "--gaussian", "g",
-            "--mask-cls", "/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/mask/mask_cls_footprint_nside_4096_norm.txt",
-            "--nz", dv.NZ_FILE["size_cut"]["blind_a"], "--out-ini", f"{tmp}/covariance.ini", *flags,
+            "--nz", dv.NZ_FILE["blind_a"], "--out-ini", f"{tmp}/covariance.ini", *flags,
         ])
         return Path(tmp, "covariance.ini").read_text().splitlines()
 
     def test_data_option_is_the_recorded_ini(self):
-        recorded = self.RECORDED_INI.read_text().splitlines()
+        recorded = self.recorded()
         with tempfile.TemporaryDirectory() as tmp:
             self.assertEqual(self.ini(tmp), recorded)
             self.assertEqual(self.ini(tmp, "--reference-covariance", "data_covariance"), recorded)
 
     def test_mock_option_changes_only_the_noise(self):
-        recorded = self.RECORDED_INI.read_text().splitlines()
+        recorded = self.recorded()
         with tempfile.TemporaryDirectory() as tmp:
             changed = [new for new, old in zip(self.ini(tmp, "--reference-covariance", "mockmatched"), recorded)
                        if new != old]

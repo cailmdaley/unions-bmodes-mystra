@@ -24,7 +24,7 @@ to, the validation behind both, and the null tests where they meet.
 
 | Sub-analysis | What it does |
 |---|---|
-| `covariances` | Every covariance: `CosmoCov` ξ±, NaMaster Cℓ, and the pure E/B (M C Mᵀ) and COSEBI (Tᵀ C T) covariances; the reference covariances the mocks are held against; the scan over n(z) blinds; and the footprint power spectrum |
+| `covariances` | Every covariance: `CosmoCov` ξ±, NaMaster Cℓ, and the pure E/B (M C Mᵀ) and COSEBI (Tᵀ C T) covariances; the reference covariances the mocks are held against; and the scan over n(z) blinds |
 | `data_vectors` | ξ± and Cℓ measured from the catalogs, including the 10,000-bin ξ± of the convergence check, and pure E/B modes and COSEBIs as linear transforms of ξ± |
 | `validation` | The evidence that the null tests can be trusted: the estimators against a 10,000-bin grid, COSEBIs from harmonic-space bandpowers against those from ξ±, and the B-mode covariances across n(z) blinds |
 | `validation/glass_mocks` | Validation of estimators and covariances on 350 GLASS mocks, and the per-mock statistics |
@@ -46,11 +46,13 @@ scale cuts, and gathers the members into a single product. A scan sits in
 `analyses/` beneath the sub-analysis it serves, declared in a `*.sweep.yaml` file
 from which the sibling `astra.yaml` is generated.
 
-A catalog's n(z) file, area, n_eff and σ_e are facts from Paper I, not steps of
-this analysis. They live in the option tables of
-`src/workflow/scripts/decision_values.py`, selected by `fiducial_catalog` and
-`fiducial_blind`, and recipes read them through that table, as they do the noise
-and catalog of each `reference_covariance` option.
+A catalog's area, n_eff and σ_e are facts from Paper I, not steps of this
+analysis. They live in the option tables of
+`src/workflow/scripts/decision_values.py`, selected by `fiducial_catalog`, and
+recipes read them through that table, as they do the noise and catalog of each
+`reference_covariance` option. Every catalog version shares one n(z), the fiducial
+catalog's at the selected `fiducial_blind`: the n(z) never enters the measured data
+vectors, and the B-mode covariance barely depends on it.
 
 Code in `src/` is vendored from `sp_validation`; the recipe on each output names
 the exact command.
@@ -103,12 +105,19 @@ file names and hold the covariances too, and `pure_eb_covariance`,
 `tools/split_recorded_covariances.py` makes the first three pairs from recorded
 files; the report's copies were made that way.
 
-`cov_integration_reference`, `cl_cov_reference`, `footprint_power_spectrum`,
-`mock_footprint_audit` and `blind_cov_sweep` have no record in the tree either:
-their recorded files sit on candide, and the results that read them were made from
-those. `footprint_power_spectrum.py` and `mock_footprint_audit.py` have not
-reproduced them, and `run_2pcf_highres.py` has not reproduced the recorded
-`xi_10000_bins`.
+`cov_integration_reference`, `cl_cov_reference`, `mock_footprint_audit` and
+`blind_cov_sweep` have no record in the tree either: their recorded files sit on
+candide, and the results that read them were made from those.
+`mock_footprint_audit.py` has not reproduced its record, and `run_2pcf_highres.py`
+has not reproduced the recorded `xi_10000_bins`.
+
+Two recorded covariance sets predate their recipes. The recorded `cov_reporting_ng`
+took its super-sample window from a footprint power spectrum; the recipe uses
+CosmoCov's circular window of the survey area, the window behind the paper's quoted
+non-Gaussian share (11% of the diagonal variance at the fiducial cuts, against the
+record's 9%). The recorded non-fiducial catalog covariances (`cov_sweep`,
+`cl_cov_sweep`) used catalog-specific n(z); the recipes use the fiducial one.
+A rerun replaces both.
 
 Code is not a declared input, so editing a script does not mark outputs stale;
 each output's manifest records the commit that made it. `CosmoCov` and its GSL

@@ -9,10 +9,11 @@ argparse `type=` for that decision's flag:
 Excluded options stay in the tables, so a table always covers its decision.
 tools/test_decision_values.py keeps the keys equal to the spec's option ids.
 
-`NZ_FILE` and `SURVEY_PROPERTIES` are facts about the catalogs from Paper I, keyed
-by `fiducial_catalog` and, for the n(z), by `fiducial_blind`. `SURVEY_PROPERTIES`
-covers every catalog version CosmoCov runs on; a version and its leakage-corrected
-twin share one entry, read by `survey_properties`.
+`SURVEY_PROPERTIES` are facts about the catalogs from Paper I, keyed by
+`fiducial_catalog`; they cover every catalog version CosmoCov runs on, and a version
+and its leakage-corrected twin share one entry, read by `survey_properties`.
+`NZ_FILE` is the fiducial catalog's n(z) per `fiducial_blind`, which every catalog
+version uses.
 
 `REFERENCE_COVARIANCE` and `REFERENCE_CATALOG` are the two forms a
 `reference_covariance` option takes: CosmoCov builds the covariance at a noise
@@ -21,7 +22,7 @@ level, and NaMaster reads a catalogue.
 Shell recipes read a value through the CLI, one key per decision it depends on:
 
     python decision_values.py mc_samples n_2000
-    python decision_values.py nz_file size_cut blind_a
+    python decision_values.py nz_file blind_a
 """
 
 import sys
@@ -54,17 +55,11 @@ FIDUCIAL_CATALOG = {
     "relaxed_flags": "SP_v1.4.11.3",
 }
 
-# Each catalog's n(z) file per blind. The masked and relaxed-flags catalogs use
-# the pre-SOM n(z).
-NZ_FILE = {
-    catalog: {option: path.format(blind=blind) for option, blind in FIDUCIAL_BLIND.items()}
-    for catalog, path in {
-        "size_cut": "/n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_{blind}.txt",
-        "initial": "/n17data/sguerrini/UNIONS/WL/nz/v1.4.5/nz_SP_v1.4.5_{blind}.txt",
-        "masked": "/n17data/mkilbing/astro/data/CFIS/v1.0/nz/dndz_SP_{blind}.txt",
-        "relaxed_flags": "/n17data/mkilbing/astro/data/CFIS/v1.0/nz/dndz_SP_{blind}.txt",
-    }.items()
-}
+# The fiducial catalog's SOM n(z), one per blind. Every catalog version uses it:
+# the n(z) enters theory and covariances only, and the B-mode covariance of a null
+# signal does not depend on it.
+NZ_PATH = "/n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_{blind}.txt"
+NZ_FILE = {option: NZ_PATH.format(blind=blind) for option, blind in FIDUCIAL_BLIND.items()}
 
 SURVEY_PROPERTIES = {
     "size_cut": SurveyProperties(2894.0303815287743, 4.957279270321334, 0.3783979556382064),

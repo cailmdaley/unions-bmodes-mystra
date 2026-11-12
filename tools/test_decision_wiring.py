@@ -183,8 +183,8 @@ else:
             cosmology = tmp / "cosmology.json"
             cosmology.write_text(json.dumps(dict(Omega_m=.3, Omega_v=.7, sigma_8=.8,
                                                  n_s=.96, Omega_b=.05, h=.7)))
-            mask = tmp / "mask.txt"
-            mask.write_text("0 1\n")
+            libgsl = tmp / "libgsl.so"
+            libgsl.write_text("")
             binary = tmp / "cosmocov"
             binary.write_text(f"#!{sys.executable}\n" + '''import pathlib, sys
 ini = dict(line.split(":", 1) for line in pathlib.Path(sys.argv[2]).read_text().splitlines() if ":" in line)
@@ -194,18 +194,14 @@ pathlib.Path(f"cov_tmp_ssss_{pm}_cov_Ntheta{ini['ntheta']}_Ntomo1_{i}").write_te
 ''')
             binary.chmod(0o755)
             for cls, ng in [("gaussian_only", "0"), ("ng", "1")]:
-                for treatment in [None, "masked", "unmasked"]:
-                    output = tmp / f"{cls}_{treatment}.txt"
-                    subprocess.run(["bash", str(ROOT / "src/workflow/scripts/run_cosmocov_chain.sh"),
-                                    "--version", "SP_v1.4.6.3", "--blind", "blind_a", "--min-sep", "1",
-                                    "--max-sep", "250", "--nbins", "3", "--gaussian", cls,
-                                    *(["--mask-application", treatment] if treatment else []),
-                                    "--mask-cls", str(mask),
-                                    "--planck18-json", str(cosmology),
-                                    "--cosmocov", str(binary), "--libgsl", str(mask),
-                                    "--emit", "blocks", "--out-file", str(output)], check=True)
-                    footprint = "mask_cls.txt" if treatment != "unmasked" and ng == "1" else "no_footprint_mask"
-                    self.assertEqual(output.read_text(), "".join(f"{i},{ng},{footprint}\n" for i in (1, 2, 3)))
+                output = tmp / f"{cls}.txt"
+                subprocess.run(["bash", str(ROOT / "src/workflow/scripts/run_cosmocov_chain.sh"),
+                                "--version", "SP_v1.4.6.3", "--blind", "blind_a", "--min-sep", "1",
+                                "--max-sep", "250", "--nbins", "3", "--gaussian", cls,
+                                "--planck18-json", str(cosmology),
+                                "--cosmocov", str(binary), "--libgsl", str(libgsl),
+                                "--emit", "blocks", "--out-file", str(output)], check=True)
+                self.assertEqual(output.read_text(), "".join(f"{i},{ng},no_footprint_mask\n" for i in (1, 2, 3)))
 
 
 if __name__ == "__main__":

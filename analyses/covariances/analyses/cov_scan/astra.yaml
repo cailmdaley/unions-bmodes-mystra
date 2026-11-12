@@ -17,7 +17,7 @@ description: |
   the selected primary catalog (in the fiducial analysis, three
   leak-corrected and four uncorrected), the version-swept analogue of
   [cov_integration](#../outputs.cov_integration). A version enters
-  through its survey area, n_eff, σ_e and n(z); the masked catalog
+  through its survey area, n_eff and σ_e; the masked catalog
   covers 2517 deg² rather than 2894 deg². The leakage correction
   changes none of these, so the corrected and uncorrected variants of
   a catalog receive identical CosmoCov inputs. The gathered result

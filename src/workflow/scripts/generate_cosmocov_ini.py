@@ -1,40 +1,29 @@
-"""Generate a CosmoCov ``.ini`` for one (version, blind, grid, flavour, mask).
+"""Generate a CosmoCov ``.ini`` for one (version, blind, grid, flavour).
 
 Cosmology is read from the frozen ``planck18.json`` snapshot (the
 cosmology_snapshot output — source of truth is sp_validation.cosmology.PLANCK18);
 survey (area, n_eff, sigma_e) from ``decision_values.survey_properties``, or
-from the ``reference_covariance`` option ``--reference-covariance`` names; n(z) from ``--nz`` when given, otherwise via the path convention of
-``build_redshift_path``; the footprint mask power spectrum is passed explicitly
-(empty string for the unmasked variant).
+from the ``reference_covariance`` option ``--reference-covariance`` names; n(z) from ``--nz`` when given, otherwise the blind's
+``decision_values.NZ_PATH``. No footprint file is named, so the super-sample term
+uses CosmoCov's circular window of the survey area and the Gaussian terms the area
+alone.
 
     python generate_cosmocov_ini.py \
         --version SP_v1.4.6.3_leak_corr --blind blind_a \
         --planck18-json <cosmology_snapshot>/planck18.json \
         --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g \
-        --mask-cls <mask_cls_footprint_nside_4096_norm.txt> \
         --out-ini <path/to/covariance.ini>
 """
 
 import argparse
 import json
 import os
-import re
 
-from decision_values import FIDUCIAL_BLIND, REFERENCE_COVARIANCE, survey_properties
-
-
-def build_redshift_path(version, blind):
-    """The per-version n(z) path convention."""
-    base_version = re.sub(r"_leak_corr$", "", version)
-    base_version = re.sub(r"_ecut\d+", "", base_version)
-    if "v1.4.11" in base_version:
-        base_version = "SP_v1.4.6"
-    version_dir = base_version.replace("SP_", "")
-    return (
-        f"/n17data/sguerrini/UNIONS/WL/nz/{version_dir}/nz_{base_version}_{blind}.txt"
-    )
+from decision_values import FIDUCIAL_BLIND, NZ_PATH, REFERENCE_COVARIANCE, survey_properties
 
 
+# `c_footprint_file` names no file: a nonexistent one selects CosmoCov's
+# circular-area window, where a blank value would make it reuse the n(z) path.
 INI_TEMPLATE = """\
 #
 # Cosmological parameters
@@ -66,7 +55,7 @@ lens_n_gal : {n_e}
 
 shear_REDSHIFT_FILE : {nz}
 clustering_REDSHIFT_FILE : {nz}
-c_footprint_file : {mask}
+c_footprint_file : no_footprint_mask
 
 
 # IA parameters
@@ -103,12 +92,9 @@ def main(argv=None):
     ap.add_argument("--nbins", required=True, help="ntheta (string, e.g. 1000)")
     ap.add_argument("--gaussian", required=True, choices=["g", "ng"])
     ap.add_argument(
-        "--mask-cls", default="", help="footprint mask Cl path ('' = unmasked)"
-    )
-    ap.add_argument(
         "--nz",
         default=None,
-        help="n(z) file (default: the per-version SOM n(z) by path convention)",
+        help="n(z) file (default: the blind's decision_values.NZ_PATH)",
     )
     ap.add_argument(
         "--reference-covariance",
@@ -135,10 +121,7 @@ def main(argv=None):
         area=survey.area,
         sigma_e=survey.sigma_e_combined,
         n_e=survey.n_eff,
-        nz=a.nz or build_redshift_path(a.version, a.blind),
-        # A blank value makes CosmoCov's sscanf reuse the previous n(z) path.
-        # A nonexistent filename selects its actual area-only/analytic window.
-        mask=a.mask_cls or "no_footprint_mask",
+        nz=a.nz or NZ_PATH.format(blind=a.blind),
         min_sep=a.min_sep,
         max_sep=a.max_sep,
         nbins=a.nbins,
