@@ -19,9 +19,6 @@ tags: [sweep]
 inputs:
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
-  - id: shapepipe_v145_rerun
-    from: ../shapepipe_v145_rerun
-
 decisions:
   noise_bias_correction:
     from: ../noise_bias_correction
@@ -64,7 +61,7 @@ template:
   description: |
     Cℓ bandpowers for catalog version `${version}` on the `${grid}` √ℓ-spaced
     bandpower grid at blind A, computed as for the fiducial catalog.
-  inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+  inputs: [shapepipe_v14_catalogs]
   decisions: [fiducial_catalog, fiducial_blind, noise_bias_correction, "${grid_decision}", estimator_choice, leakage_correction]
   recipe:
     command: >

@@ -16,9 +16,6 @@ inputs:
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
 
-  - id: shapepipe_v145_rerun
-    from: ../shapepipe_v145_rerun
-
   - id: shapepipe_comprehensive_catalog
     from: ../shapepipe_comprehensive_catalog
 
@@ -227,7 +224,7 @@ outputs:
       2018 theory spectrum plus analytic noise, with the weighted
       galaxy-count map at nside 1024 as the window.
     decisions: [fiducial_catalog, fiducial_blind, bandpower_binning, noise_bias_correction, leakage_correction, fiducial_cosmology]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions]
+    inputs: [shapepipe_v14_catalogs, redshift_distributions]
     format: fits
     recipe:
       command: >
@@ -248,7 +245,7 @@ outputs:
       leak-corrected catalogs' counterparts come from the
       [cl_cov_scan sweep](#outputs.cl_cov_sweep).
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, noise_bias_correction, leakage_correction, fiducial_cosmology]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, redshift_distributions]
+    inputs: [shapepipe_v14_catalogs, redshift_distributions]
     format: fits
     recipe:
       command: >
@@ -273,7 +270,7 @@ outputs:
       realisations' empirical 0.716
       ([clbb_variance_ratios](#../analyses.validation.analyses.glass_mocks.outputs.clbb_variance_ratios)).
     decisions: [fiducial_blind, reference_covariance, mock_suite, bandpower_binning, noise_bias_correction, fiducial_cosmology]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun, glass_mock_catalogs, redshift_distributions]
+    inputs: [shapepipe_v14_catalogs, glass_mock_catalogs, redshift_distributions]
     format: fits
     recipe:
       command: >

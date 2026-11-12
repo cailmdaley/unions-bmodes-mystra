@@ -13,9 +13,6 @@ inputs:
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
 
-  - id: shapepipe_v145_rerun
-    from: ../shapepipe_v145_rerun
-
 outputs:
   - id: xi_reporting
     type: data
@@ -25,7 +22,7 @@ outputs:
       pure modes are reported in, and the total ξ_± shown beside
       them.
     format: txt
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    inputs: [shapepipe_v14_catalogs]
     decisions: [fiducial_catalog, reporting_binning, patch_count, leakage_correction]
     recipe:
       # --ver is the catalog version; its `_leak_corr` form reads the
@@ -46,7 +43,7 @@ outputs:
       the reporting grid to reduce edge effects in the pure-mode
       boundary functions S_± and V_±.
     format: txt
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    inputs: [shapepipe_v14_catalogs]
     decisions: [fiducial_catalog, integration_grid, patch_count, leakage_correction]
     recipe:
       command: >
@@ -194,7 +191,7 @@ outputs:
       [Cℓ figure](#../outputs.fig_cl_fiducial).
     format: fits
     decisions: [fiducial_catalog, fiducial_blind, estimator_choice, bandpower_binning, noise_bias_correction, leakage_correction]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    inputs: [shapepipe_v14_catalogs]
     recipe:
       command: >
         python src/workflow/scripts/generate_cl.py
@@ -214,7 +211,7 @@ outputs:
       oscillations of its W_n(ℓ) filters.
     format: fits
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, estimator_choice, noise_bias_correction, leakage_correction]
-    inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+    inputs: [shapepipe_v14_catalogs]
     recipe:
       command: >
         python src/workflow/scripts/generate_cl.py

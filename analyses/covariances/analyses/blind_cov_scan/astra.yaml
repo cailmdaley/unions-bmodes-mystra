@@ -28,8 +28,6 @@ inputs:
   from: ../redshift_distributions
 - id: shapepipe_v14_catalogs
   from: ../shapepipe_v14_catalogs
-- id: shapepipe_v145_rerun
-  from: ../shapepipe_v145_rerun
 - id: xi_reporting
   from: ../xi_reporting
 - id: xi_integration
@@ -73,7 +71,6 @@ outputs:
   - cosmology_snapshot
   - redshift_distributions
   - shapepipe_v14_catalogs
-  - shapepipe_v145_rerun
   - xi_reporting
   - xi_integration
   decisions:
@@ -134,7 +131,6 @@ outputs:
   - cosmology_snapshot
   - redshift_distributions
   - shapepipe_v14_catalogs
-  - shapepipe_v145_rerun
   - xi_reporting
   - xi_integration
   decisions:
@@ -195,7 +191,6 @@ outputs:
   - cosmology_snapshot
   - redshift_distributions
   - shapepipe_v14_catalogs
-  - shapepipe_v145_rerun
   - xi_reporting
   - xi_integration
   decisions:

@@ -28,16 +28,11 @@ inputs:
       area loss) and relaxed-flags (size-cut with relaxed
       SExtractor deblending flags, +26% n_eff). Each comes with and
       without the object-wise PSF-leakage correction; the corrected
-      versions are fiducial.
+      versions are fiducial. The initial catalog is read from
+      `/n17data/sguerrini/unions_shapepipe_cut_struc_2024_v1.4.5_rerun.fits`,
+      outside the shared tree; `src/cosmo_val/cat_config.yaml` holds
+      every variant's path.
     source: "/n17data/UNIONS/WL/v1.4.x/v{version}/unions_shapepipe_cut_struc_2024_v{version}.fits"
-
-  - id: shapepipe_v145_rerun
-    type: data
-    description: |
-      The initial (v1.4.5) ShapePipe catalog of the
-      [v1.4 family](#inputs.shapepipe_v14_catalogs), used in the
-      catalog-version comparisons.
-    source: "/n17data/sguerrini/unions_shapepipe_cut_struc_2024_v1.4.5_rerun.fits"
 
   - id: redshift_distributions
     type: data

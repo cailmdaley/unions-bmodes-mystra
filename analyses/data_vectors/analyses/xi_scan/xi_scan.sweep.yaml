@@ -14,9 +14,6 @@ tags: [sweep]
 inputs:
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
-  - id: shapepipe_v145_rerun
-    from: ../shapepipe_v145_rerun
-
 decisions:
   integration_grid:
     from: ../integration_grid
@@ -60,7 +57,7 @@ template:
     [xi_${grid}](#../outputs.xi_${grid}) is. If the fiducial
     measurement is uncorrected, the `fiducial_counterpart` slot
     holds the leakage-corrected size-cut catalog instead.
-  inputs: [shapepipe_v14_catalogs, shapepipe_v145_rerun]
+  inputs: [shapepipe_v14_catalogs]
   decisions: [fiducial_catalog, patch_count, "${grid_decision}", leakage_correction]
   recipe:
     command: >

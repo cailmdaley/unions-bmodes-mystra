@@ -18,8 +18,6 @@ inputs:
     from: ../redshift_distributions
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
-  - id: shapepipe_v145_rerun
-    from: ../shapepipe_v145_rerun
   # Bin centres and pair counts for the pure-mode transform.
   - id: xi_reporting
     from: ../xi_reporting
@@ -66,7 +64,7 @@ template:
     [cov_integration](#../outputs.cov_integration),
     [pure_eb_covariance](#../outputs.pure_eb_covariance) and
     [cl_cov_reporting](#../outputs.cl_cov_reporting) with that blind's n(z).
-  inputs: [cosmology_snapshot, redshift_distributions, shapepipe_v14_catalogs, shapepipe_v145_rerun, xi_reporting, xi_integration]
+  inputs: [cosmology_snapshot, redshift_distributions, shapepipe_v14_catalogs, xi_reporting, xi_integration]
   decisions: [bb_blind_check_version, covariance_class, covariance_engine, integration_grid, bandpower_binning, noise_bias_correction, fiducial_cosmology, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples, decomposition_method]
   recipe:
     command: |
