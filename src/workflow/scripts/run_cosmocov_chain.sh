@@ -7,14 +7,8 @@
 # run with the ambient python (sp_validation is installed in the project
 # environment).
 #
-# The CosmoCov binary is dynamically linked against libgsl.so.23,
-# libgslcblas and libfftw3. The container carries the latter two
-# but ships gsl.so.27, so the one missing soname is supplied from the
-# host via --libgsl and linked into a scratch directory that is on
-# LD_LIBRARY_PATH *only* for the binary's own invocations — letting
-# gsl 23 shadow the container stack for the python steps would put
-# pyccl and friends on a library they were not built
-# against.
+# The CosmoCov binary is built into the project image from the public
+# CosmoLike/CosmoCov code (pyproject.toml, [tool.lightcone.image]).
 #
 # The whole chain runs in a private scratch directory: no CosmoCov temporaries
 # (cov_tmp*/order_cov_tmp*), .ini or .log ever land next to the output. Exactly
@@ -32,14 +26,12 @@
 #     [--nz <n(z) file; default the blind's decision_values.NZ_PATH>] \
 #     [--reference-covariance <option setting the survey block; default the
 #      version's own survey properties>] \
-#     --cosmocov <cov binary> --libgsl <libgsl.so.23.x> \
 #     --emit processed --out-file <path>
 set -euo pipefail
 
 # VENDOR_ROOT is this project's vendored script tree (src/).
 VENDOR_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-COSMOCOV=/n23data1/n06data/lgoh/scratch/UNIONS/CosmoCov/covs/cov
-LIBGSL=/lib64/libgsl.so.23.1.0
+COSMOCOV=/opt/CosmoCov/covs/cov
 
 VERSION=""; BLIND=""; MINSEP=""; MAXSEP=""; NBINS=""; GAUSSIAN=""
 PLANCK18=""; NZ=""; REFERENCE=""; EMIT=""; OUTFILE=""
@@ -55,10 +47,9 @@ while [ $# -gt 0 ]; do
     --nz) NZ="$2"; shift 2;;
     --reference-covariance) REFERENCE="$2"; shift 2;;
     --cosmocov) COSMOCOV="$2"; shift 2;;
-    --libgsl) LIBGSL="$2"; shift 2;;
     --emit) EMIT="$2"; shift 2;;
     --out-file) OUTFILE="$2"; shift 2;;
-    -h|--help) sed -n '2,35p' "${BASH_SOURCE[0]}"; exit 0;;
+    -h|--help) sed -n '2,29p' "${BASH_SOURCE[0]}"; exit 0;;
     *) echo "unknown arg: $1" >&2; exit 2;;
   esac
 done
@@ -86,31 +77,23 @@ trap 'rm -rf "$SCRATCH"' EXIT
 INI="$SCRATCH/covariance.ini"
 
 # The binary reads the n(z) file the .ini names relative to its cwd (the scratch
-# dir) and truncates long paths, so a supplied one is copied in and named by
-# basename.
-if [ -n "$NZ" ]; then cp "$NZ" "$SCRATCH/nz.txt"; NZ=nz.txt; fi
+# dir) and truncates long paths, so the n(z) is copied in as nz.txt.
+[ -n "$NZ" ] || NZ="$(python "$VENDOR_ROOT/workflow/scripts/decision_values.py" nz_file "$BLIND")"
+cp "$NZ" "$SCRATCH/nz.txt"; NZ=nz.txt
 
 echo "[cosmocov] generating .ini"
 python "$VENDOR_ROOT/workflow/scripts/generate_cosmocov_ini.py" \
   --version "$VERSION" --blind "$BLIND" \
   --planck18-json "$PLANCK18" \
   --min-sep "$MINSEP" --max-sep "$MAXSEP" --nbins "$NBINS" --gaussian "$GAUSSIAN" \
-  ${NZ:+--nz "$NZ"} \
+  --nz "$NZ" \
   ${REFERENCE:+--reference-covariance "$REFERENCE"} --out-ini "$INI"
-
-# The binary resolves libgsl.so.23 out of here; nothing else sees it.
-HOSTLIBS="$SCRATCH/hostlibs"
-mkdir -p "$HOSTLIBS"
-ln -sf "$LIBGSL" "$HOSTLIBS/libgsl.so.23"
 
 echo "[cosmocov] running 3 blocks (parallel)"
 cd "$SCRATCH"
 # One CosmoCov invocation per block: ++ is 1, -- is 2, +- is 3
 for idx in 1 2 3; do
-  (
-    LD_LIBRARY_PATH="$HOSTLIBS${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
-      "$COSMOCOV" "$idx" "$INI" > "$SCRATCH/cosmocov_block_${idx}.log" 2>&1
-  ) &
+  "$COSMOCOV" "$idx" "$INI" > "$SCRATCH/cosmocov_block_${idx}.log" 2>&1 &
 done
 wait
 

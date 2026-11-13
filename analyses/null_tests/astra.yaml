@@ -372,9 +372,12 @@ outputs:
       the full range. The adopted-cut values are read from grid cells,
       so the [θ-cut convention](#decisions.scale_cut_convention)
       changes the cut recorded here but none of the PTEs.
-      Feeds the config-space columns of the per-version PTE table
-      and the configuration-space PTE heatmaps.
-    decisions: [scale_cut_convention, scale_cut_pair_grid_alignment, fiducial_catalog, leakage_correction, reporting_binning, fiducial_blind]
+      All three statistics share the reporting bins, so a cut is the
+      same window in every panel; COSEBIs need at least two bins, so
+      their panels leave the single-bin cuts empty. Feeds the
+      config-space columns of the per-version PTE table and the
+      configuration-space PTE heatmaps.
+    decisions: [scale_cut_convention, fiducial_catalog, leakage_correction, reporting_binning, fiducial_blind]
     inputs:
       - pure_eb_ptes
       - cosebis_ptes
@@ -780,35 +783,6 @@ decisions:
     from: ../scale_cut_convention
   pte_threshold:
     from: ../pte_threshold
-  scale_cut_pair_grid_alignment:
-    label: "Scale-cut grid alignment across statistics"
-    tags: [scale_cuts]
-    rationale: |
-      The configuration-space PTE composite uses the same
-      `geomspace(1', 250', 21)` reporting bins for ξ_+^B, ξ_-^B and
-      COSEBI B_n, so the
-      [adopted 12'–83' fiducial cut
-      ](#decisions.fiducial_scale_cuts) selects the same window in
-      every panel: bins 9–15, spanning edges 9–16. The pure-mode
-      matrices index a cut by its first and last bin, (9, 15), and the
-      COSEBI matrices by its edges, (9, 16). The COSEBI panels show 190
-      of the 210 pure-mode cuts: the single-bin cuts, which include the
-      four [unstable pairs
-      ](#decisions.scale_cut_pair_grid), are NaN tiles. The
-      harmonic-space composite uses its own (ℓ_min, ℓ_max)
-      bandpower-pair grid over 8 ≤ ℓ ≤ 2048, which has no cell-by-cell
-      correspondence with the θ grid.
-    default: aligned_with_cosebis_subset
-    options:
-      aligned_with_cosebis_subset:
-        label: "Aligned θ-grids with COSEBI subset"
-      independent_grids:
-        label: "Independent grids per statistic"
-        excluded: true
-        excluded_reason: "Not implemented: the PTE composite indexes one shared set of reporting bins."
-        description: |
-          A separate θ-grid per statistic, which would prevent
-          comparing the adopted-cut cell across panels.
   scale_cut_pair_grid:
     from: ../scale_cut_pair_grid
   fiducial_blind:

@@ -86,8 +86,11 @@ inputs:
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
 
-  - id: glass_mock_catalogs
-    from: ../glass_mock_catalogs
+  - id: glass_mock_realisation_00001
+    from: ../glass_mock_realisation_00001
+
+  - id: glass_mock_xi_fine
+    from: ../glass_mock_xi_fine
 
   - id: glass_mock_xi_reporting
     from: ../glass_mock_xi_reporting

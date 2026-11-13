@@ -183,8 +183,8 @@ else:
             cosmology = tmp / "cosmology.json"
             cosmology.write_text(json.dumps(dict(Omega_m=.3, Omega_v=.7, sigma_8=.8,
                                                  n_s=.96, Omega_b=.05, h=.7)))
-            libgsl = tmp / "libgsl.so"
-            libgsl.write_text("")
+            nz = tmp / "nz.txt"
+            nz.write_text("0 1\n")
             binary = tmp / "cosmocov"
             binary.write_text(f"#!{sys.executable}\n" + '''import pathlib, sys
 ini = dict(line.split(":", 1) for line in pathlib.Path(sys.argv[2]).read_text().splitlines() if ":" in line)
@@ -199,7 +199,7 @@ pathlib.Path(f"cov_tmp_ssss_{pm}_cov_Ntheta{ini['ntheta']}_Ntomo1_{i}").write_te
                                 "--version", "SP_v1.4.6.3", "--blind", "blind_a", "--min-sep", "1",
                                 "--max-sep", "250", "--nbins", "3", "--gaussian", cls,
                                 "--planck18-json", str(cosmology),
-                                "--cosmocov", str(binary), "--libgsl", str(libgsl),
+                                "--nz", str(nz), "--cosmocov", str(binary),
                                 "--emit", "blocks", "--out-file", str(output)], check=True)
                 self.assertEqual(output.read_text(), "".join(f"{i},{ng},no_footprint_mask\n" for i in (1, 2, 3)))
 

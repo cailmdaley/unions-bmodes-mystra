@@ -32,7 +32,7 @@ REAL_SPACE_DECISIONS = yaml.safe_load((ROOT / "analyses/data_vectors/astra.yaml"
 KEYED_BY = {"nz_file": "fiducial_blind", "survey_properties": "fiducial_catalog",
             "reference_catalog": "reference_covariance"}
 
-FIDUCIAL_NZ = "/n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_{}.txt"
+FIDUCIAL_NZ = "data/nz/nz_SP_v1.4.6.3_{}.txt"
 
 # The values Paper II was computed with.
 PUBLISHED = {
@@ -117,10 +117,13 @@ class ReferenceNoise(unittest.TestCase):
     RECORDED_INI = ROOT / "analyses/covariances/results/baseline/cov_integration_g/covariance.ini"
 
     def recorded(self):
-        # The recorded run named the footprint spectrum, which CosmoCov does not
-        # apply to the Gaussian terms on this grid, so its covariance is the same.
-        return [("c_footprint_file : no_footprint_mask" if line.startswith("c_footprint_file") else line)
-                for line in self.RECORDED_INI.read_text().splitlines()]
+        # The recorded run read the same n(z) file from its candide path, and named
+        # the footprint spectrum, which CosmoCov does not apply to the Gaussian terms
+        # on this grid, so its covariance is the same.
+        same = {"shear_REDSHIFT_FILE": dv.NZ_FILE["blind_a"], "clustering_REDSHIFT_FILE": dv.NZ_FILE["blind_a"],
+                "c_footprint_file": "no_footprint_mask"}
+        lines = self.RECORDED_INI.read_text().splitlines()
+        return [f"{key} : {same[key]}" if (key := line.split(" :")[0]) in same else line for line in lines]
 
     def ini(self, tmp, *flags):
         generate_cosmocov_ini.main([

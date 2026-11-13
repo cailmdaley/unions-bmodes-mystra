@@ -58,7 +58,7 @@ FIDUCIAL_CATALOG = {
 # The fiducial catalog's SOM n(z), one per blind. Every catalog version uses it:
 # the n(z) enters theory and covariances only, and the B-mode covariance of a null
 # signal does not depend on it.
-NZ_PATH = "/n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_{blind}.txt"
+NZ_PATH = "data/nz/nz_SP_v1.4.6.3_{blind}.txt"
 NZ_FILE = {option: NZ_PATH.format(blind=blind) for option, blind in FIDUCIAL_BLIND.items()}
 
 SURVEY_PROPERTIES = {

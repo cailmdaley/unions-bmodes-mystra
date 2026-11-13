@@ -18,3 +18,8 @@ cosmo-numba = { git = "https://github.com/cailmdaley/cosmo-numba", rev = "d78a18
 # sp_validation CI image, branch develop at fefaf005 (#341, TinyTeX / TeX Live 2025; system layer:
 # OS libs, LaTeX, etc.). Python packages come from this project's lock.
 base = "ghcr.io/cosmostat/sp_validation@sha256:d136a922242ab48bd15a1cf281058852cfb96288adfd4253f471831c006a4ff0"
+# CosmoCov, the configuration-space covariance code, from the public CosmoLike/CosmoCov at a pinned commit;
+# run_cosmocov_chain.sh calls /opt/CosmoCov/covs/cov.
+run-commands = [
+    "git clone -q https://github.com/CosmoLike/CosmoCov.git /opt/CosmoCov && git -C /opt/CosmoCov checkout -q a341942edec0dbe2a4f4a1ea54c81a2a1c888b93 && make -C /opt/CosmoCov/covs cov_curved",
+]

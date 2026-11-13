@@ -28,11 +28,10 @@ inputs:
       area loss) and relaxed-flags (size-cut with relaxed
       SExtractor deblending flags, +26% n_eff). Each comes with and
       without the object-wise PSF-leakage correction; the corrected
-      versions are fiducial. The initial catalog is read from
-      `/n17data/sguerrini/unions_shapepipe_cut_struc_2024_v1.4.5_rerun.fits`,
-      outside the shared tree; `src/cosmo_val/cat_config.yaml` holds
-      every variant's path.
-    source: "/n17data/UNIONS/WL/v1.4.x/v{version}/unions_shapepipe_cut_struc_2024_v{version}.fits"
+      versions are fiducial. The files are the released cut catalogues
+      at `vos:cfis/weak_lensing/ShapePipe/v1.4.x/v{version}/`;
+      `src/cosmo_val/cat_config.yaml` holds every variant's path.
+    source: "data/v1.4.x/v{version}/unions_shapepipe_cut_struc_2024_v{version}.fits"
 
   - id: redshift_distributions
     type: data
@@ -44,44 +43,53 @@ inputs:
       of a null signal is shape noise in configuration space and moves
       by under 0.5% between n(z) in harmonic space
       ([bmode_null_tests_insensitive_to_blinding](#findings.bmode_null_tests_insensitive_to_blinding)).
-    source: "/n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_{blind}.txt"
+    source: "data/nz/nz_SP_v1.4.6.3_{blind}.txt"
 
-  - id: glass_mock_catalogs
+  - id: glass_mock_xi_fine
     type: data
     description: |
-      The source catalogues of the GLASS mock suite described in Paper
-      III: one HEALPix-4096 catalogue per realisation
-      (`RA`, `Dec`, `e1`, `e2`, `w`). ξ_± is recomputed from them on
-      the fine 1000-bin integration grid, which the stored 20-bin ξ_±
-      cannot supply.
-
-      A catalogue holds 60 423 575 unit-weight rows (realisation
-      00001) against the fiducial catalog's 61 378 891 rows / 51.65 M
-      weight-effective galaxies on the same footprint; the excluded
-      [v1.4.6 suite](#decisions.mock_suite) holds 35 078 729.
-    source: "/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/unions_glass_sim_*_4096.fits"
+      TreeCorr ξ_±(θ) of each of the 350 realisations of the GLASS mock
+      suite described in Paper III, measured from its HEALPix-4096
+      catalogue (`RA`, `Dec`, `e1`, `e2`, `w`; about 60 M galaxies) on
+      exactly the data's 1000-bin integration grid, 0.5′–300′, with no
+      response correction or leakage subtraction, since the
+      realisations carry input shears and no PSF leakage. Stacked
+      (`meanr`, `xip`, `xim`, `npairs`, `weight` per realisation, with
+      the mock IDs). Both config-space transforms of the mocks
+      integrate over this grid, which the 20-bin
+      [reporting ξ_±](#inputs.glass_mock_xi_reporting) cannot supply.
+    source: "data/glass_mock_v1.4.6.3_v2/mock_xi_fine.npz"
 
   - id: glass_mock_xi_reporting
     type: data
     description: |
-      Sacha Guerrini's 20-bin TreeCorr ξ_± per realisation on the
-      reporting grid, taken as delivered; the fine ξ_± are recomputed
-      here from the [catalogues](#inputs.glass_mock_catalogs). It
-      defines the reporting bins of the pure-E/B transform, whose
-      Schneider (2022) integrals run over the fine ξ_±.
-    source: "/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/xi_glass_mock_*_4096_nbins=20.fits"
+      Sacha Guerrini's 20-bin TreeCorr ξ_± of each realisation on the
+      reporting grid, stacked in the layout of
+      [glass_mock_xi_fine](#inputs.glass_mock_xi_fine). It defines the
+      reporting bins of the pure-E/B transform, whose integrals run
+      over the fine ξ_±.
+    source: "data/glass_mock_v1.4.6.3_v2/mock_xi_reporting.npz"
 
   - id: glass_mock_cl
     type: data
     description: |
       Sacha Guerrini's NaMaster Cℓ bandpowers per GLASS realisation,
-      on the data's 32 √ℓ-spaced bands (rows ℓ, EE, EB, BE, BB), taken
-      as delivered rather than recomputed from the
-      [catalogues](#inputs.glass_mock_catalogs). Their BB row is every
-      mock Cℓ^BB result: the harmonic column of the per-realisation
-      campaign, the Cℓ panels of the mock-validation figure, and the
-      measured mock-to-data BB variance ratio.
-    source: "/n09data/guerrini/glass_mock_v1.4.6.3_v2/results/cl_glass_mock_*_4096.npy"
+      on the data's 32 √ℓ-spaced bands (rows ℓ, EE, EB, BE, BB). Their
+      BB row is every mock Cℓ^BB result: the harmonic column of the
+      per-realisation campaign, the Cℓ panels of the mock-validation
+      figure, and the measured mock-to-data BB variance ratio.
+    source: "data/glass_mock_v1.4.6.3_v2/cl/cl_glass_mock_*_4096.npy"
+
+  - id: glass_mock_realisation_00001
+    type: data
+    description: |
+      The catalogue of GLASS realisation 00001, the one mock the
+      [mock-matched Cℓ covariance](#decisions.reference_covariance) and
+      the footprint audit read: 60 423 575 unit-weight rows against
+      the fiducial catalog's 61 378 891 rows / 51.65 M weight-effective
+      galaxies on the same footprint; the excluded
+      [v1.4.6 suite](#decisions.mock_suite) holds 35 078 729.
+    source: "data/glass_mock_v1.4.6.3_v2/unions_glass_sim_00001_4096.fits"
 
 # -----------------------------------------------------------------------------
 # Top-level outputs: the reported figures, tables and metrics, re-exported from

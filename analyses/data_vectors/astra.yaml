@@ -261,9 +261,9 @@ decisions:
       For a ξ_± measurement, patches matter only through a
       jackknife covariance. The
       [ξ_± covariance](#../analyses.covariances.outputs.cov_integration) is
-      semi-analytic (CosmoCov), so the measurement runs on a single
+      analytic (CosmoCov), so the measurement runs on a single
       patch; the jackknife was only a development cross-check, which
-      the paper reports agrees with the semi-analytic ξ_± covariance
+      the paper reports agrees with the analytic ξ_± covariance
       at the ten-percent level over the fiducial range.
     default: npatch_1
     options:

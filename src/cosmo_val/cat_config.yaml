@@ -189,7 +189,7 @@ SP_v1.3.6:
     e2_col: e2
     path: unions_shapepipe_star_2022_v1.0.3.fits
 SP_v1.4.5:
-  subdir: /n17data/UNIONS/WL/v1.4.x
+  subdir: data/v1.4.x
   pipeline: SP
   colour: dodgerblue
   getdist_colour: 0.0, 0.5, 1.0
@@ -216,8 +216,8 @@ SP_v1.4.5:
     e2_star_col: HSM_G2_STAR
   shear:
     R: 1.0
-    path: /n17data/sguerrini/unions_shapepipe_cut_struc_2024_v1.4.5_rerun.fits
-    redshift_path: /n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_A.txt
+    path: v1.4.5/unions_shapepipe_cut_struc_2024_v1.4.5.fits
+    redshift_path: data/nz/nz_SP_v1.4.6.3_A.txt
     w_col: w_des
     e1_col: e1
     e1_col_corrected: e1_leak_corrected
@@ -421,8 +421,8 @@ SP_v1.4.6.3_glass_mock_v2:
     e2_star_col: HSM_G2_STAR
   shear:
     R: 1.0
-    path: /n09data/guerrini/glass_mock_v1.4.6.3_v2/results/unions_glass_sim_00001_4096.fits
-    redshift_path: /n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_A.txt
+    path: data/glass_mock_v1.4.6.3_v2/unions_glass_sim_00001_4096.fits
+    redshift_path: data/nz/nz_SP_v1.4.6.3_A.txt
     w_col: w
     e1_col: e1
     e1_PSF_col: e1_PSF
@@ -475,7 +475,7 @@ SP_v1.4.5_intermediate:
     e2_col: e2
     path: /n17data/UNIONS/WL/v1.4.x/unions_shapepipe_star_2024_v1.4.a.fits
 SP_v1.4.6.3:
-  subdir: /n17data/UNIONS/WL/v1.4.x
+  subdir: data/v1.4.x
   pipeline: SP
   colour: orange
   getdist_colour: 0.0, 0.5, 1.0
@@ -502,8 +502,8 @@ SP_v1.4.6.3:
     e2_star_col: HSM_G2_STAR
   shear:
     R: 1.0
-    path: /n17data/UNIONS/WL/v1.4.x/v1.4.6.3/unions_shapepipe_cut_struc_2024_v1.4.6.3.fits
-    redshift_path: /n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_A.txt
+    path: v1.4.6.3/unions_shapepipe_cut_struc_2024_v1.4.6.3.fits
+    redshift_path: data/nz/nz_SP_v1.4.6.3_A.txt
     w_col: w_des
     e1_col: e1
     e1_col_corrected: e1_leak_corrected
@@ -865,7 +865,7 @@ SP_v1.4.7:
     e2_col: e2
     path: unions_shapepipe_star_2024_v1.4.a.fits
 SP_v1.4.8:
-  subdir: /n17data/UNIONS/WL/v1.4.x
+  subdir: data/v1.4.x
   pipeline: SP
   colour: darkorchid
   getdist_colour: 0.0, 0.5, 1.0
@@ -893,7 +893,7 @@ SP_v1.4.8:
   shear:
     R: 1.0
     path: v1.4.8/unions_shapepipe_cut_struc_2024_v1.4.8.fits
-    redshift_path: /n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_A.txt
+    redshift_path: data/nz/nz_SP_v1.4.6.3_A.txt
     w_col: w_des
     e1_col: e1
     e1_col_corrected: e1_leak_corrected
@@ -951,7 +951,7 @@ SP_v1.4.11.2:
     e2_col: e2
     path: /n17data/UNIONS/WL/v1.4.x/unions_shapepipe_star_2024_v1.4.a.fits
 SP_v1.4.11.3:
-  subdir: /n17data/UNIONS/WL/v1.4.x
+  subdir: data/v1.4.x
   pipeline: SP
   colour: red
   getdist_colour: 0.0, 0.5, 1.0
@@ -978,8 +978,8 @@ SP_v1.4.11.3:
     e2_star_col: HSM_G2_STAR
   shear:
     R: 1.0
-    path: /n17data/UNIONS/WL/v1.4.x/v1.4.11.3/unions_shapepipe_cut_struc_2024_v1.4.11.3.fits
-    redshift_path: /n17data/sguerrini/UNIONS/WL/nz/v1.4.6.3/nz_SP_v1.4.6.3_A.txt
+    path: v1.4.11.3/unions_shapepipe_cut_struc_2024_v1.4.11.3.fits
+    redshift_path: data/nz/nz_SP_v1.4.6.3_A.txt
     w_col: w_des
     e1_col: e1
     e1_col_corrected: e1_leak_corrected

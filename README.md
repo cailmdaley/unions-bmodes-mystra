@@ -17,8 +17,11 @@ figure's **Provenance** control shows the decisions behind it.
 `astra.yaml` holds the inputs, the shared decisions and the paper's findings, and
 re-exports each figure, table and metric the paper reports from the sub-analysis
 that computes it, and computes nothing itself. The inputs are what came from
-outside this analysis: the shear catalogs of Paper I, the n(z) and the GLASS suite
-of Paper III. Everything the analysis made is an output. The tree under `analyses/`
+outside this analysis: the shear catalogs of Paper I, the n(z), and from the GLASS
+suite of Paper III the per-realisation ξ± and Cℓ stacks and the catalogue of one
+realisation. Everything else is an output. The 350 realisation catalogues are not
+carried, so the fine mock ξ±, measured from them with the data's TreeCorr settings,
+enter as a stack. The tree under `analyses/`
 reads in the order of the argument: the covariances, the data vectors they belong
 to, the validation behind both, and the null tests where they meet.
 
@@ -41,8 +44,8 @@ sets, and NaMaster on the catalog an option names, realisation 00001 of the suit
 under `mockmatched`. They stay apart from the data covariances, which the null
 tests read under either selection.
 
-Each scan repeats one measurement across catalog versions, mock realisations or
-scale cuts, and gathers the members into a single product. A scan sits in
+Each scan repeats one measurement across catalog versions, n(z) blinds or scale
+cuts, and gathers the members into a single product. A scan sits in
 `analyses/` beneath the sub-analysis it serves, declared in a `*.sweep.yaml` file
 from which the sibling `astra.yaml` is generated.
 

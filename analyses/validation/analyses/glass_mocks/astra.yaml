@@ -10,7 +10,7 @@ description: |
   correlations measure how independent the six statistics are.
 
   Each realisation is measured independently (the
-  [ξ_± ensemble](#outputs.mock_xi_fine)) and carried through the
+  [ξ_± ensemble](#inputs.glass_mock_xi_fine)) and carried through the
   same ξ_± → COSEBI and ξ_± → pure-E/B transforms the data use; all
   six statistics are then compared against analytic covariances.
   The key [decision](#decisions.reference_covariance) is which
@@ -24,8 +24,8 @@ description: |
 
 inputs:
 
-  - id: glass_mock_catalogs
-    from: ../glass_mock_catalogs
+  - id: glass_mock_xi_fine
+    from: ../glass_mock_xi_fine
 
   - id: glass_mock_xi_reporting
     from: ../glass_mock_xi_reporting
@@ -54,6 +54,9 @@ inputs:
   - id: shapepipe_v14_catalogs
     from: ../shapepipe_v14_catalogs
 
+  - id: glass_mock_realisation_00001
+    from: ../glass_mock_realisation_00001
+
   - id: redshift_distributions
     from: ../redshift_distributions
 
@@ -64,25 +67,26 @@ outputs:
 
   # ── The per-realisation data vectors ─────────────────────────────────────
 
-  - id: mock_xi_fine
-    from: mock_xi_scan.mock_xi_fine
-
-  - id: mock_xi_reporting
-    type: data
-    format: npz
+  - id: glass_mock_xi_fine_check
+    type: metric
+    format: json
     description: |
-      The suite's stored 20-bin reporting-grid ξ_± vectors, stacked
-      into the same ensemble layout as
-      [mock_xi_fine](#outputs.mock_xi_fine).
-    inputs: [glass_mock_xi_reporting]
-    decisions: [mock_suite, reporting_binning]
+      Realisation 00001 measured here with the same TreeCorr call on the
+      [integration grid](#decisions.integration_grid), differenced against
+      its row of the delivered [fine ξ_± stack](#inputs.glass_mock_xi_fine):
+      per-field maximum differences, whether the bin edges match, and a
+      verdict. It is what licenses reading the stack instead of measuring
+      350 catalogues.
+    inputs: [glass_mock_xi_fine, glass_mock_realisation_00001]
+    decisions: [mock_suite, integration_grid]
     recipe:
       command: >
-        python src/workflow/scripts/mock_xi_ensemble.py
-        --members "$(dirname "$(printf '%s\n' "{inputs.glass_mock_xi_reporting}" | head -n1)")"/xi_glass_mock_*_4096_nbins=20.fits
-        --reporting-binning {decisions.reporting_binning}
+        python src/workflow/scripts/mock_xi_fine_provenance.py
+        --catalog {inputs.glass_mock_realisation_00001}
+        --xi-ensemble {inputs.glass_mock_xi_fine}
+        --integration-grid {decisions.integration_grid}
         --out-file {output}
-      resources: { cpus: 1, memory: "8GB" }
+      resources: { cpus: 8, memory: "20GB" }
 
   - id: mock_cosebis_modes
     type: data
@@ -90,19 +94,19 @@ outputs:
     description: |
       COSEBI E_n / B_n for n = 1 … 20 and all 350 realisations, stacked
       as a 350 × 20 pair, computed from
-      [mock_xi_fine](#outputs.mock_xi_fine) with the same
+      [glass_mock_xi_fine](#inputs.glass_mock_xi_fine) with the same
       `cosmo_numba` call as the data vector, over the
       [fiducial θ range](#decisions.scale_cut_convention). The filters
       span the first and last fine-bin centres inside the cut,
       12.05′–82.14′ under `grid_bin_edges`.
       [mock_cosebis_modes_full](#outputs.mock_cosebis_modes_full) is
       the 1–250 arcmin counterpart.
-    inputs: [mock_xi_fine]
+    inputs: [glass_mock_xi_fine]
     decisions: [mock_suite, scale_cut_convention]
     recipe:
       command: >
         python src/workflow/scripts/mock_cosebis_scatter.py
-        --xi-ensemble {inputs.mock_xi_fine} --out-file {output}
+        --xi-ensemble {inputs.glass_mock_xi_fine} --out-file {output}
         --nmodes 20
         --scale-cut-convention {decisions.scale_cut_convention}
       resources: { cpus: 16, memory: "8GB" }
@@ -115,12 +119,12 @@ outputs:
       realisations, stacked as a 350 × 20 pair: as
       [mock_cosebis_modes](#outputs.mock_cosebis_modes), over the
       1–250 arcmin range of the full-range data PTEs.
-    inputs: [mock_xi_fine]
+    inputs: [glass_mock_xi_fine]
     decisions: [mock_suite]
     recipe:
       command: >
         python src/workflow/scripts/mock_cosebis_scatter.py
-        --xi-ensemble {inputs.mock_xi_fine} --out-file {output}
+        --xi-ensemble {inputs.glass_mock_xi_fine} --out-file {output}
         --nmodes 20 --theta-min 1.0 --theta-max 250.0
       resources: { cpus: 16, memory: "8GB" }
 
@@ -131,19 +135,19 @@ outputs:
       Pure-mode ξ_±^{E,B,amb} for all 350 realisations on the 20-bin
       reporting grid, stacked as six 350 × 20 blocks. The reporting
       bins come from
-      [mock_xi_reporting](#outputs.mock_xi_reporting) and the transform
-      runs over [mock_xi_fine](#outputs.mock_xi_fine), on the same
+      [glass_mock_xi_reporting](#inputs.glass_mock_xi_reporting) and the transform
+      runs over [glass_mock_xi_fine](#inputs.glass_mock_xi_fine), on the same
       0.5′–300′ grid as the data, under the same
       [quadrature](#decisions.pure_eb_integration_method). Under
       `npairs` [weights](#decisions.pure_eb_rebinning_weights) each
       realisation is averaged with its own pair counts.
-    inputs: [mock_xi_fine, mock_xi_reporting]
+    inputs: [glass_mock_xi_fine, glass_mock_xi_reporting]
     decisions: [mock_suite, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, decomposition_method]
     recipe:
       command: >
         python src/workflow/scripts/mock_pure_eb_scatter.py
-        --fine-ensemble {inputs.mock_xi_fine}
-        --reporting-ensemble {inputs.mock_xi_reporting}
+        --fine-ensemble {inputs.glass_mock_xi_fine}
+        --reporting-ensemble {inputs.glass_mock_xi_reporting}
         --integration-method {decisions.pure_eb_integration_method}
         --rebinning-weights {decisions.pure_eb_rebinning_weights}
         --integration-limits {decisions.pure_eb_integration_limits}
@@ -165,7 +169,7 @@ outputs:
       masks, and the covariance triple, scale cuts and any skipped
       realisations. The campaign's σ, χ² and PTE summaries derive from
       this file.
-    inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, mock_xi_fine, glass_mock_cl, xi_integration, cov_integration_reference, pure_eb_covariance_reference, cl_cov_reference]
+    inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, glass_mock_xi_fine, glass_mock_cl, xi_integration, cov_integration_reference, pure_eb_covariance_reference, cl_cov_reference]
     decisions: [reference_covariance, mock_suite, scale_cut_convention, fiducial_catalog, fiducial_blind, pte_definition, integration_grid]
     recipe:
       command: >
@@ -173,7 +177,7 @@ outputs:
         --cosebis-ensemble {inputs.mock_cosebis_modes}
         --cosebis-ensemble-full {inputs.mock_cosebis_modes_full}
         --pure-ensemble {inputs.mock_pure_eb_modes}
-        --fine-ensemble {inputs.mock_xi_fine}
+        --fine-ensemble {inputs.glass_mock_xi_fine}
         --cl-dir "$(dirname "$(printf '%s\n' "{inputs.glass_mock_cl}" | head -n1)")"
         --cosebis-xi-grid {inputs.xi_integration}
         --cosebis-cov {inputs.cov_integration_reference}
@@ -199,7 +203,7 @@ outputs:
       the reasons any statistic could not be formed.
 
       The COSEBIs are recomputed in each window from each
-      realisation's [fine ξ_±](#outputs.mock_xi_fine), against a COSEBI
+      realisation's [fine ξ_±](#inputs.glass_mock_xi_fine), against a COSEBI
       covariance transformed on that window; holding them at their
       fiducial values would depress the threshold across the plane.
       C_ℓ^BB does not depend on the angular window, so its PTEs come
@@ -222,13 +226,13 @@ outputs:
       threshold lies below the adopted
       [p_thr = 0.01](#decisions.pte_threshold) on 148, and its 68%
       bootstrap interval lies wholly above it on 10.
-    inputs: [mock_per_mock_statistics, mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration_reference, pure_eb_covariance_reference]
+    inputs: [mock_per_mock_statistics, glass_mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration_reference, pure_eb_covariance_reference]
     decisions: [reference_covariance, mock_suite, pte_definition, integration_grid]
     recipe:
       command: >
         python src/workflow/scripts/min_pte_window_scan.py
         --per-mock-statistics {inputs.mock_per_mock_statistics}
-        --mock-xi-fine {inputs.mock_xi_fine}
+        --mock-xi-fine {inputs.glass_mock_xi_fine}
         --mock-pure-eb-modes {inputs.mock_pure_eb_modes}
         --cosebis-xi-grid {inputs.xi_integration}
         --covariance {inputs.cov_integration_reference}
@@ -348,13 +352,13 @@ outputs:
       from ℓ ~ 10⁴. The unbanded transform (`xip_untruncated` /
       `xim_untruncated`) and the curved-sky FFTLog result are written
       alongside.
-    inputs: [mock_xi_reporting, cosmology_snapshot, redshift_distributions]
+    inputs: [glass_mock_xi_reporting, cosmology_snapshot, redshift_distributions]
     decisions: [mock_suite]
     recipe:
       command: >
         python src/workflow/scripts/mock_xi_input_theory.py
         --cosmology-json {inputs.cosmology_snapshot}
-        --reporting-ensemble {inputs.mock_xi_reporting}
+        --reporting-ensemble {inputs.glass_mock_xi_reporting}
         --cat-config src/cosmo_val/cat_config.yaml
         --out-file {output}
       resources: { cpus: 8, memory: "32GB" }
@@ -379,12 +383,12 @@ outputs:
       1′) is reproduced bin for bin by band-limiting the theory at
       ℓ = 4096, the simulation's resolution, wholly outside the
       fiducial cut.
-    inputs: [mock_xi_reporting, mock_xi_input_theory, cov_reporting_reference]
+    inputs: [glass_mock_xi_reporting, mock_xi_input_theory, cov_reporting_reference]
     decisions: [mock_suite]
     recipe:
       command: >
         python src/workflow/scripts/mock_xi_validation.py
-        --reporting-ensemble {inputs.mock_xi_reporting}
+        --reporting-ensemble {inputs.glass_mock_xi_reporting}
         --theory {inputs.mock_xi_input_theory}
         --covariance {inputs.cov_reporting_reference}
         --emit figure --out-file {output}
@@ -410,12 +414,12 @@ outputs:
         delivered count at 1′, falling monotonically to 0.87 at 221′ as
         annuli run off the footprint edge — the geometry effect the
         pure-mode scatter inherits at large θ.
-    inputs: [mock_xi_reporting, mock_xi_input_theory, cov_reporting_reference]
+    inputs: [glass_mock_xi_reporting, mock_xi_input_theory, cov_reporting_reference]
     decisions: [mock_suite]
     recipe:
       command: >
         python src/workflow/scripts/mock_xi_validation.py
-        --reporting-ensemble {inputs.mock_xi_reporting}
+        --reporting-ensemble {inputs.glass_mock_xi_reporting}
         --theory {inputs.mock_xi_input_theory}
         --covariance {inputs.cov_reporting_reference}
         --emit stats --out-file {output}
@@ -464,7 +468,7 @@ outputs:
       the area conventions in circulation (2405, 2757, 2894, 2949 deg²)
       describe a single sky, so the noise difference is a pure count
       ratio.
-    inputs: [shapepipe_v14_catalogs, glass_mock_catalogs]
+    inputs: [shapepipe_v14_catalogs, glass_mock_realisation_00001]
     decisions: [fiducial_catalog, leakage_correction, mock_suite]
     recipe:
       command: >
@@ -888,8 +892,3 @@ findings:
         quote:
           exact: "0.723441470177607"
     scope: "350 GLASS v1.4.6.3_v2 realisations, fiducial scale cuts, six-statistic χ² and PTE stacks."
-
-analyses:
-
-  mock_xi_scan:
-    path: ./analyses/mock_xi_scan

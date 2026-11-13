@@ -1,13 +1,12 @@
-"""Re-measure one GLASS realisation and difference it against the ingested one.
+"""Re-measure one GLASS realisation and difference it against the delivered stack.
 
-The fine ξ_± ensemble is read from a stored measurement rather than remade,
-which would cost 5 000 core-hours. This is the check on that choice: one
-realisation measured here, under this spec's
-environment and this spec's TreeCorr call, against the stored vector standing
-in for it in the ensemble.
+The fine ξ_± stack is a delivered input rather than remade, which would cost
+5 000 core-hours and the 350 realisation catalogues. This is the check on that
+choice: one realisation measured here, with this analysis's TreeCorr call on the
+integration grid, against its row of the stack.
 
-Writes a JSON verdict. A mismatch means the ingest is no longer standing in for
-what this spec would compute, and the ingested suite is what to suspect.
+Writes a JSON verdict. A mismatch means the stack does not stand in for what this
+analysis would compute.
 """
 
 from __future__ import annotations
@@ -22,21 +21,20 @@ from pathlib import Path
 import numpy as np
 import treecorr
 
-# The measurement itself must be the one the sweep would have run, not a copy:
+# The measurement itself must be the one that made the stack, not a copy:
 # import it from the script beside this one.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from decision_values import INTEGRATION_GRID  # noqa: E402
 from run_glass_mock_2pcf import compute_one  # noqa: E402
 
 
 def _parser(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--catalog-dir", required=True)
+    parser.add_argument("--catalog", required=True, help="the realisation's catalogue")
     parser.add_argument("--xi-ensemble", required=True)
     parser.add_argument("--mock-id", default="00001")
-    parser.add_argument("--min-sep", type=float, required=True)
-    parser.add_argument("--max-sep", type=float, required=True)
-    parser.add_argument("--nbins", type=int, required=True)
+    parser.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__, required=True)
     parser.add_argument("--num-threads", type=int, default=None)
     parser.add_argument("--out-file", required=True)
     return parser.parse_args(argv)
@@ -45,6 +43,7 @@ def _parser(argv=None):
 def main(argv=None):
     args = _parser(argv)
     mock_id = str(args.mock_id).zfill(5)
+    grid = args.integration_grid
 
     ensemble = np.load(args.xi_ensemble)
     ids = [str(m) for m in ensemble["mock_ids"]]
@@ -59,26 +58,26 @@ def main(argv=None):
     with tempfile.TemporaryDirectory() as tmp:
         fresh_path = Path(tmp) / f"gg_{mock_id}.fits"
         compute_one(
-            Path(args.catalog_dir) / f"unions_glass_sim_{mock_id}_4096.fits",
+            Path(args.catalog),
             fresh_path,
-            min_sep=args.min_sep,
-            max_sep=args.max_sep,
-            nbins=args.nbins,
+            min_sep=grid.min_sep,
+            max_sep=grid.max_sep,
+            nbins=grid.nbins,
             num_threads=num_threads,
         )
         gg = treecorr.GGCorrelation(
-            min_sep=args.min_sep,
-            max_sep=args.max_sep,
-            nbins=args.nbins,
+            min_sep=grid.min_sep,
+            max_sep=grid.max_sep,
+            nbins=grid.nbins,
             sep_units="arcmin",
         )
         gg.read(str(fresh_path))
 
     report = {
         "mock_id": mock_id,
-        "nbins": int(args.nbins),
+        "nbins": int(grid.nbins),
         "num_threads": int(num_threads),
-        "ingested_ensemble": str(args.xi_ensemble),
+        "stack": str(args.xi_ensemble),
     }
 
     for name in ("meanr", "xip", "xim", "npairs", "weight"):
@@ -103,11 +102,11 @@ def main(argv=None):
     )
     report["bin_edges_match"] = edges_match
     report["verdict"] = (
-        "ingest reproduces this spec's measurement"
+        "the stack reproduces this analysis's measurement"
         if edges_match
         and report["xip"]["max_fractional_diff"] < 1e-6
         and report["xim"]["max_fractional_diff"] < 1e-6
-        else "MISMATCH - the ingested suite does not reproduce"
+        else "MISMATCH - the stack does not reproduce this analysis's measurement"
     )
 
     out_path = Path(args.out_file)

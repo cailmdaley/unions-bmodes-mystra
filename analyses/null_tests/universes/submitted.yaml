@@ -3,5 +3,4 @@ description: |
   Null-test PTE matrices on the shared scale-cut grid, with PTEs for both the
   n ≤ 6 and n ≤ 20 COSEBI subsets.
 decisions:
-  scale_cut_pair_grid_alignment: aligned_with_cosebis_subset
   mode_subsets: n_le_6_and_n_le_20

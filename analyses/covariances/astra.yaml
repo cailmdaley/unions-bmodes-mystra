@@ -17,8 +17,8 @@ inputs:
     from: ../shapepipe_v14_catalogs
 
   # Realisation 00001 is the catalog of the mock-matched Cℓ covariance.
-  - id: glass_mock_catalogs
-    from: ../glass_mock_catalogs
+  - id: glass_mock_realisation_00001
+    from: ../glass_mock_realisation_00001
 
   - id: redshift_distributions
     from: ../redshift_distributions
@@ -235,7 +235,7 @@ outputs:
       realisations' empirical 0.716
       ([clbb_variance_ratios](#../analyses.validation.analyses.glass_mocks.outputs.clbb_variance_ratios)).
     decisions: [fiducial_blind, reference_covariance, mock_suite, bandpower_binning, noise_bias_correction, fiducial_cosmology]
-    inputs: [shapepipe_v14_catalogs, glass_mock_catalogs, redshift_distributions]
+    inputs: [shapepipe_v14_catalogs, glass_mock_realisation_00001, redshift_distributions]
     format: fits
     recipe:
       command: >
