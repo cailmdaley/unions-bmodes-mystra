@@ -96,19 +96,18 @@ outputs:
       as a 350 × 20 pair, computed from
       [glass_mock_xi_fine](#inputs.glass_mock_xi_fine) with the same
       `cosmo_numba` call as the data vector, over the
-      [fiducial θ range](#decisions.scale_cut_convention). The filters
-      span the first and last fine-bin centres inside the cut,
-      12.05′–82.14′ under `grid_bin_edges`.
+      [fiducial θ range](#../../analyses.significance.decisions.fiducial_scale_cuts). The
+      filters span the first and last fine-bin centres inside the cut,
+      12.05′–82.14′.
       [mock_cosebis_modes_full](#outputs.mock_cosebis_modes_full) is
       the 1–250 arcmin counterpart.
     inputs: [glass_mock_xi_fine]
-    decisions: [mock_suite, scale_cut_convention]
+    decisions: [mock_suite]
     recipe:
       command: >
         python src/workflow/scripts/mock_cosebis_scatter.py
         --xi-ensemble {inputs.glass_mock_xi_fine} --out-file {output}
         --nmodes 20
-        --scale-cut-convention {decisions.scale_cut_convention}
       resources: { cpus: 16, memory: "8GB" }
 
   - id: mock_cosebis_modes_full
@@ -170,7 +169,7 @@ outputs:
       realisations. The campaign's σ, χ² and PTE summaries derive from
       this file.
     inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, glass_mock_xi_fine, glass_mock_cl, xi_integration, cov_integration_reference, pure_eb_covariance_reference, cl_cov_reference]
-    decisions: [reference_covariance, mock_suite, scale_cut_convention, fiducial_catalog, fiducial_blind, pte_definition, integration_grid]
+    decisions: [reference_covariance, mock_suite, fiducial_catalog, fiducial_blind, pte_definition, integration_grid]
     recipe:
       command: >
         python src/workflow/scripts/mock_campaign_analysis.py
@@ -183,7 +182,6 @@ outputs:
         --cosebis-cov {inputs.cov_integration_reference}
         --pure-cov {inputs.pure_eb_covariance_reference}
         --cl-cov {inputs.cl_cov_reference}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --label {decisions.reference_covariance}
         --emit-stats {output}
       resources: { cpus: 1, memory: "16GB" }
@@ -192,7 +190,7 @@ outputs:
     type: metric
     format: json
     description: |
-      [mock_min_pte_calibration](#../../analyses.null_tests.outputs.mock_min_pte_calibration) as
+      [mock_min_pte_calibration](#../../analyses.significance.outputs.mock_min_pte_calibration) as
       a function of the scale cut: the same 5%-quantile threshold on
       the per-realisation minimum PTE, evaluated on all 210 windows of
       the reporting grid `geomspace(1', 250', 21)` rather than at the
@@ -210,13 +208,10 @@ outputs:
       unchanged from
       [mock_per_mock_statistics](#outputs.mock_per_mock_statistics).
 
-      The windows are always the reporting grid's own bin edges (the
-      [grid_bin_edges](#decisions.scale_cut_convention) convention),
-      so the fiducial cell (edge indices 9, 16) is the window
-      [mock_min_pte_calibration](#../../analyses.null_tests.outputs.mock_min_pte_calibration)
+      The windows are the reporting grid's own bin edges, so the
+      fiducial cell (edge indices 9, 16) is the window
+      [mock_min_pte_calibration](#../../analyses.significance.outputs.mock_min_pte_calibration)
       calibrates at; the two thresholds agree to machine precision.
-      Under `rounded_arcmin` (12.0'/83.0') that cell would not be the
-      fiducial window.
 
       The 20 single-bin windows are marked `comparable: false` and
       excluded from summaries: the COSEBI basis is too ill-conditioned
@@ -224,8 +219,13 @@ outputs:
       them, against 0.41 across the 190 windows of two bins or more,
       which span 0.23–0.59). On those 190 windows the calibrated
       threshold lies below the adopted
-      [p_thr = 0.01](#decisions.pte_threshold) on 148, and its 68%
-      bootstrap interval lies wholly above it on 10.
+      [p_thr = 0.01](#../../analyses.significance.decisions.pte_threshold) on 148, and its 68%
+      bootstrap interval lies wholly above it on 10. It stays ≤ 0.0093
+      over every window with θ_min ≥ 5.24′ and θ_max ≥ 36.20′, a
+      region containing the fiducial window with margin; the
+      excursions at the plane's extremes come from few, highly
+      correlated degrees of freedom at small θ and the known
+      large-scale contamination at large θ_max.
     inputs: [mock_per_mock_statistics, glass_mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration_reference, pure_eb_covariance_reference]
     decisions: [reference_covariance, mock_suite, pte_definition, integration_grid]
     recipe:
@@ -261,7 +261,7 @@ outputs:
       covariance with no Hartlap factor; the pure-mode blocks are
       sliced from the stored 120×120 matrix, with a Hartlap factor only
       under the `monte_carlo`
-      [covariance method](#decisions.pure_eb_covariance_method), where
+      [covariance method](#../../analyses.covariances.decisions.pure_eb_covariance_method), where
       N is its 2000 draws; C_ℓ^BB takes
       no Hartlap factor, its mock-matched reference being
       [cl_cov_reference](#inputs.cl_cov_reference). Pure-mode σ is
@@ -444,14 +444,13 @@ outputs:
       a small-scale residual the cut excludes, so ξ_+^B reads PTE 0.004
       on the full range and 0.13 inside the cut.
     inputs: [mock_per_mock_statistics]
-    decisions: [reference_covariance, scale_cut_convention, pte_definition, reporting_binning]
+    decisions: [reference_covariance, pte_definition, reporting_binning]
     recipe:
       command: >
         python src/workflow/scripts/mock_mean_vector_plot.py
         --stats {inputs.mock_per_mock_statistics}
         --label {decisions.reference_covariance}
         --reporting-binning {decisions.reporting_binning}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --emit stats --out-file {output}
       resources: { cpus: 1, memory: "2GB" }
 
@@ -550,18 +549,12 @@ decisions:
     from: ../../fiducial_catalog
   fiducial_blind:
     from: ../../fiducial_blind
-  scale_cut_convention:
-    from: ../../scale_cut_convention
-  pte_threshold:
-    from: ../../pte_threshold
   pure_eb_integration_method:
     from: ../../pure_eb_integration_method
   pure_eb_rebinning_weights:
     from: ../../pure_eb_rebinning_weights
   pure_eb_integration_limits:
     from: ../../pure_eb_integration_limits
-  pure_eb_covariance_method:
-    from: ../../pure_eb_covariance_method
   reference_covariance:
     from: ../../reference_covariance
   mock_suite:
@@ -873,7 +866,7 @@ findings:
       sharing a data vector stay well below unity. This is why the
       minimum PTE over the six skews low and its threshold is
       calibrated on the mocks
-      ([pte_threshold](#decisions.pte_threshold)).
+      ([pte_threshold](#../../analyses.significance.decisions.pte_threshold)).
     notes: |
       χ² Pearson correlations across the 350 v1.4.6.3_v2 realisations
       (`correlations.chi2.pearson` in `mock_campaign_evidence`).

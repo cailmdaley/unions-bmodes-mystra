@@ -13,7 +13,7 @@ determined by the fiducial scale cut (12-83 arcmin -> bins [9, 15] -> 7 bins
 -> nu = 14), so chi2_obs is recovered exactly by inverting the stored
 un-penalized PTE, and the penalized PTE follows with nu-2. No MC re-run needed.
 
-The window is resolved by `scale_cuts.resolve_fiducial_bin_window`, the single
+The window is resolved by `scale_cuts.fiducial_bin_window`, the single
 definition shared with the PTE matrices and the mock calibration.
 """
 
@@ -24,9 +24,8 @@ import numpy as np
 from scipy import stats
 
 from scale_cuts import (
-    add_scale_cut_convention_argument,
-    resolve_fiducial_bin_window,
-    resolve_fiducial_scale_cuts,
+    fiducial_bin_window,
+    fiducial_theta_cut,
 )
 from decision_values import REPORTING_BINNING
 
@@ -42,12 +41,11 @@ def main():
         help="<version>_A_pure_eb_ptes.npz with theta + pte_combined grid",
     )
     p.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
-    add_scale_cut_convention_argument(p)
     p.add_argument("--out-file", required=True, help="output metric JSON path")
     args = p.parse_args()
 
-    cut_arcmin = resolve_fiducial_scale_cuts(args.reporting_binning, args.scale_cut_convention)
-    s, e = resolve_fiducial_bin_window(args.reporting_binning, args.scale_cut_convention)
+    cut_arcmin = fiducial_theta_cut(args.reporting_binning)
+    s, e = fiducial_bin_window(args.reporting_binning)
 
     d = np.load(args.pte_per_cut_npz)
     nbins = (e + 1) - s
@@ -67,7 +65,6 @@ def main():
         "statistic": "combined_xitot_B",
         "cut": "fiducial",
         "scale_cut_arcmin": list(cut_arcmin),
-        "scale_cut_convention": args.scale_cut_convention,
         "bin_indices": [s, e],
         "nu": nu,
         "nu_penalized": nu_pen,

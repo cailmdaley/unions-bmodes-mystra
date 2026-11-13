@@ -20,9 +20,8 @@ sys.path.insert(
 )
 from decision_values import REPORTING_BINNING  # noqa: E402
 from scale_cuts import (  # noqa: E402
-    add_scale_cut_convention_argument,
-    resolve_fiducial_bin_window,
-    resolve_fiducial_scale_cuts,
+    fiducial_bin_window,
+    fiducial_theta_cut,
 )
 
 
@@ -37,7 +36,6 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--cosebis-pte", type=Path)
     parser.add_argument("--cl-pte", type=Path)
     parser.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
-    add_scale_cut_convention_argument(parser)
     parser.add_argument(
         "--observed-ptes", help="Optional JSON mapping statistic name to PTE override"
     )
@@ -99,8 +97,8 @@ def _observed_ptes_from_artifacts(
 
     with np.load(args.pure_eb_pte, allow_pickle=False) as data:
         # These matrices are indexed [min_bin, max_bin] inclusively.  The
-        # full-range row is the [0, 19] cell; the fiducial cell is resolved
-        # from the declared scale-cut convention.
+        # full-range row is the [0, 19] cell; the fiducial cell is the
+        # fiducial bin window.
         pure_window = (0, -1) if full_range else (window_min_bin, window_max_bin)
         pure_values = {
             "xi+^B": float(data["pte_xip_B"][pure_window]),
@@ -242,7 +240,6 @@ def _calibration_payload(
     observed_ptes: dict[str, float],
     window: tuple[int, int],
     cut_arcmin: tuple[float, float],
-    convention: str,
     global_alpha: float,
 ) -> dict:
     """Return one window's complete min-PTE calibration block."""
@@ -270,7 +267,6 @@ def _calibration_payload(
         "observed_ptes": observed_ptes,
         "window_bins": list(window),
         "scale_cut_arcmin": list(cut_arcmin),
-        "scale_cut_convention": convention,
         "observed_min": observed_min,
         "observed_min_two_sided": observed_min_two_sided,
         "p_global_one_sided": one_count / n_mocks,
@@ -309,8 +305,8 @@ def main() -> None:
         if not np.all(np.isfinite(values)) or np.any((values < 0.0) | (values > 1.0)):
             raise ValueError(f"{name} values must be finite and lie in [0, 1]")
 
-    window = resolve_fiducial_bin_window(args.reporting_binning, args.scale_cut_convention)
-    cut_arcmin = resolve_fiducial_scale_cuts(args.reporting_binning, args.scale_cut_convention)
+    window = fiducial_bin_window(args.reporting_binning)
+    cut_arcmin = fiducial_theta_cut(args.reporting_binning)
     full_window = (0, 19)
     full_cut_arcmin = args.reporting_binning[:2]
 
@@ -345,7 +341,6 @@ def main() -> None:
         observed_ptes,
         window,
         cut_arcmin,
-        args.scale_cut_convention,
         args.global_alpha,
     )
     full_range = _calibration_payload(
@@ -354,7 +349,6 @@ def main() -> None:
         observed_ptes_full,
         full_window,
         full_cut_arcmin,
-        args.scale_cut_convention,
         args.global_alpha,
     )
     if args.emit == "figure":

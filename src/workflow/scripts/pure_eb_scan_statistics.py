@@ -45,8 +45,8 @@ import numpy as np
 from scipy import stats
 
 from mock_campaign_analysis import (
-    PURE_THETA_BY_CONVENTION,
-    _apply_scale_cut_convention,
+    PURE_THETA_MAX,
+    PURE_THETA_MIN,
     _load_pure_covariance,
 )
 from numerics import compute_chi2_pte
@@ -60,7 +60,7 @@ sys.path.insert(
 from calculate_pure_eb_ptes import calculate_ptes  # noqa: E402
 from pure_eb_transform import data_vector, load_xi as _load_xi  # noqa: E402
 from decision_values import REPORTING_BINNING  # noqa: E402
-from scale_cuts import resolve_fiducial_bin_window  # noqa: E402
+from scale_cuts import fiducial_bin_window  # noqa: E402
 from pure_eb_scan_variants import (  # noqa: E402
     ADOPTED,
     BY_NAME,
@@ -226,11 +226,6 @@ def main() -> None:
             "propagation at the mocks' noise."
         ),
     )
-    parser.add_argument(
-        "--scale-cut-convention",
-        choices=tuple(PURE_THETA_BY_CONVENTION),
-        default="grid_bin_edges",
-    )
     parser.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
     parser.add_argument("--npatch", type=int, default=1)
     parser.add_argument(
@@ -256,13 +251,8 @@ def main() -> None:
     args = parser.parse_args()
 
     # One definition of the fiducial window, shared with the paper's PTE
-    # matrices; see scale_cuts.resolve_fiducial_bin_window.
-    window_min_bin, window_max_bin = resolve_fiducial_bin_window(
-        args.reporting_binning, args.scale_cut_convention
-    )
-    # _load_pure_covariance masks with mock_campaign_analysis's module-level
-    # theta cut, so the convention has to be bound before the first call.
-    _apply_scale_cut_convention(args.scale_cut_convention)
+    # matrices; see scale_cuts.fiducial_bin_window.
+    window_min_bin, window_max_bin = fiducial_bin_window(args.reporting_binning)
     variants = resolve(args.variants)
     out_path = Path(args.out_file)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -405,7 +395,7 @@ def main() -> None:
             payload[variant.name] = entry
             print(f"{variant.name}: done", flush=True)
 
-    theta_min, theta_max = PURE_THETA_BY_CONVENTION[args.scale_cut_convention]
+    theta_min, theta_max = PURE_THETA_MIN, PURE_THETA_MAX
     result = {
         "variant_order": [variant.name for variant in variants],
         "adopted": ADOPTED,
@@ -413,7 +403,6 @@ def main() -> None:
         "dropped": DROPPED,
         "reference_covariance": args.reference_covariance,
         "covariance_draws": draws,
-        "scale_cut_convention": args.scale_cut_convention,
         "theta_cut": [theta_min, theta_max],
         "window_bins": [window_min_bin, window_max_bin],
         "variants": payload,

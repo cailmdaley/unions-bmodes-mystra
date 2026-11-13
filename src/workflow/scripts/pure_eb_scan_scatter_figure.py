@@ -39,7 +39,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from mock_campaign_analysis import (
-    PURE_THETA_BY_CONVENTION,
+    PURE_THETA_MAX,
+    PURE_THETA_MIN,
     _load_pure_covariance,
 )
 from plotting_utils import FIG_WIDTH_FULL, PAPER_MPLSTYLE
@@ -158,17 +159,12 @@ def main() -> None:
             "the same propagation at the mocks' noise level."
         ),
     )
-    parser.add_argument(
-        "--scale-cut-convention",
-        choices=tuple(PURE_THETA_BY_CONVENTION),
-        default="grid_bin_edges",
-    )
     parser.add_argument("--out-file", required=True)
     add_variants_argument(parser)
     args = parser.parse_args()
 
     variants = _ordered(resolve(args.variants))
-    window = PURE_THETA_BY_CONVENTION[args.scale_cut_convention]
+    window = (PURE_THETA_MIN, PURE_THETA_MAX)
 
     figure, axes = plt.subplots(
         1, 2, figsize=(FIG_WIDTH_FULL, 0.42 * FIG_WIDTH_FULL), sharex=True

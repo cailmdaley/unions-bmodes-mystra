@@ -79,25 +79,15 @@ STAT_NAMES = (
     "xi_tot^B",
     "C_ell^BB",
 )
+# The fiducial θ cut: edges 9 and 16 of the reporting grid geomspace(1', 250', 21).
 COSEBI_THETA_MIN = 250.0 ** (9.0 / 20.0)
 COSEBI_THETA_MAX = 250.0 ** (16.0 / 20.0)
 FULL_COSEBI_THETA_MIN = 1.0
 FULL_COSEBI_THETA_MAX = 250.0
-# The two readings of the paper's fiducial θ cut, as the root
-# `scale_cut_convention` decision spells them: the grid bin edges the pipeline
-# actually cut at, and the rounded arcmin values the paper text prints.
-COSEBI_THETA_BY_CONVENTION = {
-    "grid_bin_edges": (COSEBI_THETA_MIN, COSEBI_THETA_MAX),
-    "rounded_arcmin": (12.0, 83.0),
-}
 # The pure-mode blocks live on the 20-bin reporting grid and are cut by a
-# bin-CENTRE mask, so both conventions select the same seven bins (centres
-# 13.99 .. 73.29 arcmin; the nearest excluded centres are 10.61 and 96.58, far
-# from either boundary pair).  The cut is still resolved from the declared
-# convention rather than pinned here, so that the spec stays the single source
-# of truth and a future change to the reporting grid cannot silently desync it.
-PURE_THETA_BY_CONVENTION = dict(COSEBI_THETA_BY_CONVENTION)
-PURE_THETA_MIN, PURE_THETA_MAX = PURE_THETA_BY_CONVENTION["grid_bin_edges"]
+# bin-centre mask inside the same edges, which keeps the seven reporting bins
+# 9-15 (centres 13.99 .. 73.29 arcmin).
+PURE_THETA_MIN, PURE_THETA_MAX = COSEBI_THETA_MIN, COSEBI_THETA_MAX
 ELL_MIN = 300.0
 ELL_MAX = 1600.0
 STAT_TEX = {
@@ -1210,37 +1200,11 @@ def _parser(argv=None):
         default="fiducial",
         help="Covariance suite label written to evidence.json (e.g. fiducial/mockmatched).",
     )
-    parser.add_argument(
-        "--scale-cut-convention",
-        choices=tuple(COSEBI_THETA_BY_CONVENTION),
-        default="grid_bin_edges",
-        help=(
-            "How the fiducial COSEBI θ cut is read: 'grid_bin_edges' (what the "
-            "pipeline cut at) or 'rounded_arcmin' (what the paper text prints)."
-        ),
-    )
     return parser.parse_args(argv)
-
-
-def _apply_scale_cut_convention(convention):
-    """Rebind the θ-cut globals to the selected convention.
-
-    The script reads COSEBI_THETA_MIN/MAX as module constants in six
-    places and PURE_THETA_MIN/MAX in three; rebinding them once here keeps the
-    decision explicit at the CLI without threading a parameter through the
-    whole gather.  The pure-mode cut selects the same seven reporting bins
-    either way (see PURE_THETA_BY_CONVENTION), so this moves only the boundary
-    values recorded in the evidence file and shaded in the figures.
-    """
-
-    global COSEBI_THETA_MIN, COSEBI_THETA_MAX, PURE_THETA_MIN, PURE_THETA_MAX
-    COSEBI_THETA_MIN, COSEBI_THETA_MAX = COSEBI_THETA_BY_CONVENTION[convention]
-    PURE_THETA_MIN, PURE_THETA_MAX = PURE_THETA_BY_CONVENTION[convention]
 
 
 def _standalone_main(argv=None):
     args = _parser(argv)
-    _apply_scale_cut_convention(args.scale_cut_convention)
 
     if args.emit_stats:
         missing = [

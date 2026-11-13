@@ -26,7 +26,7 @@ from print_width import savefig_at_width
 
 # The paper stacks Fig. 8's three version-comparison panels at 0.88\textwidth.
 STACKED_PRINT_WIDTH = 0.88 * FIG_WIDTH_FULL
-from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
+from scale_cuts import fiducial_theta_cut
 from catalog_versions import add_catalog_arguments, catalogs_from
 from decision_values import FIDUCIAL_BLIND, REPORTING_BINNING
 
@@ -258,7 +258,6 @@ def main(
     results_dir,
     cov_dir,
     out_file,
-    scale_cut_convention,
     fiducial_version=None,
     fiducial_pure_eb_data=None,
     fiducial_pure_eb_covariance=None,
@@ -293,7 +292,7 @@ def main(
     x_offset_factors = [1.0 + offset for offset in x_offsets]
 
     # Scale cuts
-    fiducial_xip_scale_cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
+    fiducial_xip_scale_cut = fiducial_theta_cut(reporting)
     fiducial_xim_scale_cut = fiducial_xip_scale_cut
 
     scale_cuts = {
@@ -466,7 +465,6 @@ def _from_cli(argv=None):
         default=None,
         help="Explicit path to the fiducial version's pure E/B covariance NPZ",
     )
-    add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
     main(
         catalogs_from(a),
@@ -475,7 +473,6 @@ def _from_cli(argv=None):
         a.results_dir,
         a.cov_dir,
         a.out_file,
-        a.scale_cut_convention,
         fiducial_version=a.fiducial_version,
         fiducial_pure_eb_data=a.fiducial_pure_eb_data,
         fiducial_pure_eb_covariance=a.fiducial_pure_eb_covariance,

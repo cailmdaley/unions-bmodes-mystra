@@ -1,6 +1,0 @@
-id: baseline
-description: |
-  Null-test PTE matrices on the shared scale-cut grid, with PTEs for both the
-  n ≤ 6 and n ≤ 20 COSEBI subsets.
-decisions:
-  mode_subsets: n_le_6_and_n_le_20

@@ -12,7 +12,7 @@ belongs to Papers III and IV.
 - `analyses/**/astra.yaml`: the sub-analyses, four at the top, flat apart from
   `validation/glass_mocks` and the scans, which sit in `analyses/<sub>/analyses/`.
   README explains the split: every covariance lives in `covariances`,
-  `data_vectors` reads no covariance, and data meet covariance in `null_tests`.
+  `data_vectors` reads no covariance, and data meet covariance in `significance`.
 - `<scan>.sweep.yaml`: scan declarations, in each scan's own directory. The
   sibling `astra.yaml` is generated from each; edit the declaration and regenerate
   with `sweep_expand.py` from the `astra-sweep` practice.
@@ -39,6 +39,9 @@ belongs to Papers III and IV.
   says what it does on its own terms, and a label or option id names the
   method, never its status. Version talk
   belongs in `universes/` alone.
+- A rationale argues from principle and quotes no configuration or results:
+  numbers belong in option labels and descriptions, results in findings and
+  output descriptions.
 - A decision with several non-excluded options must reach the code it governs.
   A decision with one is a documented fixed choice. Excluded options carry a
   reason a scientist would accept.

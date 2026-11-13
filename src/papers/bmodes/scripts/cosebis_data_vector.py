@@ -20,7 +20,7 @@ from plotting_utils import (
     PAPER_MPLSTYLE,
 )
 from print_width import savefig_at_width
-from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
+from scale_cuts import fiducial_theta_cut
 
 from cosebis_transform import cosebis_modes
 from decision_values import INTEGRATION_GRID, MODE_COUNT, REPORTING_BINNING
@@ -130,10 +130,10 @@ def _plot_from_modes(modes_npz, covariance_npz, out_file):
     print(f"Saved figure to {out_file}")
 
 
-def main(version, nmodes, integration, reporting, xi_integration, out_file, scale_cut_convention):
+def main(version, nmodes, integration, reporting, xi_integration, out_file):
 
     scale_cuts = {
-        "fiducial": resolve_fiducial_scale_cuts(reporting, scale_cut_convention),
+        "fiducial": fiducial_theta_cut(reporting),
         "full": (reporting.min_sep, reporting.max_sep),
     }
 
@@ -185,7 +185,6 @@ def _from_cli(argv=None):
         required=True,
         help="Output file (lc {output}): the modes NPZ, or the PNG in --plot-from-modes mode",
     )
-    add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
     if a.plot_from_modes:
         _plot_from_modes(a.plot_from_modes, a.covariance, a.out_file)
@@ -195,7 +194,7 @@ def _from_cli(argv=None):
     if missing:
         ap.error(f"compute mode needs {', '.join(missing)}")
     main(a.version, a.mode_count, a.integration_grid, a.reporting_binning,
-         a.xi_integration, a.out_file, a.scale_cut_convention)
+         a.xi_integration, a.out_file)
 
 
 if __name__ == "__main__":

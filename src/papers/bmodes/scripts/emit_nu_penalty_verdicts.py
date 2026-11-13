@@ -20,7 +20,7 @@ nu is therefore fully determined by the cut, so chi2_obs is recovered exactly by
 inverting the stored PTE and the penalized PTE follows as sf(chi2_obs, nu-2). No
 statistic is recomputed and no MC is re-run.
 
-The fiducial pure-mode window is resolved by ``scale_cuts.resolve_fiducial_bin_window``
+The fiducial pure-mode window is resolved by ``scale_cuts.fiducial_bin_window``
 and the fiducial ell window by ``numerics.ell_bin_index`` -- the same
 resolvers the PTE evidence itself used, never bin means.
 
@@ -36,7 +36,7 @@ import numpy as np
 from scipy import stats
 
 from numerics import ell_bin_index
-from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_bin_window
+from scale_cuts import fiducial_bin_window
 from decision_values import REPORTING_BINNING
 
 N_FITTED_BOUNDARIES = 2
@@ -122,11 +122,10 @@ def main():
     p.add_argument("--harmonic-space-evidence", required=True)
     p.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
     p.add_argument("--leakage-correction", required=True, choices=["applied", "uncorrected"])
-    add_scale_cut_convention_argument(p)
     p.add_argument("--out-file", required=True)
     args = p.parse_args()
 
-    first_bin, last_bin = resolve_fiducial_bin_window(args.reporting_binning, args.scale_cut_convention)
+    first_bin, last_bin = fiducial_bin_window(args.reporting_binning)
     n_fid_bins = last_bin + 1 - first_bin
 
     with open(args.config_space_evidence) as f:

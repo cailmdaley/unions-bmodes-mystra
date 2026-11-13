@@ -31,7 +31,7 @@ def select_report(reference, mock_names, mock_ptes, range_option, subset_option)
     observed = {name: ref["observed_ptes"][name] for name in names}
     payload = _calibration_payload(
         mock_ptes[:, keep], names, observed, tuple(ref["window_bins"]),
-        tuple(ref["scale_cut_arcmin"]), ref["scale_cut_convention"], ref["global_alpha"],
+        tuple(ref["scale_cut_arcmin"]), ref["global_alpha"],
     )
     payload["definition"] = (
         "Empirical fraction of clean mocks whose minimum PTE across the selected "

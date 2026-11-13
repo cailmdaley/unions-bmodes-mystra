@@ -24,9 +24,15 @@ import generate_cosmocov_ini
 import mock_vs_data_noise_table
 import scale_cuts
 
-ROOT_DECISIONS = yaml.safe_load((ROOT / "astra.yaml").read_text())["decisions"]
+# Every decision defined anywhere in the tree, by id (aliases skipped).
+DECISIONS = {
+    key: decision
+    for spec in sorted(ROOT.glob("**/astra.yaml"))
+    if "results" not in spec.parts
+    for key, decision in (yaml.safe_load(spec.read_text()).get("decisions") or {}).items()
+    if "from" not in decision
+}
 CAT_CONFIG = yaml.safe_load((ROOT / "src/cosmo_val/cat_config.yaml").read_text())
-REAL_SPACE_DECISIONS = yaml.safe_load((ROOT / "analyses/data_vectors/astra.yaml").read_text())["decisions"]
 
 # Tables keyed by the options of a decision other than their namesake.
 KEYED_BY = {"nz_file": "fiducial_blind", "survey_properties": "fiducial_catalog",
@@ -54,7 +60,7 @@ PUBLISHED = {
 class Tables(unittest.TestCase):
     def test_keys_are_the_spec_option_ids(self):
         for name, table in dv.TABLES.items():
-            decisions = REAL_SPACE_DECISIONS if name == "patch_count" else ROOT_DECISIONS
+            decisions = DECISIONS
             self.assertEqual(set(table), set(decisions[KEYED_BY.get(name, name)]["options"]), name)
 
     def test_catalog_facts_match_cat_config(self):
@@ -94,21 +100,20 @@ class Tables(unittest.TestCase):
         for name, table in (("reporting_binning", dv.REPORTING_BINNING),
                             ("integration_grid", dv.INTEGRATION_GRID)):
             for option, grid in table.items():
-                label = ROOT_DECISIONS[name]["options"][option]["label"].replace(",", "")
+                label = DECISIONS[name]["options"][option]["label"].replace(",", "")
                 self.assertIn(str(grid.nbins), label, option)
         for name, table in (("mode_count", dv.MODE_COUNT),
                             ("harmonic_validation_binning", dv.HARMONIC_VALIDATION_BINNING)):
             for option, value in table.items():
-                self.assertIn(str(value), ROOT_DECISIONS[name]["options"][option]["label"], option)
+                self.assertIn(str(value), DECISIONS[name]["options"][option]["label"], option)
 
-    def test_scale_cut_edges_and_window(self):
+    def test_fiducial_cut_keeps_whole_reporting_bins(self):
         grid = dv.REPORTING_BINNING["bins_20"]
         edges = np.geomspace(1.0, 250.0, 21)
-        self.assertEqual(scale_cuts.resolve_fiducial_scale_cuts(grid, "grid_bin_edges"),
-                         (float(edges[9]), float(edges[16])))
-        self.assertEqual(scale_cuts.resolve_fiducial_scale_cuts(grid, "rounded_arcmin"), (12.0, 83.0))
-        for convention in scale_cuts.CONVENTIONS:
-            self.assertEqual(scale_cuts.resolve_fiducial_bin_window(grid, convention), (9, 15))
+        self.assertEqual(scale_cuts.fiducial_bin_window(grid), (9, 15))
+        cut = scale_cuts.fiducial_theta_cut(grid)
+        self.assertEqual(cut, (float(edges[9]), float(edges[16])))
+        self.assertEqual(tuple(float(round(t)) for t in cut), scale_cuts.STATED_CUT_ARCMIN)
 
 
 class ReferenceNoise(unittest.TestCase):

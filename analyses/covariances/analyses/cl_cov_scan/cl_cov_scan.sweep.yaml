@@ -10,8 +10,8 @@ description: |
   [harmonic COSEBI scan](#../../../analyses.validation.analyses.cosebis_harmonic_scan.outputs.cosebis_harmonic_version_ptes).
   Each variant's window is the weighted galaxy-count map of its own catalog. The
   gathered result feeds the
-  [version comparison](#../../../analyses.null_tests.outputs.cl_version_comparison_figure), the
-  [Cℓ^BB PTE grids](#../../../analyses.null_tests.outputs.cl_pte_per_cut) and the harmonic COSEBI
+  [version comparison](#../../../analyses.significance.outputs.cl_version_comparison_figure), the
+  [Cℓ^BB PTE grids](#../../../analyses.significance.outputs.cl_pte_per_cut) and the harmonic COSEBI
   scan.
 tags: [sweep]
 

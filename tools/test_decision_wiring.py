@@ -116,8 +116,7 @@ class DecisionWiringTests(unittest.TestCase):
         names = ["B_n<=6", "B_n<=20", "xi+^B", "xi-^B", "xi_tot^B", "C_ell^BB"]
         ptes = np.tile([.4, .001, .5, .6, .7, .8], (10, 1))
         reference = dict(observed_ptes=dict(zip(names, [.3, .002, .4, .5, .6, .7])),
-                         window_bins=[9, 15], scale_cut_arcmin=[12, 83],
-                         scale_cut_convention="grid_bin_edges", global_alpha=.05)
+                         window_bins=[9, 15], scale_cut_arcmin=[12, 83], global_alpha=.05)
         full = dict(reference, window_bins=[0, 19], scale_cut_arcmin=[1, 250])
         reference["full_range"] = full
         both = reporting.select_report(reference, names, ptes, "adopted", "n_le_6_and_n_le_20")

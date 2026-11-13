@@ -5,7 +5,7 @@ description: |
   The COSEBI B-mode PTE matrix of the fiducial catalog: E_n and B_n
   with their χ² and PTEs at n ≤ 6 and n ≤ 20, for each stable pair of
   edges of `geomspace(1', 250', 21)`
-  ([scale_cut_pair_grid](#../../decisions.scale_cut_pair_grid)). Each
+  ([scale_cut_pair_grid](#../decisions.scale_cut_pair_grid)). Each
   member computes one θ_min row of the matrix, and the gather
   assembles the rows into
   [cosebis_pte_per_cut](#../outputs.cosebis_pte_per_cut). That matrix

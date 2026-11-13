@@ -1,8 +1,9 @@
 version: "0.0.14"
-name: "B-mode null tests"
+name: "B-mode significance"
 description: |
-  Where data meet covariance. Error bars on the data vectors, χ² PTE matrices
-  over every scale-cut pair for each statistic and catalog version, the mock
+  Where data meet covariance: each B-mode statistic in units of its
+  uncertainty. The data vectors with their error bars, χ² PTE matrices over
+  every scale-cut pair for each statistic and catalog version, the mock
   calibration of the minimum PTE, the PTE tables and heatmaps, the primary null
   test and the numbers the paper quotes.
 
@@ -101,7 +102,7 @@ outputs:
       those on the modes from the [pure-mode covariance](#inputs.pure_eb_covariance). Grey shading
       marks scales outside the fiducial cuts.
     format: png
-    decisions: [fiducial_catalog, scale_cut_convention, pte_definition, leakage_correction, fiducial_blind, reporting_binning]
+    decisions: [fiducial_catalog, pte_definition, leakage_correction, fiducial_blind, reporting_binning]
     inputs: [pure_eb_data, pure_eb_covariance, cov_reporting_ng]
     recipe:
       command: >
@@ -110,7 +111,6 @@ outputs:
         --pure-eb-data {inputs.pure_eb_data}
         --pure-eb-covariance {inputs.pure_eb_covariance}
         --reporting-cov {inputs.cov_reporting_ng}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
 
   - id: cosebis_data_vector_figure
@@ -123,14 +123,13 @@ outputs:
       (filled circles) and over the full angular range of 1–250 arcmin
       (open diamonds). Modes n > 6 are shaded; the n ≤ 6 subset captures
       nearly all cosmological information.
-    decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention]
+    decisions: [fiducial_catalog, fiducial_blind]
     inputs: [cosebis_modes_data, cosebis_covariance]
     recipe:
       command: >
         python src/papers/bmodes/scripts/cosebis_data_vector.py
         --plot-from-modes {inputs.cosebis_modes_data}
         --covariance {inputs.cosebis_covariance}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 1, memory: "4GB" }
 
@@ -169,7 +168,7 @@ outputs:
       Only the size-cut catalog passes all statistics at the fiducial
       scale cuts ([PTE table](#outputs.pte_table_appendix)).
     format: png
-    decisions: [scale_cut_convention, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind, reporting_binning]
+    decisions: [pte_definition, fiducial_catalog, leakage_correction, fiducial_blind, reporting_binning]
     inputs: [pure_eb_data, pure_eb_sweep, pure_eb_covariance, pure_eb_covariance_sweep]
     recipe:
       command: >
@@ -182,7 +181,6 @@ outputs:
         --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --fiducial-pure-eb-data {inputs.pure_eb_data}
         --fiducial-pure-eb-covariance {inputs.pure_eb_covariance}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
 
   - id: cosebis_version_comparison_figure
@@ -198,7 +196,7 @@ outputs:
       lines mark the fiducial value. A light band covers n ≤ 6. Only the
       size-cut catalog passes all statistics at the fiducial scale cuts
       ([PTE table](#outputs.pte_table_appendix)).
-    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, leakage_correction, reporting_binning]
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, leakage_correction, reporting_binning]
     inputs: [cosebis_modes_data, cosebis_modes_sweep, cosebis_covariance, cosebis_covariance_sweep]
     recipe:
       command: >
@@ -212,7 +210,6 @@ outputs:
         --fiducial-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --fiducial-modes-path {inputs.cosebis_modes_data}
         --fiducial-covariance-path {inputs.cosebis_covariance}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 2, memory: "8GB" }
 
@@ -272,7 +269,7 @@ outputs:
       of the 20-bin `geomspace(1', 250', 21)` grid; the COSEBI
       [scale-cut pair grid](#decisions.scale_cut_pair_grid) is a subset of it.
       The χ² applies the [Hartlap finite-sample
-      correction](#../decisions.pure_eb_covariance_method) when the
+      correction](#../analyses.covariances.decisions.pure_eb_covariance_method) when the
       covariance is a Monte Carlo estimate and none when it is exact.
     format: npz
     decisions: [fiducial_catalog, fiducial_blind, pte_definition, leakage_correction]
@@ -331,7 +328,7 @@ outputs:
       `{ver}_A_pure_eb_ptes.npz` each, computed as
       [pure_eb_pte_per_cut](#outputs.pure_eb_pte_per_cut) is, with the
       [covariance-dependent Hartlap
-      treatment](#../decisions.pure_eb_covariance_method), from that
+      treatment](#../analyses.covariances.decisions.pure_eb_covariance_method), from that
       version's data vector and pure-mode covariance. Feeds the
       per-version [PTE
       heatmaps](#outputs.pte_heatmaps_figure).
@@ -369,15 +366,14 @@ outputs:
       `geomspace(1', 250', 21)`, for all four catalog versions with and
       without leakage correction, with the values at the
       [adopted 12'–83' cut](#decisions.fiducial_scale_cuts) and over
-      the full range. The adopted-cut values are read from grid cells,
-      so the [θ-cut convention](#decisions.scale_cut_convention)
-      changes the cut recorded here but none of the PTEs.
+      the full range. The adopted-cut values are read from the grid
+      cell of reporting bins 9–15, the bins the cut keeps.
       All three statistics share the reporting bins, so a cut is the
       same window in every panel; COSEBIs need at least two bins, so
       their panels leave the single-bin cuts empty. Feeds the
       config-space columns of the per-version PTE table and the
       configuration-space PTE heatmaps.
-    decisions: [scale_cut_convention, fiducial_catalog, leakage_correction, reporting_binning, fiducial_blind]
+    decisions: [fiducial_catalog, leakage_correction, reporting_binning, fiducial_blind]
     inputs:
       - pure_eb_ptes
       - cosebis_ptes
@@ -396,7 +392,6 @@ outputs:
         --fiducial-pure-eb-pte-path {inputs.pure_eb_pte_per_cut}
         --fiducial-cosebis-pte-path {inputs.cosebis_pte_per_cut}
         --emit evidence
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 4, memory: "16GB" }
 
@@ -449,9 +444,9 @@ outputs:
       / 8≤ℓ≤2048). The mock PTEs use the covariance of the matching
       window, with a Hartlap factor on the pure modes only under the
       `monte_carlo`
-      [covariance method](#../analyses.validation.analyses.glass_mocks.decisions.pure_eb_covariance_method).
+      [covariance method](#../analyses.covariances.decisions.pure_eb_covariance_method).
     inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut]
-    decisions: [scale_cut_convention, reporting_binning]
+    decisions: [reporting_binning]
     recipe:
       command: >
         python src/workflow/scripts/mock_min_pte_calibration.py
@@ -460,7 +455,6 @@ outputs:
         --cosebis-pte {inputs.cosebis_pte_per_cut}
         --cl-pte {inputs.cl_pte_per_cut}
         --reporting-binning {decisions.reporting_binning}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 1, memory: "8GB" }
 
@@ -481,7 +475,7 @@ outputs:
       raise the minimum PTE, while the slightly underestimated
       configuration-space covariance lowers it.
     inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut]
-    decisions: [scale_cut_convention, pte_threshold, reporting_binning]
+    decisions: [pte_threshold, reporting_binning]
     recipe:
       command: >
         python src/workflow/scripts/mock_min_pte_calibration.py
@@ -490,7 +484,6 @@ outputs:
         --cosebis-pte {inputs.cosebis_pte_per_cut}
         --cl-pte {inputs.cl_pte_per_cut}
         --reporting-binning {decisions.reporting_binning}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --pte-threshold {decisions.pte_threshold}
         --emit figure --out-file {output}
       resources: { cpus: 1, memory: "8GB" }
@@ -573,7 +566,7 @@ outputs:
       `passes`, `passes_penalized`, `verdict_change` (the last three
       against a fixed 0.05 level, not the
       [adopted p_thr](#decisions.pte_threshold)).
-    decisions: [scale_cut_convention, pte_definition, reporting_binning, leakage_correction]
+    decisions: [pte_definition, reporting_binning, leakage_correction]
     inputs:
       - config_space_pte_data
       - harmonic_space_pte_data
@@ -583,7 +576,6 @@ outputs:
         --config-space-evidence {inputs.config_space_pte_data}
         --harmonic-space-evidence {inputs.harmonic_space_pte_data}
         --reporting-binning {decisions.reporting_binning} --leakage-correction {decisions.leakage_correction}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
 
   - id: cosebis_harmonic_config
@@ -631,7 +623,7 @@ outputs:
       consistency with zero. Black squares mark the adopted cuts (12–83
       arcmin). The size cut (fiducial versus initial) expands the
       acceptance region, while stellar masking contracts it.
-    decisions: [scale_cut_convention, pte_threshold, fiducial_catalog, leakage_correction, reporting_binning]
+    decisions: [pte_threshold, fiducial_catalog, leakage_correction, reporting_binning]
     inputs:
       - config_space_pte_data
     recipe:
@@ -640,7 +632,6 @@ outputs:
         --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning}
         --from-evidence {inputs.config_space_pte_data}
         --figure appendix
-        --scale-cut-convention {decisions.scale_cut_convention}
         --pte-threshold {decisions.pte_threshold}
         --out-file {output}
 
@@ -674,10 +665,9 @@ outputs:
       `\newcommand` definitions:
 
       - the six headline PTEs and the version-comparison numbers,
-        with pure-mode scale cuts resolved from the
-        [scale-cut convention](#decisions.scale_cut_convention) and
-        rounded to integer arcmin, which gives 12 and 83 under either
-        reading;
+        with the pure-mode scale cuts, the bin edges of the
+        [fiducial cut](#decisions.fiducial_scale_cuts) rounded to
+        integer arcmin (12 and 83);
       - the harmonic/configuration COSEBI cross-check PTEs
         (`\harmCosebisPteSixThreeFid`, `\cfgCosebisPteSixThreeFid`,
         `\harmCosebisPteSixThreeFull`, `\cfgCosebisPteSixThreeFull`) from
@@ -719,7 +709,7 @@ outputs:
         and over the fiducial window (`\ngFractionDiagonal{All,Fiducial}`)
         from [cov_reporting_g](#inputs.cov_reporting_g) and
         [cov_reporting_ng](#inputs.cov_reporting_ng).
-    decisions: [scale_cut_convention, pte_threshold, fiducial_catalog, leakage_correction, reporting_binning]
+    decisions: [pte_threshold, fiducial_catalog, leakage_correction, reporting_binning]
     inputs:
       - config_space_pte_data
       - harmonic_space_pte_data
@@ -746,7 +736,6 @@ outputs:
         --mock-scale-cut-scan {inputs.mock_min_pte_scale_cut_scan}
         --harmonic-config-fiducial-evidence {inputs.cosebis_harmonic_metrics}
         --harmonic-config-full-evidence {inputs.cosebis_harmonic_metrics_full}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --pte-threshold {decisions.pte_threshold}
         --survey-properties {decisions.fiducial_catalog}
         --cosebis-modes-data {inputs.cosebis_modes_data}
@@ -774,15 +763,130 @@ outputs:
 
 decisions:
   fiducial_scale_cuts:
-    from: ../fiducial_scale_cuts
+    label: "Scale cuts for the B-mode null tests"
+    tags: [scale_cuts]
+    rationale: |
+      Which angular and multipole ranges the null tests use, the
+      ranges Papers III and IV also adopt for inference. The lower
+      angular bound sits above the scale of a single MegaCam CCD, so
+      it excludes most of the pair separations where the
+      [repeating additive bias](#../findings.ccd_scale_cosebi_pattern)
+      appears. The cuts were chosen from the B-mode tests together
+      with additional systematics checks and blinded
+      inference-stability checks in Papers III and IV.
+
+      A cut snaps conservatively to the measurement bins: a θ cut
+      keeps the whole reporting bins between its bounds, and an ℓ cut
+      keeps the whole bandpowers. Every bin a test uses lies inside
+      the stated range, so the tests use slightly less data than the
+      range suggests.
+
+      Scale cuts are preferred to subtracting the B modes because
+      the relation between E- and B-mode contamination depends on
+      the physical mechanism. No look-elsewhere correction is applied
+      for the many cuts tested, because the B modes were only one of
+      four factors behind the choice, with PSF leakage, modeling
+      systematics and the scale-cut dependence of the blinded
+      constraints. Treating the two boundaries as fitted parameters
+      is the most pessimistic degrees-of-freedom treatment;
+      [the finding](#../findings.bmodes_null_at_adopted_cuts) records
+      what it does to the PTEs.
+
+      The tables and heatmaps always show both ranges; this decision
+      selects which one
+      [primary_null_test_report](#../outputs.primary_null_test_report)
+      treats as primary.
+    default: adopted
+    options:
+      adopted:
+        label: "12'–83', 300 < ℓ < 1600"
+        insights: [asgari19a_bmode_subtraction_insufficient]
+        description: |
+          Configuration space: reporting bins 9–15, between edges 9
+          and 16 (11.997′ and 82.861′) of the 21-edge
+          geomspace(1', 250') reporting grid. Harmonic: the
+          bandpowers within 300 < ℓ < 1600.
+      full_range:
+        label: "Full range (1'–250', 8 ≤ ℓ ≤ 2048)"
+        description: |
+          Makes the full range the primary report. It is always
+          shown beside the fiducial cut in the
+          [PTE table](#../outputs.pte_table_appendix) to expose
+          contamination at small and large scales.
+      bmode_bias_subtraction:
+        label: "Subtract a B-mode template"
+        excluded: true
+        excluded_reason: |
+          The B-mode amplitude does not determine the E-mode
+          contamination, since the E/B ratio depends on the
+          systematic; scale cuts need no such assumption.
   pte_definition:
     from: ../pte_definition
-  scale_cut_convention:
-    from: ../scale_cut_convention
   pte_threshold:
-    from: ../pte_threshold
+    label: "PTE pass threshold p_thr"
+    tags: [statistics]
+    rationale: |
+      The test statistic is the minimum PTE over the six B-mode
+      statistics, and p_thr is set on the systematics-free GLASS
+      realizations so that a clean sample fails 5% of the time, as a
+      single test at PTE = 0.05 would. The six are correlated but not
+      perfectly, so the minimum skews low and the calibrated p_thr
+      sits well below 0.05
+      ([mock_min_pte_calibration](#../outputs.mock_min_pte_calibration)).
+      It changes little across a wide region of scale cuts around the
+      fiducial window
+      ([scale-cut scan](#../analyses.validation.analyses.glass_mocks.outputs.mock_min_pte_scale_cut_scan)),
+      so a single representative value, rounded conservatively and
+      matching the value Paper III uses, is adopted everywhere. A
+      [PTE table](#../outputs.pte_table_appendix) row passes when its
+      minimum PTE is at least p_thr. This decision sets the heatmap
+      colour scale, the threshold marked on the calibration figure
+      and the value quoted in the report; the PTEs themselves do not
+      depend on it.
+    default: calibrated_0p01
+    options:
+      nominal_0p05:
+        label: "0.05 per statistic"
+        description: "Each of the six statistics tested against 0.05. The minimum over the six skews low, so a clean sample fails at least one more than 5% of the time."
+      calibrated_0p01:
+        label: "0.01 on the minimum PTE"
+        insights: [asgari19a_bmode_verdict_depends_on_statistic, jefferson25_estimators_disagree_on_same_data]
+        description: |
+          Conservative rounding of the 350-mock minimum-PTE
+          calibration; a clean sample fails it 7% of the time at the
+          fiducial cuts.
   scale_cut_pair_grid:
-    from: ../scale_cut_pair_grid
+    label: "COSEBI PTE scale-cut grid"
+    tags: [scale_cuts]
+    rationale: |
+      The COSEBI PTE is evaluated for every pair of reporting-grid
+      edges, so the [PTE composite figure](#../outputs.fig_pte_heatmaps)
+      shows how the verdict depends on the scale cut; its fiducial and
+      full-range cells feed the
+      [PTE table](#../outputs.pte_table_appendix) and the mock
+      calibration. The COSEBI filters T_{±n}(θ) are built from the
+      roots of polynomials on the cut interval, a construction that
+      becomes numerically unstable as the interval narrows. A pair
+      enters the grid only where the filters can be built, because a
+      PTE from a failed filter set measures the numerics rather than
+      the B modes.
+    default: production_grid
+    options:
+      production_grid:
+        label: "Stable index pairs of geomspace(1', 250', 21)"
+        description: |
+          206 pairs: all 210 edge pairs except the single-bin pairs
+          (9, 10), (10, 11), (11, 12) and (13, 14), on which the
+          construction of T_{±n}(θ) fails. The figure shows the 190
+          cuts that span at least two bins.
+      single_pair:
+        excluded: true
+        excluded_reason: "Full-range PTE reporting and mock calibration require the full-range cell absent from this grid."
+        label: "Single pair only (i=9, j=16)"
+        description: |
+          Only the
+          [adopted 12'–83' fiducial cut](#decisions.fiducial_scale_cuts);
+          no scale-cut sensitivity.
   fiducial_blind:
     from: ../fiducial_blind
   fiducial_catalog:
@@ -799,15 +903,16 @@ decisions:
     label: "PTE-reported mode subsets"
     tags: [estimator]
     rationale: |
-      n ≤ 6 is the cosmologically informative range, where the
-      E-mode amplitude has saturated; n ≤ 20 tests the B modes over
-      the full computed basis, which matters for the full-range
-      oscillatory pattern that motivates the lower angular cut.
+      The low-order modes are the cosmologically informative range,
+      where the E-mode amplitude has saturated; the full computed
+      basis tests the B modes where systematics can still appear,
+      which matters for the full-range oscillatory pattern that
+      motivates the lower angular cut.
       The selection acts in [primary_null_test_report](#outputs.primary_null_test_report),
       recalibrating its minimum from the selected stored mock PTE columns;
       the complete reference products and mode-vector figures retain both subsets.
       Larger subsets are unavailable because the
-      [mode count](#decisions.mode_count) is 20.
+      [mode count](#decisions.mode_count) bounds the basis.
     default: n_le_6_and_n_le_20
     options:
       n_le_6_and_n_le_20:
@@ -876,6 +981,91 @@ prior_insights:
     scope: |
       COSEBI B-mode analysis of KiDS-450, DES-SV and CFHTLenS
       (Asgari et al. 2019a, §4); same n_max = 20 as Paper II.
+
+  asgari19a_bmode_subtraction_insufficient:
+    id: asgari19a_bmode_subtraction_insufficient
+    claim: |
+      Different systematics contaminate E and B modes by different
+      amounts: most produce a significant E-mode contamination on the
+      same scales as their B modes, but a repeating additive pattern
+      does not. Correcting the data by subtracting the B modes from
+      the E modes is therefore not sufficient; the B-mode amplitude
+      alone does not determine the E-mode contamination.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "For this reason we have shown that it is not sufficient to correct data by simply subtracting the B-modes from the E-modes."
+          prefix: "In contrast the COSEBIs B-modes detect systematics that can affect E and B-modes differently."
+        location:
+          page: 22
+      - id: ev2
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "Comparing the right and left panels we see that all systematics affect both E and B-modes, but not equally."
+        location:
+          page: 16
+      - id: ev3
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "The repeating additive pattern forms a clear exception to this rule though."
+          prefix: "In general a significant B-mode signal translates to a significant contamination to the E-modes on the same scales."
+        location:
+          page: 16
+    scope: "Mock systematics on COSEBIs (Asgari et al. 2019a, A&A 624, A134, §5.2)"
+
+  asgari19a_bmode_verdict_depends_on_statistic:
+    id: asgari19a_bmode_verdict_depends_on_statistic
+    claim: |
+      A shear catalogue can formally pass one B-mode statistic and
+      fail another computed from the same data, because each weights
+      the B modes differently (KiDS-450 passes COSEBIs but shows a
+      2.7σ B mode in compressed COSEBIs). The recommendation is to
+      require every statistic to be consistent with zero, which is
+      the logic behind taking the minimum PTE over all six B-mode
+      statistics as the test statistic.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "Here the COSEBIs B-modes that are insignificant overall are weighted in such a way that the resulting CCOSEBIs signal becomes significant."
+        location:
+          page: 22
+      - id: ev2
+        doi: "10.1051/0004-6361/201834379"
+        quote:
+          exact: "We therefore recommend measuring both CCOSEBIs and COSEBIs B-modes in future analyses, ensuring that both are consistent with zero."
+        location:
+          page: 22
+    scope: "COSEBIs vs compressed COSEBIs (Asgari et al. 2019a, Conclusions)"
+    notes: |
+      Paper II extends the recommendation to pure-mode ξ_±, COSEBIs
+      and Cℓ^BB.
+
+  jefferson25_estimators_disagree_on_same_data:
+    id: jefferson25_estimators_disagree_on_same_data
+    claim: |
+      In a uniform reanalysis of KiDS-1000, DES-Y3 and HSC-Y3, the
+      same tomographic bins can pass a pseudo-Cℓ B-mode test and fail
+      the HybridEB one: the B-mode verdict depends on the estimator,
+      so passing a single null test does not validate a catalogue.
+    created_at: "2026-10-31T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.33232/001c.144668"
+        quote:
+          exact: "also reveals that it is possible for one of the estimators to pass while the other fails."
+        location:
+          page: 18
+      - id: ev2
+        doi: "10.33232/001c.144668"
+        quote:
+          exact: "the signal may be significantly different when estimated with the"
+        location:
+          page: 21
+    scope: "Stage-III reanalysis (Jefferson et al. 2025, OJAp, §5)"
 
 analyses:
 

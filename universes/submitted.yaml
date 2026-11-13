@@ -17,13 +17,6 @@ decisions:
   fiducial_catalog: size_cut
   leakage_correction: applied
   fiducial_blind: blind_a
-  fiducial_scale_cuts: adopted
-  # Edges 9 and 16 of geomspace(1', 250', 21), which the text prints rounded.
-  scale_cut_convention: grid_bin_edges
-  scale_cut_pair_grid: production_grid
-  # Each statistic tested against the nominal 0.05. The threshold sets the PTE
-  # heatmap colour scale and the quoted threshold value.
-  pte_threshold: nominal_0p05
   integration_grid: bins_1000
   # cosmo_numba's get_pure_EB_modes, integrated with QUADPACK dqags.
   pure_eb_integration_method: adaptive_dqags
@@ -32,11 +25,8 @@ decisions:
   pure_eb_rebinning_weights: none
   # The transform limits [1', 250'].
   pure_eb_integration_limits: reporting_extent
-  # 2000 draws, with the Hartlap factor on the inverse at χ² time.
-  pure_eb_covariance_method: monte_carlo
   harmonic_validation_binning: bins_96
   pte_definition: chi2_tail
-  fiducial_cosmology: planck18
   bandpower_binning: bandpowers_32_powspace
   noise_bias_correction: analytic_shot_noise
   reporting_binning: bins_20
@@ -52,5 +42,5 @@ analyses:
     universe: submitted
   validation:
     universe: submitted
-  null_tests:
+  significance:
     universe: submitted

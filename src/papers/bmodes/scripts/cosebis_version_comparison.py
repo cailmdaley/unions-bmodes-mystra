@@ -25,7 +25,7 @@ from print_width import savefig_at_width
 
 # The paper stacks Fig. 8's three version-comparison panels at 0.88\textwidth.
 STACKED_PRINT_WIDTH = 0.88 * FIG_WIDTH_FULL
-from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
+from scale_cuts import fiducial_theta_cut
 
 from catalog_versions import add_catalog_arguments, catalogs_from
 from decision_values import FIDUCIAL_BLIND, MODE_COUNT, REPORTING_BINNING
@@ -154,7 +154,6 @@ def main(
     results_dir,
     cov_dir,
     out_file,
-    scale_cut_convention,
     fiducial_version=None,
     fiducial_modes_path=None,
     fiducial_covariance_path=None,
@@ -184,7 +183,7 @@ def main(
     # Which version gets the fiducial reference line in boxes
     fiducial_for_comparison = catalogs.fiducial
 
-    fiducial_scale_cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
+    fiducial_scale_cut = fiducial_theta_cut(reporting)
     full_scale_cut = (reporting.min_sep, reporting.max_sep)
 
     scale_cuts = {
@@ -312,7 +311,6 @@ def _from_cli(argv=None):
         default=None,
         help="The fiducial version's cosebis_covariance npz",
     )
-    add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
     main(
         catalogs_from(a),
@@ -322,7 +320,6 @@ def _from_cli(argv=None):
         a.results_dir,
         a.cov_dir,
         a.out_file,
-        a.scale_cut_convention,
         fiducial_version=a.fiducial_version,
         fiducial_modes_path=a.fiducial_modes_path,
         fiducial_covariance_path=a.fiducial_covariance_path,

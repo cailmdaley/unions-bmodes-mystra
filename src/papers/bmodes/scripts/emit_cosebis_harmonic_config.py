@@ -5,7 +5,7 @@ two ways — harmonic space (Cℓ bandpower fit) and config space
 (real-space COSEBIs coefficients) — across catalog version and angular-range
 cut. Those values live inside nested-dict `evidence.json` carriers belonging
 to `type: figure` / `type: data` ASTRA outputs
-(``null_tests.config_space_pte_evidence``, ``validation.cosebis_harmonic_modes``,
+(``significance.config_space_pte_evidence``, ``validation.cosebis_harmonic_modes``,
 and ``validation.cosebis_harmonic_modes_full``). MySTRA's ``{astra:value col=
 where=}`` role can only read a flat CSV/JSON table, not a nested dict. This
 script reads

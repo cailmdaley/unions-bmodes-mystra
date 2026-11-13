@@ -41,8 +41,6 @@ decisions:
     from: ../fiducial_blind
   harmonic_validation_binning:
     from: ../harmonic_validation_binning
-  scale_cut_convention:
-    from: ../scale_cut_convention
   fiducial_catalog:
     from: ../fiducial_catalog
   integration_grid:
@@ -69,7 +67,6 @@ outputs:
   decisions:
   - fiducial_blind
   - harmonic_validation_binning
-  - scale_cut_convention
   - pte_definition
   - fiducial_catalog
   - leakage_correction
@@ -95,7 +92,6 @@ outputs:
         --fiducial-cl-cov-path "$k/cl_cov_$ver"_blind=A_powspace_nbins=$nb.fits \
         --fiducial-xi-path "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --fiducial-cov-path "$c/$cb/$cb"_processed.txt \
-        --scale-cut-convention {decisions.scale_cut_convention} \
         --out-file {output}
       rm -rf "$x" "$c" "$l" "$k"
     resources:
@@ -117,7 +113,6 @@ outputs:
   decisions:
   - fiducial_blind
   - harmonic_validation_binning
-  - scale_cut_convention
   - pte_definition
   - fiducial_catalog
   - leakage_correction
@@ -143,7 +138,6 @@ outputs:
         --fiducial-cl-cov-path "$k/cl_cov_$ver"_blind=A_powspace_nbins=$nb.fits \
         --fiducial-xi-path "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --fiducial-cov-path "$c/$cb/$cb"_processed.txt \
-        --scale-cut-convention {decisions.scale_cut_convention} \
         --out-file {output}
       rm -rf "$x" "$c" "$l" "$k"
     resources:
@@ -165,7 +159,6 @@ outputs:
   decisions:
   - fiducial_blind
   - harmonic_validation_binning
-  - scale_cut_convention
   - pte_definition
   - fiducial_catalog
   - leakage_correction
@@ -191,7 +184,6 @@ outputs:
         --fiducial-cl-cov-path "$k/cl_cov_$ver"_blind=A_powspace_nbins=$nb.fits \
         --fiducial-xi-path "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
         --fiducial-cov-path "$c/$cb/$cb"_processed.txt \
-        --scale-cut-convention {decisions.scale_cut_convention} \
         --out-file {output}
       rm -rf "$x" "$c" "$l" "$k"
     resources:

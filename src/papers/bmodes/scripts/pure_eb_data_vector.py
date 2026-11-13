@@ -28,7 +28,7 @@ from plotting_utils import (
     PAPER_MPLSTYLE,
 )
 from pure_mode_covariance import hartlap_samples
-from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
+from scale_cuts import fiducial_theta_cut
 from catalog_versions import add_catalog_arguments, catalogs_from
 from decision_values import FIDUCIAL_BLIND, REPORTING_BINNING
 
@@ -226,9 +226,8 @@ def _create_pure_eb_figure(
     return fig
 
 
-def main(version, blind, reporting, pure_eb_path, pure_eb_covariance_path, cov_path, out_file,
-         scale_cut_convention):
-    fiducial_xip_scale_cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
+def main(version, blind, reporting, pure_eb_path, pure_eb_covariance_path, cov_path, out_file):
+    fiducial_xip_scale_cut = fiducial_theta_cut(reporting)
     fiducial_xim_scale_cut = fiducial_xip_scale_cut
 
     out_file = Path(out_file)
@@ -329,10 +328,9 @@ def _from_cli(argv=None):
     ap.add_argument(
         "--out-file", required=True, help="Output PNG path (lc {output})"
     )
-    add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
     main(catalogs_from(a).fiducial, a.blind, a.reporting_binning, a.pure_eb_data,
-         a.pure_eb_covariance, a.reporting_cov, a.out_file, a.scale_cut_convention)
+         a.pure_eb_covariance, a.reporting_cov, a.out_file)
 
 
 if __name__ == "__main__":

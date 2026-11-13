@@ -18,7 +18,7 @@ import treecorr
 from cosmo_numba.B_modes.cosebis import COSEBIS
 from numerics import compute_chi2_pte
 from plotting_utils import FIG_WIDTH_SINGLE, PAPER_MPLSTYLE
-from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
+from scale_cuts import fiducial_theta_cut
 
 from sp_validation.b_modes import calculate_cosebis, scale_cut_to_bins
 from decision_values import INTEGRATION_GRID, MODE_COUNT, REPORTING_BINNING
@@ -77,10 +77,9 @@ def _compute_Bn_only(gg, nmodes, scale_cut):
     return En, Bn
 
 
-def main(nmodes, integration, reporting, xi_1k_path, xi_10k_path, cov_1k_path, out_file,
-         scale_cut_convention):
+def main(nmodes, integration, reporting, xi_1k_path, xi_10k_path, cov_1k_path, out_file):
     # Scale cuts
-    fiducial_scale_cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
+    fiducial_scale_cut = fiducial_theta_cut(reporting)
     full_scale_cut = (reporting.min_sep, reporting.max_sep)
     scale_cuts = {"fiducial": fiducial_scale_cut, "full": full_scale_cut}
 
@@ -271,10 +270,9 @@ def _from_cli(argv=None):
         required=True,
         help="Output file (lc {output}): the single rendered PNG",
     )
-    add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
     main(a.mode_count, a.integration_grid, a.reporting_binning, a.xi_1k, a.xi_10k,
-         a.cov_1k, a.out_file, a.scale_cut_convention)
+         a.cov_1k, a.out_file)
 
 
 if __name__ == "__main__":

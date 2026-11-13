@@ -21,22 +21,22 @@ outside this analysis: the shear catalogs of Paper I, the n(z), and from the GLA
 suite of Paper III the per-realisation ξ± and Cℓ stacks and the catalogue of one
 realisation. Everything else is an output. The 350 realisation catalogues are not
 carried, so the fine mock ξ±, measured from them with the data's TreeCorr settings,
-enter as a stack. The tree under `analyses/`
-reads in the order of the argument: the covariances, the data vectors they belong
-to, the validation behind both, and the null tests where they meet.
+enter as a stack. The tree under `analyses/` lists the conclusions first: the
+significance of the B modes, the validation that licenses it, then the
+covariances and the data vectors it rests on.
 
 | Sub-analysis | What it does |
 |---|---|
-| `covariances` | Every covariance: `CosmoCov` ξ±, NaMaster Cℓ, and the pure E/B (M C Mᵀ) and COSEBI (Tᵀ C T) covariances; the reference covariances the mocks are held against; and the scan over n(z) blinds |
-| `data_vectors` | ξ± and Cℓ measured from the catalogs, including the 10,000-bin ξ± of the convergence check, and pure E/B modes and COSEBIs as linear transforms of ξ± |
+| `significance` | Where data meet covariance: data-vector figures with their error bars, PTE matrices over scale cuts and catalog versions, the mock calibration of the minimum PTE, the PTE tables and heatmaps, the primary null test, and the numbers the paper quotes |
 | `validation` | The evidence that the null tests can be trusted: the estimators against a 10,000-bin grid, COSEBIs from harmonic-space bandpowers against those from ξ±, and the B-mode covariances across n(z) blinds |
 | `validation/glass_mocks` | Validation of estimators and covariances on 350 GLASS mocks, and the per-mock statistics |
-| `null_tests` | Where data meet covariance: data-vector figures with their error bars, PTE matrices over scale cuts and catalog versions, the mock calibration of the minimum PTE, the PTE tables and heatmaps, the primary null test, and the numbers the paper quotes |
+| `covariances` | Every covariance: `CosmoCov` ξ±, NaMaster Cℓ, and the pure E/B (M C Mᵀ) and COSEBI (Tᵀ C T) covariances; the reference covariances the mocks are held against; and the scan over n(z) blinds |
+| `data_vectors` | ξ± and Cℓ measured from the catalogs, including the 10,000-bin ξ± of the convergence check, and pure E/B modes and COSEBIs as linear transforms of ξ± |
 
 `data_vectors` reads no covariance. `covariances` reads the ξ± bin centres and pair
 counts from `data_vectors`, which the pure E/B and COSEBI transforms are built on,
 and none of the shear. Data flows one way: from `data_vectors` through
-`covariances` and `validation` to `null_tests`.
+`covariances` and `validation` to `significance`.
 
 `reference_covariance` governs the covariances the GLASS mocks are held against.
 They are the fiducial recipes under one decision: CosmoCov at the noise an option
@@ -74,9 +74,8 @@ changes. `universes/<id>.yaml` names each selection, and each sub-analysis's own
 Some decisions act more narrowly than their labels suggest, because the paper
 reports both options side by side. `fiducial_scale_cuts` and `mode_subsets`
 select what `primary_null_test_report` records; the report's tables and figures
-always show both ranges and all six tests. `scale_cut_convention` moves COSEBIs
-only, and `pte_threshold` sets the heatmap colour scale, the marked line and the
-quoted value.
+always show both ranges and all six tests. `pte_threshold` sets the heatmap
+colour scale, the marked line and the quoted value.
 
 ## Reproducing
 

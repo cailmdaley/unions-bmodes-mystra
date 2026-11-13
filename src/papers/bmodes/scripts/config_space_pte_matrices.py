@@ -50,9 +50,8 @@ from plotting_utils import (
 )
 from print_width import savefig_at_width
 from scale_cuts import (
-    add_scale_cut_convention_argument,
-    resolve_fiducial_bin_window,
-    resolve_fiducial_scale_cuts,
+    fiducial_bin_window,
+    fiducial_theta_cut,
 )
 from catalog_versions import VERSIONS, add_catalog_arguments, catalogs_from
 from decision_values import FIDUCIAL_BLIND, REPORTING_BINNING
@@ -813,25 +812,25 @@ def create_9panel_composite(
     return fig, all_stats, all_full_range_ptes
 
 
-def _fiducial_cuts(reporting, scale_cut_convention):
+def _fiducial_cuts(reporting):
     """Fiducial scale cuts: (xip, xim, cosebis) arcmin pairs.
 
     These are the cuts in arcmin, for the evidence payload and the axis
     annotations. The reporting-grid *cell* they select is resolved separately
-    by ``resolve_fiducial_bin_window`` — never by matching against bin means;
+    by ``fiducial_bin_window`` — never by matching against bin means;
     see that function for why.
     """
-    cut = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
+    cut = fiducial_theta_cut(reporting)
     return cut, cut, cut
 
 
-def _pure_eb_windows(reporting, scale_cut_convention):
+def _pure_eb_windows(reporting):
     """(xip, xim) fiducial bin windows into the pure-E/B PTE matrices.
 
     Both are (first_bin, last_bin), 0-based and inclusive, resolved from the
-    reporting-grid bin *edges*; see ``resolve_fiducial_bin_window``.
+    reporting-grid bin *edges*; see ``fiducial_bin_window``.
     """
-    window = resolve_fiducial_bin_window(reporting, scale_cut_convention)
+    window = fiducial_bin_window(reporting)
     return window, window
 
 
@@ -858,7 +857,6 @@ def gather_all_versions(
     reporting,
     pure_eb_pte_files,
     cosebis_pte_files,
-    scale_cut_convention,
     fiducial_overrides=None,
 ):
     """Load PTE matrices, cut statistics and full-range PTEs for every version.
@@ -871,8 +869,8 @@ def gather_all_versions(
     """
     versions = [v for v in VERSIONS if "_ecut" not in v]
     fiducial_version = catalogs.fiducial
-    _, _, cosebis_fid = _fiducial_cuts(reporting, scale_cut_convention)
-    xip_window, xim_window = _pure_eb_windows(reporting, scale_cut_convention)
+    _, _, cosebis_fid = _fiducial_cuts(reporting)
+    xip_window, xim_window = _pure_eb_windows(reporting)
 
     matrices_by_version = {}
     all_stats = {}
@@ -953,13 +951,12 @@ def build_evidence(
     matrices_by_version,
     all_stats,
     all_full_range_ptes,
-    scale_cut_convention,
     spec_path=None,
     outputs=None,
 ):
     """Assemble the evidence payload, including the full per-version matrices."""
     fiducial_version = catalogs.fiducial
-    xip_fid, xim_fid, cosebis_fid = _fiducial_cuts(reporting, scale_cut_convention)
+    xip_fid, xim_fid, cosebis_fid = _fiducial_cuts(reporting)
 
     evidence_data = {
         "spec_id": "config_space_pte_matrices",
@@ -1016,14 +1013,13 @@ def render_figure(
     reporting,
     matrices_by_version,
     all_full_range_ptes,
-    scale_cut_convention,
     which="fiducial",
     pte_threshold=0.05,
 ):
     """Render the fiducial 1×3 or the appendix N×3 composite from matrices."""
     fiducial_version = catalogs.fiducial
-    xip_window, xim_window = _pure_eb_windows(reporting, scale_cut_convention)
-    _, _, cosebis_fid = _fiducial_cuts(reporting, scale_cut_convention)
+    xip_window, xim_window = _pure_eb_windows(reporting)
+    _, _, cosebis_fid = _fiducial_cuts(reporting)
     version_labels = catalogs.labels
 
     if which == "fiducial":
@@ -1067,7 +1063,6 @@ def render_from_evidence(
     reporting,
     evidence_path,
     out_file,
-    scale_cut_convention,
     which="fiducial",
     pte_threshold=0.05,
 ):
@@ -1100,7 +1095,6 @@ def render_from_evidence(
         reporting,
         matrices_by_version,
         full_range_by_version,
-        scale_cut_convention,
         which,
         pte_threshold=pte_threshold,
     )
@@ -1119,7 +1113,6 @@ def main(
     reporting,
     pure_eb_pte_files,
     cosebis_pte_files,
-    scale_cut_convention,
     output_dir=None,
     spec_path=None,
     fiducial_overrides=None,
@@ -1134,7 +1127,6 @@ def main(
         reporting,
         pure_eb_pte_files,
         cosebis_pte_files,
-        scale_cut_convention,
         fiducial_overrides,
     )
 
@@ -1146,7 +1138,6 @@ def main(
             matrices_by_version,
             all_stats,
             all_full_range_ptes,
-            scale_cut_convention,
             spec_path=spec_path,
         )
         with open(out_file, "w") as f:
@@ -1159,7 +1150,6 @@ def main(
             reporting,
             matrices_by_version,
             all_full_range_ptes,
-            scale_cut_convention,
             figure,
             pte_threshold=pte_threshold,
         )
@@ -1181,7 +1171,7 @@ def main(
 
     print("\n--- Creating 1x3 composite for fiducial version ---", flush=True)
     fig_fid = render_figure(
-        catalogs, reporting, matrices_by_version, all_full_range_ptes, scale_cut_convention,
+        catalogs, reporting, matrices_by_version, all_full_range_ptes,
         "fiducial", pte_threshold=pte_threshold
     )
     fig_fid.savefig(
@@ -1196,7 +1186,7 @@ def main(
 
     print("\n--- Creating Nx3 composite for all versions ---", flush=True)
     fig = render_figure(
-        catalogs, reporting, matrices_by_version, all_full_range_ptes, scale_cut_convention,
+        catalogs, reporting, matrices_by_version, all_full_range_ptes,
         "appendix", pte_threshold=pte_threshold
     )
     fig.savefig(
@@ -1304,7 +1294,6 @@ def _from_cli(argv=None):
         default="nominal_0p05",
         help="ASTRA PTE-threshold option ID or numeric threshold",
     )
-    add_scale_cut_convention_argument(ap)
     a = ap.parse_args(argv)
 
     if sum(bool(x) for x in (a.emit, a.from_evidence, a.out)) != 1:
@@ -1323,7 +1312,6 @@ def _from_cli(argv=None):
             a.reporting_binning,
             a.from_evidence,
             a.out_file,
-            a.scale_cut_convention,
             which=a.figure,
             pte_threshold=a.pte_threshold,
         )
@@ -1374,7 +1362,6 @@ def _from_cli(argv=None):
         reporting=a.reporting_binning,
         pure_eb_pte_files=pure_eb_pte_files,
         cosebis_pte_files=cosebis_pte_files,
-        scale_cut_convention=a.scale_cut_convention,
         output_dir=a.out,
         fiducial_overrides=fiducial_overrides,
         emit=a.emit,

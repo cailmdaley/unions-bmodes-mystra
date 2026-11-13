@@ -29,7 +29,7 @@ $$ (eq:transform)
 
 class SpecLinksTest(unittest.TestCase):
     def test_link_to_a_whole_sub_analysis_fails(self):
-        here = Path("analyses/null_tests")
+        here = Path("analyses/significance")
         self.assertFalse(resolves(here, "../analyses.covariances"))
         self.assertTrue(resolves(here, "../analyses.covariances.outputs.cl_cov_sweep"))
 

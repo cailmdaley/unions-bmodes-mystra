@@ -49,10 +49,9 @@ from pure_eb_transform import (
     load_xi,
 )
 from scale_cuts import (
-    add_scale_cut_convention_argument,
     reporting_grid_edges,
-    resolve_fiducial_bin_window,
-    resolve_fiducial_scale_cuts,
+    fiducial_bin_window,
+    fiducial_theta_cut,
 )
 from catalog_versions import catalogs_from
 from decision_values import FIDUCIAL_CATALOG, INTEGRATION_GRID, MODE_COUNT, REPORTING_BINNING
@@ -178,7 +177,6 @@ def compute(
     cosebis_baseline,
     cosebis_covariance,
     out_file,
-    scale_cut_convention,
     integration_method,
     rebinning_weights,
     integration_limits,
@@ -198,7 +196,6 @@ def compute(
             "nbins_fine": {"coarse": nbins_1k, "fine": nbins_10k},
             "fine_extent_arcmin": [min_sep_int, max_sep_int],
             "decisions": {
-                "scale_cut_convention": scale_cut_convention,
                 "pure_eb_integration_method": integration_method,
                 "pure_eb_rebinning_weights": rebinning_weights,
                 "pure_eb_integration_limits": integration_limits,
@@ -245,7 +242,7 @@ def compute(
             "fine_bins_straddling_each_reporting_edge": counts,
             "straddling_bin_npairs_fraction_of_its_reporting_bin": fracs,
         }
-    first_bin, last_bin = resolve_fiducial_bin_window(reporting, scale_cut_convention)
+    first_bin, last_bin = fiducial_bin_window(reporting)
     payload["grid_checks"] = {
         "reporting_edges_arcmin": reporting_edges.tolist(),
         "fiducial_window_bins_inclusive": [int(first_bin), int(last_bin)],
@@ -360,7 +357,7 @@ def compute(
     cos_base = np.load(cosebis_baseline, allow_pickle=True)
     cos_cov = np.load(cosebis_covariance)
     scale_cuts = {
-        "fiducial": resolve_fiducial_scale_cuts(reporting, scale_cut_convention),
+        "fiducial": fiducial_theta_cut(reporting),
         "full": (
             reporting.min_sep,
             reporting.max_sep,
@@ -673,7 +670,6 @@ def _from_cli(argv=None):
         help="Render mode: B_n itself for the four grid x interval corners",
     )
     ap.add_argument("--out-file", required=True, help="lc {output}")
-    add_scale_cut_convention_argument(ap)
     add_integration_method_argument(ap)
     add_integration_limits_argument(ap)
     add_rebinning_weights_argument(ap)
@@ -704,7 +700,6 @@ def _from_cli(argv=None):
         cosebis_baseline=a.cosebis_baseline,
         cosebis_covariance=a.cosebis_covariance,
         out_file=a.out_file,
-        scale_cut_convention=a.scale_cut_convention,
         integration_method=a.integration_method,
         rebinning_weights=a.rebinning_weights,
         integration_limits=a.integration_limits,

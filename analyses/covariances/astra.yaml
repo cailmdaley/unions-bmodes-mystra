@@ -83,7 +83,7 @@ outputs:
       area, and the Gaussian part the area alone.
       It sets the non-Gaussian share of the diagonal variance
       quoted in the paper and the total-ξ_± error bars of the
-      [pure-mode data-vector figure](#../analyses.null_tests.outputs.pure_eb_data_vector_figure),
+      [pure-mode data-vector figure](#../analyses.significance.outputs.pure_eb_data_vector_figure),
       but does not enter the PTEs, which use
       the [selected integration covariance](#decisions.covariance_class).
     decisions: [fiducial_catalog, fiducial_blind, covariance_engine, reporting_binning, leakage_correction]
@@ -264,7 +264,7 @@ outputs:
       [pure_eb_data](#../analyses.data_vectors.outputs.pure_eb_data) for the
       [fiducial catalog](#../decisions.fiducial_catalog) at blind A, propagated
       from [cov_integration](#outputs.cov_integration) by the selected
-      [covariance method](#../decisions.pure_eb_covariance_method). The file
+      [covariance method](#decisions.pure_eb_covariance_method). The file
       records that construction (and the draw count, for the Monte Carlo) so χ²
       consumers apply the matching Hartlap treatment. The transform M weights
       fine bins by the [measured pair counts](#inputs.xi_integration); the
@@ -360,7 +360,7 @@ outputs:
       the σ_n that normalise B_n / σ_n in the
       [COSEBI data-vector figure](#../outputs.fig_cosebis_fiducial). T depends on
       the [integration-grid bin centres](#inputs.xi_integration) inside each cut.
-    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, leakage_correction, reporting_binning, integration_grid]
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, leakage_correction, reporting_binning, integration_grid]
     inputs: [xi_integration, cov_integration]
     recipe:
       command: >
@@ -369,7 +369,6 @@ outputs:
         --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
         --xi-integration {inputs.xi_integration}
         --cov-integration {inputs.cov_integration}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 8, memory: "16GB" }
 
@@ -382,7 +381,7 @@ outputs:
       [COSEBI version comparison](#../outputs.fig_versions_cosebis), one npz each,
       from that version's ξ_± ([xi_sweep](#inputs.xi_sweep)) and Gaussian
       integration covariance ([cov_sweep](#outputs.cov_sweep)).
-    decisions: [fiducial_catalog, fiducial_blind, mode_count, scale_cut_convention, leakage_correction, reporting_binning, integration_grid]
+    decisions: [fiducial_catalog, fiducial_blind, mode_count, leakage_correction, reporting_binning, integration_grid]
     inputs: [xi_sweep, cov_sweep]
     recipe:
       command: |
@@ -399,7 +398,6 @@ outputs:
             --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
             --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
             --cov-integration "$c/$cb/$cb"_processed.txt \
-            --scale-cut-convention {decisions.scale_cut_convention} \
             --out-file "$o/$ver"_"$b"_cosebis_covariance.npz
         done
         tar czf {output} -C $o .
@@ -439,7 +437,23 @@ decisions:
   bandpower_binning:
     from: ../bandpower_binning
   fiducial_cosmology:
-    from: ../fiducial_cosmology
+    label: "Fiducial cosmology for covariance theory"
+    tags: [covariance_model]
+    rationale: |
+      The analytic covariance needs a fixed cosmology for
+      its matter power spectrum. Planck 2018 + BAO ΛCDM is the
+      community reference and is shared with the covariances of
+      Papers III and IV. No alternative is exposed: the B modes are
+      tested against zero, so the cosmology enters only through the
+      covariance.
+    default: planck18
+    options:
+      planck18:
+        label: "Planck 2018 + BAO"
+        description: |
+          Ω_m=0.30966, σ_8=0.8102, n_s=0.9665, Ω_b=0.04897,
+          h=0.6766 (astropy `Planck18`).
+        insights: [planck18_fiducial_cosmology]
   leakage_correction:
     from: ../leakage_correction
 
@@ -462,16 +476,54 @@ decisions:
     from: ../pure_eb_integration_limits
 
   pure_eb_covariance_method:
-    from: ../pure_eb_covariance_method
+    label: "Pure-mode covariance construction"
+    tags: [covariance_model]
+    rationale: |
+      The [fixed-quadrature estimator](#../decisions.pure_eb_integration_method)
+      is exactly linear in the fine ξ_± vector, ξ^{E/B/amb} =
+      M · [ξ_+; ξ_−], so its covariance is M C_ξ Mᵀ with C_ξ the
+      CosmoCov covariance. The two options are two ways of
+      evaluating that matrix. The Monte Carlo pushes Gaussian draws
+      of ξ_± through the transform and applies the Hartlap factor at
+      χ² time; it equals M Ĉ_ξ Mᵀ with Ĉ_ξ the draws' sample
+      covariance, so it differs from the exact matrix only by
+      sampling noise.
+
+      The exact matrix is adopted. It is noise-free, so no Hartlap
+      factor enters, and it removes a noise term from every
+      pure-mode PTE and from the mock-calibrated threshold built
+      under the same covariance. It requires a linear operator, so
+      `adaptive_dqags` can only use the Monte Carlo.
+    default: exact_linear
+    options:
+      exact_linear:
+        label: "Exact M C_ξ Mᵀ"
+        description: |
+          M from the averaged transform applied to the 2000 fine-grid
+          unit vectors; C_ξ is the CosmoCov covariance (data) or its
+          mock-matched twin. No Hartlap factor. Under it the
+          data-to-mock-matched B variance ratio is a constant 1.353
+          across ξ^B bins, as expected for a shape-noise B-mode
+          covariance.
+      monte_carlo:
+        label: "Monte Carlo, Hartlap-corrected"
+        description: |
+          Sample covariance of 2000 draws
+          from C_ξ through the same transform, with the Hartlap
+          factor (N − p − 2)/(N − 1) on its inverse; the only option
+          available to `adaptive_dqags`. It reproduces M Ĉ_ξ Mᵀ to
+          1e-15, and its differences from the exact matrix all lie
+          within 1.5σ of the simulated MC scatter (fiducial ξ_−^B PTE
+          0.025 against 0.019, MC scatter 0.004). Its per-bin
+          data-to-mock-matched B variance ratio spreads over
+          1.23–1.43, which is noise.
+        insights: [hartlap07_correction]
 
   decomposition_method:
     from: ../decomposition_method
 
   mode_count:
     from: ../mode_count
-
-  scale_cut_convention:
-    from: ../scale_cut_convention
 
   reference_covariance:
     from: ../reference_covariance
@@ -536,12 +588,12 @@ decisions:
     rationale: |
       The fiducial B-mode null tests use only the Gaussian part of the
       covariance. In configuration space this keeps the
-      calculation tractable on the 1000-bin integration grid;
+      calculation tractable on the fine integration grid;
       in harmonic space Paper IV likewise adds non-Gaussian
       terms only for its EE cosmology analysis. Omitting the
       connected-trispectrum and super-sample terms
-      underestimates the variances (the non-Gaussian share of the
-      ξ_± diagonal variance within the fiducial cuts is about 9%), so
+      underestimates the variances by a
+      [modest share](#../findings.mock_ptes_skew_low_by_ng_term), so
       the null tests are
       conservative: a test that passes with the Gaussian-only
       covariance would generally pass with a more complete one,
@@ -630,4 +682,32 @@ prior_insights:
         location:
           page: 1
     scope: "Sample covariances of Gaussian data, not theory covariances (Hartlap et al. 2007, Eq. 17)."
+
+  planck18_fiducial_cosmology:
+    id: planck18_fiducial_cosmology
+    claim: |
+      The Planck 2018 baseline ΛCDM cosmology (Ω_m = 0.315 ± 0.007,
+      σ_8 = 0.811 ± 0.006, H_0 = 67.4 ± 0.5 km s⁻¹ Mpc⁻¹,
+      Ω_b h² = 0.0224 ± 0.0001, n_s = 0.965 ± 0.004) is the community
+      reference for late-Universe parameters.
+    created_at: "2026-04-25T00:00:00Z"
+    evidence:
+      - id: ev1
+        doi: "10.1051/0004-6361/201833910"
+        quote:
+          exact: |
+            Assuming the base-ΛCDM cosmology, the inferred
+            (model-dependent) late-Universe parameters are:
+            Hubble constant H_0 = (67.4 ± 0.5) km s⁻¹ Mpc⁻¹;
+            matter density parameter Ω_m = 0.315 ± 0.007; and
+            matter fluctuation amplitude σ_8 = 0.811 ± 0.006.
+          prefix: "These results are only weakly dependent on the cosmological model and remain stable, with somewhat increased errors, in many commonly considered extensions."
+          suffix: "We find no compelling evidence for extensions to the base-ΛCDM model."
+        location:
+          page: 1
+    scope: "Base ΛCDM (Planck Collaboration VI 2020, A&A 641, A6)"
+    notes: |
+      The covariance uses the Planck 2018 + BAO parameters of astropy
+      `Planck18` (Ω_m = 0.30966, σ_8 = 0.8102, h = 0.6766), which sit
+      within 1.7% of these central values.
 

@@ -33,7 +33,7 @@ from plotting_utils import (
     iter_version_figures,
     version_label,
 )
-from scale_cuts import add_scale_cut_convention_argument, resolve_fiducial_scale_cuts
+from scale_cuts import fiducial_theta_cut
 
 from sp_validation.b_modes import calculate_cosebis
 from catalog_versions import VERSIONS, catalogs_from
@@ -538,7 +538,6 @@ def main(
     inputs,
     scale_cut,
     output_dir,
-    scale_cut_convention,
     paper_figure_name=None,
     spec_path=None,
 ):
@@ -643,9 +642,7 @@ def main(
         # For the paper figure, produce a combined 2x2 (both scale cuts)
         if fig_spec["is_paper_figure"] and paper_figure_name:
             # Compute the other scale cut for the combined figure
-            scale_cut_full, scale_cut_fid = _scale_cuts(
-                reporting, scale_cut_convention
-            )
+            scale_cut_full, scale_cut_fid = _scale_cuts(reporting)
             # Determine which is "this" and which is "other"
             if scale_cut == scale_cut_full:
                 other_cut = scale_cut_fid
@@ -817,10 +814,10 @@ def main(
     print(f"Saved evidence to {evidence_path}")
 
 
-def _scale_cuts(reporting, scale_cut_convention):
+def _scale_cuts(reporting):
     """(full, fiducial) scale cuts, as used for the combined paper figure."""
     full = (reporting.min_sep, reporting.max_sep)
-    fiducial = resolve_fiducial_scale_cuts(reporting, scale_cut_convention)
+    fiducial = fiducial_theta_cut(reporting)
     return full, fiducial
 
 
@@ -842,14 +839,11 @@ def _compute_modes_npz(
     xi_path,
     cov_path,
     out_file,
-    scale_cut_convention,
 ):
     """Compute the harmonic- and config-space COSEBIs at both scale cuts for one
     version and write exactly one NPZ to ``out_file``."""
     reliable_mode_max = _reliable_mode_max(cosebis_nbins)
-    scale_cut_full, scale_cut_fid = _scale_cuts(
-        reporting, scale_cut_convention
-    )
+    scale_cut_full, scale_cut_fid = _scale_cuts(reporting)
 
     payload = {
         "nmodes": nmodes,
@@ -976,9 +970,9 @@ def _cov_integration_path(cov_dir, version, blind, min_sep, max_sep, nbins):
     return os.path.join(cov_dir, base, f"{base}_processed.txt")
 
 
-def _angular_ranges(reporting, scale_cut_convention):
+def _angular_ranges(reporting):
     """The full and fiducial angular ranges, by name."""
-    full, fiducial = _scale_cuts(reporting, scale_cut_convention)
+    full, fiducial = _scale_cuts(reporting)
     return {"full": full, "fiducial": fiducial}
 
 
@@ -1082,7 +1076,6 @@ def _from_cli(argv=None):
             "--cosmo-val-dir is not given."
         ),
     )
-    add_scale_cut_convention_argument(ap)
     ap.add_argument("--harmonic-validation-binning", type=HARMONIC_VALIDATION_BINNING.__getitem__)
     a = ap.parse_args(argv)
 
@@ -1173,7 +1166,6 @@ def _from_cli(argv=None):
             xi_path,
             cov_path,
             a.out_file,
-            a.scale_cut_convention,
         )
         return
 
@@ -1217,7 +1209,7 @@ def _from_cli(argv=None):
             )
         )
 
-    scale_cut = _angular_ranges(a.reporting_binning, a.scale_cut_convention)[a.angular_range]
+    scale_cut = _angular_ranges(a.reporting_binning)[a.angular_range]
 
     main(
         catalogs=catalogs,
@@ -1228,7 +1220,6 @@ def _from_cli(argv=None):
         inputs=inputs,
         scale_cut=scale_cut,
         output_dir=a.out,
-        scale_cut_convention=a.scale_cut_convention,
         paper_figure_name=f"harmonic_config_cosebis_{a.angular_range}.pdf",
         spec_path=inputs["specs"][0],
     )

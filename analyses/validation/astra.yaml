@@ -131,7 +131,7 @@ outputs:
       10,000), and the effective COSEBI interval each grid's
       bin selection produces. The fiducial window is bins (9, 15)
       on both grids.
-    decisions: [fiducial_catalog, fiducial_blind, scale_cut_convention, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, mode_count, decomposition_method, pte_definition, leakage_correction, reporting_binning, integration_grid]
+    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, mode_count, decomposition_method, pte_definition, leakage_correction, reporting_binning, integration_grid]
     inputs: [xi_reporting, xi_integration, xi_10000_bins, pure_eb_data, pure_eb_covariance, cosebis_modes_data, cosebis_covariance]
     recipe:
       command: >
@@ -144,7 +144,6 @@ outputs:
         --pure-eb-covariance {inputs.pure_eb_covariance}
         --cosebis-baseline {inputs.cosebis_modes_data}
         --cosebis-covariance {inputs.cosebis_covariance}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --integration-method {decisions.pure_eb_integration_method}
         --rebinning-weights {decisions.pure_eb_rebinning_weights}
         --integration-limits {decisions.pure_eb_integration_limits}
@@ -165,7 +164,7 @@ outputs:
       path of [cosebis_modes_data](#inputs.cosebis_modes_data). PTEs
       are in
       [cosebis_harmonic_metrics](#outputs.cosebis_harmonic_metrics).
-    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention, pte_definition, leakage_correction, reporting_binning, integration_grid, mode_count]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, pte_definition, leakage_correction, reporting_binning, integration_grid, mode_count]
     inputs: [cl_bandpowers_fine, cl_cov_fine, xi_integration, cov_integration]
     recipe:
       command: >
@@ -178,7 +177,6 @@ outputs:
         --fiducial-cl-cov-path {inputs.cl_cov_fine}
         --fiducial-xi-path {inputs.xi_integration}
         --fiducial-cov-path {inputs.cov_integration}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 8, memory: "16GB" }
 
@@ -192,14 +190,13 @@ outputs:
       [cosebis_harmonic_modes](#outputs.cosebis_harmonic_modes),
       quoted in the
       [harmonic/configuration COSEBI table](#../outputs.cosebis_harmonic_config).
-    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning]
     inputs: [cosebis_harmonic_modes]
     recipe:
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
         --angular-range fiducial
         --metrics-from-modes {inputs.cosebis_harmonic_modes}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 1, memory: "4GB" }
 
@@ -211,14 +208,13 @@ outputs:
       over the full angular range: the n ≤ 6 failure of both paths
       behind the
       [filter-function finding](#../findings.filter_functions_set_sensitivity).
-    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, scale_cut_convention]
+    decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning]
     inputs: [cosebis_harmonic_modes]
     recipe:
       command: >
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
         --angular-range full
         --metrics-from-modes {inputs.cosebis_harmonic_modes}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 1, memory: "4GB" }
 
@@ -237,7 +233,7 @@ outputs:
       bandpowers (open squares). Modes n > 6 are shaded; for n ≤ 6,
       where the cosmological information is concentrated, we confirm
       consistency between the two paths on GLASS simulations.
-    decisions: [fiducial_catalog, scale_cut_convention]
+    decisions: [fiducial_catalog]
     inputs:
       - cosebis_harmonic_modes
     recipe:
@@ -245,7 +241,6 @@ outputs:
         python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py
         --angular-range full
         --figure-from-modes {inputs.cosebis_harmonic_modes}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 1, memory: "4GB" }
 
@@ -263,7 +258,7 @@ outputs:
       from the [bandpowers](#inputs.cl_bandpowers_reporting). Supports the
       [blind-A fiducial choice](#decisions.fiducial_blind); it does not
       enter the headline figures. Under the Monte Carlo
-      [covariance method](#../decisions.pure_eb_covariance_method), the
+      [covariance method](#../analyses.covariances.decisions.pure_eb_covariance_method), the
       2000 draws size the ±√(2/N) reference band drawn on the ξ_±
       panels.
     decisions: [fiducial_catalog, leakage_correction, reporting_binning, integration_grid, mode_count]
@@ -299,8 +294,6 @@ decisions:
     from: ../fiducial_catalog
   fiducial_blind:
     from: ../fiducial_blind
-  scale_cut_convention:
-    from: ../scale_cut_convention
   pure_eb_integration_method:
     from: ../pure_eb_integration_method
   pure_eb_rebinning_weights:

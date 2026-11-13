@@ -14,10 +14,6 @@ decisions:
   fiducial_catalog: size_cut
   leakage_correction: applied
   fiducial_blind: blind_a
-  fiducial_scale_cuts: adopted
-  scale_cut_convention: grid_bin_edges
-  scale_cut_pair_grid: production_grid
-  pte_threshold: calibrated_0p01
   integration_grid: bins_1000
   # The operator and its geometry are described on the root decision's option.
   pure_eb_integration_method: fixed_operator
@@ -25,11 +21,8 @@ decisions:
   pure_eb_rebinning_weights: npairs
   # Wide [grid floor, 300'] window: retain support below the 1' reporting floor.
   pure_eb_integration_limits: fine_grid_extent
-  # Exact M C_ξ Mᵀ of the linear operator; no Hartlap factor.
-  pure_eb_covariance_method: exact_linear
   harmonic_validation_binning: bins_96
   pte_definition: chi2_tail
-  fiducial_cosmology: planck18
   bandpower_binning: bandpowers_32_powspace
   noise_bias_correction: analytic_shot_noise
   reporting_binning: bins_20
@@ -45,5 +38,5 @@ analyses:
     universe: baseline
   validation:
     universe: baseline
-  null_tests:
+  significance:
     universe: baseline

@@ -141,7 +141,7 @@ outputs:
       cuts, computed from [xi_integration](#outputs.xi_integration). Their
       covariance is
       [cosebis_covariance](#../analyses.covariances.outputs.cosebis_covariance).
-    decisions: [fiducial_catalog, mode_count, scale_cut_convention, leakage_correction, reporting_binning, integration_grid]
+    decisions: [fiducial_catalog, mode_count, leakage_correction, reporting_binning, integration_grid]
     inputs: [xi_integration]
     recipe:
       command: >
@@ -149,7 +149,6 @@ outputs:
         --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
         --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
         --xi-integration {inputs.xi_integration}
-        --scale-cut-convention {decisions.scale_cut_convention}
         --out-file {output}
       resources: { cpus: 8, memory: "16GB" }
 
@@ -161,7 +160,7 @@ outputs:
       catalog versions of the
       [COSEBI version comparison](#../outputs.fig_versions_cosebis), one npz
       each, from that version's ξ_± ([xi_sweep](#outputs.xi_sweep)).
-    decisions: [fiducial_catalog, mode_count, scale_cut_convention, leakage_correction, reporting_binning, integration_grid]
+    decisions: [fiducial_catalog, mode_count, leakage_correction, reporting_binning, integration_grid]
     inputs: [xi_sweep]
     recipe:
       command: |
@@ -174,7 +173,6 @@ outputs:
             --version "$ver" \
             --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} \
             --xi-integration "$x/$ver"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \
-            --scale-cut-convention {decisions.scale_cut_convention} \
             --out-file "$o/$ver"_cosebis_modes.npz
         done
         tar czf {output} -C $o .
@@ -238,8 +236,6 @@ decisions:
     from: ../integration_grid
   mode_count:
     from: ../mode_count
-  scale_cut_convention:
-    from: ../scale_cut_convention
   pure_eb_integration_method:
     from: ../pure_eb_integration_method
   pure_eb_rebinning_weights:
@@ -262,9 +258,8 @@ decisions:
       jackknife covariance. The
       [ξ_± covariance](#../analyses.covariances.outputs.cov_integration) is
       analytic (CosmoCov), so the measurement runs on a single
-      patch; the jackknife was only a development cross-check, which
-      the paper reports agrees with the analytic ξ_± covariance
-      at the ten-percent level over the fiducial range.
+      patch; a jackknife serves only as a development cross-check of
+      the analytic covariance.
     default: npatch_1
     options:
       npatch_1:
@@ -274,7 +269,9 @@ decisions:
       npatch_120:
         label: "120 patches"
         description: |
-          Enables a spatial-jackknife covariance.
+          Enables a spatial-jackknife covariance, which the paper
+          reports agrees with the analytic ξ_± covariance at the
+          ten-percent level over the fiducial range.
         excluded: true
         excluded_reason: |
           The reported configuration-space PTEs use the CosmoCov

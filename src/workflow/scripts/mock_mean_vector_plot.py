@@ -33,9 +33,8 @@ sys.path.insert(
 )
 from decision_values import REPORTING_BINNING  # noqa: E402
 from scale_cuts import (  # noqa: E402
-    add_scale_cut_convention_argument,
-    resolve_fiducial_bin_window,
-    resolve_fiducial_scale_cuts,
+    fiducial_bin_window,
+    fiducial_theta_cut,
 )
 
 matplotlib.use("Agg")
@@ -104,7 +103,6 @@ def main() -> None:
     parser.add_argument("--out-file", required=True)
     parser.add_argument("--label", default=None)
     parser.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
-    add_scale_cut_convention_argument(parser)
     args = parser.parse_args()
 
     # The pure-mode statistics are quoted on two ranges, and the file says
@@ -113,8 +111,8 @@ def main() -> None:
     # mocks carry a small mean B residual at the smallest scales, which the
     # cut excludes — so an unlabelled single number invites the two to be
     # read against each other.
-    window = resolve_fiducial_bin_window(args.reporting_binning, args.scale_cut_convention)
-    window_arcmin = resolve_fiducial_scale_cuts(args.reporting_binning, args.scale_cut_convention)
+    window = fiducial_bin_window(args.reporting_binning)
+    window_arcmin = fiducial_theta_cut(args.reporting_binning)
 
     data = np.load(args.stats, allow_pickle=False)
     provenance = json.loads(str(data["provenance"]))
@@ -215,7 +213,6 @@ def main() -> None:
                     "n_bins": cut_dof,
                     "bin_indices": [lo, hi],
                     "theta_range_arcmin": list(window_arcmin),
-                    "scale_cut_convention": args.scale_cut_convention,
                     "range": "fiducial scale cut",
                 }
                 annotations.append(
@@ -275,7 +272,6 @@ def main() -> None:
                     "fiducial_window": {
                         "bin_indices": list(window),
                         "theta_range_arcmin": list(window_arcmin),
-                        "scale_cut_convention": args.scale_cut_convention,
                     },
                     "statistics": all_stats,
                 },

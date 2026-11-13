@@ -1,7 +1,8 @@
 """Compute COSEBIS E_n/B_n for GLASS mock realizations.
 
-`compute_one` holds the transform and the recipes call the batch CLI, whose
-`--scale-cut-convention` carries the declared `scale_cut_convention` decision.
+`compute_one` holds the transform and the recipes call the batch CLI. The θ cut
+defaults to the fiducial one, edges 9 and 16 of the reporting grid
+geomspace(1', 250', 21).
 """
 
 import argparse
@@ -15,17 +16,10 @@ from sp_validation.b_modes import scale_cut_to_bins
 
 import mock_scatter_pool
 
-# The fiducial θ cut in its two forms.  `grid_bin_edges` is edges 9 and 16 of
-# the reporting grid geomspace(1', 250', 21) — what the published pipeline cut
-# at; `rounded_arcmin` is what the paper text prints.  Kept in step with
-# `COSEBI_THETA_BY_CONVENTION` in mock_campaign_analysis.py and with
-# papers/bmodes/scripts/scale_cuts.py, which resolves the same choice from the
-# reporting_binning decision for the paper-facing scripts.
+# The fiducial θ cut, as papers/bmodes/scripts/scale_cuts.py defines it for the
+# paper-facing scripts.
 _REPORTING_EDGES = np.geomspace(1.0, 250.0, 21)
-THETA_BY_CONVENTION = {
-    "grid_bin_edges": (float(_REPORTING_EDGES[9]), float(_REPORTING_EDGES[16])),
-    "rounded_arcmin": (12.0, 83.0),
-}
+FIDUCIAL_THETA = (float(_REPORTING_EDGES[9]), float(_REPORTING_EDGES[16]))
 
 
 class _Grid:
@@ -177,30 +171,9 @@ def _parser(argv=None):
         help="Directory for cosebis_glass_mock_<id>.npz (batch mode).",
     )
     parser.add_argument("--nmodes", type=int, default=20)
-    parser.add_argument(
-        "--scale-cut-convention",
-        choices=tuple(THETA_BY_CONVENTION),
-        help=(
-            "How the fiducial COSEBI θ cut is read: 'grid_bin_edges' (edges 9 "
-            "and 16 of the geomspace(1', 250', 21) reporting grid, what the "
-            "published pipeline cut at) or 'rounded_arcmin' ([12, 83], what the "
-            "paper text prints).  Mutually exclusive with the explicit "
-            "--theta-min/--theta-max pair."
-        ),
-    )
-    parser.add_argument("--theta-min", type=float)
-    parser.add_argument("--theta-max", type=float)
+    parser.add_argument("--theta-min", type=float, default=FIDUCIAL_THETA[0])
+    parser.add_argument("--theta-max", type=float, default=FIDUCIAL_THETA[1])
     args = parser.parse_args(argv)
-    explicit = args.theta_min is not None and args.theta_max is not None
-    if bool(args.scale_cut_convention) == explicit:
-        parser.error(
-            "give either --scale-cut-convention or both of "
-            "--theta-min/--theta-max, not both and not neither"
-        )
-    if args.scale_cut_convention:
-        args.theta_min, args.theta_max = THETA_BY_CONVENTION[
-            args.scale_cut_convention
-        ]
     ensemble_mode = args.xi_ensemble is not None
     if ensemble_mode != (args.out_file is not None):
         parser.error("--xi-ensemble and --out-file must be given together")
