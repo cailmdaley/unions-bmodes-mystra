@@ -604,6 +604,7 @@ decisions:
   mc_samples:
     label: "Monte-Carlo sample count"
     tags: [covariance_model]
+    when: [pure_eb_covariance_method.monte_carlo]
     rationale: |
       How many Gaussian draws of ξ± from the CosmoCov covariance the
       [Monte-Carlo pure-mode covariance](#decisions.pure_eb_covariance_method)

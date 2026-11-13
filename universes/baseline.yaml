@@ -28,7 +28,6 @@ decisions:
   # Exact M C_ξ Mᵀ of the linear operator; no Hartlap factor.
   pure_eb_covariance_method: exact_linear
   harmonic_validation_binning: bins_96
-  mc_samples: n_2000
   pte_definition: chi2_tail
   fiducial_cosmology: planck18
   bandpower_binning: bandpowers_32_powspace
