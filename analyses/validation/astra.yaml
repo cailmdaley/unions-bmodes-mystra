@@ -257,17 +257,16 @@ outputs:
       blind A, for the B-mode block and, as the reference, the E-mode
       block: pure E/B over the 20 reporting bins, COSEBIs (n ≤ 20) on
       the full 1'–250' range and harmonic Cℓ over the 32 bandpowers, on
-      the [catalog version](#decisions.bb_blind_check_version) chosen
-      for the check. The covariances come from the
+      the [fiducial catalog](#decisions.fiducial_catalog). The covariances come from the
       [blind scan](#inputs.blind_cov_sweep), the COSEBI filters from the
       [integration-grid ξ_±](#inputs.xi_integration) and the multipoles
       from the [bandpowers](#inputs.cl_bandpowers_reporting). Supports the
       [blind-A fiducial choice](#decisions.fiducial_blind); it does not
       enter the headline figures. Under the Monte Carlo
       [covariance method](#../decisions.pure_eb_covariance_method), the
-      [sample count](#decisions.mc_samples) sizes the ±√(2/N) reference band
-      drawn on the ξ_± panels.
-    decisions: [bb_blind_check_version, reporting_binning, integration_grid, mode_count, mc_samples]
+      2000 draws size the ±√(2/N) reference band drawn on the ξ_±
+      panels.
+    decisions: [fiducial_catalog, leakage_correction, reporting_binning, integration_grid, mode_count]
     inputs:
       - blind_cov_sweep
       - xi_integration
@@ -276,7 +275,7 @@ outputs:
       command: >
         d=$(mktemp -d) && tar xzf {inputs.blind_cov_sweep} -C $d &&
         python src/papers/bmodes/scripts/bb_covariance_blind_independence.py
-        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count} --mc-samples {decisions.mc_samples}
+        --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
         --covariance-dir $d
         --xi-integration {inputs.xi_integration}
         --cl-bandpowers {inputs.cl_bandpowers_reporting}
@@ -316,10 +315,6 @@ decisions:
     from: ../reporting_binning
   harmonic_validation_binning:
     from: ../harmonic_validation_binning
-  mc_samples:
-    from: ../mc_samples
-  bb_blind_check_version:
-    from: ../bb_blind_check_version
 
 findings:
 

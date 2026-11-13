@@ -38,7 +38,8 @@ LOCALEVAL=""
 # NPROC is how many MC chunk processes this ONE task forks. It must be the
 # task's slot, not the allocation. Same knob as the TreeCorr cap in
 # run_2pcf.py, set by the runner; --nproc overrides.
-NCHUNKS=20; NSAMPLES=""; NPROC="${OMP_NUM_THREADS:-1}"
+# NSAMPLES is pure_mode_covariance.MC_SAMPLES, the Monte Carlo draw count.
+NCHUNKS=20; NSAMPLES=2000; NPROC="${OMP_NUM_THREADS:-1}"
 MINSEP=1.0; MAXSEP=250.0; NBINS=20
 MINSEPINT=0.5; MAXSEPINT=300.0; NBINSINT=1000; NPATCH=1
 
@@ -75,7 +76,6 @@ done
 [ -n "$INTLIMITS" ] || { echo "--integration-limits is required" >&2; exit 2; }
 [ -n "$REBINWEIGHTS" ] || { echo "--rebinning-weights is required" >&2; exit 2; }
 [ -n "$COVMETHOD" ] || { echo "--covariance-method is required" >&2; exit 2; }
-[ -n "$NSAMPLES" ] || { echo "--n-samples is required" >&2; exit 2; }
 GEOMETRY_FLAG=""
 [ -z "$GEOMETRY" ] || GEOMETRY_FLAG="--geometry $GEOMETRY"
 LOCALEVAL_FLAG="$LOCALEVAL"

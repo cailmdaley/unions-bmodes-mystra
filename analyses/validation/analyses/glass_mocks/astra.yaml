@@ -262,7 +262,7 @@ outputs:
       sliced from the stored 120×120 matrix, with a Hartlap factor only
       under the `monte_carlo`
       [covariance method](#decisions.pure_eb_covariance_method), where
-      N is the [MC sample count](#decisions.mc_samples); C_ℓ^BB takes
+      N is its 2000 draws; C_ℓ^BB takes
       no Hartlap factor, its mock-matched reference being
       [cl_cov_reference](#inputs.cl_cov_reference). Pure-mode σ is
       reported on all 20 reporting bins and on the fiducial cut, COSEBI
@@ -560,8 +560,6 @@ decisions:
     from: ../../pure_eb_rebinning_weights
   pure_eb_integration_limits:
     from: ../../pure_eb_integration_limits
-  mc_samples:
-    from: ../../mc_samples
   pure_eb_covariance_method:
     from: ../../pure_eb_covariance_method
   reference_covariance:

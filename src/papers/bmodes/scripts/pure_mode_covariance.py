@@ -18,8 +18,7 @@ Every covariance artifact records which construction made it
 (``covariance_method``, plus ``n_samples`` for the Monte Carlo);
 :func:`hartlap_samples` reads that back, so each χ² consumer applies the
 correction the artifact it was handed calls for. Artifacts that carry no
-``covariance_method`` are Monte Carlo with :data:`MC_SAMPLES_WITHOUT_RECORD`
-draws.
+``covariance_method`` are Monte Carlo with :data:`MC_SAMPLES` draws.
 """
 
 from __future__ import annotations
@@ -28,9 +27,9 @@ import numpy as np
 
 COVARIANCE_METHODS = ("exact_linear", "monte_carlo")
 
-#: Draw count of a pure-mode covariance artifact that records no construction:
-#: every such artifact is a 20 × 100 Monte Carlo.
-MC_SAMPLES_WITHOUT_RECORD = 2000
+#: Draw count of the Monte Carlo pure-mode covariance (20 chunks of 100), and of
+#: any artifact that records no construction.
+MC_SAMPLES = 2000
 
 
 def add_covariance_method_argument(parser):
@@ -89,7 +88,7 @@ def hartlap_samples(artifact):
         return None
     if "n_samples" in keys:
         return int(artifact["n_samples"])
-    return MC_SAMPLES_WITHOUT_RECORD
+    return MC_SAMPLES
 
 
 def hartlap_factor(n_samples, dof):

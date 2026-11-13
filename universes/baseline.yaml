@@ -32,13 +32,11 @@ decisions:
   fiducial_cosmology: planck18
   bandpower_binning: bandpowers_32_powspace
   noise_bias_correction: analytic_shot_noise
-  pte_blind_strategy: blind_a_for_paper
   reporting_binning: bins_20
   decomposition_method: schneider22_integral_transform
   mode_count: n_max_20
   reference_covariance: mockmatched
   mock_suite: v1_4_6_3_v2
-  bb_blind_check_version: size_cut_v1463
 
 analyses:
   covariances:

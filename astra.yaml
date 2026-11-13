@@ -211,7 +211,7 @@ decisions:
 
   fiducial_blind:
     label: "Fiducial blind for reported data vectors"
-    tags: [blinding]
+    tags: [data_selection]
     rationale: |
       Blinding acts on the source n(z): an external coordinator
       produced three variants (A, B, C), two with random shifts. The
@@ -571,7 +571,7 @@ decisions:
       monte_carlo:
         label: "Monte Carlo, Hartlap-corrected"
         description: |
-          Sample covariance of [2000 draws](#decisions.mc_samples)
+          Sample covariance of 2000 draws
           from C_ξ through the same transform, with the Hartlap
           factor (N − p − 2)/(N − 1) on its inverse; the only option
           available to `adaptive_dqags`.
@@ -600,28 +600,6 @@ decisions:
         label: "32 √ℓ-linear bandpowers"
         excluded: true
         excluded_reason: "Cannot resolve W_n(ℓ) beyond n ≈ 4."
-
-  mc_samples:
-    label: "Monte-Carlo sample count"
-    tags: [covariance_model]
-    when: [pure_eb_covariance_method.monte_carlo]
-    rationale: |
-      How many Gaussian draws of ξ± from the CosmoCov covariance the
-      [Monte-Carlo pure-mode covariance](#decisions.pure_eb_covariance_method)
-      pushes through the filters. The exact construction makes no
-      draws, so this count matters only under `monte_carlo`. The
-      default is 2000 draws; 1000 and 5000 test sample-count
-      sensitivity. It does not touch the COSEBI
-      covariances, which are propagated linearly.
-    default: n_2000
-    options:
-      n_2000:
-        label: "2000"
-      n_1000:
-        label: "1000"
-      n_5000:
-        label: "5000"
-        description: "2.5× as many draws as the default, to test sample-count sensitivity."
 
   pte_definition:
     label: "PTE statistical convention"
@@ -773,26 +751,6 @@ decisions:
         description: |
           Subtracts the mean Cℓ of ellipticity-randomised
           realisations.
-
-  pte_blind_strategy:
-    label: "Blinds evaluated for the reported PTEs"
-    tags: [blinding]
-    rationale: |
-      The reported PTEs, pure-mode and harmonic, use blind A. They are
-      not re-evaluated per blind: the
-      [check](#outputs.bb_covariance_blind_independence_evidence) instead
-      compares the E- and B-mode covariances across the three blinds.
-    default: blind_a_for_paper
-    options:
-      blind_a_for_paper:
-        label: "Blind A for the reported PTEs"
-      all_blinds_for_paper:
-        excluded: true
-        excluded_reason: "The paper reports blind A; independence is tested by validation.bb_covariance_blind_independence_evidence."
-        label: "All three blinds in the reported PTEs"
-        description: |
-          Would triple the PTE table without adding B-mode
-          information, given the blind-independence check.
 
   reporting_binning:
     label: "Reporting-grid angular binning"
@@ -978,38 +936,6 @@ decisions:
           that is not the data's footprint (the generator's default
           6.0905 arcmin⁻² on a smaller sky); the v1.4.6.3_v2 suite
           sits far closer to the catalog's count.
-
-  bb_blind_check_version:
-    label: "Catalog for the blind-independence check"
-    tags: [data_selection]
-    rationale: |
-      The B-mode covariance of a null signal is shape noise, plus a
-      small E-to-B mask leakage in harmonic space, and neither reason
-      for its blind independence is specific to a catalog version, so
-      one version suffices for the [BB-covariance blind-independence
-      check](#outputs.bb_covariance_blind_independence_evidence).
-      It uses the fiducial leak-corrected v1.4.6.3 catalog, for which
-      the GLASS mock suite was built. B-mode covariance ratios are
-      expected to sit closer to unity across blinds than E-mode ratios;
-      a Monte Carlo pure-mode covariance adds sampling scatter to both.
-    default: size_cut_v1463
-    options:
-      size_cut_v1463:
-        label: "Size-cut v1.4.6.3"
-        description: |
-          Per-blind covariances on the fiducial leak-corrected
-          catalog, matching the adopted mock suite.
-      mock_version_v146:
-        label: "Mock version v1.4.6"
-        description: |
-          Per-blind covariances at v1.4.6, the catalog version of
-          the excluded GLASS mock suite.
-        excluded: true
-        excluded_reason: |
-          v1.4.6 is not one of the paper's four catalog versions, and
-          its [mock suite](#decisions.mock_suite) sits on
-          a mask that is not the data's footprint; the check follows
-          the adopted v1.4.6.3 suite.
 
 # -----------------------------------------------------------------------------
 # Findings: claims derived from this analysis's own measurements. Evidence
@@ -1331,7 +1257,6 @@ prior_insights:
         location:
           page: 2
     scope: "Guinot et al. 2026, arXiv 2603.18419 — software paper by a Paper II co-author."
-
 
   hartlap07_correction:
     id: hartlap07_correction
@@ -1783,7 +1708,6 @@ prior_insights:
       The paper does not say how the ℓ ≳ 10 floor moves with f_sky
       or fragmentation, nor the sign or size of the BB covariance
       error below it.
-
 
   stebbins96_scalar_perturbations_give_no_bmodes:
     id: stebbins96_scalar_perturbations_give_no_bmodes

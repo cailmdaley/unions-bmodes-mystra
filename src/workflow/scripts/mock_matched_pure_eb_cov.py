@@ -42,6 +42,7 @@ from scipy import sparse
 sys.path.insert(
     0, str(Path(__file__).resolve().parents[2] / "papers" / "bmodes" / "scripts")
 )
+from pure_mode_covariance import MC_SAMPLES  # noqa: E402
 from pure_eb_transform import (  # noqa: E402
     AveragedPureEBTransform,
     PureEBTransform,
@@ -436,7 +437,7 @@ def _parser(argv=None):
         "--cat-config", required=True, help="Path to cat_config.yaml"
     )
     parser.add_argument("--out", required=True, help="Final .npz output path")
-    parser.add_argument("--n-samples", type=int, required=True)
+    parser.add_argument("--n-samples", type=int, default=MC_SAMPLES)
     parser.add_argument(
         "--n-batches",
         "--n-chunks",

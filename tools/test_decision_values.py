@@ -42,13 +42,11 @@ PUBLISHED = {
     "survey_properties": ("size_cut", (2894.0303815287743, 4.957279270321334, 0.3783979556382064)),
     "reference_covariance": ("mockmatched", (2894.0303815287743, 5.793082, 0.3792561)),
     "reference_catalog": ("mockmatched", "SP_v1.4.6.3_glass_mock_v2"),
-    "bb_blind_check_version": ("size_cut_v1463", "SP_v1.4.6.3_leak_corr"),
     "reporting_binning": ("bins_20", (1.0, 250.0, 20)),
     "integration_grid": ("bins_1000", (0.5, 300.0, 1000)),
     "patch_count": ("npatch_1", 1),
     "mode_count": ("n_max_20", 20),
     "harmonic_validation_binning": ("bins_96", 96),
-    "mc_samples": ("n_2000", 2000),
     "fiducial_scale_cuts": ("adopted", (300, 1600)),
 }
 
@@ -98,7 +96,7 @@ class Tables(unittest.TestCase):
             for option, grid in table.items():
                 label = ROOT_DECISIONS[name]["options"][option]["label"].replace(",", "")
                 self.assertIn(str(grid.nbins), label, option)
-        for name, table in (("mc_samples", dv.MC_SAMPLES), ("mode_count", dv.MODE_COUNT),
+        for name, table in (("mode_count", dv.MODE_COUNT),
                             ("harmonic_validation_binning", dv.HARMONIC_VALIDATION_BINNING)):
             for option, value in table.items():
                 self.assertIn(str(value), ROOT_DECISIONS[name]["options"][option]["label"], option)

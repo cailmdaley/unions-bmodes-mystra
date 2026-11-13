@@ -25,7 +25,7 @@ sys.path[:0] = [str(ROOT / "src/papers/bmodes/scripts"), str(ROOT / "src/workflo
 import bundle_sweep
 from catalog_versions import VERSIONS, Catalogs
 import compute_cosebis_pte_single as pairs
-from decision_values import MC_SAMPLES
+from pure_mode_covariance import MC_SAMPLES
 import generate_cl as cl
 import generate_cl_cov as cl_cov
 import merge_cosebis_pte_rows as merge
@@ -165,8 +165,8 @@ else:
 ''')
             python.chmod(0o755)
             env = dict(os.environ, PATH=f"{tmp}:{os.environ['PATH']}")
-            for option, expected in MC_SAMPLES.items():
-                output = tmp / f"{option}.npz"
+            for expected in (MC_SAMPLES, 500):
+                output = tmp / f"{expected}.npz"
                 subprocess.run(["bash", str(ROOT / "src/papers/bmodes/scripts/run_pure_eb_covariance.sh"),
                                 "--version", "test", "--blind", "A", "--cat-config", "unused",
                                 "--xi-reporting", "unused", "--xi-integration", "unused",

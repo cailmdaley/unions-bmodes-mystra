@@ -109,7 +109,8 @@ outputs:
       on this grid, with area-only geometry.
       COSEBI covariances derive from it by a linear transform;
       pure-mode covariances use a linear transform or
-      [MC realisations](#../decisions.mc_samples).
+      Monte Carlo draws, per the
+      [construction](#decisions.pure_eb_covariance_method).
     decisions: [fiducial_catalog, fiducial_blind, covariance_class, covariance_engine, integration_grid, leakage_correction]
     inputs: [cosmology_snapshot, redshift_distributions]
     format: txt
@@ -268,7 +269,7 @@ outputs:
       consumers apply the matching Hartlap treatment. The transform M weights
       fine bins by the [measured pair counts](#inputs.xi_integration); the
       Monte Carlo draws of ξ_± produce this covariance and nothing else.
-    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples, decomposition_method, leakage_correction]
+    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, decomposition_method, leakage_correction]
     inputs: [xi_reporting, xi_integration, cov_integration, redshift_distributions]
     recipe:
       command: >
@@ -282,7 +283,6 @@ outputs:
         --integration-limits {decisions.pure_eb_integration_limits}
         --rebinning-weights {decisions.pure_eb_rebinning_weights}
         --covariance-method {decisions.pure_eb_covariance_method}
-        --n-samples "$(python src/workflow/scripts/decision_values.py mc_samples {decisions.mc_samples})"
         --out-file {output}
       resources: { cpus: 24, memory: "60GB" }
 
@@ -296,7 +296,7 @@ outputs:
       Carlo chain with the same draws, so the two differ by their input
       alone. The mocks' noise enters only through that covariance, as it
       does for COSEBIs.
-    decisions: [fiducial_catalog, fiducial_blind, reference_covariance, mock_suite, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples, decomposition_method, leakage_correction, integration_grid]
+    decisions: [fiducial_catalog, fiducial_blind, reference_covariance, mock_suite, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, decomposition_method, leakage_correction, integration_grid]
     inputs: [xi_reporting, xi_integration, cov_integration_reference, redshift_distributions]
     recipe:
       command: >
@@ -310,7 +310,6 @@ outputs:
         --integration-limits {decisions.pure_eb_integration_limits}
         --rebinning-weights {decisions.pure_eb_rebinning_weights}
         --covariance-method {decisions.pure_eb_covariance_method}
-        --n-samples "$(python src/workflow/scripts/decision_values.py mc_samples {decisions.mc_samples})"
         --out-file {output}
       resources: { cpus: 24, memory: "60GB" }
 
@@ -324,7 +323,7 @@ outputs:
       treatment), one npz each, from that version's ξ_±
       ([xi_sweep](#inputs.xi_sweep)) and Gaussian integration covariance
       ([cov_sweep](#outputs.cov_sweep)).
-    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples, decomposition_method, leakage_correction]
+    decisions: [fiducial_catalog, fiducial_blind, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, decomposition_method, leakage_correction]
     inputs: [xi_sweep, cov_sweep, redshift_distributions]
     recipe:
       command: |
@@ -346,7 +345,6 @@ outputs:
             --integration-limits {decisions.pure_eb_integration_limits} \
             --rebinning-weights {decisions.pure_eb_rebinning_weights} \
             --covariance-method {decisions.pure_eb_covariance_method} \
-            --n-samples "$(python src/workflow/scripts/decision_values.py mc_samples {decisions.mc_samples})" \
             --out-file "$o/$ver"_"$b"_pure_eb_covariance.npz
         done
         tar czf {output} -C $o .
@@ -466,9 +464,6 @@ decisions:
   pure_eb_covariance_method:
     from: ../pure_eb_covariance_method
 
-  mc_samples:
-    from: ../mc_samples
-
   decomposition_method:
     from: ../decomposition_method
 
@@ -483,9 +478,6 @@ decisions:
 
   mock_suite:
     from: ../mock_suite
-
-  bb_blind_check_version:
-    from: ../bb_blind_check_version
 
   covariance_engine:
     label: "Covariance engine"

@@ -275,7 +275,7 @@ outputs:
       correction](#../decisions.pure_eb_covariance_method) when the
       covariance is a Monte Carlo estimate and none when it is exact.
     format: npz
-    decisions: [fiducial_catalog, fiducial_blind, pte_blind_strategy, pte_definition, leakage_correction]
+    decisions: [fiducial_catalog, fiducial_blind, pte_definition, leakage_correction]
     inputs: [pure_eb_data, pure_eb_covariance]
     recipe:
       command: >
@@ -306,7 +306,7 @@ outputs:
       shows.
     format: npz
     inputs: [cl_sweep, cl_cov_sweep, cl_bandpowers_reporting, cl_cov_reporting]
-    decisions: [pte_blind_strategy, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
+    decisions: [pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
     recipe:
       command: >
         d=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d &&
@@ -336,7 +336,7 @@ outputs:
       per-version [PTE
       heatmaps](#outputs.pte_heatmaps_figure).
     format: tar.gz
-    decisions: [fiducial_catalog, fiducial_blind, pte_blind_strategy, pte_definition, leakage_correction]
+    decisions: [fiducial_catalog, fiducial_blind, pte_definition, leakage_correction]
     inputs: [pure_eb_sweep, pure_eb_covariance_sweep]
     recipe:
       command: |
@@ -416,7 +416,7 @@ outputs:
       - cl_cov_sweep
       - cl_bandpowers_reporting
       - cl_cov_reporting
-    decisions: [pte_blind_strategy, pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
+    decisions: [pte_definition, fiducial_catalog, leakage_correction, fiducial_blind]
     recipe:
       command: >
         d_cl=$(mktemp -d) && tar xzf {inputs.cl_sweep} -C $d_cl &&
@@ -777,8 +777,6 @@ decisions:
     from: ../fiducial_scale_cuts
   pte_definition:
     from: ../pte_definition
-  pte_blind_strategy:
-    from: ../pte_blind_strategy
   scale_cut_convention:
     from: ../scale_cut_convention
   pte_threshold:

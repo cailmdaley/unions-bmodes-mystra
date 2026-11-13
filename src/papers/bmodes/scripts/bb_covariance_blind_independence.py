@@ -18,13 +18,12 @@ import numpy as np
 import treecorr
 from astropy.io import fits
 from plotting_utils import PAPER_MPLSTYLE
-from pure_mode_covariance import hartlap_samples
+from pure_mode_covariance import MC_SAMPLES, hartlap_samples
 
 from sp_validation.b_modes import calculate_cosebis
 from decision_values import (
     FIDUCIAL_BLIND,
     INTEGRATION_GRID,
-    MC_SAMPLES,
     MODE_COUNT,
     REPORTING_BINNING,
 )
@@ -545,7 +544,6 @@ def _from_cli(argv=None):
     ap.add_argument("--reporting-binning", type=REPORTING_BINNING.__getitem__, required=True)
     ap.add_argument("--integration-grid", type=INTEGRATION_GRID.__getitem__, required=True)
     ap.add_argument("--mode-count", type=MODE_COUNT.__getitem__, required=True)
-    ap.add_argument("--mc-samples", type=MC_SAMPLES.__getitem__, required=True)
     ap.add_argument(
         "--covariance-dir",
         required=True,
@@ -560,7 +558,7 @@ def _from_cli(argv=None):
     options = {blind: option for option, blind in FIDUCIAL_BLIND.items()}
     main(
         integration=a.integration_grid,
-        n_samples=a.mc_samples,
+        n_samples=MC_SAMPLES,
         pure_eb_paths={b: directory / f"pure_eb_covariance_{o}.npz" for b, o in options.items()},
         harmonic_paths={b: directory / f"cl_cov_{o}.fits" for b, o in options.items()},
         xi_integration_path=a.xi_integration,

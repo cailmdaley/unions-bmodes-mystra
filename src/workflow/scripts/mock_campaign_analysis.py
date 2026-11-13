@@ -55,7 +55,7 @@ from sp_validation.b_modes import scale_cut_to_bins
 sys.path.insert(
     0, str(Path(__file__).resolve().parents[2] / "papers" / "bmodes" / "scripts")
 )
-from pure_mode_covariance import MC_SAMPLES_WITHOUT_RECORD, hartlap_samples  # noqa: E402
+from pure_mode_covariance import MC_SAMPLES, hartlap_samples  # noqa: E402
 
 from numerics import (  # noqa: E402
     compute_chi2_pte,
@@ -1130,7 +1130,7 @@ def emit_evidence(payload, out_path):
             payload["pte"],
             payload["dof"],
             payload["provenance"]["covariance_mode"].get(
-                "pure_eb_hartlap_n", MC_SAMPLES_WITHOUT_RECORD
+                "pure_eb_hartlap_n", MC_SAMPLES
             ),
         ),
         "correlations": _correlation_evidence(payload["pte"], payload["chi2"]),

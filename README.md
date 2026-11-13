@@ -76,7 +76,7 @@ reports both options side by side. `fiducial_scale_cuts` and `mode_subsets`
 select what `primary_null_test_report` records; the report's tables and figures
 always show both ranges and all six tests. `scale_cut_convention` moves COSEBIs
 only, and `pte_threshold` sets the heatmap colour scale, the marked line and the
-quoted value. `mc_samples` acts only under the Monte Carlo covariance.
+quoted value.
 
 ## Reproducing
 

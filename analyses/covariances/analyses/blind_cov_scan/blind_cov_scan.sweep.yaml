@@ -3,7 +3,7 @@ version: "1.0"
 name: "Covariance scan over the n(z) blinds"
 description: |
   The ξ_±, pure E/B and Cℓ covariances at each of the three n(z) blinds, on the
-  [catalog chosen for the check](#../decisions.bb_blind_check_version): the
+  [fiducial catalog](#../decisions.fiducial_catalog): the
   Gaussian CosmoCov ξ_± covariance on the integration grid, its propagation
   through the pure-mode transform, and the iNKA covariance of the 32 bandpowers,
   each by the recipe of its fiducial counterpart. Only the n(z) moves between
@@ -25,8 +25,10 @@ inputs:
     from: ../xi_integration
 
 decisions:
-  bb_blind_check_version:
-    from: ../bb_blind_check_version
+  fiducial_catalog:
+    from: ../fiducial_catalog
+  leakage_correction:
+    from: ../leakage_correction
   covariance_engine:
     from: ../covariance_engine
   covariance_class:
@@ -47,8 +49,6 @@ decisions:
     from: ../pure_eb_integration_limits
   pure_eb_covariance_method:
     from: ../pure_eb_covariance_method
-  mc_samples:
-    from: ../mc_samples
   decomposition_method:
     from: ../decomposition_method
 
@@ -65,11 +65,11 @@ template:
     [pure_eb_covariance](#../outputs.pure_eb_covariance) and
     [cl_cov_reporting](#../outputs.cl_cov_reporting) with that blind's n(z).
   inputs: [cosmology_snapshot, redshift_distributions, shapepipe_v14_catalogs, xi_reporting, xi_integration]
-  decisions: [bb_blind_check_version, covariance_class, covariance_engine, integration_grid, bandpower_binning, noise_bias_correction, fiducial_cosmology, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, mc_samples, decomposition_method]
+  decisions: [fiducial_catalog, leakage_correction, covariance_class, covariance_engine, integration_grid, bandpower_binning, noise_bias_correction, fiducial_cosmology, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, decomposition_method]
   recipe:
     command: |
       set -e
-      version=$(python src/workflow/scripts/decision_values.py bb_blind_check_version {decisions.bb_blind_check_version})
+      version=$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})
       o=$(mktemp -d)
       bash src/workflow/scripts/run_cosmocov_chain.sh \
         --version "$version" --blind ${blind} \
@@ -87,7 +87,6 @@ template:
         --integration-limits {decisions.pure_eb_integration_limits} \
         --rebinning-weights {decisions.pure_eb_rebinning_weights} \
         --covariance-method {decisions.pure_eb_covariance_method} \
-        --n-samples "$(python src/workflow/scripts/decision_values.py mc_samples {decisions.mc_samples})" \
         --out-file "$o"/pure_eb_covariance_${blind}.npz
       python src/workflow/scripts/generate_cl_cov.py \
         --ver "$version" \

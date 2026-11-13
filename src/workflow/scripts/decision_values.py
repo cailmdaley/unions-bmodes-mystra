@@ -21,7 +21,7 @@ level, and NaMaster reads a catalogue.
 
 Shell recipes read a value through the CLI, one key per decision it depends on:
 
-    python decision_values.py mc_samples n_2000
+    python decision_values.py reporting_binning bins_20
     python decision_values.py nz_file blind_a
 """
 
@@ -90,11 +90,6 @@ REFERENCE_CATALOG = {
     "data_covariance": "SP_v1.4.6.3_leak_corr",
 }
 
-BB_BLIND_CHECK_VERSION = {
-    "size_cut_v1463": "SP_v1.4.6.3_leak_corr",
-    "mock_version_v146": "SP_v1.4.6_leak_corr",
-}
-
 REPORTING_BINNING = {
     "bins_20": Grid(1.0, 250.0, 20),
     "bins_40": Grid(1.0, 250.0, 40),
@@ -111,8 +106,6 @@ MODE_COUNT = {"n_max_20": 20, "n_max_15": 15, "n_max_30": 30}
 
 HARMONIC_VALIDATION_BINNING = {"bins_96": 96, "bins_128": 128, "bins_32": 32}
 
-MC_SAMPLES = {"n_2000": 2000, "n_1000": 1000, "n_5000": 5000}
-
 # Harmonic ℓ window of each fiducial_scale_cuts option. The B-mode subtraction
 # option is a treatment, not a window.
 FIDUCIAL_ELL_CUT = {
@@ -128,13 +121,11 @@ TABLES = {
     "survey_properties": SURVEY_PROPERTIES,
     "reference_covariance": REFERENCE_COVARIANCE,
     "reference_catalog": REFERENCE_CATALOG,
-    "bb_blind_check_version": BB_BLIND_CHECK_VERSION,
     "reporting_binning": REPORTING_BINNING,
     "integration_grid": INTEGRATION_GRID,
     "patch_count": PATCH_COUNT,
     "mode_count": MODE_COUNT,
     "harmonic_validation_binning": HARMONIC_VALIDATION_BINNING,
-    "mc_samples": MC_SAMPLES,
     "fiducial_scale_cuts": FIDUCIAL_ELL_CUT,
 }
 
