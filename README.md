@@ -83,11 +83,6 @@ colour scale, the marked line and the quoted value.
 produces the stale outputs on a cluster allocated with `lc compute`. The catalogs
 are UNIONS-internal, at `/n17data/UNIONS/WL/` on candide, and are not public.
 
-One output stays outside `lc`. `xi_10000_bins` is a three-node MPI job that has to
-run on the host, because the container's OpenMPI cannot start under candide's
-Slurm: its recipe submits `producers/run_10k_xi_barehost.sbatch` from the project
-root.
-
 The results under `results/` were made by `lc` on candide, last on 4 November
 2026, and each manifest records the commit and recipe that made them. Recipes and
 scripts have since been rewritten to take decisions as typed flags, without a

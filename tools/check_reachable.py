@@ -19,7 +19,7 @@ KEEP = {
         "pte_table_tex",  # the paper's TeX appendix table
         "primary_null_test_report",  # the primary-report selection the README documents
         "bb_covariance_blind_independence_evidence",  # §3.7 blind-independence statement
-        "tenk_grid_comparison",  # evidence for the integration-grid convergence findings
+        "integration_grid_convergence",  # evidence for the integration-grid convergence findings
     },
     ("validation", "glass_mocks"): {
         "glass_mock_xi_fine_check",  # what licenses the delivered fine ξ± stack

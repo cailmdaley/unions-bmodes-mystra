@@ -49,7 +49,8 @@ inputs:
     type: data
     description: |
       TreeCorr ξ_±(θ) of each of the 350 realisations of the GLASS mock
-      suite described in Paper III, measured from its HEALPix-4096
+      suite described in Paper III, regenerated on fir with the published
+      settings (seeds 1000000+N) and measured from its HEALPix-4096
       catalogue (`RA`, `Dec`, `e1`, `e2`, `w`; about 60 M galaxies) on
       exactly the data's 1000-bin integration grid, 0.5′–300′, with no
       response correction or leakage subtraction, since the
@@ -63,7 +64,7 @@ inputs:
   - id: glass_mock_xi_reporting
     type: data
     description: |
-      Sacha Guerrini's 20-bin TreeCorr ξ_± of each realisation on the
+      The 20-bin TreeCorr ξ_± of each realisation on the
       reporting grid, stacked in the layout of
       [glass_mock_xi_fine](#inputs.glass_mock_xi_fine). It defines the
       reporting bins of the pure-E/B transform, whose integrals run
@@ -73,7 +74,7 @@ inputs:
   - id: glass_mock_cl
     type: data
     description: |
-      Sacha Guerrini's NaMaster Cℓ bandpowers per GLASS realisation,
+      NaMaster Cℓ bandpowers per GLASS realisation,
       on the data's 32 √ℓ-spaced bands (rows ℓ, EE, EB, BE, BB). Their
       BB row is every mock Cℓ^BB result: the harmonic column of the
       per-realisation campaign, the Cℓ panels of the mock-validation
@@ -85,7 +86,7 @@ inputs:
     description: |
       The catalogue of GLASS realisation 00001, the one mock the
       [mock-matched Cℓ covariance](#decisions.reference_covariance) and
-      the footprint audit read: 60 423 575 unit-weight rows against
+      the footprint audit read: 60 414 487 unit-weight rows against
       the fiducial catalog's 61 378 891 rows / 51.65 M weight-effective
       galaxies on the same footprint; the excluded
       [v1.4.6 suite](#decisions.mock_suite) holds 35 078 729.
@@ -136,7 +137,7 @@ outputs:
   - {id: nu_penalty_verdicts, from: significance.nu_penalty_verdicts}
   - {id: cosebis_harmonic_config, from: significance.cosebis_harmonic_config}
   - {id: mock_campaign_evidence, from: validation.mock_campaign_evidence}
-  - {id: tenk_grid_comparison, from: validation.tenk_grid_comparison}
+  - {id: integration_grid_convergence, from: validation.integration_grid_convergence}
 
 # -----------------------------------------------------------------------------
 # Top-level decisions: the choices shared across the analysis (catalog,
@@ -233,7 +234,7 @@ decisions:
           per catalog variant.
       bins_10000:
         excluded: true
-        excluded_reason: "Used only as the convergence check in validation.tenk_grid_comparison; the mock measurements and covariance exist on the 1000-bin grid."
+        excluded_reason: "Used only as the convergence check in validation.integration_grid_convergence; the mock measurements and covariance exist on the 1000-bin grid."
         label: "10,000 bins (convergence test)"
         description: |
           Fiducial catalog only.
@@ -600,7 +601,7 @@ decisions:
       computed at high precision, so numerics do not set the limit.
       Fewer modes would lose the high-n end of the full-range
       [COSEBI failure signature](#findings.ccd_scale_cosebi_pattern).
-      The [convergence test](#analyses.validation.outputs.tenk_grid_comparison) covers every
+      The [convergence test](#analyses.validation.outputs.integration_grid_convergence) covers every
       mode the COSEBI analysis reports, so it takes the same count.
     default: n_max_20
     options:

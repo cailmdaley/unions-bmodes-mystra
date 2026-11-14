@@ -1,28 +1,23 @@
 {
   "schema_version": 1,
-  "output_id": "pure_eb.pure_eb_sweep",
+  "output_id": "data_vectors.pure_eb_sweep",
   "universe_id": "submitted",
-  "recipe": "x=$(mktemp -d) && tar xzf results/submitted/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x && c=$(mktemp -d) && tar xzf results/submitted/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c && o=$(mktemp -d) && bash src/papers/bmodes/scripts/run_pure_eb_sweep.sh --config results/submitted/catalog/selected_config.yaml --cat-config src/cosmo_val/cat_config.yaml --xi-sweep-dir $x --cov-sweep-dir $c --integration-method adaptive_dqags --integration-limits reporting_extent --rebinning-weights none --covariance-method monte_carlo --n-samples n_2000 --out $o && tar czf results/submitted/pure_eb/pure_eb_sweep.tar.gz -C $o .\n",
-  "definition_version": "sha256:4c00ce0c6cfaa63770bea128255340aaf744a677167f3e449f58bc87f13af210",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:bac3d5d1a68ba25d964ac63f267e3d70d5334e3b6175b561e37340ad5cc55948",
+  "recipe": "set -e\nx=$(mktemp -d) && tar xzf results/submitted/data_vectors/xi_scan/xi_sweep_bundle.tar.gz -C $x\no=$(mktemp -d)\nversions=$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --nonfiducial)\nfor ver in $versions; do\n  python src/papers/bmodes/scripts/pure_eb_modes.py \\\n    --xi-reporting \"$x/$ver\"_xi_minsep=1.0_maxsep=250.0_nbins=20_npatch=1.txt \\\n    --xi-integration \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n    --integration-method adaptive_dqags \\\n    --integration-limits reporting_extent \\\n    --rebinning-weights none \\\n    --out-file \"$o/$ver\"_pure_eb_data.npz\ndone\ntar czf results/submitted/data_vectors/pure_eb_sweep.tar.gz -C $o .\n",
+  "definition_version": "sha256:05172d25c5e1aac7af4dd5808cf70ed8683b26cee1d69eceeed9be53963f495d",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:31523cb4670d4675a0d159aaad11265f73b36a1d4b30ee83fdfd094c24b70866",
   "decisions": {
     "fiducial_catalog": "size_cut",
-    "fiducial_blind": "blind_a",
     "pure_eb_integration_method": "adaptive_dqags",
     "pure_eb_rebinning_weights": "none",
     "pure_eb_integration_limits": "reporting_extent",
-    "pure_eb_covariance_method": "monte_carlo",
-    "mc_samples": "n_2000"
+    "decomposition_method": "schneider22_integral_transform",
+    "leakage_correction": "applied"
   },
   "input_versions": {
-    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
-    "xi_sweep": "sha256:b2187ac5f1c26542e107b6c04d48b7eda3a330db8a389a80a6a395d4a2ec164b",
-    "cov_sweep": "sha256:bd948ef8d6b73924fb98a43f23cf3ba54444881ba9a45dc18636dd2210615e43",
-    "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da",
-    "redshift_distributions_legacy": "sha256:a499c565d8ad6fda0f305251c2a7b3669b9916e09014b533d9c54e3e6f8989f7"
+    "xi_sweep": "sha256:2a737daa114a707c5f0afece4ac3590ef03eb6f04d1124c120ceabb55d73bc7f"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -32,13 +27,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-04T02:56:48.658+00:00",
-  "finished_at": "2026-11-04T04:16:09.879+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T13:11:50.267+00:00",
+  "finished_at": "2026-11-13T13:15:31.858+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

@@ -1,20 +1,19 @@
 {
   "schema_version": 1,
-  "output_id": "pure_eb.pure_eb_covariance_figure",
+  "output_id": "covariances.pure_eb_covariance_figure",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/pure_eb_covariance.py --config results/baseline/catalog/selected_config.yaml --pure-eb-data results/baseline/pure_eb/pure_eb_semianalytic_data.npz --out-file results/baseline/pure_eb/pure_eb_covariance_figure.png\n",
-  "definition_version": "sha256:3d3b50602784c98ff139bf9c68ed12b2b2f726a2e6b017b6f2b64a865395c2bd",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
+  "recipe": "python src/papers/bmodes/scripts/pure_eb_covariance.py --fiducial-catalog size_cut --leakage-correction applied --pure-eb-covariance results/baseline/covariances/pure_eb_covariance.npz --out-file results/baseline/covariances/pure_eb_covariance_figure.png\n",
+  "definition_version": "sha256:3909bff28a376122abd871a86d9c50af67e4b17b94d55f96b0f8cd20db5c3df8",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
   "data_version": "sha256:5e6ae0e21f3045439e62ec4b2a39443a1ca37cd0e488f00dc0d6052268d5b1d8",
   "decisions": {
-    "fiducial_catalog": "size_cut"
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied"
   },
   "input_versions": {
-    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
-    "pure_eb_semianalytic_data": "sha256:7e1374ee2882b55cec68a093330a6fbf6fbab5c50e6516f4e68844800a7f2137",
-    "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
+    "pure_eb_covariance": "sha256:f02851765875fefaf415c0eb00e7a1ac0dba9668d31fa8eb5764018d08efd729"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -24,13 +23,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-03T23:58:12.740+00:00",
-  "finished_at": "2026-11-03T23:58:20.926+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T12:56:25.868+00:00",
+  "finished_at": "2026-11-13T12:57:02.640+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

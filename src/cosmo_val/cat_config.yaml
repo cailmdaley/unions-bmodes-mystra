@@ -189,7 +189,7 @@ SP_v1.3.6:
     e2_col: e2
     path: unions_shapepipe_star_2022_v1.0.3.fits
 SP_v1.4.5:
-  subdir: data/v1.4.x
+  subdir: .
   pipeline: SP
   colour: dodgerblue
   getdist_colour: 0.0, 0.5, 1.0
@@ -216,7 +216,7 @@ SP_v1.4.5:
     e2_star_col: HSM_G2_STAR
   shear:
     R: 1.0
-    path: v1.4.5/unions_shapepipe_cut_struc_2024_v1.4.5.fits
+    path: data/v1.4.x/v1.4.5/unions_shapepipe_cut_struc_2024_v1.4.5.fits
     redshift_path: data/nz/nz_SP_v1.4.6.3_A.txt
     w_col: w_des
     e1_col: e1
@@ -394,7 +394,7 @@ SP_v1.4.6_glass_mock:
     e2_col: e2
     path: unions_shapepipe_star_2024_v1.4.a.fits
 SP_v1.4.6.3_glass_mock_v2:
-  subdir: /n17data/UNIONS/WL/v1.4.x
+  subdir: .
   pipeline: SP
   colour: darkgreen
   getdist_colour: 0.0, 0.7, 0.0
@@ -475,7 +475,7 @@ SP_v1.4.5_intermediate:
     e2_col: e2
     path: /n17data/UNIONS/WL/v1.4.x/unions_shapepipe_star_2024_v1.4.a.fits
 SP_v1.4.6.3:
-  subdir: data/v1.4.x
+  subdir: .
   pipeline: SP
   colour: orange
   getdist_colour: 0.0, 0.5, 1.0
@@ -502,7 +502,7 @@ SP_v1.4.6.3:
     e2_star_col: HSM_G2_STAR
   shear:
     R: 1.0
-    path: v1.4.6.3/unions_shapepipe_cut_struc_2024_v1.4.6.3.fits
+    path: data/v1.4.x/v1.4.6.3/unions_shapepipe_cut_struc_2024_v1.4.6.3.fits
     redshift_path: data/nz/nz_SP_v1.4.6.3_A.txt
     w_col: w_des
     e1_col: e1
@@ -865,7 +865,7 @@ SP_v1.4.7:
     e2_col: e2
     path: unions_shapepipe_star_2024_v1.4.a.fits
 SP_v1.4.8:
-  subdir: data/v1.4.x
+  subdir: .
   pipeline: SP
   colour: darkorchid
   getdist_colour: 0.0, 0.5, 1.0
@@ -892,7 +892,7 @@ SP_v1.4.8:
     e2_star_col: HSM_G2_STAR
   shear:
     R: 1.0
-    path: v1.4.8/unions_shapepipe_cut_struc_2024_v1.4.8.fits
+    path: data/v1.4.x/v1.4.8/unions_shapepipe_cut_struc_2024_v1.4.8.fits
     redshift_path: data/nz/nz_SP_v1.4.6.3_A.txt
     w_col: w_des
     e1_col: e1
@@ -951,7 +951,7 @@ SP_v1.4.11.2:
     e2_col: e2
     path: /n17data/UNIONS/WL/v1.4.x/unions_shapepipe_star_2024_v1.4.a.fits
 SP_v1.4.11.3:
-  subdir: data/v1.4.x
+  subdir: .
   pipeline: SP
   colour: red
   getdist_colour: 0.0, 0.5, 1.0
@@ -978,7 +978,7 @@ SP_v1.4.11.3:
     e2_star_col: HSM_G2_STAR
   shear:
     R: 1.0
-    path: v1.4.11.3/unions_shapepipe_cut_struc_2024_v1.4.11.3.fits
+    path: data/v1.4.x/v1.4.11.3/unions_shapepipe_cut_struc_2024_v1.4.11.3.fits
     redshift_path: data/nz/nz_SP_v1.4.6.3_A.txt
     w_col: w_des
     e1_col: e1

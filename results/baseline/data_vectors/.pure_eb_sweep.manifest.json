@@ -1,28 +1,23 @@
 {
   "schema_version": 1,
-  "output_id": "pure_eb.pure_eb_sweep",
+  "output_id": "data_vectors.pure_eb_sweep",
   "universe_id": "baseline",
-  "recipe": "x=$(mktemp -d) && tar xzf results/baseline/two_point/xi_scan/xi_sweep_bundle.tar.gz -C $x && c=$(mktemp -d) && tar xzf results/baseline/covariance/cov_scan/cov_sweep_bundle.tar.gz -C $c && o=$(mktemp -d) && bash src/papers/bmodes/scripts/run_pure_eb_sweep.sh --config results/baseline/catalog/selected_config.yaml --cat-config src/cosmo_val/cat_config.yaml --xi-sweep-dir $x --cov-sweep-dir $c --integration-method fixed_operator --integration-limits fine_grid_extent --rebinning-weights npairs --covariance-method exact_linear --n-samples n_2000 --out $o && tar czf results/baseline/pure_eb/pure_eb_sweep.tar.gz -C $o .\n",
-  "definition_version": "sha256:1705cef1b2f4b86fbee7b40d12e317a593f05a9f1d40b07ad4a1340af26b8606",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:01199964b245ad90a91494a9848898e43227e5237171422971b9bde6ee67092b",
+  "recipe": "set -e\nx=$(mktemp -d) && tar xzf results/baseline/data_vectors/xi_scan/xi_sweep_bundle.tar.gz -C $x\no=$(mktemp -d)\nversions=$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --nonfiducial)\nfor ver in $versions; do\n  python src/papers/bmodes/scripts/pure_eb_modes.py \\\n    --xi-reporting \"$x/$ver\"_xi_minsep=1.0_maxsep=250.0_nbins=20_npatch=1.txt \\\n    --xi-integration \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n    --integration-method fixed_operator \\\n    --integration-limits fine_grid_extent \\\n    --rebinning-weights npairs \\\n    --out-file \"$o/$ver\"_pure_eb_data.npz\ndone\ntar czf results/baseline/data_vectors/pure_eb_sweep.tar.gz -C $o .\n",
+  "definition_version": "sha256:d164d028da5d1a3a6f969fc95769956d377bb2c3dc1ee994d3f45c2d1a566cd5",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:b562da4082331fba6d9724c61263c2211bec96a0fe4adc5cd4028f521048a11b",
   "decisions": {
     "fiducial_catalog": "size_cut",
-    "fiducial_blind": "blind_a",
     "pure_eb_integration_method": "fixed_operator",
     "pure_eb_rebinning_weights": "npairs",
     "pure_eb_integration_limits": "fine_grid_extent",
-    "pure_eb_covariance_method": "exact_linear",
-    "mc_samples": "n_2000"
+    "decomposition_method": "schneider22_integral_transform",
+    "leakage_correction": "applied"
   },
   "input_versions": {
-    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
-    "xi_sweep": "sha256:a21ed886d33d8b4ff68b27fe4457161b2260053b7f391770d11db86fec85ab71",
-    "cov_sweep": "sha256:7503199d43b0381627fecea743b03f82b7e75d754847cdd03800362411eed766",
-    "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da",
-    "redshift_distributions_legacy": "sha256:a499c565d8ad6fda0f305251c2a7b3669b9916e09014b533d9c54e3e6f8989f7"
+    "xi_sweep": "sha256:6c0e90cb29b0d474f9915986547a125373ff766d279b042ba51a8ec7bc30e896"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -32,13 +27,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-04T07:47:00.839+00:00",
-  "finished_at": "2026-11-04T07:49:56.365+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T08:37:37.434+00:00",
+  "finished_at": "2026-11-13T08:41:41.397+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

@@ -1,21 +1,20 @@
 {
   "schema_version": 1,
-  "output_id": "glass_mocks.mock_xi_input_theory",
+  "output_id": "validation.glass_mocks.mock_xi_input_theory",
   "universe_id": "submitted",
-  "recipe": "python src/workflow/scripts/mock_xi_input_theory.py --cosmology-json results/submitted/covariance/cosmology_snapshot.json --reporting-ensemble results/submitted/glass_mocks/mock_xi_reporting.npz --cat-config src/cosmo_val/cat_config.yaml --out-file results/submitted/glass_mocks/mock_xi_input_theory.npz\n",
-  "definition_version": "sha256:e801c15c6478af4ce89ae6d45154b02757452addceb377ae0619841549baae1f",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:85609b50c9e0e210f3f5debf1b545d6c3788cd4a0be4e632e7ec46a8fbc87401",
+  "recipe": "python src/workflow/scripts/mock_xi_input_theory.py --cosmology-json results/submitted/covariances/cosmology_snapshot.json --reporting-ensemble data/glass_mock_v1.4.6.3_v2/mock_xi_reporting.npz --cat-config src/cosmo_val/cat_config.yaml --out-file results/submitted/validation/glass_mocks/mock_xi_input_theory.npz\n",
+  "definition_version": "sha256:e0c91b194bbf7a2cadbe3c18997bf773f72d2aed127c1e57413a8f707e1fce4c",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:c89b96306bcef991826278a91e6d0432ba94570163f01cc33df9ad1a8f5905a0",
   "decisions": {
     "mock_suite": "v1_4_6_3_v2"
   },
   "input_versions": {
-    "mock_xi_reporting": "sha256:347e06f70a8d3dc4c65027f41a1fe5f2dbc0fb2b148148d36208824350a4cf1f",
+    "glass_mock_xi_reporting": "sha256:4576ba49d0303b70345ccf56ae64071c25a16d95ea067289146d144c834cd9c7",
     "cosmology_snapshot": "sha256:c2a2387f4c8a208fbb1cb4e7c6fb11dbf0945b44f4d576380626c21c228c2024",
-    "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da",
-    "mock_xi_input_theory_script": "sha256:b0f2842fc891d9ab14e6c376a2269fb4faf89d84bccb324ecad4a0e9c396ac01"
+    "redshift_distributions": "spelling:sha256:11ef1341c9f8ea8d3d7fb69db5d38885a4f438092cb4096978145b98d45b8e43"
   },
-  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -25,13 +24,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T05:46:02.890+00:00",
-  "finished_at": "2026-11-01T05:46:20.276+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T11:37:07.434+00:00",
+  "finished_at": "2026-11-13T11:38:09.218+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

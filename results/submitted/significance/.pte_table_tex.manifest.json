@@ -1,18 +1,16 @@
 {
   "schema_version": 1,
-  "output_id": "pte_table_tex",
+  "output_id": "significance.pte_table_tex",
   "universe_id": "submitted",
-  "recipe": "python src/papers/bmodes/scripts/generate_pte_table_tex.py --pte-csv results/submitted/pte_table_appendix.csv --calibration results/submitted/glass_mocks/mock_min_pte_calibration.json --out-file results/submitted/pte_table_tex.tex\n",
-  "definition_version": "sha256:5be5f95848204eadc6bcae8064031d73d0902bf870c88dfa8fd1f4248ce7d13c",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:005e36b1deafb5e0425da8cbac030b4d1c115f8231801fcce42fed6f7291599d",
+  "recipe": "python src/papers/bmodes/scripts/generate_pte_table_tex.py --pte-csv results/submitted/significance/pte_table_appendix.csv --out-file results/submitted/significance/pte_table_tex.tex\n",
+  "definition_version": "sha256:146ce669d248906a1dff493ee3c7fdf2af881334cfab85069cd57ca959129b66",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:82f4c6595ad8b632ba8ddd5f427a0f0858139f7ccde214b1095d071bd43b43a2",
   "decisions": {},
   "input_versions": {
-    "pte_table_appendix": "sha256:0f11c5a0acb8943d207e66b4294a15adac4766a694f6467b9b0dd3fcc6f99969",
-    "mock_min_pte_calibration": "sha256:42f925f9d9d146a0df96f4e19879b4b75fbee5ca290f989e2738fc80ad2c8558",
-    "generate_pte_table_tex_script": "sha256:13e47ea760ed3c38ff55c310e6a0381c352130622cb8da706301e9b9f91888d4"
+    "pte_table_appendix": "sha256:a5cdcf6d7dab6e08564b56656c5a98bfcdd610ed05d999c84600083f614ba6ad"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "ab8b43a0ea47e20b5fc39b7e1297a6a3e0f4007b",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -22,13 +20,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-04T04:16:49.394+00:00",
-  "finished_at": "2026-11-04T04:16:50.036+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T16:40:40.448+00:00",
+  "finished_at": "2026-11-13T16:40:42.089+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

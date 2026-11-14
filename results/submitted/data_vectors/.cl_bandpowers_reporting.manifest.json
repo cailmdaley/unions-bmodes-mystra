@@ -1,23 +1,23 @@
 {
   "schema_version": 1,
-  "output_id": "cl_bb.cl_bandpowers_reporting",
+  "output_id": "data_vectors.cl_bandpowers_reporting",
   "universe_id": "submitted",
-  "recipe": "python src/workflow/scripts/generate_pseudo_cl.py --ver \"$(python src/papers/bmodes/scripts/paper_config.py --config results/submitted/catalog/selected_config.yaml --get fiducial.version)\" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind blind_a --out-file results/submitted/cl_bb/cl_bandpowers_reporting.fits\n",
-  "definition_version": "sha256:566df5c402ac80eb305152089c7de003052bb3c42694811ffc5b165bc2c3e726",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:9f9460fb57e1f99948c43f6bcbe1e4302e9c00637b5e2580516780028e9cf0f7",
+  "recipe": "python src/workflow/scripts/generate_cl.py --ver \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind blind_a --out-file results/submitted/data_vectors/cl_bandpowers_reporting.fits\n",
+  "definition_version": "sha256:f0c37974a661d6e3ed8ca379b584fc0fd3713e5ac72215b35fe9a4e8da4f6d30",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:f27662b55fe2bee589a530db9f1a1c8f1c116bbb7f6910de9f58326960bfc334",
   "decisions": {
     "fiducial_catalog": "size_cut",
-    "fiducial_blind": "blind_a"
+    "fiducial_blind": "blind_a",
+    "estimator_choice": "wolz25_catalog_based",
+    "bandpower_binning": "bandpowers_32_powspace",
+    "noise_bias_correction": "analytic_shot_noise",
+    "leakage_correction": "applied"
   },
   "input_versions": {
-    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
-    "shapepipe_v14_catalogs": "spelling:sha256:476a59a7d51545a6de80b0d96e7f535550159cda928a0bf2b7efb76c5eef5f3d",
-    "shapepipe_v145_rerun": "sha256:a59810c516c30805937388d56eede60d0417ce9375168a8813823b9be6c5acd8",
-    "redshift_distribution": "sha256:0d712922bf6edc27600b4035cc236cccd3aa73fbd4f2bc426c3914b9a924cbe8",
-    "mask_power_spectrum": "sha256:043c512476658dea60273e095e88b00e3b73559cfea394d1bda35e9548c576cb"
+    "shapepipe_v14_catalogs": "spelling:sha256:ddcb9bb187a44cd4aa678855597346a6b0bb4ad3f2056a08cfb7714923d2457a"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -27,13 +27,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-04T02:24:15.423+00:00",
-  "finished_at": "2026-11-04T02:24:32.725+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T05:11:56.606+00:00",
+  "finished_at": "2026-11-13T05:27:18.463+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

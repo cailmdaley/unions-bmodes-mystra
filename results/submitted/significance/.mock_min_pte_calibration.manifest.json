@@ -1,25 +1,21 @@
 {
   "schema_version": 1,
-  "output_id": "glass_mocks.mock_min_pte_calibration",
+  "output_id": "significance.mock_min_pte_calibration",
   "universe_id": "submitted",
-  "recipe": "python src/workflow/scripts/mock_min_pte_calibration.py --per-mock-statistics results/submitted/glass_mocks/mock_per_mock_statistics.npz --pure-eb-pte results/submitted/pure_eb/pure_eb_pte_per_cut.npz --cosebis-pte results/submitted/cosebis/cosebis_pte_grid/cosebis_pte_matrix.npz --cl-pte results/submitted/cl_bb/cl_pte_per_cut.npz --config results/submitted/catalog/selected_config.yaml --scale-cut-convention grid_bin_edges --out-file results/submitted/glass_mocks/mock_min_pte_calibration.json\n",
-  "definition_version": "sha256:184ef1e2266e64317fe1fa6cb39868181229061107407be22693a56f3f7e52a5",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:42f925f9d9d146a0df96f4e19879b4b75fbee5ca290f989e2738fc80ad2c8558",
+  "recipe": "python src/workflow/scripts/mock_min_pte_calibration.py --per-mock-statistics results/submitted/validation/glass_mocks/mock_per_mock_statistics.npz --pure-eb-pte results/submitted/significance/pure_eb_pte_per_cut.npz --cosebis-pte results/submitted/significance/cosebis_pte_grid/cosebis_pte_matrix.npz --cl-pte results/submitted/significance/cl_pte_per_cut.npz --reporting-binning bins_20 --out-file results/submitted/significance/mock_min_pte_calibration.json\n",
+  "definition_version": "sha256:8ab00073e45cad7e9f9393ed496544c09f17596b93ada18e9baef7cea136f0cf",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:f02da261d7093d476d494db2fa2b1f24c20765b59757ef0bc5366aa1396592de",
   "decisions": {
-    "reference_covariance": "mockmatched",
-    "mock_suite": "v1_4_6_3_v2",
-    "scale_cut_convention": "grid_bin_edges"
+    "reporting_binning": "bins_20"
   },
   "input_versions": {
-    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
-    "mock_per_mock_statistics": "sha256:1f4ba097281123c41a3bf3430bbe3305b05546223b4a2eec6fa9b86a9fac0f8b",
-    "pure_eb_pte_per_cut": "sha256:bf32f1b6481b930e6fcaa08dda65171e382a1ba2e743e589c63b4f3ee26c76e3",
-    "cosebis_pte_per_cut": "sha256:ddd441675fa706030fd26863a3455e120abf87f8406e5f39e9475ecaa491bc79",
-    "cl_pte_per_cut": "sha256:555abcbb99cc98085a0cd822df57ce54664406852dfcf3e0ae75be4ac0accb66",
-    "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2"
+    "mock_per_mock_statistics": "sha256:4527b8633c97fc8916488ec6ee0b218c214bcfd63da8986d71a009c7516f79a8",
+    "pure_eb_pte_per_cut": "sha256:5346e6363a5c9d04eb08160a5caaebbd470cfd21f1d1fef9fd32d96212a3a8a2",
+    "cosebis_pte_per_cut": "sha256:9c4b6a384f85ef690bb8c27eab92500d9ead59ccd0b4b1995114b5a1dddb936f",
+    "cl_pte_per_cut": "sha256:46da41dd4520f0f6b2eb7576dacf081985a6ff73112c53801289e756632c79e6"
   },
-  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -29,13 +25,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-04T08:51:26.350+00:00",
-  "finished_at": "2026-11-04T08:51:27.746+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T12:02:11.647+00:00",
+  "finished_at": "2026-11-13T12:02:20.511+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

@@ -1,21 +1,21 @@
 {
   "schema_version": 1,
-  "output_id": "glass_mocks.mock_xi_reporting_cov_mockmatched",
+  "output_id": "covariances.cov_reporting_reference",
   "universe_id": "submitted",
-  "recipe": "python src/workflow/scripts/mock_xi_reporting_cov_mockmatched.py --covariance /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt --reporting-ensemble results/submitted/glass_mocks/mock_xi_reporting.npz --fine-min-sep 0.5 --fine-max-sep 300.0 --fine-nbins 1000 --out-file results/submitted/glass_mocks/mock_xi_reporting_cov_mockmatched.npz\n",
-  "definition_version": "sha256:8cc25e3c3881d7b3ae4f756afc7b044ea06df536ef67febe83c1f15e3ac9c39e",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:c0e16cbd8040127e0fb814dc43cc8b163426eae6c512961cba3357f096b9ac00",
+  "recipe": "python src/workflow/scripts/xi_reporting_covariance.py --covariance results/submitted/covariances/cov_integration_reference.txt --reporting-binning bins_20 --integration-grid bins_1000 --out-file results/submitted/covariances/cov_reporting_reference.npz\n",
+  "definition_version": "sha256:ffbf36752671c5114bc605c17d68eb1f919f95a9c7c8251c7c1e7a3fd2719b99",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:73fa7732909c1467ede4615a9e064522f9f7fcae3daedb3acb00292547331562",
   "decisions": {
+    "reference_covariance": "mockmatched",
     "mock_suite": "v1_4_6_3_v2",
-    "reference_covariance": "mockmatched"
+    "integration_grid": "bins_1000",
+    "reporting_binning": "bins_20"
   },
   "input_versions": {
-    "cov_integration_mockmatched": "sha256:a65ee4c8beac7c53d45db38c2aac9226628ccd921151d27227e6a15078646780",
-    "mock_xi_reporting": "sha256:347e06f70a8d3dc4c65027f41a1fe5f2dbc0fb2b148148d36208824350a4cf1f",
-    "mock_xi_reporting_cov_script": "sha256:702f4e0787c31139f62a423bb0df5f6b5ba095bff49bcd94c21be624321f29a0"
+    "cov_integration_reference": "sha256:5b205a01120a8055969bf92bd07d5334e453359f6b4ad7711a2fc6dc6a302120"
   },
-  "git_sha": "ed4c35f39829f45adf957cdaa15741052b75d055",
+  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -25,13 +25,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-01T05:46:08.524+00:00",
-  "finished_at": "2026-11-01T05:46:10.326+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T03:43:51.588+00:00",
+  "finished_at": "2026-11-13T03:43:57.186+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

@@ -1,21 +1,18 @@
 {
   "schema_version": 1,
-  "output_id": "glass_mocks.mock_sigma_ratio_figure",
+  "output_id": "validation.glass_mocks.mock_sigma_ratio_figure",
   "universe_id": "submitted",
-  "recipe": "python src/workflow/scripts/mock_campaign_analysis.py --from-stats results/submitted/glass_mocks/mock_per_mock_statistics.npz --emit sigma-ratio-figure --out-file results/submitted/glass_mocks/mock_sigma_ratio_figure.pdf\n",
-  "definition_version": "sha256:bdc6d195d074b578f66e23cd4226737129e3cbd01f7a7df426265fc567596724",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:a18e5e4753cf92eb0121400956daff40c2b172af6ea85bf8bf71a19b1d0b7673",
+  "recipe": "python src/workflow/scripts/mock_campaign_analysis.py --from-stats results/submitted/validation/glass_mocks/mock_per_mock_statistics.npz --emit sigma-ratio-figure --out-file results/submitted/validation/glass_mocks/mock_sigma_ratio_figure.pdf\n",
+  "definition_version": "sha256:0a9380139b32b7a0b11b7c72191c0d55e86abd0d73bc0d19998d636329d23322",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:6233db2a59de6f9e043138827f6f96cbbd97ab30b878e2de5597a85d837b8429",
   "decisions": {
     "reference_covariance": "mockmatched"
   },
   "input_versions": {
-    "mock_per_mock_statistics": "sha256:1f4ba097281123c41a3bf3430bbe3305b05546223b4a2eec6fa9b86a9fac0f8b",
-    "mock_campaign_analysis_script": "sha256:dd95fe07e97d351b9ed59b0784e29657fbd97020727e31170ab7fc399f295abb",
-    "plotting_utils_script": "sha256:e53c7b42f75838d1d6b63327bd72e7c2a3f3d5b22b4e00e67df32a409552a0da",
-    "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
+    "mock_per_mock_statistics": "sha256:4527b8633c97fc8916488ec6ee0b218c214bcfd63da8986d71a009c7516f79a8"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -25,13 +22,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-04T03:41:34.054+00:00",
-  "finished_at": "2026-11-04T03:41:57.262+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T12:02:11.660+00:00",
+  "finished_at": "2026-11-13T12:03:47.405+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

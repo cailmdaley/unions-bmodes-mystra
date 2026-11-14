@@ -1,21 +1,20 @@
 {
   "schema_version": 1,
-  "output_id": "glass_mocks.mock_mean_vector_stats",
+  "output_id": "validation.glass_mocks.mock_mean_vector_stats",
   "universe_id": "baseline",
-  "recipe": "python src/workflow/scripts/mock_mean_vector_plot.py --stats results/baseline/glass_mocks/mock_per_mock_statistics.npz --label mockmatched --config results/baseline/catalog/selected_config.yaml --scale-cut-convention grid_bin_edges --emit stats --out-file results/baseline/glass_mocks/mock_mean_vector_stats.json\n",
-  "definition_version": "sha256:6943aa467b5d8c435b8aeac98fda225d252049a453649d2e099b867711be3b59",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:c58ab8c600fe367ce138a15308c8f9fd7e261e61b945e4b8f177930b94154a46",
+  "recipe": "python src/workflow/scripts/mock_mean_vector_plot.py --stats results/baseline/validation/glass_mocks/mock_per_mock_statistics.npz --label mockmatched --reporting-binning bins_20 --emit stats --out-file results/baseline/validation/glass_mocks/mock_mean_vector_stats.json\n",
+  "definition_version": "sha256:32bfd5725fa5ecaf8143a4c3725cd351e94fc0049d509c61c1ce3c311568b1ff",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:bafde33743c8fdd21c6e3a63a8f44df50a774d321ee3bade9c636bd862e247fe",
   "decisions": {
     "reference_covariance": "mockmatched",
-    "scale_cut_convention": "grid_bin_edges"
+    "pte_definition": "chi2_tail",
+    "reporting_binning": "bins_20"
   },
   "input_versions": {
-    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
-    "mock_per_mock_statistics": "sha256:08e23e1456e4279ab5664ff4916cd95e6a762c2071d3bec5c14a5fe4b5d157a7",
-    "scale_cuts_script": "sha256:94e1ef02b7bbad3cae2be46af78b87eefc74a6dba0750e02a862251a486a06d2"
+    "mock_per_mock_statistics": "sha256:e57566d75aeb13c670ff6ec4bb71d1128d49cda2db95a8b3967e230135ac6c79"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -25,13 +24,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-03T23:59:44.850+00:00",
-  "finished_at": "2026-11-03T23:59:55.415+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T12:58:44.240+00:00",
+  "finished_at": "2026-11-13T12:59:21.862+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

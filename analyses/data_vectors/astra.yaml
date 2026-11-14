@@ -58,23 +58,20 @@ outputs:
     description: |
       TreeCorr ξ_±(θ) of the leakage-corrected size-cut catalog on a
       10,000-bin grid over [0.5', 300'], for the
-      [convergence check](#../analyses.validation.outputs.tenk_grid_comparison)
-      of the 1000-bin integration grid. It is an expensive multi-node MPI run,
-      three nodes with 15 ranks of 12 threads, 180 cores for about four hours,
-      because bins this fine blow up TreeCorr's pair traversal. The run uses 50
-      TreeCorr patches only to share the work between nodes, and no jackknife
-      enters.
+      [convergence check](#../analyses.validation.outputs.integration_grid_convergence)
+      of the 1000-bin integration grid. It is the expensive one, about 720
+      core-hours on one node, because bins this fine blow up
+      TreeCorr's pair traversal; no jackknife enters.
     format: txt
     when: [leakage_correction.applied]
     decisions: [leakage_correction]
     inputs: [shapepipe_v14_catalogs]
     recipe:
-      # A host job, not a recipe `lc` can run: the container's OpenMPI cannot start
-      # under candide's Slurm, and `lc` has no way to hand a recipe an allocation
-      # across nodes. Submit it from the project root, on the host.
       command: >
-        sbatch --wait producers/run_10k_xi_barehost.sbatch {output}
-      resources: { cpus: 180 }
+        python src/workflow/scripts/run_2pcf_highres.py
+        --cat-config src/cosmo_val/cat_config.yaml --version SP_v1.4.6.3_leak_corr
+        --nbins 10000 --min-sep 0.5 --max-sep 300.0 --out-file {output}
+      resources: { cpus: 96, memory: "200GB" }
 
   - id: xi_sweep
     # The ξ_± of the catalog-version scan, read by the pure-mode and COSEBI

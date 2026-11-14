@@ -1,32 +1,32 @@
 {
   "schema_version": 1,
-  "output_id": "two_point.xi_scan.xi_sweep_bundle",
+  "output_id": "data_vectors.xi_scan.xi_sweep_bundle",
   "universe_id": "submitted",
-  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout xi --config src/papers/bmodes/config/catalogs/size_cut.yaml --leakage-correction applied --names xi_sp_v1p4p5_reporting xi_sp_v1p4p5_integration xi_sp_v1p4p5_leak_corr_reporting xi_sp_v1p4p5_leak_corr_integration xi_fiducial_counterpart_reporting xi_fiducial_counterpart_integration xi_sp_v1p4p8_reporting xi_sp_v1p4p8_integration xi_sp_v1p4p8_leak_corr_reporting xi_sp_v1p4p8_leak_corr_integration xi_sp_v1p4p11p3_reporting xi_sp_v1p4p11p3_integration xi_sp_v1p4p11p3_leak_corr_reporting xi_sp_v1p4p11p3_leak_corr_integration --members results/submitted/two_point/xi_scan/xi_sp_v1p4p5_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p5_integration.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p5_leak_corr_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p5_leak_corr_integration.txt results/submitted/two_point/xi_scan/xi_fiducial_counterpart_reporting.txt results/submitted/two_point/xi_scan/xi_fiducial_counterpart_integration.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p8_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p8_integration.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p8_leak_corr_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p8_leak_corr_integration.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p11p3_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p11p3_integration.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p11p3_leak_corr_reporting.txt results/submitted/two_point/xi_scan/xi_sp_v1p4p11p3_leak_corr_integration.txt --out-file results/submitted/two_point/xi_scan/xi_sweep_bundle.tar.gz\n",
-  "definition_version": "sha256:b13a17070146820e9d9776ce73c996572bf94d4e355b9857d4913d822cb888c1",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:b2187ac5f1c26542e107b6c04d48b7eda3a330db8a389a80a6a395d4a2ec164b",
+  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout xi --fiducial-catalog size_cut --leakage-correction applied --names xi_sp_v1p4p5_reporting xi_sp_v1p4p5_integration xi_sp_v1p4p5_leak_corr_reporting xi_sp_v1p4p5_leak_corr_integration xi_fiducial_counterpart_reporting xi_fiducial_counterpart_integration xi_sp_v1p4p8_reporting xi_sp_v1p4p8_integration xi_sp_v1p4p8_leak_corr_reporting xi_sp_v1p4p8_leak_corr_integration xi_sp_v1p4p11p3_reporting xi_sp_v1p4p11p3_integration xi_sp_v1p4p11p3_leak_corr_reporting xi_sp_v1p4p11p3_leak_corr_integration --members results/submitted/data_vectors/xi_scan/xi_sp_v1p4p5_reporting.txt results/submitted/data_vectors/xi_scan/xi_sp_v1p4p5_integration.txt results/submitted/data_vectors/xi_scan/xi_sp_v1p4p5_leak_corr_reporting.txt results/submitted/data_vectors/xi_scan/xi_sp_v1p4p5_leak_corr_integration.txt results/submitted/data_vectors/xi_scan/xi_fiducial_counterpart_reporting.txt results/submitted/data_vectors/xi_scan/xi_fiducial_counterpart_integration.txt results/submitted/data_vectors/xi_scan/xi_sp_v1p4p8_reporting.txt results/submitted/data_vectors/xi_scan/xi_sp_v1p4p8_integration.txt results/submitted/data_vectors/xi_scan/xi_sp_v1p4p8_leak_corr_reporting.txt results/submitted/data_vectors/xi_scan/xi_sp_v1p4p8_leak_corr_integration.txt results/submitted/data_vectors/xi_scan/xi_sp_v1p4p11p3_reporting.txt results/submitted/data_vectors/xi_scan/xi_sp_v1p4p11p3_integration.txt results/submitted/data_vectors/xi_scan/xi_sp_v1p4p11p3_leak_corr_reporting.txt results/submitted/data_vectors/xi_scan/xi_sp_v1p4p11p3_leak_corr_integration.txt --out-file results/submitted/data_vectors/xi_scan/xi_sweep_bundle.tar.gz\n",
+  "definition_version": "sha256:6131a7cdc916b61d01b4a7aa9c50854b7172d47ca732f5e0baa13bea211ad661",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:2a737daa114a707c5f0afece4ac3590ef03eb6f04d1124c120ceabb55d73bc7f",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "leakage_correction": "applied"
   },
   "input_versions": {
-    "xi_sp_v1p4p5_reporting": "sha256:ce2d25a367ebd48f7092b1d06c4fc91c7d584c4838f55b8b61b8926b1269b6f1",
-    "xi_sp_v1p4p5_integration": "sha256:f30176661465f31af8d1df26cc9cca7075fb044ff37d2c8af0518cf1ce90b81f",
-    "xi_sp_v1p4p5_leak_corr_reporting": "sha256:eced2ab8967246f0dbab1786b9be029dbb9be13033f02c600154e77d02fa63db",
-    "xi_sp_v1p4p5_leak_corr_integration": "sha256:903cba12f7a5895ddefd34424694e0c197291ba2da087214ddf1683bb50cdf7a",
-    "xi_fiducial_counterpart_reporting": "sha256:4658e2e64361c2f88e60152bcc0dfe53e04c4d8906cad25b27f6199460a73ae2",
-    "xi_fiducial_counterpart_integration": "sha256:0b4ab0a3e7c5dbe2a22f472ca672c6ce12ec8b82b582d95bc5434773fc1d8577",
-    "xi_sp_v1p4p8_reporting": "sha256:97bf1ca90335fc07aec15ec7a679a985f89b1d7395f34881c0b66ee3a4e8d867",
-    "xi_sp_v1p4p8_integration": "sha256:2c7f5649d333b8da25ae0db7f393170902f8e8053c88789cbabf355a7dc2c45d",
-    "xi_sp_v1p4p8_leak_corr_reporting": "sha256:e30155be24ebc66f088fb03b9a4d848a50baea2b020823e8b60449b450766a9d",
-    "xi_sp_v1p4p8_leak_corr_integration": "sha256:2a3f1fb635f8f01d18fab126e1470315302ee1673f1c2ad283af4ac06a42c56d",
-    "xi_sp_v1p4p11p3_reporting": "sha256:2917cac5a578862dd98d5ea5b70e2fa1c5332b0126b4f31188c72d96e7a53466",
-    "xi_sp_v1p4p11p3_integration": "sha256:eaf774b8e020ab1207ac0f38a425fb18890abef3079e73a32bf9b8884f3ad8a2",
-    "xi_sp_v1p4p11p3_leak_corr_reporting": "sha256:60222365581dcd119143f4e2beddd10e6d40802d4c8379f5fedb6607a748dd84",
-    "xi_sp_v1p4p11p3_leak_corr_integration": "sha256:df91c1bd07330a47eb9089d6a2d7772a460c79a3e39953f039e260081baf74fa"
+    "xi_sp_v1p4p5_reporting": "sha256:cd0c1f3f5a8c2a4278f94e21f8a63db0d8ac63b70672b00a99ebc91bce271164",
+    "xi_sp_v1p4p5_integration": "sha256:141cae1f4a05135e350bc6f215462c6a5592df950ddaa7564e02ef60d252a18b",
+    "xi_sp_v1p4p5_leak_corr_reporting": "sha256:12270f26ed99db13b8db481a791c4c36e9b5c150c1c202ac27179e47553e8374",
+    "xi_sp_v1p4p5_leak_corr_integration": "sha256:db362135c2cea07cbad168af4b92fbeaedf318a8bbcda7969eb3763d83656519",
+    "xi_fiducial_counterpart_reporting": "sha256:2e329841c57bf25efc7b1a3c5707c0bd02d20589da26df6343169417b5f86603",
+    "xi_fiducial_counterpart_integration": "sha256:685ae362b84286619a8a7e852452e83aebf6c70034e2ce31037b91c30af07ff3",
+    "xi_sp_v1p4p8_reporting": "sha256:faac50c4ea90bd351b33a9b87db0567a8de1001ed9bad4d8d7268aac681dceb3",
+    "xi_sp_v1p4p8_integration": "sha256:afe11166bed4747bb9cf8a1fe5eebf2d22b00e4c171bc1edf5910f7f08685a7f",
+    "xi_sp_v1p4p8_leak_corr_reporting": "sha256:1682ee60247cd5bc4d31a7cb3c0614c014088ab09d165236aff83ec7e51e5b8f",
+    "xi_sp_v1p4p8_leak_corr_integration": "sha256:0ccb3cf31737a35dbef6d43b2a94e75d2150b13270355e25ff835adb2b48efb3",
+    "xi_sp_v1p4p11p3_reporting": "sha256:cfe0acde12b00c22cb975b696505179d86bece95e116d31a589bfcccf249f7fe",
+    "xi_sp_v1p4p11p3_integration": "sha256:166b92fe4a828d6aefe45a19581153fa6843eebe7ac1a740f54ba3785896d1cd",
+    "xi_sp_v1p4p11p3_leak_corr_reporting": "sha256:32ed13249315ae99cce1277531f369852a4c92e67df1a6158127bddfec6f8f2a",
+    "xi_sp_v1p4p11p3_leak_corr_integration": "sha256:5173a760004b578256ebf6ac552d7e8387224ded11764bd03754a75a2d95a0bd"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -36,13 +36,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-04T02:36:37.880+00:00",
-  "finished_at": "2026-11-04T02:36:41.985+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T13:11:40.310+00:00",
+  "finished_at": "2026-11-13T13:11:49.829+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

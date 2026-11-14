@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "output_id": "data_vectors.cosebis_modes_sweep",
+  "universe_id": "baseline",
+  "recipe": "set -e\nx=$(mktemp -d) && tar xzf results/baseline/data_vectors/xi_scan/xi_sweep_bundle.tar.gz -C $x\no=$(mktemp -d)\nversions=$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --comparison)\nfor ver in $versions; do\n  python src/papers/bmodes/scripts/cosebis_data_vector.py \\\n    --version \"$ver\" \\\n    --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 \\\n    --xi-integration \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n    --out-file \"$o/$ver\"_cosebis_modes.npz\ndone\ntar czf results/baseline/data_vectors/cosebis_modes_sweep.tar.gz -C $o .\n",
+  "definition_version": "sha256:22572c0086208781774b2e9b9347ce97e4f593da69b634195e86d03525b9e577",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:0cbb31fa729c18f98b0a1c20e57b66b6095af3c25eb2e1500df0200ad365efec",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "mode_count": "n_max_20",
+    "leakage_correction": "applied",
+    "reporting_binning": "bins_20",
+    "integration_grid": "bins_1000"
+  },
+  "input_versions": {
+    "xi_sweep": "sha256:6c0e90cb29b0d474f9915986547a125373ff766d279b042ba51a8ec7bc30e896"
+  },
+  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-13T08:37:37.367+00:00",
+  "finished_at": "2026-11-13T08:41:20.503+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

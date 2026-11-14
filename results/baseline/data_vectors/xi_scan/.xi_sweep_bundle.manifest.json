@@ -1,32 +1,32 @@
 {
   "schema_version": 1,
-  "output_id": "two_point.xi_scan.xi_sweep_bundle",
+  "output_id": "data_vectors.xi_scan.xi_sweep_bundle",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout xi --config src/papers/bmodes/config/catalogs/size_cut.yaml --leakage-correction applied --names xi_sp_v1p4p5_reporting xi_sp_v1p4p5_integration xi_sp_v1p4p5_leak_corr_reporting xi_sp_v1p4p5_leak_corr_integration xi_fiducial_counterpart_reporting xi_fiducial_counterpart_integration xi_sp_v1p4p8_reporting xi_sp_v1p4p8_integration xi_sp_v1p4p8_leak_corr_reporting xi_sp_v1p4p8_leak_corr_integration xi_sp_v1p4p11p3_reporting xi_sp_v1p4p11p3_integration xi_sp_v1p4p11p3_leak_corr_reporting xi_sp_v1p4p11p3_leak_corr_integration --members results/baseline/two_point/xi_scan/xi_sp_v1p4p5_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p5_integration.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p5_leak_corr_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p5_leak_corr_integration.txt results/baseline/two_point/xi_scan/xi_fiducial_counterpart_reporting.txt results/baseline/two_point/xi_scan/xi_fiducial_counterpart_integration.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p8_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p8_integration.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p8_leak_corr_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p8_leak_corr_integration.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p11p3_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p11p3_integration.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p11p3_leak_corr_reporting.txt results/baseline/two_point/xi_scan/xi_sp_v1p4p11p3_leak_corr_integration.txt --out-file results/baseline/two_point/xi_scan/xi_sweep_bundle.tar.gz\n",
-  "definition_version": "sha256:253545b9d6c512f5ee915373985e91a249bde46830c3ed66eb06e9f37b668c56",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:a21ed886d33d8b4ff68b27fe4457161b2260053b7f391770d11db86fec85ab71",
+  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout xi --fiducial-catalog size_cut --leakage-correction applied --names xi_sp_v1p4p5_reporting xi_sp_v1p4p5_integration xi_sp_v1p4p5_leak_corr_reporting xi_sp_v1p4p5_leak_corr_integration xi_fiducial_counterpart_reporting xi_fiducial_counterpart_integration xi_sp_v1p4p8_reporting xi_sp_v1p4p8_integration xi_sp_v1p4p8_leak_corr_reporting xi_sp_v1p4p8_leak_corr_integration xi_sp_v1p4p11p3_reporting xi_sp_v1p4p11p3_integration xi_sp_v1p4p11p3_leak_corr_reporting xi_sp_v1p4p11p3_leak_corr_integration --members results/baseline/data_vectors/xi_scan/xi_sp_v1p4p5_reporting.txt results/baseline/data_vectors/xi_scan/xi_sp_v1p4p5_integration.txt results/baseline/data_vectors/xi_scan/xi_sp_v1p4p5_leak_corr_reporting.txt results/baseline/data_vectors/xi_scan/xi_sp_v1p4p5_leak_corr_integration.txt results/baseline/data_vectors/xi_scan/xi_fiducial_counterpart_reporting.txt results/baseline/data_vectors/xi_scan/xi_fiducial_counterpart_integration.txt results/baseline/data_vectors/xi_scan/xi_sp_v1p4p8_reporting.txt results/baseline/data_vectors/xi_scan/xi_sp_v1p4p8_integration.txt results/baseline/data_vectors/xi_scan/xi_sp_v1p4p8_leak_corr_reporting.txt results/baseline/data_vectors/xi_scan/xi_sp_v1p4p8_leak_corr_integration.txt results/baseline/data_vectors/xi_scan/xi_sp_v1p4p11p3_reporting.txt results/baseline/data_vectors/xi_scan/xi_sp_v1p4p11p3_integration.txt results/baseline/data_vectors/xi_scan/xi_sp_v1p4p11p3_leak_corr_reporting.txt results/baseline/data_vectors/xi_scan/xi_sp_v1p4p11p3_leak_corr_integration.txt --out-file results/baseline/data_vectors/xi_scan/xi_sweep_bundle.tar.gz\n",
+  "definition_version": "sha256:f8c20c846df8ea105b95726280464cb7448209d62fcca12254fa938bf7c42016",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:6c0e90cb29b0d474f9915986547a125373ff766d279b042ba51a8ec7bc30e896",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "leakage_correction": "applied"
   },
   "input_versions": {
-    "xi_sp_v1p4p5_reporting": "sha256:eaae8c02a0bae9eba77865bd35d060b37a0b5d2524ceec7f78632780a4d88082",
-    "xi_sp_v1p4p5_integration": "sha256:1a6d70d6a8605d0919ef46eaeea5d492b78ed688691a2d832c67bba53873e4e9",
-    "xi_sp_v1p4p5_leak_corr_reporting": "sha256:298ebca1b838368da7b4fb81aa09aba5d67eedb67355116e3b06fd03976cb820",
-    "xi_sp_v1p4p5_leak_corr_integration": "sha256:e10fd9b6dd5ad97b1088fc89900342f8890aec32c8686ebf8c09106c240aaae2",
-    "xi_fiducial_counterpart_reporting": "sha256:ee2284e0c6abcd71962fd011faff538d8c85621ce105da4d14bea8dfdcd7c806",
-    "xi_fiducial_counterpart_integration": "sha256:14598ae87547f948430f419aae0108c59679053a45c0ad13a091cf5cf26055b8",
-    "xi_sp_v1p4p8_reporting": "sha256:78cc3ba0c36fea86d76573735ae8236f4ad9a5195c46426263f8d333b61c21bf",
-    "xi_sp_v1p4p8_integration": "sha256:8db5870a7278c4f40c1629bc578cc956b3ab386dfc3f57a3ac4abf77e6231016",
-    "xi_sp_v1p4p8_leak_corr_reporting": "sha256:dd4bf6a2acb3264536909ee85e577bc1218b7c6ef5ce2e8b0c14584696cbc492",
-    "xi_sp_v1p4p8_leak_corr_integration": "sha256:fe0908f2085ad83a23170f67fa1094a3a1cf79d80833f52bee3bac85b2b3ad4e",
-    "xi_sp_v1p4p11p3_reporting": "sha256:675c7b171fffef99da6326306018ce3b219d2e2d0b3d103a38cb36606d9c1d97",
-    "xi_sp_v1p4p11p3_integration": "sha256:0eee9a77e7dbedb252da5c4cf4cdf0bc2ddbb0cd943048398397bc33da23e8f5",
-    "xi_sp_v1p4p11p3_leak_corr_reporting": "sha256:57f012b47b7eaec3cb86dff8debacb83a12aeb6546dada93bc6c4a3c3821b5b7",
-    "xi_sp_v1p4p11p3_leak_corr_integration": "sha256:ca3fab81adf90d75a218e6ca9920331139f620c32d22728317dde835171eb82f"
+    "xi_sp_v1p4p5_reporting": "sha256:2e73fee2cc8d26258fd087e7ca0aa90592d273a8b2a5e187707b09be0b3b58f1",
+    "xi_sp_v1p4p5_integration": "sha256:c8dca0d14e45fa5ec18e5bde03a6c337e67fd7d06b5a7a579211ddbfa2ce1dcc",
+    "xi_sp_v1p4p5_leak_corr_reporting": "sha256:8edc03c3292f8d7a2438ee69beba1c723d9415a1c4aadf3e2082c0e7bf3b6f47",
+    "xi_sp_v1p4p5_leak_corr_integration": "sha256:e8e7b81e629551e6ba995d5f68c5fc150dd8984b5c87abffcc547fe4d3d6b3a1",
+    "xi_fiducial_counterpart_reporting": "sha256:de18d8ea3f52193e767c5c4b9fc00d8a71c981af2da3f510d28d2cff6b556dda",
+    "xi_fiducial_counterpart_integration": "sha256:77abd6db5deca9b7913db871f577344ff55caa9b8de19169f14fc70d4e6087a9",
+    "xi_sp_v1p4p8_reporting": "sha256:e5e503d2f362fe904a3a56e9e52409825900b626c8dfa3515a403af4eb918f4d",
+    "xi_sp_v1p4p8_integration": "sha256:e563a09f51edd0772e9294df684dc5892fb1475ea662af1501007e23bdae02ee",
+    "xi_sp_v1p4p8_leak_corr_reporting": "sha256:7428148d79bc4457417496840e6f94f9246c04e1f7184b1d5c6534ca58e448c9",
+    "xi_sp_v1p4p8_leak_corr_integration": "sha256:bf86d0d42265c72433576efcbffcacc17abb992aa3c918e0b5f379a188d96743",
+    "xi_sp_v1p4p11p3_reporting": "sha256:31616b423a7a10fe11a220367cf7ec5ea4bb3feced4dd5a77d744ec6eecfd82e",
+    "xi_sp_v1p4p11p3_integration": "sha256:65e2219d6650930f5250fef81395768473cd565c8baeec9f5174e17d7f3b5a9d",
+    "xi_sp_v1p4p11p3_leak_corr_reporting": "sha256:11b855979a45112c7c464989b44e0ccac1b1f3d8287786fce592d0c443c5c947",
+    "xi_sp_v1p4p11p3_leak_corr_integration": "sha256:dcfa0c9bdeef9db90c561a25cf021f2646982e2447ea6699b69dd95779c3c94e"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -36,13 +36,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-04T07:42:08.657+00:00",
-  "finished_at": "2026-11-04T07:42:12.655+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T08:37:24.052+00:00",
+  "finished_at": "2026-11-13T08:37:37.228+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

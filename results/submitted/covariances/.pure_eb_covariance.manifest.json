@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "output_id": "covariances.pure_eb_covariance",
+  "universe_id": "submitted",
+  "recipe": "bash src/papers/bmodes/scripts/run_pure_eb_covariance.sh --version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --blind \"$(python src/workflow/scripts/decision_values.py fiducial_blind blind_a)\" --cat-config src/cosmo_val/cat_config.yaml --xi-reporting results/submitted/data_vectors/xi_reporting.txt --xi-integration results/submitted/data_vectors/xi_integration.txt --cov-integration results/submitted/covariances/cov_integration.txt --integration-method adaptive_dqags --integration-limits reporting_extent --rebinning-weights none --covariance-method monte_carlo --out-file results/submitted/covariances/pure_eb_covariance.npz\n",
+  "definition_version": "sha256:82ff15b102ba13e43e380530a07be2206fca2d5eb1a268f77a8c910ede4d1b3c",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:62cbad153633d290490b406acb6d4b40eb36047c2d1db0a400991e9fe34b02fe",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "pure_eb_integration_method": "adaptive_dqags",
+    "pure_eb_rebinning_weights": "none",
+    "pure_eb_integration_limits": "reporting_extent",
+    "pure_eb_covariance_method": "monte_carlo",
+    "decomposition_method": "schneider22_integral_transform",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "xi_reporting": "sha256:ee1a6fd1b93c52f49ee62bcab79e278fec2690c7413bd09ee87a659a8b6c7fee",
+    "xi_integration": "sha256:9ea1cd3bce93b01cebb42332a27c96856521c1fda5bc4b8c9bed0b7798dc1244",
+    "cov_integration": "sha256:d2127e272d367378b381e18385b200ed4218b36ce9484803b2cdc94f4af5e646",
+    "redshift_distributions": "spelling:sha256:11ef1341c9f8ea8d3d7fb69db5d38885a4f438092cb4096978145b98d45b8e43"
+  },
+  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-13T06:43:26.454+00:00",
+  "finished_at": "2026-11-13T06:49:10.213+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

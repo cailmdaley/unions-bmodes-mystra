@@ -1,22 +1,20 @@
 {
   "schema_version": 1,
-  "output_id": "fig_cl_pte_heatmap",
+  "output_id": "significance.cl_pte_heatmap_figure",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py --config results/baseline/catalog/selected_config.yaml --from-evidence results/baseline/null_tests/harmonic_space_pte_data.json --figure appendix --pte-threshold calibrated_0p01 --out-file results/baseline/fig_cl_pte_heatmap.png\n",
-  "definition_version": "sha256:dcc4b8c938268f64c6d32d00f8746ba767c4987bd4cd7efef646d777e4bf392a",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:d02d41d13af6875b9475669046c63bed2345dd6ecc1a4996a5aeaae7942262d0",
+  "recipe": "python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py --fiducial-catalog size_cut --leakage-correction applied --from-evidence results/baseline/significance/harmonic_space_pte_data.json --figure appendix --pte-threshold calibrated_0p01 --out-file results/baseline/significance/cl_pte_heatmap_figure.png\n",
+  "definition_version": "sha256:04f0db35e8fdaf2fcb7924a9d74c619d7a9dd9b57492ecc90fb7f40132fdd619",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:68a1357b04357c3a451b695814692d525849f45fc66d77e0ca3152a6df6376dc",
   "decisions": {
-    "pte_threshold": "calibrated_0p01"
+    "pte_threshold": "calibrated_0p01",
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied"
   },
   "input_versions": {
-    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
-    "harmonic_space_pte_data": "sha256:564c2c3f9885b0f88a7d1bd5c67ed5f800c8498e1421f14d7051d7bd9efc491f",
-    "harmonic_space_pte_matrices_script": "sha256:355913b9d34126b92663905c3a0f3dde1c6fe57ce49f6da612cc30da843dad3f",
-    "print_width_script": "sha256:d1692083bf9a5226a33b7e9cc7b602f66825e21bbbad7e841d0bc8457489306a",
-    "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
+    "harmonic_space_pte_data": "sha256:63a7c7e13d1758f284fd5f730a7e7a119d1a0fba72a1122129bae0946af93382"
   },
-  "git_sha": "c8c6fed03eab44cf24abea5d7d7f2863dec4b2e4",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -26,13 +24,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-04T08:56:12.862+00:00",
-  "finished_at": "2026-11-04T08:56:23.041+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T11:54:55.793+00:00",
+  "finished_at": "2026-11-13T11:55:48.664+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

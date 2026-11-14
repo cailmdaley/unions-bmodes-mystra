@@ -1,28 +1,24 @@
 {
   "schema_version": 1,
-  "output_id": "pure_eb.pure_eb_semianalytic_data",
+  "output_id": "data_vectors.pure_eb_data",
   "universe_id": "baseline",
-  "recipe": "bash src/papers/bmodes/scripts/run_pure_eb_semianalytic.sh --version \"$(python src/papers/bmodes/scripts/paper_config.py --config results/baseline/catalog/selected_config.yaml --get fiducial.version)\" --blind A --cat-config src/cosmo_val/cat_config.yaml --xi-reporting results/baseline/two_point/xi_reporting.txt --xi-integration results/baseline/two_point/xi_integration.txt --cov-integration results/baseline/covariance/cov_integration.txt --integration-method fixed_operator --integration-limits fine_grid_extent --rebinning-weights npairs --covariance-method exact_linear --n-samples n_2000 --out-file results/baseline/pure_eb/pure_eb_semianalytic_data.npz\n",
-  "definition_version": "sha256:223a37efe5c62b6e7f8f21fb909c2caa03e7b6f134f44412986365a235ffaf0c",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:7e1374ee2882b55cec68a093330a6fbf6fbab5c50e6516f4e68844800a7f2137",
+  "recipe": "python src/papers/bmodes/scripts/pure_eb_modes.py --xi-reporting results/baseline/data_vectors/xi_reporting.txt --xi-integration results/baseline/data_vectors/xi_integration.txt --integration-method fixed_operator --integration-limits fine_grid_extent --rebinning-weights npairs --out-file results/baseline/data_vectors/pure_eb_data.npz\n",
+  "definition_version": "sha256:76708d504a0d8fa0657255d263c745b56e36deb1ec85e6670c673438f3a265b4",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:ea60559633c1283ad5289da6b916b7d14503afbfc717269c3ebd3f030eda9a7c",
   "decisions": {
     "fiducial_catalog": "size_cut",
-    "fiducial_blind": "blind_a",
     "pure_eb_integration_method": "fixed_operator",
     "pure_eb_rebinning_weights": "npairs",
     "pure_eb_integration_limits": "fine_grid_extent",
-    "pure_eb_covariance_method": "exact_linear",
-    "mc_samples": "n_2000"
+    "decomposition_method": "schneider22_integral_transform",
+    "leakage_correction": "applied"
   },
   "input_versions": {
-    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
-    "xi_reporting": "sha256:6e97dde65c7c19cda1fc2d7fc44adc902d2d5b3e4d7efac90d16c22950fa7bfc",
-    "xi_integration": "sha256:ac1981ed80625d173b650eb6343d6c2318a8afd53b67c178d0599cf512c0a7ef",
-    "cov_integration": "sha256:d8434f1513c0e2e9b80fae0cd0082196bb99245b8918364bcd293e2c03b1f052",
-    "redshift_distributions": "spelling:sha256:54315a2e00097273e5f3c0b6c8f44ac54c5716c2cab91d181ae63079e54b39da"
+    "xi_reporting": "sha256:8a9d59dfb380aa4f43db124d64f6639f60e0a56ccdb6746fb718eb8cf1d6eb95",
+    "xi_integration": "sha256:8aad521c25174deae913ced1dc8d416edd5662de2a436dc57999cb475b376130"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -32,13 +28,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-03T23:57:33.729+00:00",
-  "finished_at": "2026-11-03T23:58:06.366+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T12:53:19.095+00:00",
+  "finished_at": "2026-11-13T12:55:04.255+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

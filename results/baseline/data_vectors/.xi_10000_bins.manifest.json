@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "output_id": "two_point.xi_integration_convergence",
+  "output_id": "data_vectors.xi_10000_bins",
   "universe_id": "baseline",
-  "recipe": "cp -f /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/staging/tenk_xi/production_out/SP_v1.4.6.3_leak_corr_xi_minsep=0.5_maxsep=300.0_nbins=10000_npatch=1.txt results/baseline/two_point/xi_integration_convergence.txt\n",
-  "definition_version": "sha256:4652f42d10905f316e953314edaf531c640e15f8a07f0f44c5d7861b9ba9cfc6",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:9fdbcb61c1f75674c9222aae360dad0ac958721342fdb1952432ee3ba9a6cb46",
+  "recipe": "python src/workflow/scripts/run_2pcf_highres.py --cat-config src/cosmo_val/cat_config.yaml --version SP_v1.4.6.3_leak_corr --nbins 10000 --min-sep 0.5 --max-sep 300.0 --out-file results/baseline/data_vectors/xi_10000_bins.txt\n",
+  "definition_version": "sha256:8b91391b8ff24c99aff6825b276ed3f40a959bd4c7f4d915e74c6dc072c9e409",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:b44a00978a3dde5e0ae4bd9c4b7851a3d1689cefc03f43fdca5c75d33701dc06",
   "decisions": {
-    "fiducial_catalog": "size_cut"
+    "leakage_correction": "applied"
   },
   "input_versions": {
-    "tenk_xi_staging": "sha256:9fdbcb61c1f75674c9222aae360dad0ac958721342fdb1952432ee3ba9a6cb46"
+    "shapepipe_v14_catalogs": "spelling:sha256:ddcb9bb187a44cd4aa678855597346a6b0bb4ad3f2056a08cfb7714923d2457a"
   },
-  "git_sha": "9f201d2234a899be9a019bba4acbdd4477452688",
+  "git_sha": "ab8b43a0ea47e20b5fc39b7e1297a6a3e0f4007b",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -22,13 +22,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-30T02:22:21.721+00:00",
-  "finished_at": "2026-10-30T02:22:22.584+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T14:05:09.943+00:00",
+  "finished_at": "2026-11-13T16:35:11.174+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

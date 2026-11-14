@@ -1,17 +1,14 @@
-"""High-resolution TreeCorr ξ± of one catalog version across MPI ranks.
+"""High-resolution TreeCorr ξ± of one catalog version on one node.
 
 Bins this fine shrink TreeCorr's tree-opening criterion, so the pair traversal
-runs across nodes: TreeCorr shares the pairs of the patches between MPI ranks.
-The patches only divide the work, and no jackknife enters. The script runs on the
-host under the launcher `producers/run_10k_xi_barehost.sbatch`, with host OpenMPI
-and a host python that has none of the analysis's stack, so it reads the catalog
-entry straight from cat_config.
+is long: about 720 core-hours for 10,000 bins. The script reads the
+catalog entry straight from cat_config and takes its thread count from
+OMP_NUM_THREADS, which `lc` sets from the recipe's cpus.
 
-    mpiexec --map-by ppr:5:node python run_2pcf_highres.py \
+    python run_2pcf_highres.py \
         --cat-config src/cosmo_val/cat_config.yaml --version SP_v1.4.6.3_leak_corr \
-        --nbins 10000 --npatch 50 --min-sep 0.5 --max-sep 300.0 --out-file <xi.txt>
+        --nbins 10000 --min-sep 0.5 --max-sep 300.0 --out-file <xi.txt>
 """
-
 import argparse
 import copy
 import os
@@ -21,20 +18,14 @@ import numpy as np
 import treecorr
 import yaml
 from astropy.io import fits
-from mpi4py import MPI
-
-comm = MPI.COMM_WORLD
-rank = comm.Get_rank()
-
 # Shear response, 1 for the ShapePipe catalogs.
 R = 1.0
 LEAK_SUFFIX = "_leak_corr"
 
 
 def log(message):
-    """Print with a timestamp, on rank 0 only."""
-    if rank == 0:
-        print(f"[{time.strftime('%H:%M:%S')}] {message}", flush=True)
+    """Print with a timestamp."""
+    print(f"[{time.strftime('%H:%M:%S')}] {message}", flush=True)
 
 
 def shear_config(cat_config, version):
@@ -65,76 +56,34 @@ def load_catalog(shear):
     return ra, dec, g1, g2, w
 
 
-def wait_for_file(path, timeout=300, interval=1.0):
-    """Block until `path` is visible here, defeating NFS directory caching.
-
-    Peer nodes can carry a stale negative directory-cache entry past an MPI
-    Barrier; listing the parent forces an attribute refresh.
-    """
-    parent = os.path.dirname(path) or "."
-    waited = 0.0
-    while waited < timeout:
-        if os.path.basename(path) in os.listdir(parent):
-            return
-        time.sleep(interval)
-        waited += interval
-    raise TimeoutError(f"patch-center file not visible after {timeout}s: {path}")
-
-
-def write_patch_centers(ra, dec, npatch, path):
-    """Patch centers from a 1% subsample."""
-    rng = np.random.default_rng(42)
-    idx = rng.choice(len(ra), size=max(len(ra) // 100, npatch * 100), replace=False)
-    subsample = treecorr.Catalog(
-        ra=ra[idx], dec=dec[idx], ra_units="degrees", dec_units="degrees", npatch=npatch
-    )
-    subsample.write_patch_centers(path)
-
-
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--cat-config", required=True)
     ap.add_argument("--version", required=True, help="Catalog version key in cat_config")
     ap.add_argument("--nbins", type=int, required=True)
-    ap.add_argument("--npatch", type=int, required=True)
     ap.add_argument("--min-sep", type=float, required=True, help="arcmin")
     ap.add_argument("--max-sep", type=float, required=True, help="arcmin")
     ap.add_argument("--out-file", required=True)
     a = ap.parse_args(argv)
 
     start = time.time()
-    threads = int(os.environ["SLURM_CPUS_PER_TASK"])
+    threads = int(os.environ["OMP_NUM_THREADS"])
     log(f"{a.version}: {a.nbins:,} bins, [{a.min_sep}, {a.max_sep}] arcmin, "
-        f"{a.npatch} patches, {comm.Get_size()} ranks of {threads} threads")
+        f"{threads} threads")
 
     ra, dec, g1, g2, w = load_catalog(shear_config(a.cat_config, a.version))
-
-    patch_file = f"{a.out_file}.patch_centers"
-    if rank == 0:
-        write_patch_centers(ra, dec, a.npatch, patch_file)
-    comm.Barrier()
-    wait_for_file(patch_file)
-
     cat = treecorr.Catalog(
-        ra=ra, dec=dec, g1=g1, g2=g2, w=w,
-        ra_units="degrees", dec_units="degrees", patch_centers=patch_file,
+        ra=ra, dec=dec, g1=g1, g2=g2, w=w, ra_units="degrees", dec_units="degrees",
     )
-    cat.load()
-    cat.get_patches()
     del ra, dec, g1, g2, w
 
     gg = treecorr.GGCorrelation(
         min_sep=a.min_sep, max_sep=a.max_sep, nbins=a.nbins,
         sep_units="arcminutes", verbose=2,
     )
-    gg.process(cat, num_threads=threads, comm=comm)
-
-    if rank == 0:
-        # The main per-bin correlation alone: the patch results and jackknife
-        # covariance would add about 10 GB that nothing reads.
-        gg.write(a.out_file, write_patch_results=False, write_cov=False)
-        os.remove(patch_file)
-        log(f"Wrote {a.out_file} after {(time.time() - start) / 3600:.1f} h")
+    gg.process(cat, num_threads=threads)
+    gg.write(a.out_file)
+    log(f"Wrote {a.out_file} after {(time.time() - start) / 3600:.1f} h")
 
 
 if __name__ == "__main__":

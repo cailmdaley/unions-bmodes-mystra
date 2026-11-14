@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
-  "output_id": "glass_mocks.mock_cosebis_modes_full",
+  "output_id": "validation.glass_mocks.mock_cosebis_modes_full",
   "universe_id": "baseline",
-  "recipe": "python src/workflow/scripts/mock_cosebis_scatter.py --xi-ensemble results/baseline/glass_mocks/mock_xi_scan/mock_xi_fine.npz --out-file results/baseline/glass_mocks/mock_cosebis_modes_full.npz --nmodes 20 --theta-min 1.0 --theta-max 250.0\n",
-  "definition_version": "sha256:7a4fbf4969335ddb7057daa49f5b6883c2b0a8018b56052d0b961958a62f76c7",
-  "env_version": "sha256:8ab5b1dffad6cced8b1358c5f97b870ee3bd46df2e2e5c5ca988fdbfb9bd5ad1",
-  "data_version": "sha256:fef1b88ee96a25005c77f6ac3709fa5641e45e918729958b9fe527eb65258d2b",
+  "recipe": "python src/workflow/scripts/mock_cosebis_scatter.py --xi-ensemble data/glass_mock_v1.4.6.3_v2/mock_xi_fine.npz --out-file results/baseline/validation/glass_mocks/mock_cosebis_modes_full.npz --nmodes 20 --theta-min 1.0 --theta-max 250.0\n",
+  "definition_version": "sha256:01d9c545934700990818af75c7023cfa7345598e1f6b28edc7e851e94e2e8fc2",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:970ace5e5146f5680c4cb8877aa8133bb57ec179390c792d06745e031e4d1870",
   "decisions": {
     "mock_suite": "v1_4_6_3_v2"
   },
   "input_versions": {
-    "mock_xi_fine": "sha256:67109830ad3121c15403ad8371c21f2384e9a8ab2f11d48fde62753f2c4760cf"
+    "glass_mock_xi_fine": "sha256:d54e74db9146ec2b395fa38616f41f734a05e545574c6e5b3709c02df50f80d8"
   },
-  "git_sha": "81786fba0dceec25c082de387b0b9cb3d50e163a",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
-  "lc_version": "0.5.0rc3.dev11+g99a36c1e1",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
     "mechanism": "apptainer",
     "fs": "declared",
@@ -22,13 +22,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-09-08T18:33:12.214+00:00",
-  "finished_at": "2026-09-08T18:55:53.439+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T11:35:27.572+00:00",
+  "finished_at": "2026-11-13T11:40:09.469+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-e841fa2c63d0c02c",
-    "id": "40e2b9866bb1f6224fa9b77056417cecad729ff995c1790ecaa9d640a0e7d62d",
-    "archive": ".datalad/environments/lc-env-e841fa2c63d0c02c/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

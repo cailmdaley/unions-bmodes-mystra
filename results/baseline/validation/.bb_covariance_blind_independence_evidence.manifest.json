@@ -1,23 +1,24 @@
 {
   "schema_version": 1,
-  "output_id": "null_tests.bb_covariance_blind_independence_evidence",
+  "output_id": "validation.bb_covariance_blind_independence_evidence",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/bb_covariance_blind_independence.py --config results/baseline/catalog/selected_config.yaml --version fiducial_version_v1463 --pure-eb-template '/automnt/n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/paper_plots/intermediate/{version}_{blind}_pure_eb_semianalytic.npz' --harmonic-template '/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_cov_{version}_blind={blind}_powspace_nbins=32.fits' --cov-integration-template '/n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_{version}_{blind}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_{version}_{blind}_g_minsep=0.5_maxsep=300.0_nbins=1000_masked_processed.txt' --xi-template '/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/{version}_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt' --pseudo-cl-template '/n17data/cdaley/unions/code/sp_validation/cosmo_val/output/pseudo_cl_{version}_blind=A_powspace_nbins=32.fits' --out-file results/baseline/null_tests/bb_covariance_blind_independence_evidence.png\n",
-  "definition_version": "sha256:3476bee3e68aeb23a7ec643cde8a98657a7d73a1d0b356dcf957bf309493ccd7",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:562c88ee793e8a22f91fae577c01677bca2978836932c4d486f2106b503909ae",
+  "recipe": "d=$(mktemp -d) && tar xzf results/baseline/covariances/blind_cov_scan/blind_cov_sweep_bundle.tar.gz -C $d && python src/papers/bmodes/scripts/bb_covariance_blind_independence.py --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 --covariance-dir $d --xi-integration results/baseline/data_vectors/xi_integration.txt --cl-bandpowers results/baseline/data_vectors/cl_bandpowers_reporting.fits --out-file results/baseline/validation/bb_covariance_blind_independence_evidence.png\n",
+  "definition_version": "sha256:cc260507929e8a6d0a2e5b9696bc4bedff6c8fe1122c0eec983394f5c5ed4b40",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:d27cf0123282eeb93a868c85802a31116e93c3ffef2f4885d28376832aa4d4a0",
   "decisions": {
-    "bb_blind_check_version": "fiducial_version_v1463"
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied",
+    "reporting_binning": "bins_20",
+    "integration_grid": "bins_1000",
+    "mode_count": "n_max_20"
   },
   "input_versions": {
-    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
-    "blind_check_pure_eb": "spelling:sha256:ce1b1f23da92648b7c32239dc9658ae4bef6cff83d1c8f2307a81924c2feabf8",
-    "blind_check_harmonic_cov": "spelling:sha256:025858e4cb039c72feb626db4963c600d3616a5adc254849fc6dcc9390d003cb",
-    "blind_check_cosmocov": "spelling:sha256:56fde18c75ed1861c4d8dc1a9cfea51fc65edf564e63d2a7577e7f72ad9964c8",
-    "blind_check_xi": "spelling:sha256:2eafbe77581befb7f35433d2fe76165b579d67845739a1c146ba20fbff5f4cf4",
-    "blind_check_pseudo_cl": "spelling:sha256:5483e01e258ba7261b7b885f06dbdf661a4e4684ff417e23d92b13a05b4c4753"
+    "blind_cov_sweep": "sha256:3e5649b92908fb995bbf14521a39d5d08ef13a0a4039fc21898b8f5d47fce292",
+    "xi_integration": "sha256:8aad521c25174deae913ced1dc8d416edd5662de2a436dc57999cb475b376130",
+    "cl_bandpowers_reporting": "sha256:f27662b55fe2bee589a530db9f1a1c8f1c116bbb7f6910de9f58326960bfc334"
   },
-  "git_sha": "e3e85c6429bbfc19124dba4416a1bce9bf09ee86",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -27,13 +28,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-03T19:20:03.718+00:00",
-  "finished_at": "2026-11-03T19:22:32.088+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T13:04:07.150+00:00",
+  "finished_at": "2026-11-13T13:06:22.415+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

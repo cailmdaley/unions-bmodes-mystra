@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "output_id": "covariances.blind_cov_scan.blind_covariances_blind_a",
+  "universe_id": "baseline",
+  "recipe": "set -e\nversion=$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\no=$(mktemp -d)\nbash src/workflow/scripts/run_cosmocov_chain.sh \\\n  --version \"$version\" --blind blind_a \\\n  --min-sep 0.5 --max-sep 300.0 --nbins 1000 \\\n  --gaussian gaussian_only \\\n  --planck18-json results/baseline/covariances/cosmology_snapshot.json \\\n  --emit processed --out-file \"$o\"/cov_integration_blind_a.txt\nbash src/papers/bmodes/scripts/run_pure_eb_covariance.sh \\\n  --version \"$version\" --blind \"$(python src/workflow/scripts/decision_values.py fiducial_blind blind_a)\" \\\n  --cat-config src/cosmo_val/cat_config.yaml \\\n  --xi-reporting results/baseline/data_vectors/xi_reporting.txt \\\n  --xi-integration results/baseline/data_vectors/xi_integration.txt \\\n  --cov-integration \"$o\"/cov_integration_blind_a.txt \\\n  --integration-method fixed_operator \\\n  --integration-limits fine_grid_extent \\\n  --rebinning-weights npairs \\\n  --covariance-method exact_linear \\\n  --out-file \"$o\"/pure_eb_covariance_blind_a.npz\npython src/workflow/scripts/generate_cl_cov.py \\\n  --ver \"$version\" \\\n  --cat-config src/cosmo_val/cat_config.yaml \\\n  --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind blind_a \\\n  --out-file \"$o\"/cl_cov_blind_a.fits\ntar czf results/baseline/covariances/blind_cov_scan/blind_covariances_blind_a.tar.gz -C $o .\n",
+  "definition_version": "sha256:b6dd59683d7036626004da8b1b115b23bb5de07f9b50b488ba72c94221b027ed",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:0fee181453c13d62eefb6733a7b549475adb1f88b16385c936d76dd0fe481af0",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied",
+    "covariance_class": "gaussian_only",
+    "covariance_engine": "cosmocov",
+    "integration_grid": "bins_1000",
+    "bandpower_binning": "bandpowers_32_powspace",
+    "noise_bias_correction": "analytic_shot_noise",
+    "fiducial_cosmology": "planck18",
+    "pure_eb_integration_method": "fixed_operator",
+    "pure_eb_rebinning_weights": "npairs",
+    "pure_eb_integration_limits": "fine_grid_extent",
+    "pure_eb_covariance_method": "exact_linear",
+    "decomposition_method": "schneider22_integral_transform"
+  },
+  "input_versions": {
+    "cosmology_snapshot": "sha256:c2a2387f4c8a208fbb1cb4e7c6fb11dbf0945b44f4d576380626c21c228c2024",
+    "redshift_distributions": "spelling:sha256:11ef1341c9f8ea8d3d7fb69db5d38885a4f438092cb4096978145b98d45b8e43",
+    "shapepipe_v14_catalogs": "spelling:sha256:ddcb9bb187a44cd4aa678855597346a6b0bb4ad3f2056a08cfb7714923d2457a",
+    "xi_reporting": "sha256:8a9d59dfb380aa4f43db124d64f6639f60e0a56ccdb6746fb718eb8cf1d6eb95",
+    "xi_integration": "sha256:8aad521c25174deae913ced1dc8d416edd5662de2a436dc57999cb475b376130"
+  },
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-13T12:53:19.039+00:00",
+  "finished_at": "2026-11-13T13:03:53.133+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

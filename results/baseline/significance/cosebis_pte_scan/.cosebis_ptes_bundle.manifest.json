@@ -1,25 +1,25 @@
 {
   "schema_version": 1,
-  "output_id": "cosebis.cosebis_pte_scan.cosebis_ptes_bundle",
+  "output_id": "significance.cosebis_pte_scan.cosebis_ptes_bundle",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout cosebis_ptes --config src/papers/bmodes/config/catalogs/size_cut.yaml --leakage-correction applied --names cosebis_ptes_sp_v1p4p5 cosebis_ptes_sp_v1p4p5_leak_corr cosebis_ptes_fiducial_counterpart cosebis_ptes_sp_v1p4p8 cosebis_ptes_sp_v1p4p8_leak_corr cosebis_ptes_sp_v1p4p11p3 cosebis_ptes_sp_v1p4p11p3_leak_corr --members results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p5.npz results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p5_leak_corr.npz results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_fiducial_counterpart.npz results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8.npz results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8_leak_corr.npz results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p11p3.npz results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_sp_v1p4p11p3_leak_corr.npz --out-file results/baseline/cosebis/cosebis_pte_scan/cosebis_ptes_bundle.tar.gz\n",
-  "definition_version": "sha256:cd466f91b15bfbbb86d2fc3aebc04e3e38c5e8fb86d05a2aa18718a03c522091",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:48385cde975d2f7e83cf5a943e13abed09b584fe14e9cb7d8e2095da967e05ff",
+  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout cosebis_ptes --fiducial-catalog size_cut --leakage-correction applied --names cosebis_ptes_sp_v1p4p5 cosebis_ptes_sp_v1p4p5_leak_corr cosebis_ptes_fiducial_counterpart cosebis_ptes_sp_v1p4p8 cosebis_ptes_sp_v1p4p8_leak_corr cosebis_ptes_sp_v1p4p11p3 cosebis_ptes_sp_v1p4p11p3_leak_corr --members results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p5.npz results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p5_leak_corr.npz results/baseline/significance/cosebis_pte_scan/cosebis_ptes_fiducial_counterpart.npz results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8.npz results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8_leak_corr.npz results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p11p3.npz results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p11p3_leak_corr.npz --out-file results/baseline/significance/cosebis_pte_scan/cosebis_ptes_bundle.tar.gz\n",
+  "definition_version": "sha256:45398b6792eab4e8f173c3d8cb131880c380d51db97ccaf87db80f0f941a6796",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:e4f1dddcdc3f0c1ef11ee9e6c26505725b030b2a6597321c6d788b6c6d24d231",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "leakage_correction": "applied"
   },
   "input_versions": {
-    "cosebis_ptes_sp_v1p4p5": "sha256:94e21d8b4ca1067411890fc7f5d802fd68ee7b4110ca09efe2a0cd647a350e73",
-    "cosebis_ptes_sp_v1p4p5_leak_corr": "sha256:a7ab89a90b354f0e273e6e9242f7820b48244a666c2fbe81a54559dd9b7c6fef",
-    "cosebis_ptes_fiducial_counterpart": "sha256:22bb1f84228d2740510bdc9766fddbfdaa7c4c6ea3002f5164a1a560201dfa71",
-    "cosebis_ptes_sp_v1p4p8": "sha256:9648e611ffcdaa7a094619ecd3918c0b1951ab00121994ab29ff44df47cf5608",
-    "cosebis_ptes_sp_v1p4p8_leak_corr": "sha256:3b11e82f3265d24e3c957bd7f9355613dac9990e4154f5b99a914bc3c616bef9",
-    "cosebis_ptes_sp_v1p4p11p3": "sha256:b15f743431d695e4d9fc10712bd596973ad580cd31c6bc3ad5f1938daf0e77c4",
-    "cosebis_ptes_sp_v1p4p11p3_leak_corr": "sha256:9bfdc966a5c1bd9daa11e94b40af21b4720ddd855ee3b8ee4ea0f117e28d6abd"
+    "cosebis_ptes_sp_v1p4p5": "sha256:32c923a737db1ab3cdc3a4e6b9b615594b2f3c63156ad0172b37a1dc03916beb",
+    "cosebis_ptes_sp_v1p4p5_leak_corr": "sha256:9215dd1ff055114a85e2128463dcf883e35c4219f4ecd47067329d38b36df7d7",
+    "cosebis_ptes_fiducial_counterpart": "sha256:887bbf31586544ecd7a468c618e2b6c08ebb64205e766f2fef6639b88e7ecb8e",
+    "cosebis_ptes_sp_v1p4p8": "sha256:0bd5a40ab33edfed378a31c057afb22af173a6143597227c77041731b4fff152",
+    "cosebis_ptes_sp_v1p4p8_leak_corr": "sha256:46de9217862514f61f111630daecffbd004f713a68cb8fc730db0e738f4a2006",
+    "cosebis_ptes_sp_v1p4p11p3": "sha256:399f491c28f2fabd6e5cd26b6fbb49754e0cfd4e40ffa3c547cdae059cd640ff",
+    "cosebis_ptes_sp_v1p4p11p3_leak_corr": "sha256:63f15dcb30fbbefe67979cde40752a28f58fccf3f92e2cce03a216590a62e3e9"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -29,13 +29,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-04T07:49:35.739+00:00",
-  "finished_at": "2026-11-04T07:49:36.385+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T08:43:52.441+00:00",
+  "finished_at": "2026-11-13T08:43:54.124+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

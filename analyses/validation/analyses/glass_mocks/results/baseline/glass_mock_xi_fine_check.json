@@ -1,0 +1,38 @@
+{
+  "mock_id": "00001",
+  "nbins": 1000,
+  "num_threads": 8,
+  "stack": "data/glass_mock_v1.4.6.3_v2/mock_xi_fine.npz",
+  "meanr": {
+    "max_abs_diff": 2.0730794858536683e-10,
+    "max_abs_diff_over_max_stored": 6.930162930029943e-13,
+    "max_fractional_diff": 2.770391692878738e-12,
+    "identical": false
+  },
+  "xip": {
+    "max_abs_diff": 7.109680897870031e-12,
+    "max_abs_diff_over_max_stored": 3.9219624438347685e-08,
+    "max_fractional_diff": 1.7929064068718008e-06,
+    "identical": false
+  },
+  "xim": {
+    "max_abs_diff": 4.939007072112455e-12,
+    "max_abs_diff_over_max_stored": 3.006594326851612e-08,
+    "max_fractional_diff": 4.278845382853561e-06,
+    "identical": false
+  },
+  "npairs": {
+    "max_abs_diff": 6.0,
+    "max_abs_diff_over_max_stored": 1.3435105547506404e-11,
+    "max_fractional_diff": 3.32643296526683e-10,
+    "identical": false
+  },
+  "weight": {
+    "max_abs_diff": 6.0,
+    "max_abs_diff_over_max_stored": 1.3435105547506404e-11,
+    "max_fractional_diff": 3.32643296526683e-10,
+    "identical": false
+  },
+  "bin_edges_match": true,
+  "verdict": "MISMATCH - the stack does not reproduce this analysis's measurement"
+}

@@ -99,7 +99,7 @@ inputs:
     from: ../glass_mock_cl
 
 outputs:
-  - id: tenk_grid_comparison
+  - id: integration_grid_convergence
     when: [leakage_correction.applied]
     type: metric
     format: json
@@ -135,7 +135,7 @@ outputs:
     inputs: [xi_reporting, xi_integration, xi_10000_bins, pure_eb_data, pure_eb_covariance, cosebis_modes_data, cosebis_covariance]
     recipe:
       command: >
-        python src/papers/bmodes/scripts/tenk_grid_convergence.py
+        python src/papers/bmodes/scripts/integration_grid_convergence.py
         --fiducial-catalog {decisions.fiducial_catalog} --leakage-correction {decisions.leakage_correction} --reporting-binning {decisions.reporting_binning} --integration-grid {decisions.integration_grid} --mode-count {decisions.mode_count}
         --xi-reporting {inputs.xi_reporting}
         --xi-1k {inputs.xi_integration}
@@ -329,7 +329,7 @@ findings:
     created_at: "2026-09-13T00:00:00Z"
     evidence:
       - id: ev1
-        artifact: tenk_grid_comparison
+        artifact: integration_grid_convergence
         quote:
           exact: '"pte": 0.8420537855782536'
 
@@ -364,7 +364,7 @@ findings:
     created_at: "2026-09-13T00:00:00Z"
     evidence:
       - id: ev1
-        artifact: tenk_grid_comparison
+        artifact: integration_grid_convergence
         quote:
           exact: '"pte": 0.7145810240685493'
 

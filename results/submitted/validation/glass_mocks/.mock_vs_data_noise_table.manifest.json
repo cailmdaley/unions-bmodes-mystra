@@ -1,21 +1,19 @@
 {
   "schema_version": 1,
-  "output_id": "glass_mocks.mock_vs_data_noise_table",
+  "output_id": "validation.glass_mocks.mock_vs_data_noise_table",
   "universe_id": "submitted",
-  "recipe": "python src/workflow/scripts/mock_vs_data_noise_table.py --cosmocov-ini-data /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked.ini --cosmocov-ini-mock /n17data/cdaley/unions/code/sp_validation/cosmo_inference/data/covariance/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked/covariance_SP_v1.4.6.3_mockv2_A_g_minsep=0.5_maxsep=300.0_nbins=1000_masked.ini --footprint-audit /n17data/cdaley/unions/analyses/shear_2d/bmodes_2d/results/glass_mock_v1.4.6.3_v2/clbb_cov_work/footprint_4096.log --out-file results/submitted/glass_mocks/mock_vs_data_noise_table.csv\n",
-  "definition_version": "sha256:be8f869754d40cdc64c9434515fda50b698e02f3db287170158d2200e046e1e1",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:599a6d3ee3aca35c49ae0366c9492a6b908a4988a319bd68ee7ac20fd37dccda",
+  "recipe": "python src/workflow/scripts/mock_vs_data_noise_table.py --footprint-audit results/submitted/validation/glass_mocks/mock_footprint_audit.txt --out-file results/submitted/validation/glass_mocks/mock_vs_data_noise_table.csv\n",
+  "definition_version": "sha256:99f5ba25bd74dd614d5a4a502eb20ab02be1f3f6ef16f0f58e4c367e4397aafe",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:69dc99dee2639807cb71c12806a08d4651e2a835979a16e736d9bf05b871a936",
   "decisions": {
     "mock_suite": "v1_4_6_3_v2",
     "fiducial_catalog": "size_cut"
   },
   "input_versions": {
-    "cosmocov_ini_data": "sha256:20639dbb8fcee55baf04a9eb923a76eb2ac297fa224a9839dcc4797797c375db",
-    "cosmocov_ini_mockmatched": "sha256:8afcadf2cfea28e6a9a8470529509d072a9a6161011d0de85cbddd378ace060d",
-    "mock_footprint_audit": "sha256:766bc3bfda20fe9c260a038e06e2c12225f5a9960866e833d3104b6f3f9d8ee4"
+    "mock_footprint_audit": "sha256:d8111588cafc8b3e6be8574110b584580132238310047aef8317da43b4ec2f73"
   },
-  "git_sha": "9f201d2234a899be9a019bba4acbdd4477452688",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -25,13 +23,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-10-30T02:22:21.843+00:00",
-  "finished_at": "2026-10-30T02:22:22.868+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T11:54:04.822+00:00",
+  "finished_at": "2026-11-13T11:54:06.371+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

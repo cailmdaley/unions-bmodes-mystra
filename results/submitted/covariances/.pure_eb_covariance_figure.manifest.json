@@ -1,20 +1,19 @@
 {
   "schema_version": 1,
-  "output_id": "pure_eb.pure_eb_covariance_figure",
+  "output_id": "covariances.pure_eb_covariance_figure",
   "universe_id": "submitted",
-  "recipe": "python src/papers/bmodes/scripts/pure_eb_covariance.py --config results/submitted/catalog/selected_config.yaml --pure-eb-data results/submitted/pure_eb/pure_eb_semianalytic_data.npz --out-file results/submitted/pure_eb/pure_eb_covariance_figure.png\n",
-  "definition_version": "sha256:ed1354943955d2672955c9d0cab29423a996d3b161fd12151435f2acf475f420",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:94c76469520a40bec579f5a9be612995713cd7183ba98bc9995ba070d3d32033",
+  "recipe": "python src/papers/bmodes/scripts/pure_eb_covariance.py --fiducial-catalog size_cut --leakage-correction applied --pure-eb-covariance results/submitted/covariances/pure_eb_covariance.npz --out-file results/submitted/covariances/pure_eb_covariance_figure.png\n",
+  "definition_version": "sha256:a20f33fe364b8de169c7ce18e3787e86bc1032a64b8faa21f86ce89693d2ea9d",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:922a1eb1a202430c24cbec468d63c36d472fc588721f15abdb2a13ba3dd74c99",
   "decisions": {
-    "fiducial_catalog": "size_cut"
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied"
   },
   "input_versions": {
-    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
-    "pure_eb_semianalytic_data": "sha256:30545d1677df98c92d8e794858db83a015b0c213080dee381c13ed54d7c99dbe",
-    "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
+    "pure_eb_covariance": "sha256:62cbad153633d290490b406acb6d4b40eb36047c2d1db0a400991e9fe34b02fe"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -24,13 +23,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-04T03:39:15.672+00:00",
-  "finished_at": "2026-11-04T03:39:23.980+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T06:49:10.303+00:00",
+  "finished_at": "2026-11-13T06:49:48.286+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

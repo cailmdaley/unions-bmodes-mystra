@@ -1,0 +1,5 @@
+data: N=61378891, occupied pix=13423984, area=2750.65 deg2
+mock: N=60414487, occupied pix=13224726, area=2709.82 deg2
+overlap = 2703.09 deg2
+data only = 47.56 deg2
+mock only = 6.73 deg2

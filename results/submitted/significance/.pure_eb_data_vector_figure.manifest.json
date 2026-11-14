@@ -1,22 +1,24 @@
 {
   "schema_version": 1,
-  "output_id": "pure_eb.pure_eb_data_vector_figure",
+  "output_id": "significance.pure_eb_data_vector_figure",
   "universe_id": "submitted",
-  "recipe": "python src/papers/bmodes/scripts/pure_eb_data_vector.py --config results/submitted/catalog/selected_config.yaml --pure-eb-data results/submitted/pure_eb/pure_eb_semianalytic_data.npz --reporting-cov results/submitted/covariance/cov_reporting_ng.txt --scale-cut-convention grid_bin_edges --out-file results/submitted/pure_eb/pure_eb_data_vector_figure.png\n",
-  "definition_version": "sha256:dca2a88c97a5bd6f6a38d6293c4fa060ff8d1c30694cea99854b61d7ee361009",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:2dd6f2aeb559ca5356cd82e897fc6c7ced21622a46306807d489703c8b64bf66",
+  "recipe": "python src/papers/bmodes/scripts/pure_eb_data_vector.py --fiducial-catalog size_cut --leakage-correction applied --blind blind_a --reporting-binning bins_20 --pure-eb-data results/submitted/data_vectors/pure_eb_data.npz --pure-eb-covariance results/submitted/covariances/pure_eb_covariance.npz --reporting-cov results/submitted/covariances/cov_reporting_ng.txt --out-file results/submitted/significance/pure_eb_data_vector_figure.png\n",
+  "definition_version": "sha256:b55fe218351f656ad9759d1550c029157c5a38c22c0d4fdc3c22c0e457e155fa",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:40c15c45539fcaac0b8d3264429b140f9e96f073f8b995e780911df3d4ddc853",
   "decisions": {
     "fiducial_catalog": "size_cut",
-    "scale_cut_convention": "grid_bin_edges"
+    "pte_definition": "chi2_tail",
+    "leakage_correction": "applied",
+    "fiducial_blind": "blind_a",
+    "reporting_binning": "bins_20"
   },
   "input_versions": {
-    "selected_config": "sha256:dce0a07e7f1d248469a3922fd29d3267ca78a735a38f40ca23f5feb58aa29b9e",
-    "pure_eb_semianalytic_data": "sha256:30545d1677df98c92d8e794858db83a015b0c213080dee381c13ed54d7c99dbe",
-    "cov_reporting_ng": "sha256:59e36f7c04d8a249ab3cbf610eccf16fae272e4c69b92dae09f78f6ecabd4aec",
-    "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
+    "pure_eb_data": "sha256:63ec67f466ddeb1eaf324e4afb1a062c682e97c03dd2d9e4a14d156f5f84e780",
+    "pure_eb_covariance": "sha256:62cbad153633d290490b406acb6d4b40eb36047c2d1db0a400991e9fe34b02fe",
+    "cov_reporting_ng": "sha256:6fa7373f4f0baea3945a1065961c2f65fcb8645f6cda22608d318a583c7a54b1"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -26,13 +28,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-04T03:39:15.672+00:00",
-  "finished_at": "2026-11-04T03:39:24.951+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T06:49:10.276+00:00",
+  "finished_at": "2026-11-13T06:49:49.342+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }

@@ -1,21 +1,18 @@
 {
   "schema_version": 1,
-  "output_id": "glass_mocks.mock_sigma_ratio_figure",
+  "output_id": "validation.glass_mocks.mock_sigma_ratio_figure",
   "universe_id": "baseline",
-  "recipe": "python src/workflow/scripts/mock_campaign_analysis.py --from-stats results/baseline/glass_mocks/mock_per_mock_statistics.npz --emit sigma-ratio-figure --out-file results/baseline/glass_mocks/mock_sigma_ratio_figure.pdf\n",
-  "definition_version": "sha256:d48ed4d5f8b37c3e45acf10396771d9c82a5d8488e16e9be6482ffe54e18ed88",
-  "env_version": "sha256:ab2d7cfcb125f0b0d80e3e8d2b397251ab9d930d826b0f8647131bcc3dc1989e",
-  "data_version": "sha256:bdb441d11cf33995903b7e8cf8567da8328fb982191faad06130867de574eb2a",
+  "recipe": "python src/workflow/scripts/mock_campaign_analysis.py --from-stats results/baseline/validation/glass_mocks/mock_per_mock_statistics.npz --emit sigma-ratio-figure --out-file results/baseline/validation/glass_mocks/mock_sigma_ratio_figure.pdf\n",
+  "definition_version": "sha256:67dc4dd0cf1e21ea1a175dbc6860707158c3a0a8aa59f970c5ae5f4e0e30cfb2",
+  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "data_version": "sha256:967122e2a4a271bb43a75b1789527d18a6b298a689dbe1c189857bbe71cef8fb",
   "decisions": {
     "reference_covariance": "mockmatched"
   },
   "input_versions": {
-    "mock_per_mock_statistics": "sha256:08e23e1456e4279ab5664ff4916cd95e6a762c2071d3bec5c14a5fe4b5d157a7",
-    "mock_campaign_analysis_script": "sha256:dd95fe07e97d351b9ed59b0784e29657fbd97020727e31170ab7fc399f295abb",
-    "plotting_utils_script": "sha256:e53c7b42f75838d1d6b63327bd72e7c2a3f3d5b22b4e00e67df32a409552a0da",
-    "paper_mplstyle": "sha256:a1b04659972ea0881862dd4bbf4269d4ae5cdb6b4de4e0b7d397e518cb16d112"
+    "mock_per_mock_statistics": "sha256:e57566d75aeb13c670ff6ec4bb71d1128d49cda2db95a8b3967e230135ac6c79"
   },
-  "git_sha": "88961701318530f745db7f3502f55839ecc1a038",
+  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -25,13 +22,13 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-03T23:59:44.848+00:00",
-  "finished_at": "2026-11-04T00:00:16.222+00:00",
-  "uv_version": "0.12.6",
+  "started_at": "2026-11-13T12:58:44.194+00:00",
+  "finished_at": "2026-11-13T12:59:56.998+00:00",
+  "uv_version": "0.13.8",
   "image": {
-    "tag": "lc-env-54f5826a45ef4844",
-    "id": "9189e621d803ff89888c08b8947857d518a9239de1a064de22d38506f0795eab",
-    "archive": ".datalad/environments/lc-env-54f5826a45ef4844/image",
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
     "arch": "amd64"
   }
 }
