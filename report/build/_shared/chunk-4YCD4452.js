@@ -1,0 +1,1 @@
+import{_ as s}from"/unions-bmodes-mystra/report/build/_shared/chunk-NCKPZN7H.js";import{a as n,i as e}from"/unions-bmodes-mystra/report/build/_shared/chunk-GW5AG52Z.js";var a=n(t=>{let{securityLevel:c}=s(),o=e("body");if(c==="sandbox"){let m=e(`#i${t}`).node()?.contentDocument??document;o=e(m.body)}return o.select(`#${t}`)},"selectSvgElement");export{a};

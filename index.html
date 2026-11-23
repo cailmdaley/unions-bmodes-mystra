@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UNIONS-3500 Paper II — Lightcone Studio &amp; Interactive Report</title>
+<style>
+  :root {
+    --bg: #fbf8f2; --ink: #24211d; --soft: #665f56; --line: #d8cfc1;
+    --card: #fffdf9; --card-hover: #f6efe2; --accent: #8f471c; --ok: #386e43; --run: #9a6e17;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1816; --ink: #ece6dc; --soft: #a49b8f; --line: #3c3630;
+      --card: #23201c; --card-hover: #2b2722; --accent: #e08a52; --ok: #7fbf8a; --run: #e2b44f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  }
+  main { max-width: 880px; margin: 0 auto; padding: 56px 24px 72px; }
+  .eyebrow {
+    font: 11.5px/1 ui-monospace, Menlo, Consolas, monospace;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--soft);
+  }
+  h1 { font-size: 1.9rem; line-height: 1.22; font-weight: 600; margin: 10px 0 8px; }
+  .authors { color: var(--soft); font-size: .96rem; margin: 0 0 28px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; margin: 24px 0 36px; }
+  a.card {
+    display: flex; flex-direction: column; text-decoration: none; color: inherit;
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+    padding: 22px 24px; transition: border-color .15s, background .15s, transform .15s;
+  }
+  a.card:hover { border-color: var(--accent); background: var(--card-hover); transform: translateY(-1px); }
+  .card-kicker {
+    font: 11px/1 ui-monospace, Menlo, Consolas, monospace;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+  }
+  .card h2 { font-size: 1.25rem; margin: 0 0 8px; font-weight: 600; }
+  .card p { margin: 0; color: var(--soft); font-size: .95rem; flex: 1; }
+  .card .cta {
+    margin-top: 16px; font: 13px/1 ui-monospace, Menlo, Consolas, monospace;
+    color: var(--accent);
+  }
+  h3 {
+    font: 11.5px/1 ui-monospace, Menlo, Consolas, monospace;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--soft);
+    margin: 34px 0 10px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+  th, td { border-bottom: 1px solid var(--line); padding: 9px 10px; text-align: left; vertical-align: top; }
+  th { font-weight: 600; color: var(--soft); font-size: .85rem; }
+  code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .86em; }
+  .ok { color: var(--ok); font-weight: 600; }
+  .run { color: var(--run); font-weight: 600; }
+  footer {
+    margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line);
+    color: var(--soft); font-size: .86rem; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">UNIONS-3500 Weak Lensing · ASTRA Analysis Record</div>
+  <h1>II. B-mode validation for cosmic shear</h1>
+  <p class="authors">Daley et al. (2026), Astronomy &amp; Astrophysics (accepted) · Pure-mode ξ<sub>±</sub><sup>B</sup>, COSEBIs B<sub>n</sub>, and harmonic C<sub>ℓ</sub><sup>BB</sup> null tests across four ShapePipe v1.4 catalogs and 350-realization GLASS mock suites.</p>
+
+  <div class="cards">
+    <a class="card" href="./studio/">
+      <span class="card-kicker">Analysis explorer</span>
+      <h2>Lightcone Studio</h2>
+      <p>Decisions beside the 13 figures and headline PTE table, lineage graph, provenance, data products, and inline bibliography across all three universes.</p>
+      <span class="cta">Open Studio →</span>
+    </a>
+    <a class="card" href="./report/">
+      <span class="card-kicker">Narrative article (MySTRA)</span>
+      <h2>Interactive Paper</h2>
+      <p>The full paper with live-bound values, figures, provenance controls, and the ASTRA Inventory, rendered on the data-matched <code>baseline</code> universe.</p>
+      <span class="cta">Read Report →</span>
+    </a>
+  </div>
+
+  <h3>Universes</h3>
+  <table>
+    <thead>
+      <tr><th>Universe</th><th>Description</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>baseline</code></td>
+        <td>Accepted selection on the data-matched GLASS suite (fiducial footprint, weight-effective count, and σ<sub>e</sub>) held against the data covariances.</td>
+        <td class="ok">350/350 · complete</td>
+      </tr>
+      <tr>
+        <td><code>published</code></td>
+        <td>Accepted A&amp;A paper: fixed-quadrature pure-mode operator, exact linear covariance, mock-calibrated 0.01 threshold on the published v1.4.6.3_v2 GLASS suite.</td>
+        <td class="ok">350/350 · complete</td>
+      </tr>
+      <tr>
+        <td><code>preprint_v2</code></td>
+        <td>Pre-referee selection (arXiv 2604.03227v2): adaptive quadrature, Monte Carlo covariance, nominal 0.05 threshold.</td>
+        <td class="ok">350/350 · complete</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <span>Snapshot <code>6a2f4c99c</code> (23 Nov 2026) · unlisted preview (<code>noindex</code>)</span>
+    <span>
+      <a href="https://github.com/cailmdaley/unions-bmodes-mystra">Mirror repo</a> ·
+      <a href="https://arxiv.org/abs/2604.03227">arXiv:2604.03227</a>
+    </span>
+  </footer>
+</main>
+</body>
+</html>
