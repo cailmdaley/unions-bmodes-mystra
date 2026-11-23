@@ -3,16 +3,16 @@
   "output_id": "validation.glass_mocks.mock_sigma_ratio_figure",
   "universe_id": "baseline",
   "recipe": "python src/workflow/scripts/mock_campaign_analysis.py --from-stats results/baseline/validation/glass_mocks/mock_per_mock_statistics.npz --emit sigma-ratio-figure --out-file results/baseline/validation/glass_mocks/mock_sigma_ratio_figure.pdf\n",
-  "definition_version": "sha256:67dc4dd0cf1e21ea1a175dbc6860707158c3a0a8aa59f970c5ae5f4e0e30cfb2",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
-  "data_version": "sha256:967122e2a4a271bb43a75b1789527d18a6b298a689dbe1c189857bbe71cef8fb",
+  "definition_version": "sha256:a0d1597af934a5753b75822c246484a96556cad749826d981ae711aa9d6de678",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:a67523b2498a33b5432e5aa51a66873a0cafc11d0148927db217215a3f7e62b9",
   "decisions": {
-    "reference_covariance": "mockmatched"
+    "reference_covariance": "data_covariance"
   },
   "input_versions": {
-    "mock_per_mock_statistics": "sha256:e57566d75aeb13c670ff6ec4bb71d1128d49cda2db95a8b3967e230135ac6c79"
+    "mock_per_mock_statistics": "sha256:5dc996380d29e4921e21f09110f321986fb4c812ddab94c6ee7ab3bc91410cfd"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -22,8 +22,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T12:58:44.194+00:00",
-  "finished_at": "2026-11-13T12:59:56.998+00:00",
+  "started_at": "2026-11-22T23:06:37.607+00:00",
+  "finished_at": "2026-11-22T23:07:40.378+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

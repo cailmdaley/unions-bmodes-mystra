@@ -2,13 +2,13 @@
 
 Two rows over the same three columns (COSEBI modes, pure ξ^B, C_ℓ^BB):
 
-* top    — the across-realisation mean B vector in units of the analytic
+* top    — the across-realization mean B vector in units of the analytic
            (data) σ, with σ_emp/(σ_ana √N) error bars.  Reads as "fraction of
            a data error bar";
 * bottom — the empirical-over-analytic σ ratio, with the 1/sqrt(2(N-1))
-           sampling error of an N-realisation standard deviation.
+           sampling error of an N-realization standard deviation.
 
-Both rows are functions of the campaign's per-realisation statistics npz
+Both rows are functions of the campaign's per-realization statistics npz
 alone, and both reuse ``mock_campaign_analysis``'s loader and cut constants
 rather than restating them: the two figures this composes
 (``mock_mean_vector_figure`` and ``mock_sigma_ratio_figure``) stay the
@@ -239,7 +239,7 @@ def main() -> None:
     parser.add_argument(
         "--stats",
         required=True,
-        help="The campaign's per-realisation statistics npz.",
+        help="The campaign's per-realization statistics npz.",
     )
     parser.add_argument("--out-file", required=True)
     args = parser.parse_args()

@@ -1,7 +1,0 @@
-id: submitted
-description: |
-  TreeCorr ξ± on the 20-bin reporting grid and the 1000-bin integration grid, in
-  a single patch, with the Wolz et al. (2025) catalog-based Cℓ estimator.
-decisions:
-  patch_count: npatch_1
-  estimator_choice: wolz25_catalog_based

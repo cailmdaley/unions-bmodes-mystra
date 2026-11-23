@@ -2,9 +2,9 @@
   "schema_version": 1,
   "output_id": "significance.pure_eb_pte_per_cut",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/calculate_pure_eb_ptes.py --version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --blind \"$(python src/workflow/scripts/decision_values.py fiducial_blind blind_a)\" --pure-eb-data results/baseline/data_vectors/pure_eb_data.npz --pure-eb-covariance results/baseline/covariances/pure_eb_covariance.npz --npatch 1 --out-file results/baseline/significance/pure_eb_pte_per_cut.npz\n",
-  "definition_version": "sha256:60a596749b0ac6f8732dd0f7abfeb750abad14c71be66025b17f15ad4c8914d1",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "recipe": "python src/papers/bmodes/scripts/calculate_pure_eb_ptes.py --version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --blind \"$(python src/workflow/scripts/decision_values.py fiducial_blind blind_a)\" --pure-eb-data results/baseline/catalog_processing/pure_eb_data.npz --pure-eb-covariance results/baseline/covariances/pure_eb_covariance.npz --npatch 1 --out-file results/baseline/significance/pure_eb_pte_per_cut.npz\n",
+  "definition_version": "sha256:ec2f363fe7c37846cbc89743058a2f6d080ed3a8028e280618ac81f2ea280fbc",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
   "data_version": "sha256:ff345db30cc55e18d9a86947422027248bc6e3b6c1a9fd672b04c5a6eb4158dc",
   "decisions": {
     "fiducial_catalog": "size_cut",
@@ -16,7 +16,7 @@
     "pure_eb_data": "sha256:ea60559633c1283ad5289da6b916b7d14503afbfc717269c3ebd3f030eda9a7c",
     "pure_eb_covariance": "sha256:f02851765875fefaf415c0eb00e7a1ac0dba9668d31fa8eb5764018d08efd729"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -26,8 +26,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T12:56:25.885+00:00",
-  "finished_at": "2026-11-13T12:57:15.586+00:00",
+  "started_at": "2026-11-22T21:30:19.469+00:00",
+  "finished_at": "2026-11-22T21:31:00.403+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

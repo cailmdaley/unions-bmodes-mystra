@@ -34,7 +34,7 @@ class _Grid:
 def compute_from_grid(
     meanr, xip, xim, left_edges, right_edges, *, nmodes, theta_min, theta_max
 ):
-    """COSEBI modes for one realisation's ξ± sampled on a fine grid."""
+    """COSEBI modes for one realization's ξ± sampled on a fine grid."""
 
     grid = _Grid(meanr, left_edges, right_edges)
     start, stop = scale_cut_to_bins(grid, theta_min, theta_max)
@@ -81,7 +81,7 @@ def compute_one(xi_path, out_path, *, nmodes, theta_min, theta_max):
 
 
 def _ensemble_worker(index):
-    """One realisation, reading the ensemble the pool initializer shared."""
+    """One realization, reading the ensemble the pool initializer shared."""
 
     state = mock_scatter_pool.state()
     return compute_from_grid(
@@ -97,7 +97,7 @@ def _ensemble_worker(index):
 
 
 def compute_ensemble(ensemble_path, out_path, *, nmodes, theta_min, theta_max):
-    """COSEBI modes for every realisation in a stacked ξ± ensemble."""
+    """COSEBI modes for every realization in a stacked ξ± ensemble."""
 
     with np.load(ensemble_path, allow_pickle=False) as data:
         mock_ids = np.asarray(data["mock_ids"])
@@ -105,7 +105,7 @@ def compute_ensemble(ensemble_path, out_path, *, nmodes, theta_min, theta_max):
         left_edges = np.asarray(data["left_edges"], dtype=float)
         right_edges = np.asarray(data["right_edges"], dtype=float)
 
-    modes = mock_scatter_pool.map_realisations(
+    modes = mock_scatter_pool.map_realizations(
         _ensemble_worker,
         range(len(mock_ids)),
         {
@@ -137,7 +137,7 @@ def compute_ensemble(ensemble_path, out_path, *, nmodes, theta_min, theta_max):
         theta_max_requested=float(theta_max),
     )
     print(
-        f"Saved {out_path}: {len(mock_ids)} realisations x {nmodes} modes, "
+        f"Saved {out_path}: {len(mock_ids)} realizations x {nmodes} modes, "
         f"θ=[{modes[0]['theta_min_actual']:.2f}, "
         f"{modes[0]['theta_max_actual']:.2f}]",
         flush=True,

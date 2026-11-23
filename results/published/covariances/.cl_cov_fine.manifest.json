@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "covariances.cl_cov_fine",
+  "universe_id": "published",
+  "recipe": "python src/workflow/scripts/generate_cl_cov.py --ver \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --summary results/published/catalog_processing/catalog_summary.npz --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins \"$(python src/workflow/scripts/decision_values.py harmonic_validation_binning bins_96)\" --power 0.5 --blind blind_a --out-file results/published/covariances/cl_cov_fine.fits\n",
+  "definition_version": "sha256:ef168b2d4db423af6fb835d718e1e96a40a126dfffe1358b93d17ea3e2c045f6",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:1a8bb377db496d1cc3036748788c2de2fae7f424efea87318706ea7ff1bed761",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "harmonic_validation_binning": "bins_96",
+    "noise_bias_correction": "analytic_shot_noise",
+    "leakage_correction": "applied",
+    "fiducial_cosmology": "planck18"
+  },
+  "input_versions": {
+    "catalog_summary": "sha256:dd5e46c738ae810b7b32773e42863057d03a64b316bb91f8063667be5021e160",
+    "redshift_distributions": "spelling:sha256:11ef1341c9f8ea8d3d7fb69db5d38885a4f438092cb4096978145b98d45b8e43"
+  },
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-20T15:35:21.707+00:00",
+  "finished_at": "2026-11-20T15:36:58.893+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

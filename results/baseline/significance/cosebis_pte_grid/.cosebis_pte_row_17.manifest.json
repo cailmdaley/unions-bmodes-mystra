@@ -2,9 +2,9 @@
   "schema_version": 1,
   "output_id": "significance.cosebis_pte_grid.cosebis_pte_row_17",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --blind blind_a --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 --xi-integration results/baseline/data_vectors/xi_integration.txt --cov-integration results/baseline/covariances/cov_integration.txt --row 17 --out-file results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_17.npz\n",
-  "definition_version": "sha256:8ba607ebaa0240cc16cc6e515c07766b24407f7b2d7b2efcb2f7488ab55c4692",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "recipe": "python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --blind blind_a --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 --xi-integration results/baseline/catalog_processing/xi_integration.txt --cov-integration results/baseline/covariances/cov_integration.txt --row 17 --out-file results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_17.npz\n",
+  "definition_version": "sha256:fa37b4f1b143be882dcc1e774e5780470ae66ee07f5c38310e628c0a9144af03",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
   "data_version": "sha256:2f362ad997a5eb8205f15765aa5a2b750a5c18600b5f57d3a3ae905f067da665",
   "decisions": {
     "fiducial_catalog": "size_cut",
@@ -17,10 +17,10 @@
     "mode_count": "n_max_20"
   },
   "input_versions": {
-    "xi_integration": "sha256:8aad521c25174deae913ced1dc8d416edd5662de2a436dc57999cb475b376130",
+    "xi_integration": "sha256:1f5f0f013b61307d6e5506eaea3e3bf04a2ec70bb8013594f5e1423855083e4e",
     "cov_integration": "sha256:d2127e272d367378b381e18385b200ed4218b36ce9484803b2cdc94f4af5e646"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -30,8 +30,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T12:53:19.070+00:00",
-  "finished_at": "2026-11-13T12:56:08.371+00:00",
+  "started_at": "2026-11-21T02:30:00.855+00:00",
+  "finished_at": "2026-11-21T02:33:38.311+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

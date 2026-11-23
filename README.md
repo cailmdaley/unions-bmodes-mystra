@@ -15,15 +15,15 @@ figure's **Provenance** control shows the decisions behind it.
 ## How the analysis is organised
 
 `astra.yaml` holds the inputs, the shared decisions and the paper's findings, and
-re-exports each figure, table and metric the paper reports from the sub-analysis
-that computes it, and computes nothing itself. The inputs are what came from
-outside this analysis: the shear catalogs of Paper I, the n(z), and from the GLASS
-suite of Paper III the per-realisation ξ± and Cℓ stacks and the catalogue of one
-realisation. Everything else is an output. The 350 realisation catalogues are not
-carried, so the fine mock ξ±, measured from them with the data's TreeCorr settings,
-enter as a stack. The tree under `analyses/` lists the conclusions first: the
-significance of the B modes, the validation that licenses it, then the
-covariances and the data vectors it rests on.
+re-exports each figure, table and supporting data product the paper reports from
+the sub-analysis that computes it, and computes nothing itself. The inputs are
+what came from outside this analysis: the shear catalogs of Paper I, the n(z),
+and the Paper I survey areas (`data/survey_areas.yaml`). Everything else is an
+output, the GLASS mocks included: `mocks` generates each realization, measures
+it with the data's TreeCorr and NaMaster settings, and keeps the measurements
+and the catalog summary of realization 00001. The tree under `analyses/` lists
+the conclusions first: the significance of the B modes, the validation that
+licenses it, then the covariances, the data vectors and the mocks it rests on.
 
 | Sub-analysis | What it does |
 |---|---|
@@ -31,29 +31,37 @@ covariances and the data vectors it rests on.
 | `validation` | The evidence that the null tests can be trusted: the estimators against a 10,000-bin grid, COSEBIs from harmonic-space bandpowers against those from ξ±, and the B-mode covariances across n(z) blinds |
 | `validation/glass_mocks` | Validation of estimators and covariances on 350 GLASS mocks, and the per-mock statistics |
 | `covariances` | Every covariance: `CosmoCov` ξ±, NaMaster Cℓ, and the pure E/B (M C Mᵀ) and COSEBI (Tᵀ C T) covariances; the reference covariances the mocks are held against; and the scan over n(z) blinds |
-| `data_vectors` | ξ± and Cℓ measured from the catalogs, including the 10,000-bin ξ± of the convergence check, and pure E/B modes and COSEBIs as linear transforms of ξ± |
+| `catalog_processing` | Everything read from the catalogs: ξ± and Cℓ, including the 10,000-bin ξ± of the convergence check, and the catalog summary (count maps, footprints, weight and shape-noise sums) the covariances and mocks take; plus pure E/B modes and COSEBIs as linear transforms of ξ± |
+| `mocks` | The 350 GLASS realizations of the selected `mock_suite`, generated on the footprint in the catalog summary and measured as ξ± and Cℓ stacks |
 
-`data_vectors` reads no covariance. `covariances` reads the ξ± bin centres and pair
-counts from `data_vectors`, which the pure E/B and COSEBI transforms are built on,
-and none of the shear. Data flows one way: from `data_vectors` through
+Only `catalog_processing` and the GLASS realizations read a catalog.
+`catalog_processing` reads no covariance. `covariances` reads the ξ± bin centres and
+pair counts from `catalog_processing`, which the pure E/B and COSEBI transforms are
+built on, and none of the shear, and the NaMaster covariances take their window and
+shot noise from the catalog summary. Data flows one way: from `catalog_processing` and `mocks` through
 `covariances` and `validation` to `significance`.
 
-`reference_covariance` governs the covariances the GLASS mocks are held against.
-They are the fiducial recipes under one decision: CosmoCov at the noise an option
-sets, and NaMaster on the catalog an option names, realisation 00001 of the suite
-under `mockmatched`. They stay apart from the data covariances, which the null
-tests read under either selection.
+`mock_suite` selects the GLASS suite and `reference_covariance` the covariances
+its scatter is held against. A data-matched suite, at the fiducial catalog's
+footprint, count and σ_e, is held against the data's own covariances
+(`data_covariance`). The published suite carries 17% more galaxies than the data,
+so it is held against the fiducial recipes rebuilt at its noise (`mockmatched`):
+CosmoCov at that noise, and NaMaster on the summary of its realization 00001. Under
+`data_covariance` the reference covariances are copies of the data covariances; the
+null tests read the data covariances under either selection.
 
 Each scan repeats one measurement across catalog versions, n(z) blinds or scale
 cuts, and gathers the members into a single product. A scan sits in
 `analyses/` beneath the sub-analysis it serves, declared in a `*.sweep.yaml` file
 from which the sibling `astra.yaml` is generated.
 
-A catalog's area, n_eff and σ_e are facts from Paper I, not steps of this
-analysis. They live in the option tables of
+The CosmoCov covariances take each catalog's area, n_eff and σ_e from Paper I, as
+facts like the n(z): they live in the option tables of
 `src/workflow/scripts/decision_values.py`, selected by `fiducial_catalog`, and
-recipes read them through that table, as they do the noise and catalog of each
-`reference_covariance` option. Every catalog version shares one n(z), the fiducial
+recipes read them through that table, as they do the noise of each
+`reference_covariance` option. The catalog summary reproduces Paper I's
+weight-effective counts and σ_e; its occupied-pixel areas are 3–5% below Paper I's
+mask areas. Every catalog version shares one n(z), the fiducial
 catalog's at the selected `fiducial_blind`: the n(z) never enters the measured data
 vectors, and the B-mode covariance barely depends on it.
 
@@ -64,11 +72,14 @@ the exact command.
 
 | Universe | What it is |
 |---|---|
-| `baseline` | The accepted A&A paper: fixed-quadrature pure E/B operator, analytic covariance validated on GLASS mocks, mock-calibrated minimum-PTE threshold (0.01). |
-| `submitted` | The paper as submitted (arXiv v1; v2 reports the same results): adaptive-quadrature pure modes, Monte Carlo covariance, per-statistic 0.05 threshold. |
+| `baseline` | The accepted paper's selection on the data-matched GLASS suite, its scatter held against the data's own covariances. |
+| `published` | The accepted A&A paper: fixed-quadrature pure E/B operator, analytic covariance validated on GLASS mocks, mock-calibrated minimum-PTE threshold (0.01). |
+| `preprint_v2` | The paper before the referee report (arXiv 2604.03227v2): adaptive-quadrature pure modes, Monte Carlo covariance, per-statistic 0.05 threshold. |
 
-The decisions that differ between the two are the referee round's methodological
-changes. `universes/<id>.yaml` names each selection, and each sub-analysis's own
+`published` and `preprint_v2` validate on the published GLASS suite against
+mock-matched covariances; the decisions that differ between them are the referee
+round's methodological changes. `baseline` differs from `published` in `mock_suite`
+and `reference_covariance` alone. `universes/<id>.yaml` names each selection, and each sub-analysis's own
 `universes/` holds its local ones.
 
 Some decisions act more narrowly than their labels suggest, because the paper
@@ -79,48 +90,24 @@ colour scale, the marked line and the quoted value.
 
 ## Reproducing
 
-`lc status` shows what state each output is in, and `lc materialize <cluster>`
-produces the stale outputs on a cluster allocated with `lc compute`. The catalogs
-are UNIONS-internal, at `/n17data/UNIONS/WL/` on candide, and are not public.
+`lc status` shows the state of every output across `baseline`, `published`, and
+`preprint_v2`, and `lc materialize <cluster>` produces stale outputs on a
+cluster allocated with `lc compute`.
 
-The results under `results/` were made by `lc` on candide, last on 4 November
-2026, and each manifest records the commit and recipe that made them. Recipes and
-scripts have since been rewritten to take decisions as typed flags, without a
-cluster rerun. The outputs that can run without the catalogs (the tables, macros
-and figures drawn from recorded evidence) reproduce their records: the same
-numbers to 7.8e-14 and the same pixels. The measurement scripts have not been run
-in this form, so a full rerun is still owed.
+Products derived directly from a shear catalog — everything under
+`results/*/catalog_processing/`, the 350 per-realization GLASS measurements per
+universe (`results/*/mocks/glass_suite/realization_*.tar.gz`), and realization
+00001's summary — are tracked in plain Git (`.gitattributes`), so a clone from
+GitHub can regenerate every covariance, validation check, significance product,
+table, and figure without the UNIONS-internal FITS catalogs. The catalogs and
+the downstream products stay annexed locally; every downstream output carries a
+manifest recording the commit, environment, and recipe that built it.
 
-Recorded results sit in the present tree with their manifests as written, so a
-manifest's output ids and paths are those of the run that made it, and `lc` treats
-the outputs as changed. The recorded `pure_eb_data`, `pure_eb_sweep` and
-`cosebis_modes_data` still hold their covariances alongside the data vectors, the
-members of the recorded `cl_sweep` bundle still carry that run's `pseudo_cl_*`
-file names and hold the covariances too, and `pure_eb_covariance`,
-`pure_eb_covariance_sweep`, `cosebis_covariance`, `cosebis_covariance_sweep`,
-`cosebis_modes_sweep` and `cl_cov_sweep` have no record yet.
-`tools/split_recorded_covariances.py` makes the first three pairs from recorded
-files; the report's copies were made that way.
-
-`cov_integration_reference`, `cl_cov_reference`, `mock_footprint_audit` and
-`blind_cov_sweep` have no record in the tree either: their recorded files sit on
-candide, and the results that read them were made from those.
-`mock_footprint_audit.py` has not reproduced its record, and `run_2pcf_highres.py`
-has not reproduced the recorded `xi_10000_bins`.
-
-Two recorded covariance sets predate their recipes. The recorded `cov_reporting_ng`
-took its super-sample window from a footprint power spectrum; the recipe uses
-CosmoCov's circular window of the survey area, the window behind the paper's quoted
-non-Gaussian share (11% of the diagonal variance at the fiducial cuts, against the
-record's 9%). The recorded non-fiducial catalog covariances (`cov_sweep`,
-`cl_cov_sweep`) used catalog-specific n(z); the recipes use the fiducial one.
-A rerun replaces both.
-
-Code is not a declared input, so editing a script does not mark outputs stale;
-each output's manifest records the commit that made it. `CosmoCov` and its GSL
-library live outside the project at the paths in
-`src/workflow/scripts/run_cosmocov_chain.sh`, and a rerun has to make them visible
-to the covariance recipes.
+`CosmoCov` and its GSL library live outside the project at the paths in
+`src/workflow/scripts/run_cosmocov_chain.sh`, and covariance recipes run inside
+the container image built by `lc`. Code is not a declared input, so editing a
+script does not mark outputs stale automatically; each manifest records the
+`git_sha` that produced it.
 
 ## Checks
 

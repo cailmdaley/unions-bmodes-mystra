@@ -2,10 +2,10 @@
   "schema_version": 1,
   "output_id": "validation.cosebis_harmonic_scan.harmonic_modes_sp_v1p4p5",
   "universe_id": "baseline",
-  "recipe": "set -e\nx=$(mktemp -d) && tar xzf results/baseline/data_vectors/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/baseline/covariances/cov_scan/cov_sweep_bundle.tar.gz -C $c\nl=$(mktemp -d) && tar xzf results/baseline/data_vectors/cl_scan/cl_sweep_bundle.tar.gz -C $l\nk=$(mktemp -d) && tar xzf results/baseline/covariances/cl_cov_scan/cl_cov_sweep_bundle.tar.gz -C $k\nver=$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --scan-version SP_v1.4.5_leak_corr --fine-grid)\ncb=covariance_\"$ver\"_A_integration\nnb=$(python src/workflow/scripts/decision_values.py harmonic_validation_binning bins_96)\npython src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py \\\n  --fiducial-catalog size_cut --leakage-correction applied --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 \\\n  --blind blind_a \\\n  --fiducial-version $ver \\\n  --harmonic-validation-binning bins_96 \\\n  --fiducial-cl-path \"$l/cl_$ver\"_blind=A_powspace_nbins=$nb.fits \\\n  --fiducial-cl-cov-path \"$k/cl_cov_$ver\"_blind=A_powspace_nbins=$nb.fits \\\n  --fiducial-xi-path \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n  --fiducial-cov-path \"$c/$cb/$cb\"_processed.txt \\\n  --out-file results/baseline/validation/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p5.npz\nrm -rf \"$x\" \"$c\" \"$l\" \"$k\"\n",
-  "definition_version": "sha256:f8c4dc82b8bff0472ead5672ad3f851e323d4e7188aeb3b923d7bfdbdbb391e5",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
-  "data_version": "sha256:db43a0aacc55393f8e199311ecc12412f3d5e67a91ea21065e2140fd6b15d255",
+  "recipe": "set -e\nx=$(mktemp -d) && tar xzf results/baseline/catalog_processing/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/baseline/covariances/cov_scan/cov_sweep_bundle.tar.gz -C $c\nl=$(mktemp -d) && tar xzf results/baseline/catalog_processing/cl_scan/cl_sweep_bundle.tar.gz -C $l\nk=$(mktemp -d) && tar xzf results/baseline/covariances/cl_cov_scan/cl_cov_sweep_bundle.tar.gz -C $k\nver=$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --scan-version SP_v1.4.5_leak_corr --fine-grid)\ncb=covariance_\"$ver\"_A_integration\nnb=$(python src/workflow/scripts/decision_values.py harmonic_validation_binning bins_96)\npython src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py \\\n  --fiducial-catalog size_cut --leakage-correction applied --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 \\\n  --blind blind_a \\\n  --fiducial-version $ver \\\n  --harmonic-validation-binning bins_96 \\\n  --fiducial-cl-path \"$l/cl_$ver\"_blind=A_powspace_nbins=$nb.fits \\\n  --fiducial-cl-cov-path \"$k/cl_cov_$ver\"_blind=A_powspace_nbins=$nb.fits \\\n  --fiducial-xi-path \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n  --fiducial-cov-path \"$c/$cb/$cb\"_processed.txt \\\n  --out-file results/baseline/validation/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p5.npz\nrm -rf \"$x\" \"$c\" \"$l\" \"$k\"\n",
+  "definition_version": "sha256:c5bd46b0a716bf3833d070a90bcff64d8403fb8b929ed6aa5565fb3f55e40736",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:f572592d1d4b422dc0e31bf7205d1f42a6d6bc3e4cb81429ffb87fc7fe43d333",
   "decisions": {
     "fiducial_blind": "blind_a",
     "harmonic_validation_binning": "bins_96",
@@ -17,12 +17,12 @@
     "mode_count": "n_max_20"
   },
   "input_versions": {
-    "xi_sweep": "sha256:6c0e90cb29b0d474f9915986547a125373ff766d279b042ba51a8ec7bc30e896",
-    "cov_sweep": "sha256:a4fbd408c021a90ddf72728b214317874b92e32308d7efc24a5f0f3382f759ae",
-    "cl_sweep": "sha256:8c8599a4ea5eb6f041f99132c836d0c31dee8519efd68218f802a1ef4346c74d",
-    "cl_cov_sweep": "sha256:3ec979b9128065e4f013879b053a9babe794ebcb959718a5d06000adf0041338"
+    "xi_sweep": "sha256:4f09cb5c40d202eb8483e62d28632ae8fe3ec78cbdc47b07580b2bd057dc4115",
+    "cov_sweep": "sha256:a64d94c7dafda7598e1e8dcf51103315c1942ee7fb3e26f55ac683e8c19e5e9d",
+    "cl_sweep": "sha256:3b9a1709ed9605e64b4cac15e40510385a4bcebad8322be09b9a5f553008a67e",
+    "cl_cov_sweep": "sha256:04c212938cd41486d713383c16cb4d5e0938102832620ea041ad28646723463c"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -32,8 +32,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T11:38:39.927+00:00",
-  "finished_at": "2026-11-13T11:40:39.889+00:00",
+  "started_at": "2026-11-22T21:29:45.505+00:00",
+  "finished_at": "2026-11-22T21:32:02.165+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

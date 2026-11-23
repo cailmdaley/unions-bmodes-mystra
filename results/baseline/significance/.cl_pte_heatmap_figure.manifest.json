@@ -4,7 +4,7 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py --fiducial-catalog size_cut --leakage-correction applied --from-evidence results/baseline/significance/harmonic_space_pte_data.json --figure appendix --pte-threshold calibrated_0p01 --out-file results/baseline/significance/cl_pte_heatmap_figure.png\n",
   "definition_version": "sha256:04f0db35e8fdaf2fcb7924a9d74c619d7a9dd9b57492ecc90fb7f40132fdd619",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
   "data_version": "sha256:68a1357b04357c3a451b695814692d525849f45fc66d77e0ca3152a6df6376dc",
   "decisions": {
     "pte_threshold": "calibrated_0p01",
@@ -12,9 +12,9 @@
     "leakage_correction": "applied"
   },
   "input_versions": {
-    "harmonic_space_pte_data": "sha256:63a7c7e13d1758f284fd5f730a7e7a119d1a0fba72a1122129bae0946af93382"
+    "harmonic_space_pte_data": "sha256:69f57ce0c7ff9f26f998ebd95bf2a760479e1df30aa39d65144a48c32e411a45"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -24,8 +24,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T11:54:55.793+00:00",
-  "finished_at": "2026-11-13T11:55:48.664+00:00",
+  "started_at": "2026-11-22T21:53:39.410+00:00",
+  "finished_at": "2026-11-22T21:54:14.218+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

@@ -26,8 +26,10 @@ inputs:
   from: ../../covariances.cosmology_snapshot
 - id: redshift_distributions
   from: ../redshift_distributions
-- id: shapepipe_v14_catalogs
-  from: ../shapepipe_v14_catalogs
+- id: survey_areas
+  from: ../survey_areas
+- id: catalog_summary
+  from: ../catalog_summary
 - id: xi_reporting
   from: ../xi_reporting
 - id: xi_integration
@@ -70,7 +72,8 @@ outputs:
   inputs:
   - cosmology_snapshot
   - redshift_distributions
-  - shapepipe_v14_catalogs
+  - survey_areas
+  - catalog_summary
   - xi_reporting
   - xi_integration
   decisions:
@@ -110,9 +113,9 @@ outputs:
         --covariance-method {decisions.pure_eb_covariance_method} \
         --out-file "$o"/pure_eb_covariance_blind_a.npz
       python src/workflow/scripts/generate_cl_cov.py \
-        --ver "$version" \
+        --ver "$version" --summary {inputs.catalog_summary} \
         --cat-config src/cosmo_val/cat_config.yaml \
-        --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind blind_a \
+        --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind blind_a \
         --out-file "$o"/cl_cov_blind_a.fits
       tar czf {output} -C $o .
     resources:
@@ -129,7 +132,8 @@ outputs:
   inputs:
   - cosmology_snapshot
   - redshift_distributions
-  - shapepipe_v14_catalogs
+  - survey_areas
+  - catalog_summary
   - xi_reporting
   - xi_integration
   decisions:
@@ -169,9 +173,9 @@ outputs:
         --covariance-method {decisions.pure_eb_covariance_method} \
         --out-file "$o"/pure_eb_covariance_blind_b.npz
       python src/workflow/scripts/generate_cl_cov.py \
-        --ver "$version" \
+        --ver "$version" --summary {inputs.catalog_summary} \
         --cat-config src/cosmo_val/cat_config.yaml \
-        --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind blind_b \
+        --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind blind_b \
         --out-file "$o"/cl_cov_blind_b.fits
       tar czf {output} -C $o .
     resources:
@@ -188,7 +192,8 @@ outputs:
   inputs:
   - cosmology_snapshot
   - redshift_distributions
-  - shapepipe_v14_catalogs
+  - survey_areas
+  - catalog_summary
   - xi_reporting
   - xi_integration
   decisions:
@@ -228,9 +233,9 @@ outputs:
         --covariance-method {decisions.pure_eb_covariance_method} \
         --out-file "$o"/pure_eb_covariance_blind_c.npz
       python src/workflow/scripts/generate_cl_cov.py \
-        --ver "$version" \
+        --ver "$version" --summary {inputs.catalog_summary} \
         --cat-config src/cosmo_val/cat_config.yaml \
-        --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind blind_c \
+        --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind blind_c \
         --out-file "$o"/cl_cov_blind_c.fits
       tar czf {output} -C $o .
     resources:

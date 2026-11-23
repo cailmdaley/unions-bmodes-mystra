@@ -82,7 +82,7 @@ def main() -> None:
                 arrays[f"{variant.name}__theta"] = np.asarray(data["theta"])
                 if not shared_written:
                     # Identical across variants by construction: the reporting
-                    # binning and the realisation list do not depend on the
+                    # binning and the realization list do not depend on the
                     # transform. Stored once, and asserted below.
                     for key in ("mock_ids", "reporting_left_edges", "reporting_right_edges"):
                         arrays[key] = np.asarray(data[key])
@@ -90,7 +90,7 @@ def main() -> None:
                 else:
                     if not np.array_equal(arrays["mock_ids"], np.asarray(data["mock_ids"])):
                         raise ValueError(
-                            f"{variant.name} transformed a different realisation "
+                            f"{variant.name} transformed a different realization "
                             "set than the first variant"
                         )
                 provenance[variant.name] = {
@@ -108,7 +108,7 @@ def main() -> None:
     )
     n_real = arrays["mock_ids"].size
     print(
-        f"Saved {out_path}: {len(variants)} variants x {n_real} realisations",
+        f"Saved {out_path}: {len(variants)} variants x {n_real} realizations",
         flush=True,
     )
 

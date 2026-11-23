@@ -51,7 +51,7 @@ def main(argv=None):
         axis.axvspan(cut_lo, cut_hi, color="0.85", alpha=0.45, lw=0, zorder=0)
 
     ax.plot(ell, emp, color="0.15", lw=1.6, marker="o", ms=3.2, zorder=5,
-            label=rf"empirical, {d['n_realisations']} mocks")
+            label=rf"empirical, {d['n_realizations']} mocks")
     for key, label, colour, ls in VARIANTS:
         ax.plot(ell, np.array(d["variants"][key]["sigma_BB"]), color=colour,
                 ls=ls, lw=1.4, label=label)

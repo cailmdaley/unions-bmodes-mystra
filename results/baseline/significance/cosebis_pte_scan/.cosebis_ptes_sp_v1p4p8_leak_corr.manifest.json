@@ -2,9 +2,9 @@
   "schema_version": 1,
   "output_id": "significance.cosebis_pte_scan.cosebis_ptes_sp_v1p4p8_leak_corr",
   "universe_id": "baseline",
-  "recipe": "set -e\nx=$(mktemp -d) && tar xzf results/baseline/data_vectors/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/baseline/covariances/cov_scan/cov_sweep_bundle.tar.gz -C $c\nver=$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --scan-version SP_v1.4.8_leak_corr)\ncb=covariance_\"$ver\"_A_integration\npython src/papers/bmodes/scripts/compute_cosebis_pte_single.py \\\n  --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 \\\n  --xi-integration \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n  --cov-integration \"$c/$cb/$cb\"_processed.txt \\\n  --version $ver --blind blind_a \\\n  --out-file results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8_leak_corr.npz\nrm -rf \"$x\" \"$c\"\n",
-  "definition_version": "sha256:f77fe93481dcfbb9ec9532d0bac9f7fdc27e8188cd43af0ce87b328cea82a039",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "recipe": "set -e\nx=$(mktemp -d) && tar xzf results/baseline/catalog_processing/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/baseline/covariances/cov_scan/cov_sweep_bundle.tar.gz -C $c\nver=$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --scan-version SP_v1.4.8_leak_corr)\ncb=covariance_\"$ver\"_A_integration\npython src/papers/bmodes/scripts/compute_cosebis_pte_single.py \\\n  --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 \\\n  --xi-integration \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n  --cov-integration \"$c/$cb/$cb\"_processed.txt \\\n  --version $ver --blind blind_a \\\n  --out-file results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8_leak_corr.npz\nrm -rf \"$x\" \"$c\"\n",
+  "definition_version": "sha256:88fdad0c57e161377a63c83767853af911b552eb13caf3b1a9b45294807ec631",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
   "data_version": "sha256:46de9217862514f61f111630daecffbd004f713a68cb8fc730db0e738f4a2006",
   "decisions": {
     "fiducial_catalog": "size_cut",
@@ -17,10 +17,10 @@
     "mode_count": "n_max_20"
   },
   "input_versions": {
-    "xi_sweep": "sha256:6c0e90cb29b0d474f9915986547a125373ff766d279b042ba51a8ec7bc30e896",
-    "cov_sweep": "sha256:a4fbd408c021a90ddf72728b214317874b92e32308d7efc24a5f0f3382f759ae"
+    "xi_sweep": "sha256:4f09cb5c40d202eb8483e62d28632ae8fe3ec78cbdc47b07580b2bd057dc4115",
+    "cov_sweep": "sha256:a64d94c7dafda7598e1e8dcf51103315c1942ee7fb3e26f55ac683e8c19e5e9d"
   },
-  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -30,8 +30,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T08:37:37.404+00:00",
-  "finished_at": "2026-11-13T08:43:51.553+00:00",
+  "started_at": "2026-11-22T21:52:35.494+00:00",
+  "finished_at": "2026-11-22T21:59:34.194+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

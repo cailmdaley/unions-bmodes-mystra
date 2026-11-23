@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "catalog_processing.pure_eb_data",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/papers/bmodes/scripts/pure_eb_modes.py --xi-reporting results/preprint_v2/catalog_processing/xi_reporting.txt --xi-integration results/preprint_v2/catalog_processing/xi_integration.txt --integration-method adaptive_dqags --integration-limits reporting_extent --rebinning-weights none --out-file results/preprint_v2/catalog_processing/pure_eb_data.npz\n",
+  "definition_version": "sha256:483907213a379e14144c7c495c38a28d3ebfdf3b799232cf8e16c7a5f60e81aa",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:63ec67f466ddeb1eaf324e4afb1a062c682e97c03dd2d9e4a14d156f5f84e780",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "pure_eb_integration_method": "adaptive_dqags",
+    "pure_eb_rebinning_weights": "none",
+    "pure_eb_integration_limits": "reporting_extent",
+    "decomposition_method": "schneider22_integral_transform",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "xi_reporting": "sha256:d36fd4f4c065c7ad9c0ab5198cda7ff4b9110df261ca0b8288c3a79a735c0fa2",
+    "xi_integration": "sha256:1f5f0f013b61307d6e5506eaea3e3bf04a2ec70bb8013594f5e1423855083e4e"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T03:52:39.678+00:00",
+  "finished_at": "2026-11-22T03:54:33.708+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

@@ -1,7 +1,6 @@
 id: baseline
 description: |
-  GLASS mock validation on the v1.4.6.3_v2 suite, built against the fiducial
-  catalog, with the mock scatter compared to a covariance computed for the
-  mocks' own noise. The comparison therefore tests the covariance machinery
-  rather than the galaxy-count difference between mocks and data.
+  GLASS mock validation on the data-matched suite, whose shape noise is the
+  fiducial catalog's, with the mock scatter held against the data's own
+  covariance.
 decisions: {}

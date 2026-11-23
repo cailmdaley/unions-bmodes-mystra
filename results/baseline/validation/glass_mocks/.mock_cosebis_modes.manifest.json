@@ -2,17 +2,17 @@
   "schema_version": 1,
   "output_id": "validation.glass_mocks.mock_cosebis_modes",
   "universe_id": "baseline",
-  "recipe": "python src/workflow/scripts/mock_cosebis_scatter.py --xi-ensemble data/glass_mock_v1.4.6.3_v2/mock_xi_fine.npz --out-file results/baseline/validation/glass_mocks/mock_cosebis_modes.npz --nmodes 20\n",
-  "definition_version": "sha256:06224d34a64eacfde76ef62d0a22b78088c80ae3da23a8ed5ec4dcdd8d4bc8a6",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
-  "data_version": "sha256:8ebbf12f469829557059cf4b22607ae2a99b6f257d99162a0dcf0176103f96f7",
+  "recipe": "python src/workflow/scripts/mock_cosebis_scatter.py --xi-ensemble results/baseline/mocks/glass_mock_xi_fine.npz --out-file results/baseline/validation/glass_mocks/mock_cosebis_modes.npz --nmodes 20\n",
+  "definition_version": "sha256:f0326a2ffd37205ae7d2cae3018642a6d540dee5bde5db6b00a0300cccc136ac",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:0af2f9ace16d5935aed368754e9566b6e46893b1dce8f623aec8e8396cac202d",
   "decisions": {
-    "mock_suite": "v1_4_6_3_v2"
+    "mock_suite": "data_matched"
   },
   "input_versions": {
-    "glass_mock_xi_fine": "sha256:d54e74db9146ec2b395fa38616f41f734a05e545574c6e5b3709c02df50f80d8"
+    "glass_mock_xi_fine": "sha256:bab70b08c72ae34f1f157f9d1197bb1729c1d0a2fa2dfe87e328a570410739b4"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -22,8 +22,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T11:35:27.570+00:00",
-  "finished_at": "2026-11-13T11:39:47.604+00:00",
+  "started_at": "2026-11-22T22:58:39.417+00:00",
+  "finished_at": "2026-11-22T23:02:42.351+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

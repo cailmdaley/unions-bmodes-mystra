@@ -1,6 +1,6 @@
 """The theory xi_pm the GLASS suite was generated from, on the reporting grid.
 
-The mocks are lognormal realisations built by Sacha Guerrini's
+The mocks are lognormal realizations built by Sacha Guerrini's
 ``make_unions_glass_sim.py``: CAMB matter shells under Planck-18 with HMcode
 ``mead2020_feedback`` (log T_AGN = 7.8) and As rescaled to sigma_8 = 0.8102,
 lensed through ``glass.MultiPlaneConvergence`` onto an NSide-4096 map.  No

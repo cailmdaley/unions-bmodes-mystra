@@ -1,0 +1,102 @@
+version: "0.0.14"
+name: "GLASS mocks"
+description: |
+  The suite of 350 systematics-free GLASS lognormal realizations on
+  which the covariances and null tests are validated, made here from the
+  catalog footprint and the fiducial n(z), and measured with the same
+  TreeCorr and NaMaster recipes as the data. Each realization samples
+  unit-weight galaxies with input shears and Gaussian intrinsic
+  ellipticities inside the footprint, at the density and σ_e the
+  [suite](#decisions.mock_suite) sets: the fiducial catalog's
+  weight-effective count and σ_e for the data-matched suite, or the
+  published settings, whose density is 17% above the data's
+  ([mocks_are_over_constraining](#../analyses.validation.analyses.glass_mocks.findings.mocks_are_over_constraining)).
+  A realization is fixed by its seed, 1 000 000 plus its number, so the
+  [summary of realization 00001](#outputs.glass_mock_realization_00001) is
+  that of the catalog the suite measured. The footprint, density and σ_e come
+  from the [catalog summary](#inputs.catalog_summary); no recipe here reads a
+  data catalog.
+
+inputs:
+  - id: catalog_summary
+    from: ../catalog_processing.catalog_summary
+
+  - id: redshift_distributions
+    from: ../redshift_distributions
+
+outputs:
+  - {id: glass_mock_sampling, from: generation.glass_mock_sampling}
+  - {id: glass_mock_realization_00001, from: generation.glass_mock_realization_00001}
+
+  - id: glass_mock_suite
+    from: glass_suite.glass_suite_bundle
+
+  - id: glass_mock_xi_fine
+    type: data
+    format: npz
+    description: |
+      TreeCorr ξ_±(θ) of each realization on exactly the data's
+      1000-bin integration grid, 0.5′–300′, with no response correction
+      or leakage subtraction, since the realizations carry input shears
+      and no PSF leakage. Stacked (`meanr`, `xip`, `xim`, `npairs`,
+      `weight` per realization, with the mock IDs). Both
+      configuration-space transforms of the mocks integrate over this
+      grid.
+    inputs: [glass_mock_suite]
+    decisions: [mock_suite, integration_grid]
+    recipe:
+      command: >
+        python src/workflow/scripts/glass_mock_suite.py --extract mock_xi_fine.npz
+        --suite {inputs.glass_mock_suite} --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
+
+  - id: glass_mock_xi_reporting
+    type: data
+    format: npz
+    description: |
+      The same TreeCorr call on the 20-bin reporting grid, stacked in the
+      layout of [glass_mock_xi_fine](#outputs.glass_mock_xi_fine). It
+      defines the reporting bins of the pure-E/B transform, whose
+      integrals run over the fine ξ_±.
+    inputs: [glass_mock_suite]
+    decisions: [mock_suite, reporting_binning]
+    recipe:
+      command: >
+        python src/workflow/scripts/glass_mock_suite.py --extract mock_xi_reporting.npz
+        --suite {inputs.glass_mock_suite} --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
+
+  - id: glass_mock_cl
+    type: data
+    format: tar.gz
+    description: |
+      Catalog-based NaMaster Cℓ bandpowers of each realization, unweighted,
+      on the data's 32 √ℓ-spaced bands over 8 ≤ ℓ ≤ 2048, one
+      `cl_glass_mock_<id>_4096.npy` per realization (rows ℓ, EE, EB, BE,
+      BB). Their BB row is every mock Cℓ^BB result: the harmonic column of
+      the per-realization campaign, the Cℓ panels of the mock-validation
+      figure, and the measured mock-to-data BB variance ratio.
+    inputs: [glass_mock_suite]
+    decisions: [mock_suite]
+    recipe:
+      command: >
+        python src/workflow/scripts/glass_mock_suite.py --extract cl
+        --suite {inputs.glass_mock_suite} --out-file {output}
+      resources: { cpus: 1, memory: "4GB" }
+
+decisions:
+  mock_suite:
+    from: ../mock_suite
+  fiducial_catalog:
+    from: ../fiducial_catalog
+  integration_grid:
+    from: ../integration_grid
+  reporting_binning:
+    from: ../reporting_binning
+
+analyses:
+  generation:
+    path: ./analyses/generation
+
+  glass_suite:
+    path: ./analyses/glass_suite

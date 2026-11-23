@@ -31,6 +31,8 @@ inputs:
   from: ../../covariances.cosmology_snapshot
 - id: redshift_distributions
   from: ../redshift_distributions
+- id: survey_areas
+  from: ../survey_areas
 decisions:
   integration_grid:
     from: ../integration_grid
@@ -56,6 +58,7 @@ outputs:
   inputs:
   - cosmology_snapshot
   - redshift_distributions
+  - survey_areas
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -81,6 +84,7 @@ outputs:
   inputs:
   - cosmology_snapshot
   - redshift_distributions
+  - survey_areas
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -106,6 +110,7 @@ outputs:
   inputs:
   - cosmology_snapshot
   - redshift_distributions
+  - survey_areas
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -131,6 +136,7 @@ outputs:
   inputs:
   - cosmology_snapshot
   - redshift_distributions
+  - survey_areas
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -156,6 +162,7 @@ outputs:
   inputs:
   - cosmology_snapshot
   - redshift_distributions
+  - survey_areas
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -181,6 +188,7 @@ outputs:
   inputs:
   - cosmology_snapshot
   - redshift_distributions
+  - survey_areas
   decisions:
   - fiducial_catalog
   - fiducial_blind
@@ -206,6 +214,7 @@ outputs:
   inputs:
   - cosmology_snapshot
   - redshift_distributions
+  - survey_areas
   decisions:
   - fiducial_catalog
   - fiducial_blind

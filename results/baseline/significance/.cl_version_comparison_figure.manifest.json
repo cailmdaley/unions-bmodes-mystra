@@ -2,9 +2,9 @@
   "schema_version": 1,
   "output_id": "significance.cl_version_comparison_figure",
   "universe_id": "baseline",
-  "recipe": "d=$(mktemp -d) && tar xzf results/baseline/data_vectors/cl_scan/cl_sweep_bundle.tar.gz -C $d && k=$(mktemp -d) && tar xzf results/baseline/covariances/cl_cov_scan/cl_cov_sweep_bundle.tar.gz -C $k && python src/papers/bmodes/scripts/cl_version_comparison.py --fiducial-catalog size_cut --leakage-correction applied --results-dir $d --cov-dir $k --fiducial-version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --fiducial-cl-path results/baseline/data_vectors/cl_bandpowers_reporting.fits --fiducial-cl-cov-path results/baseline/covariances/cl_cov_reporting.fits --out-file results/baseline/significance/cl_version_comparison_figure.png\n",
-  "definition_version": "sha256:1f20aa69ce09aad9cbe27b8aee1d1b51c978186a4bd4b6300f503d9ed904979f",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "recipe": "d=$(mktemp -d) && tar xzf results/baseline/catalog_processing/cl_scan/cl_sweep_bundle.tar.gz -C $d && k=$(mktemp -d) && tar xzf results/baseline/covariances/cl_cov_scan/cl_cov_sweep_bundle.tar.gz -C $k && python src/papers/bmodes/scripts/cl_version_comparison.py --fiducial-catalog size_cut --leakage-correction applied --results-dir $d --cov-dir $k --fiducial-version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --fiducial-cl-path results/baseline/catalog_processing/cl_bandpowers_reporting.fits --fiducial-cl-cov-path results/baseline/covariances/cl_cov_reporting.fits --out-file results/baseline/significance/cl_version_comparison_figure.png\n",
+  "definition_version": "sha256:da18fa90cde18dfad3e2b79990f7e828a4405ef25df0a793d96183bd90bd5c72",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
   "data_version": "sha256:f1db7d755b76549e14ebeab4e8046e5b7bafd614a033c7d3ab6d241003b4849b",
   "decisions": {
     "pte_definition": "chi2_tail",
@@ -12,12 +12,12 @@
     "leakage_correction": "applied"
   },
   "input_versions": {
-    "cl_sweep": "sha256:8c8599a4ea5eb6f041f99132c836d0c31dee8519efd68218f802a1ef4346c74d",
-    "cl_cov_sweep": "sha256:3ec979b9128065e4f013879b053a9babe794ebcb959718a5d06000adf0041338",
+    "cl_sweep": "sha256:3b9a1709ed9605e64b4cac15e40510385a4bcebad8322be09b9a5f553008a67e",
+    "cl_cov_sweep": "sha256:04c212938cd41486d713383c16cb4d5e0938102832620ea041ad28646723463c",
     "cl_bandpowers_reporting": "sha256:f27662b55fe2bee589a530db9f1a1c8f1c116bbb7f6910de9f58326960bfc334",
-    "cl_cov_reporting": "sha256:76c73b28a865f3b476270354bb2a2b2164070b203cc1d435a32bc69a96bb500f"
+    "cl_cov_reporting": "sha256:4d33c2bb912fc43993a9b246fafe47720cc79d951afe04ce32e3208a978adabd"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -27,8 +27,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T11:53:56.946+00:00",
-  "finished_at": "2026-11-13T11:55:08.700+00:00",
+  "started_at": "2026-11-22T22:02:32.832+00:00",
+  "finished_at": "2026-11-22T22:03:00.932+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

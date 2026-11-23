@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "covariances.cov_reporting_ng",
+  "universe_id": "preprint_v2",
+  "recipe": "bash src/workflow/scripts/run_cosmocov_chain.sh --version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --blind blind_a --min-sep 1.0 --max-sep 250.0 --nbins 20 --gaussian ng --planck18-json results/preprint_v2/covariances/cosmology_snapshot.json --nz \"$(python src/workflow/scripts/decision_values.py nz_file blind_a)\" --emit processed --out-file results/preprint_v2/covariances/cov_reporting_ng.txt\n",
+  "definition_version": "sha256:483c4b8966c7b03439b726b1c7b7aad38d98bd20e5267ab2190655ef96d7dc19",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:6fa7373f4f0baea3945a1065961c2f65fcb8645f6cda22608d318a583c7a54b1",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "covariance_engine": "cosmocov",
+    "reporting_binning": "bins_20",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "cosmology_snapshot": "sha256:c2a2387f4c8a208fbb1cb4e7c6fb11dbf0945b44f4d576380626c21c228c2024",
+    "redshift_distributions": "spelling:sha256:11ef1341c9f8ea8d3d7fb69db5d38885a4f438092cb4096978145b98d45b8e43",
+    "survey_areas": "sha256:4a8decd35573a28df52de9f9ec1aa019e8db7851748735e73316726e6267f94c"
+  },
+  "git_sha": "0f1a526566e68182e80ac2473546f110025fb052",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T20:29:45.931+00:00",
+  "finished_at": "2026-11-23T20:36:46.842+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

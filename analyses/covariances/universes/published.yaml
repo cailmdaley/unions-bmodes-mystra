@@ -1,0 +1,11 @@
+id: published
+description: |
+  Gaussian CosmoCov covariance for all three ξ± pairings, carried exactly
+  through the linear pure-mode transform. The reference covariances sit at the
+  noise of the published v1.4.6.3_v2 GLASS suite.
+decisions:
+  covariance_engine: cosmocov
+  covariance_class: gaussian_only
+  fiducial_cosmology: planck18
+  # Exact M C_ξ Mᵀ of the linear operator; no Hartlap factor.
+  pure_eb_covariance_method: exact_linear

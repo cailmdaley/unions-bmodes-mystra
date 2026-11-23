@@ -1,0 +1,46 @@
+id: published
+description: |
+  The selection the accepted paper (A&A, 2026) was computed with:
+  the exactly linear fixed-quadrature Schneider-2022 operator in the
+  single-grid transform-averaged geometry (fine-grid evaluation,
+  `[θ_min, θ_max]` at the fine-grid extent), with the
+  pair-count-weighted mean from the 1000 fine nodes into the 20
+  reporting bins, the exact linear covariance, and the mock-calibrated
+  threshold on the minimum PTE. Its mock validation runs on the published
+  v1.4.6.3_v2 GLASS suite, 17% denser than the data, against covariances
+  rebuilt at that suite's noise. The selection it revises is the
+  `preprint_v2` universe, which differs in quadrature, geometry,
+  covariance and threshold together.
+
+decisions:
+  fiducial_catalog: size_cut
+  leakage_correction: applied
+  fiducial_blind: blind_a
+  integration_grid: bins_1000
+  # The operator and its geometry are described on the root decision's option.
+  pure_eb_integration_method: fixed_operator
+  # Pair-count weighting: the averaged local term is the reporting-bin ξ.
+  pure_eb_rebinning_weights: npairs
+  # Wide [grid floor, 300'] window: retain support below the 1' reporting floor.
+  pure_eb_integration_limits: fine_grid_extent
+  harmonic_validation_binning: bins_96
+  pte_definition: chi2_tail
+  bandpower_binning: bandpowers_32_powspace
+  noise_bias_correction: analytic_shot_noise
+  reporting_binning: bins_20
+  decomposition_method: schneider22_integral_transform
+  mode_count: n_max_20
+  reference_covariance: mockmatched
+  mock_suite: v1_4_6_3_v2
+
+analyses:
+  covariances:
+    universe: published
+  catalog_processing:
+    universe: published
+  mocks:
+    universe: published
+  validation:
+    universe: published
+  significance:
+    universe: published

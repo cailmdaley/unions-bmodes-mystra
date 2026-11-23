@@ -28,8 +28,8 @@ tags:
 inputs:
 - id: redshift_distributions
   from: ../redshift_distributions
-- id: shapepipe_v14_catalogs
-  from: ../shapepipe_v14_catalogs
+- id: catalog_summary
+  from: ../catalog_summary
 decisions:
   noise_bias_correction:
     from: ../noise_bias_correction
@@ -53,7 +53,7 @@ outputs:
     `SP_v1.4.5` on the `nbins32` √ℓ-spaced bandpower grid at blind A, computed
     as for the fiducial catalog.
   inputs:
-  - shapepipe_v14_catalogs
+  - catalog_summary
   - redshift_distributions
   decisions:
   - fiducial_catalog
@@ -64,7 +64,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
+      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -76,7 +76,7 @@ outputs:
     `SP_v1.4.5_leak_corr` on the `nbins32` √ℓ-spaced bandpower grid at blind A, computed
     as for the fiducial catalog.
   inputs:
-  - shapepipe_v14_catalogs
+  - catalog_summary
   - redshift_distributions
   decisions:
   - fiducial_catalog
@@ -87,7 +87,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
+      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -99,7 +99,7 @@ outputs:
     `SP_v1.4.6.3` on the `nbins32` √ℓ-spaced bandpower grid at blind A, computed
     as for the fiducial catalog.
   inputs:
-  - shapepipe_v14_catalogs
+  - catalog_summary
   - redshift_distributions
   decisions:
   - fiducial_catalog
@@ -110,7 +110,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.6.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
+      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.6.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -122,7 +122,7 @@ outputs:
     `SP_v1.4.8` on the `nbins32` √ℓ-spaced bandpower grid at blind A, computed
     as for the fiducial catalog.
   inputs:
-  - shapepipe_v14_catalogs
+  - catalog_summary
   - redshift_distributions
   decisions:
   - fiducial_catalog
@@ -133,7 +133,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
+      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -145,7 +145,7 @@ outputs:
     `SP_v1.4.8_leak_corr` on the `nbins32` √ℓ-spaced bandpower grid at blind A, computed
     as for the fiducial catalog.
   inputs:
-  - shapepipe_v14_catalogs
+  - catalog_summary
   - redshift_distributions
   decisions:
   - fiducial_catalog
@@ -156,7 +156,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
+      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -168,7 +168,7 @@ outputs:
     `SP_v1.4.11.3` on the `nbins32` √ℓ-spaced bandpower grid at blind A, computed
     as for the fiducial catalog.
   inputs:
-  - shapepipe_v14_catalogs
+  - catalog_summary
   - redshift_distributions
   decisions:
   - fiducial_catalog
@@ -179,7 +179,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
+      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3 $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -191,7 +191,7 @@ outputs:
     `SP_v1.4.11.3_leak_corr` on the `nbins32` √ℓ-spaced bandpower grid at blind A, computed
     as for the fiducial catalog.
   inputs:
-  - shapepipe_v14_catalogs
+  - catalog_summary
   - redshift_distributions
   decisions:
   - fiducial_catalog
@@ -202,7 +202,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
+      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))" --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -214,7 +214,7 @@ outputs:
     `SP_v1.4.5_leak_corr` on the `fine` √ℓ-spaced bandpower grid at blind A, computed
     as for the fiducial catalog.
   inputs:
-  - shapepipe_v14_catalogs
+  - catalog_summary
   - redshift_distributions
   decisions:
   - fiducial_catalog
@@ -225,7 +225,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
+      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.5_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -237,7 +237,7 @@ outputs:
     `SP_v1.4.8_leak_corr` on the `fine` √ℓ-spaced bandpower grid at blind A, computed
     as for the fiducial catalog.
   inputs:
-  - shapepipe_v14_catalogs
+  - catalog_summary
   - redshift_distributions
   decisions:
   - fiducial_catalog
@@ -248,7 +248,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
+      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.8_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB
@@ -260,7 +260,7 @@ outputs:
     `SP_v1.4.11.3_leak_corr` on the `fine` √ℓ-spaced bandpower grid at blind A, computed
     as for the fiducial catalog.
   inputs:
-  - shapepipe_v14_catalogs
+  - catalog_summary
   - redshift_distributions
   decisions:
   - fiducial_catalog
@@ -271,7 +271,7 @@ outputs:
   - leakage_correction
   recipe:
     command: |
-      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
+      python src/workflow/scripts/generate_cl_cov.py --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version SP_v1.4.11.3_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))" --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind} --out-file {output}
     resources:
       cpus: 12
       memory: 16GB

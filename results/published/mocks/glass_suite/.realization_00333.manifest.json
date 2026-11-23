@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "mocks.glass_suite.realization_00333",
+  "universe_id": "published",
+  "recipe": "python src/workflow/scripts/glass_mock_member.py --number 00333 --summary results/published/catalog_processing/catalog_summary.npz --suite v1_4_6_3_v2 --fiducial-catalog size_cut --shell-cls results/published/mocks/generation/glass_mock_shell_cls.npy --sampling results/published/mocks/generation/glass_mock_sampling.json --nz \"$(python src/workflow/scripts/decision_values.py nz_file blind_a)\" --out-file results/published/mocks/glass_suite/realization_00333.tar.gz\n",
+  "definition_version": "sha256:e89387aeac337fc151f3dfaed7e040a238298c7d25df7b81d15f4d33e329abd0",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:92ea20b7f6ab5184e9c287773ac01c48184d623cf78141058f1f4d5cac142517",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2",
+    "fiducial_catalog": "size_cut",
+    "integration_grid": "bins_1000",
+    "reporting_binning": "bins_20"
+  },
+  "input_versions": {
+    "catalog_summary": "sha256:dd5e46c738ae810b7b32773e42863057d03a64b316bb91f8063667be5021e160",
+    "glass_mock_shell_cls": "sha256:c10980b95ed158265666e822a7d75b8d49f31db91f5a25356a2374043ee7ef97",
+    "glass_mock_sampling": "sha256:a4462a502e0a7355e1050174a289697758bd2ef883412674deaa15e86027e692",
+    "redshift_distributions": "spelling:sha256:11ef1341c9f8ea8d3d7fb69db5d38885a4f438092cb4096978145b98d45b8e43"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T22:01:23.577+00:00",
+  "finished_at": "2026-11-23T00:03:29.910+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

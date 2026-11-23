@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.cl_pte_heatmap_figure",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py --fiducial-catalog size_cut --leakage-correction applied --from-evidence results/preprint_v2/significance/harmonic_space_pte_data.json --figure appendix --pte-threshold nominal_0p05 --out-file results/preprint_v2/significance/cl_pte_heatmap_figure.png\n",
+  "definition_version": "sha256:41d677099e31cf8617dcca88b926e81f313d058b4e4d98a651aafd48e1f6af60",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:90f22e686279c6a13b4e28538f54e5d062b67e40c8eda3830e6fae76431628c2",
+  "decisions": {
+    "pte_threshold": "nominal_0p05",
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "harmonic_space_pte_data": "sha256:29a9fecbea95edb5d0ad15699220b1f45a869d38d132908bcc5945dabc68e0d7"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T20:17:15.011+00:00",
+  "finished_at": "2026-11-22T20:17:49.780+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

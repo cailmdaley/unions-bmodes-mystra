@@ -4,7 +4,7 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/config_space_pte_matrices.py --fiducial-catalog size_cut --leakage-correction applied --reporting-binning bins_20 --from-evidence results/baseline/significance/config_space_pte_data.json --figure appendix --pte-threshold calibrated_0p01 --out-file results/baseline/significance/pte_heatmaps_figure.png\n",
   "definition_version": "sha256:a7bba10f2246bd2345347f0eaa21d230817e1089a00e188a2cf746d96564d3d1",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
   "data_version": "sha256:ded196e103fd37a35c35622829ede6aabe2ab1444478d6beb20451b3f5458948",
   "decisions": {
     "pte_threshold": "calibrated_0p01",
@@ -13,9 +13,9 @@
     "reporting_binning": "bins_20"
   },
   "input_versions": {
-    "config_space_pte_data": "sha256:05c3b5890a08bea5c4dda847a31737a5ff36abdc3f3021314f87e559cf62bcd5"
+    "config_space_pte_data": "sha256:0522e05285710aefad74d53825ad88b7556b8e2b30d7e9a67593e57e37d7fc29"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -25,8 +25,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T12:59:27.674+00:00",
-  "finished_at": "2026-11-13T13:00:14.594+00:00",
+  "started_at": "2026-11-22T23:19:45.318+00:00",
+  "finished_at": "2026-11-22T23:20:29.032+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

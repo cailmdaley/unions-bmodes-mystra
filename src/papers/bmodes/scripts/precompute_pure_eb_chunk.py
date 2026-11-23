@@ -1,6 +1,6 @@
 """Compute one chunk of MC samples for the pure E/B covariance.
 
-Draw ``n_samples // n_chunks`` Gaussian realisations of ξ±(θ) from
+Draw ``n_samples // n_chunks`` Gaussian realizations of ξ±(θ) from
 the 1000-bin integration-grid CosmoCov covariance (deterministic seed
 ``42 + chunk_id``), rebin to the reporting grid, and push each draw through the
 Schneider-2022 pure-mode integral transforms (``cosmo_numba``, under the

@@ -19,8 +19,8 @@ inputs:
   # The theory n(z), one for every version.
   - id: redshift_distributions
     from: ../redshift_distributions
-  - id: shapepipe_v14_catalogs
-    from: ../shapepipe_v14_catalogs
+  - id: catalog_summary
+    from: ../catalog_summary
 decisions:
   noise_bias_correction:
     from: ../noise_bias_correction
@@ -64,14 +64,14 @@ template:
     iNKA Gaussian covariance of the Cℓ bandpowers for catalog version
     `${version}` on the `${grid}` √ℓ-spaced bandpower grid at blind A, computed
     as for the fiducial catalog.
-  inputs: [shapepipe_v14_catalogs, redshift_distributions]
+  inputs: [catalog_summary, redshift_distributions]
   decisions: [fiducial_catalog, fiducial_blind, noise_bias_correction, "${grid_decision}", fiducial_cosmology, leakage_correction]
   recipe:
     command: >
       python src/workflow/scripts/generate_cl_cov.py
       --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction} --scan-version ${version} $(if [ ${grid} = fine ]; then printf -- '--fine-grid'; fi))"
-      --cat-config src/cosmo_val/cat_config.yaml
-      --nside 1024 --npatch 1 --binning powspace --nbins ${nbins} --power 0.5 --blind {decisions.fiducial_blind}
+      --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml
+      --nside 1024 --binning powspace --nbins ${nbins} --power 0.5 --blind {decisions.fiducial_blind}
       --out-file {output}
     resources: { cpus: 12, memory: "16GB" }
 

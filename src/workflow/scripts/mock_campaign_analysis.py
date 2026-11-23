@@ -20,8 +20,8 @@ Compute and reporting are separate invocations, because they are separate
 artifacts:
 
 * ``--emit-stats PATH`` is the compute pass.  It reads the mock ensembles and
-  the reference covariances, forms the six statistics for every realisation,
-  and writes *one* npz — the per-realisation table plus the analytic σ vectors
+  the reference covariances, forms the six statistics for every realization,
+  and writes *one* npz — the per-realization table plus the analytic σ vectors
   and cut masks the reporting passes need.  This is the expensive step and the
   only one that touches a covariance.
 * ``--from-stats PATH --emit {evidence,sigma-ratio-figure,pte-uniformity-figure,
@@ -249,7 +249,7 @@ def _load_pure(ensemble, index):
         raise KeyError(f"{source} is missing pure-EB keys {missing}")
     result = {key: _native(ensemble[key][index]) for key in required}
     # The reporting binning and the integration cut are ensemble-wide, not
-    # per-realisation: they are stored once by mock_pure_eb_scatter.
+    # per-realization: they are stored once by mock_pure_eb_scatter.
     for key in ("reporting_left_edges", "reporting_right_edges"):
         if key in ensemble:
             result[key] = _native(ensemble[key])
@@ -751,8 +751,8 @@ def compute_statistics(
     """The compute pass.
 
     Reads the four mock ensembles and the reference covariance triple, forms
-    the six statistics for every realisation at both angular windows, and writes
-    one npz holding the per-realisation tables together with everything the
+    the six statistics for every realization at both angular windows, and writes
+    one npz holding the per-realization tables together with everything the
     reporting passes need:
     the analytic σ vectors, the cut grids, and a provenance blob.  Nothing
     downstream of this touches a covariance file.
@@ -1152,7 +1152,7 @@ def _parser(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--emit-stats",
-        help="Compute pass: write the per-realisation statistics npz here.",
+        help="Compute pass: write the per-realization statistics npz here.",
     )
     parser.add_argument(
         "--from-stats",
@@ -1171,7 +1171,7 @@ def _parser(argv=None):
         "--data-ptes",
         help=(
             "Optional mock_min_pte_calibration.json.  Its `observed_ptes` — the "
-            "real catalogue's PTE per statistic — are drawn as a red vertical "
+            "real catalog's PTE per statistic — are drawn as a red vertical "
             "line on the pte-uniformity figure.  Omit it and the figure is "
             "drawn from the mocks alone."
         ),

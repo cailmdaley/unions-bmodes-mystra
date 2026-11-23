@@ -10,14 +10,16 @@ Excluded options stay in the tables, so a table always covers its decision.
 tools/test_decision_values.py keeps the keys equal to the spec's option ids.
 
 `SURVEY_PROPERTIES` are facts about the catalogs from Paper I, keyed by
-`fiducial_catalog`; they cover every catalog version CosmoCov runs on, and a version
+`fiducial_catalog`, their areas read from the `survey_areas` input; they cover every catalog version CosmoCov runs on, and a version
 and its leakage-corrected twin share one entry, read by `survey_properties`.
 `NZ_FILE` is the fiducial catalog's n(z) per `fiducial_blind`, which every catalog
 version uses.
 
-`REFERENCE_COVARIANCE` and `REFERENCE_CATALOG` are the two forms a
-`reference_covariance` option takes: CosmoCov builds the covariance at a noise
-level, and NaMaster reads a catalogue.
+`MOCK_SUITE` is how each GLASS suite samples its galaxies.
+
+`REFERENCE_COVARIANCE` is the survey scale CosmoCov builds each reference
+covariance at; the NaMaster reference covariance takes its window and noise from
+a catalog summary instead.
 
 Shell recipes read a value through the CLI, one key per decision it depends on:
 
@@ -26,7 +28,10 @@ Shell recipes read a value through the CLI, one key per decision it depends on:
 """
 
 import sys
+from pathlib import Path
 from typing import NamedTuple
+
+import yaml
 
 
 class Grid(NamedTuple):
@@ -35,6 +40,14 @@ class Grid(NamedTuple):
     min_sep: float
     max_sep: float
     nbins: int
+
+
+class MockSuite(NamedTuple):
+    """How a GLASS suite samples its galaxies."""
+
+    footprint: str | None  # catalog version whose galaxies set the mask; None: the fiducial catalog
+    n_arcmin2: float | None  # galaxy density; None: matched to the fiducial catalog
+    sigma_e: float | None  # per-component intrinsic dispersion; None: the fiducial catalog's
 
 
 class SurveyProperties(NamedTuple):
@@ -61,11 +74,14 @@ FIDUCIAL_CATALOG = {
 NZ_PATH = "data/nz/nz_SP_v1.4.6.3_{blind}.txt"
 NZ_FILE = {option: NZ_PATH.format(blind=blind) for option, blind in FIDUCIAL_BLIND.items()}
 
+# Each catalog's survey area in deg², the `survey_areas` input.
+SURVEY_AREA = yaml.safe_load((Path(__file__).resolve().parents[3] / "data/survey_areas.yaml").read_text())
+
 SURVEY_PROPERTIES = {
-    "size_cut": SurveyProperties(2894.0303815287743, 4.957279270321334, 0.3783979556382064),
-    "initial": SurveyProperties(2894.0303815287743, 6.477062501504287, 0.39740419232655594),
-    "masked": SurveyProperties(2517.021356326454, 4.983323636055024, 0.3797397825805285),
-    "relaxed_flags": SurveyProperties(2894.0303815287743, 6.2581259680050625, 0.380499698062307),
+    "size_cut": SurveyProperties(SURVEY_AREA["SP_v1.4.6.3"], 4.957279270321334, 0.3783979556382064),
+    "initial": SurveyProperties(SURVEY_AREA["SP_v1.4.5"], 6.477062501504287, 0.39740419232655594),
+    "masked": SurveyProperties(SURVEY_AREA["SP_v1.4.8"], 4.983323636055024, 0.3797397825805285),
+    "relaxed_flags": SurveyProperties(SURVEY_AREA["SP_v1.4.11.3"], 6.2581259680050625, 0.380499698062307),
 }
 
 
@@ -83,11 +99,12 @@ REFERENCE_COVARIANCE = {
     "data_covariance": SURVEY_PROPERTIES["size_cut"],
 }
 
-# The cat_config entry the NaMaster covariance of each option reads. The
-# mock-matched entry is realisation 00001 of the suite.
-REFERENCE_CATALOG = {
-    "mockmatched": "SP_v1.4.6.3_glass_mock_v2",
-    "data_covariance": "SP_v1.4.6.3_leak_corr",
+# The published suite's sampling, and the data-matched suite's, which
+# glass_mock_sampling.py derives from the fiducial catalog.
+MOCK_SUITE = {
+    "v1_4_6_3_v2": MockSuite("1.4.6", 6.0905, 0.2684),
+    "data_matched": MockSuite(None, None, None),
+    "v1_4_6": MockSuite(None, 6.0905, 0.2684),
 }
 
 REPORTING_BINNING = {
@@ -120,7 +137,7 @@ TABLES = {
     "nz_file": NZ_FILE,
     "survey_properties": SURVEY_PROPERTIES,
     "reference_covariance": REFERENCE_COVARIANCE,
-    "reference_catalog": REFERENCE_CATALOG,
+    "mock_suite": MOCK_SUITE,
     "reporting_binning": REPORTING_BINNING,
     "integration_grid": INTEGRATION_GRID,
     "patch_count": PATCH_COUNT,

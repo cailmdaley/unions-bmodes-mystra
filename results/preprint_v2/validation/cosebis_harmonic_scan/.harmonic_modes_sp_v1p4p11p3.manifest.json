@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "output_id": "validation.cosebis_harmonic_scan.harmonic_modes_sp_v1p4p11p3",
+  "universe_id": "preprint_v2",
+  "recipe": "set -e\nx=$(mktemp -d) && tar xzf results/preprint_v2/catalog_processing/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/preprint_v2/covariances/cov_scan/cov_sweep_bundle.tar.gz -C $c\nl=$(mktemp -d) && tar xzf results/preprint_v2/catalog_processing/cl_scan/cl_sweep_bundle.tar.gz -C $l\nk=$(mktemp -d) && tar xzf results/preprint_v2/covariances/cl_cov_scan/cl_cov_sweep_bundle.tar.gz -C $k\nver=$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --scan-version SP_v1.4.11.3_leak_corr --fine-grid)\ncb=covariance_\"$ver\"_A_integration\nnb=$(python src/workflow/scripts/decision_values.py harmonic_validation_binning bins_96)\npython src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py \\\n  --fiducial-catalog size_cut --leakage-correction applied --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 \\\n  --blind blind_a \\\n  --fiducial-version $ver \\\n  --harmonic-validation-binning bins_96 \\\n  --fiducial-cl-path \"$l/cl_$ver\"_blind=A_powspace_nbins=$nb.fits \\\n  --fiducial-cl-cov-path \"$k/cl_cov_$ver\"_blind=A_powspace_nbins=$nb.fits \\\n  --fiducial-xi-path \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n  --fiducial-cov-path \"$c/$cb/$cb\"_processed.txt \\\n  --out-file results/preprint_v2/validation/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p11p3.npz\nrm -rf \"$x\" \"$c\" \"$l\" \"$k\"\n",
+  "definition_version": "sha256:53647c6eec46977abb8c42e4552912872f187143784323eb81eccde1288d7344",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:c26303fbdc2ae1731369ecc9e70670cde7222dd4b1d16e7cf1b913f4f9dd4c8c",
+  "decisions": {
+    "fiducial_blind": "blind_a",
+    "harmonic_validation_binning": "bins_96",
+    "pte_definition": "chi2_tail",
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied",
+    "reporting_binning": "bins_20",
+    "integration_grid": "bins_1000",
+    "mode_count": "n_max_20"
+  },
+  "input_versions": {
+    "xi_sweep": "sha256:9c89bc463ad5b603963437b521438c4c07b279cf8296b45ea320acac1e512c34",
+    "cov_sweep": "sha256:4f5d685908b587c693788d573bc0c63ac1f5c52c4ed547d2b458d145a38b1a2d",
+    "cl_sweep": "sha256:2011c8ba6d802c3811b661e0da45c1187b8b5778d00222ec8f6e70e145ee57e3",
+    "cl_cov_sweep": "sha256:b7378d3a6bc32b163c7692c054dd0043279c444a4bedb835076b05fb54349014"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T20:06:15.471+00:00",
+  "finished_at": "2026-11-22T20:08:10.375+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

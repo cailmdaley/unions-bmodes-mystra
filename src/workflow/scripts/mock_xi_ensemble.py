@@ -1,7 +1,7 @@
-"""Stack per-realisation TreeCorr ξ± files into one mock-ensemble array.
+"""Stack per-realization TreeCorr ξ± files into one mock-ensemble array.
 
 The gather of a `run_glass_mock_2pcf.py` sweep.  Each member is one mock's
-GGCorrelation FITS; the ensemble is the realisation axis made explicit — a
+GGCorrelation FITS; the ensemble is the realization axis made explicit — a
 single npz holding `(n_mocks, nbins)` blocks of `meanr`, `xip`, `xim`,
 `npairs` and `weight` on a shared binning, plus the mock IDs.
 
@@ -97,7 +97,7 @@ def main(argv=None):
     out_path.parent.mkdir(parents=True, exist_ok=True)
     np.savez(out_path, **ensemble)
     print(
-        f"Saved {out_path}: {len(ensemble['mock_ids'])} realisations "
+        f"Saved {out_path}: {len(ensemble['mock_ids'])} realizations "
         f"x {grid.nbins} bins",
         flush=True,
     )

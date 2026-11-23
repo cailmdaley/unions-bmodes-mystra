@@ -1,259 +1,134 @@
-"""Generate Cl covariances (no data vector).
+"""Gaussian (iNKA) covariance of the catalog-based Cℓ bandpowers.
 
-The CLI runs the measurement from explicit flags. The primitive's native
-``pseudo_cl_cov_{ver}.fits`` is produced in a private scratch directory and
-moved to the single ``--out-file`` path the caller gives (the fresh scratch
-also means the primitives' skip-if-exists never collides across nbins runs):
+The covariance of one catalog version, from its entry in the catalog summary
+(``catalog_summary.py``) rather than the catalog itself: the weighted
+nside-1024 count map is the window, and the analytic shot-noise bias is
+Ω_pix · Σ w²(e1² + e2²)/2 / N_pix, the mean of the per-pixel variance map. The
+theory spectrum is CCL's Cℓ for the version's n(z) at the requested blind,
+multiplied by the squared pixel window, plus that noise, coupled through the
+mode-coupling matrix. This is the computation of sp_validation's
+``CosmologyValidation.calculate_pseudo_cl_eb_cov`` with the analytic noise
+bias and coupled iNKA input, which this script reproduces.
 
-    python generate_cl_cov.py \
-        --ver SP_v1.4.6.3_leak_corr \
-        --cat-config /path/to/cosmo_val/cat_config.yaml \
-        --out-file <path.fits> \
-        --binning powspace --nbins 32 --power 0.5
+    python generate_cl_cov.py --ver SP_v1.4.6.3_leak_corr --summary summary.npz \
+        --cat-config cat_config.yaml --nbins 32 --blind blind_a --out-file cov.fits
 
-Supports two binning modes:
-- Linear binning with configurable nbins for COSEBIS
-- Power-space binning with configurable nbins for standard C_ell analysis
-
-See generate_cl.py for data vector generation.
+``--ver`` names a cat_config entry, with ``_leak_corr`` for the
+leakage-corrected ellipticities; its summary key is the entry without that
+suffix.
 """
 
 import argparse
 import json
-import os
 import re
-import shutil
 import tempfile
 
+import healpy as hp
+import numpy as np
+import pymaster as nmt
 import yaml
-
-from decision_values import FIDUCIAL_BLIND
 from astropy.io import fits
-
 from sp_validation.cosmo_val import CosmologyValidation
+from sp_validation.cosmology import get_theo_c_ell
+
+from catalog_summary import load, window
+from decision_values import FIDUCIAL_BLIND
+
+LMIN = 8
 
 
-def generate_cl_cov(
-    version: str,
-    output_dir: str,
-    cat_config: str,
-    nside: int = 1024,
-    npatch: int = 1,
-    blind: str = None,
-    cosmo_params: dict = None,
-    binning: str = "powspace",
-    nbins: int = 32,
-    power: float = 0.5,
-):
-    """Generate a Cl covariance into ``output_dir``.
-
-    Parameters
-    ----------
-    version : str
-        Catalog version (e.g., "SP_v1.4.6_leak_corr")
-    output_dir : str
-        Directory the covariance FITS file is written into. The primitive writes
-        its native ``pseudo_cl_cov_{version}.fits`` here; callers that need a
-        tagged filename rename it themselves.
-    cat_config : str
-        Path to catalog configuration YAML
-    nside : int
-        HEALPix nside for map-based estimation
-    npatch : int
-        Number of jackknife patches
-    blind : str, optional
-        Blind identifier (A, B, or C) to override n(z) path
-    cosmo_params : dict, optional
-        Cosmological parameters. Keys: Omega_m, sigma_8, n_s, h, Omega_b.
-        If None, uses Planck 2018 defaults.
-    binning : str
-        Binning mode: "linear", "logspace", or "powspace"
-    nbins : int
-        Number of ell bins
-    power : float
-        Power for powspace binning (0.5 = sqrt spacing)
-
-    Returns
-    -------
-    str
-        Path to the primitive's native ``pseudo_cl_cov_{version}.fits`` product.
-    """
-    os.makedirs(output_dir, exist_ok=True)
-
-    blind_str = f" blind={blind}" if blind else ""
-    if binning == "linear":
-        ell_step = max(1, (2048 - 2) // nbins)
-        bin_str = f"nbins={nbins} (ell_step={ell_step})"
-    elif binning == "logspace":
-        bin_str = f"nbins={nbins} (geomspace)"
-    else:
-        bin_str = f"nbins={nbins}, power={power}"
-
-    print(f"\n{'=' * 60}")
-    print(f"Generating Cl covariance for {version}{blind_str}")
-    print(f"Binning: {binning} ({bin_str})")
-    if cosmo_params:
-        print(
-            f"Cosmology: Om={cosmo_params.get('Omega_m')}, s8={cosmo_params.get('sigma_8')}"
-        )
-    else:
-        print("Cosmology: Planck 2018 defaults")
-    print(f"{'=' * 60}\n")
-
-    # Remap config cosmology param names to get_cosmo() expected names
+def cl_covariance(version, summary, cat_config, nside, blind, cosmo_params, binning, nbins, power):
+    """The 16 EE/EB/BE/BB covariance blocks, as an HDUList."""
+    base = version.removesuffix("_leak_corr")
+    with open(cat_config) as f:
+        cc = yaml.safe_load(f)
+    nz_path = cc[base]["shear"]["redshift_path"]
+    if blind:
+        nz_path = re.sub(r"_[ABC]\.txt$", f"_{blind}.txt", nz_path)
     if cosmo_params:
         cosmo_params = {
-            "Omega_m": cosmo_params.get("Omega_m"),
-            "Omega_b": cosmo_params.get("Omega_b"),
-            "h": cosmo_params.get("h"),
-            "sig8": cosmo_params.get("sigma_8"),
-            "ns": cosmo_params.get("n_s"),
+            "Omega_m": cosmo_params["Omega_m"],
+            "Omega_b": cosmo_params["Omega_b"],
+            "h": cosmo_params["h"],
+            "sig8": cosmo_params["sigma_8"],
+            "ns": cosmo_params["n_s"],
         }
+    # Supplies the cosmology and the NaMaster binning and field helpers.
+    with tempfile.TemporaryDirectory(prefix="cl_cov_") as scratch:
+        cv = CosmologyValidation(
+            versions=[version],
+            catalog_config=cat_config,
+            output_dir=scratch,
+            binning=binning,
+            nside=nside,
+            cell_method="catalog",
+            cosmo_params=cosmo_params,
+            n_ell_bins=nbins,
+            power=power,
+        )
 
-    # CosmologyValidation.calculate_pseudo_cl_eb_cov reads the theory n(z) from
-    # cat_config's `redshift_path` and ignores `blind`, so the blind is applied
-    # here, to a copy of the config.
-    if blind:
-        with open(cat_config) as f:
-            cc = yaml.safe_load(f)
-        entry = cc[version.removesuffix("_leak_corr")]["shear"]
-        entry["redshift_path"] = re.sub(r"_[ABC]\.txt$", f"_{blind}.txt", entry["redshift_path"])
-        cat_config = os.path.join(output_dir, "cat_config_blind.yaml")
-        with open(cat_config, "w") as f:
-            yaml.safe_dump(cc, f)
-        print(f"Theory n(z): {entry['redshift_path']}")
+    entry = load(summary, base)
+    n_gal = window(entry)
+    s = entry["sum_w2e2_leak_corr" if version.endswith("_leak_corr") else "sum_w2e2"]
+    noise_bias = hp.nside2pixarea(nside) * s / hp.nside2npix(nside)
 
-    # Build CV kwargs based on binning mode
-    cv_kwargs = dict(
-        versions=[version],
-        catalog_config=cat_config,
-        output_dir=output_dir,
-        binning=binning,
-        nside=nside,
-        cell_method="catalog",
-        nrandom_cell=100,
-        blind=blind,
-        cosmo_params=cosmo_params,
-        npatch=npatch,
-        theta_min=1.0,
-        theta_max=250.0,
-        nbins=20,
-    )
-    if binning == "linear":
-        cv_kwargs["ell_step"] = ell_step
-    else:
-        cv_kwargs["n_ell_bins"] = nbins
-        cv_kwargs["power"] = power
+    lmax = 2 * nside
+    ell = np.arange(1, lmax + 1)
+    pw = hp.pixwin(nside, lmax=lmax)[1 : lmax + 1]
+    z, dndz = np.loadtxt(nz_path, unpack=True)
+    print(f"Theory n(z): {nz_path}")
+    fiducial_cl = get_theo_c_ell(ell=ell, z=z, nz=dndz, backend="ccl", cosmo=cv.cosmo) * pw**2
 
-    cv = CosmologyValidation(**cv_kwargs)
+    b = cv.get_namaster_bin(LMIN, lmax, lmax - 1)
+    f, wsp = cv.get_field_and_workspace_from_map(n_gal, lmax - 1, b)
 
-    # Calculate covariance only
-    print("Calculating covariance...")
-    cv.calculate_pseudo_cl_eb_cov()
+    noise_bias_cl = np.zeros((4, lmax))
+    noise_bias_cl[0, :] = noise_bias
+    noise_bias_cl[3, :] = noise_bias
+    noise_bias_cl = b.unbin_cell(wsp.decouple_cell(noise_bias_cl))
+    lowest_ell = b.get_ell_list(0)[0]
+    noise_bias_cl[:, :lowest_ell] = noise_bias_cl[:, [lowest_ell]]
 
-    # Report on the native product
-    src_cov = os.path.join(output_dir, f"pseudo_cl_cov_{version}.fits")
-    if os.path.exists(src_cov):
-        with fits.open(src_cov) as hdul:
-            # CV outputs covariance blocks as COVAR_XX_YY extensions
-            cov = hdul["COVAR_BB_BB"].data
-            n_ell = int(len(cov) ** 0.5)
-            print(f"Generated covariance matrix: {n_ell}x{n_ell}")
-    return src_cov
+    zero = 0.0 * fiducial_cl
+    fiducial_cl = np.array([fiducial_cl, zero, zero, zero]) + noise_bias_cl
+    coupling = np.reshape(wsp.get_coupling_matrix(), (4, lmax, 4, lmax), order="F")
+    fiducial_cl = np.tensordot(coupling, fiducial_cl) / np.mean(n_gal**2)
 
+    cw = nmt.NmtCovarianceWorkspace.from_fields(f, f, f, f)
+    n_ell = b.get_n_bands()
+    cov = nmt.gaussian_covariance(
+        cw, 2, 2, 2, 2, fiducial_cl, fiducial_cl, fiducial_cl, fiducial_cl, wsp, wb=wsp
+    ).reshape([n_ell, 4, n_ell, 4])
 
-def _from_snakemake(smk):
-    p = smk.params
-    output_cov = smk.output.cl_cov
-    src_cov = generate_cl_cov(
-        version=p["version"],
-        output_dir=os.path.dirname(output_cov),
-        cat_config=p["cat_config"],
-        nside=int(p["nside"]),
-        npatch=int(p["npatch"]),
-        blind=p.get("blind", None),
-        cosmo_params=p.get("cosmo_params", None),
-        binning=p["binning"],
-        nbins=int(p["nbins"]),
-        power=float(p.get("power", 0.5)),
-    )
-    # Rename the native product to the tagged output filename.
-    if os.path.exists(src_cov) and src_cov != output_cov:
-        os.rename(src_cov, output_cov)
-        print(f"Saved to: {output_cov}")
+    pols = ["EE", "EB", "BE", "BB"]
+    hdu = fits.HDUList()
+    for i, pa in enumerate(pols):
+        for j, pb in enumerate(pols):
+            hdu.append(fits.ImageHDU(cov[:, i, :, j], name=f"COVAR_{pa}_{pb}"))
+    return hdu
 
 
-def _from_cli(argv=None):
-    ap = argparse.ArgumentParser(
-        description="Cl covariance for one catalog version."
-    )
-    ap.add_argument(
-        "--ver",
-        required=True,
-        help="Catalog version key in cat_config, e.g. SP_v1.4.6.3_leak_corr",
-    )
-    ap.add_argument(
-        "--cat-config", required=True, help="Absolute path to cat_config.yaml"
-    )
-    ap.add_argument(
-        "--out-file", required=True, help="Output FITS file path (lc {output})"
-    )
-    ap.add_argument(
-        "--nside", type=int, default=1024, help="HEALPix nside for map estimation"
-    )
-    ap.add_argument(
-        "--npatch",
-        type=int,
-        default=1,
-        help="Jackknife patch count (paper fiducial: 1)",
-    )
-    ap.add_argument(
-        "--binning",
-        choices=["linear", "logspace", "powspace"],
-        default="powspace",
-        help="Ell binning mode",
-    )
-    ap.add_argument("--nbins", type=int, required=True,
-                    help="Number of ell bins")
-    ap.add_argument(
-        "--power",
-        type=float,
-        default=0.5,
-        help="Power for powspace binning (0.5 = sqrt spacing)",
-    )
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--ver", required=True)
+    ap.add_argument("--summary", required=True)
+    ap.add_argument("--cat-config", required=True)
+    ap.add_argument("--out-file", required=True)
+    ap.add_argument("--nside", type=int, default=1024)
+    ap.add_argument("--binning", choices=["linear", "logspace", "powspace"], default="powspace")
+    ap.add_argument("--nbins", type=int, required=True)
+    ap.add_argument("--power", type=float, default=0.5)
     ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__)
-    ap.add_argument(
-        "--cosmo-json",
-        default=None,
-        help="Path to a Planck18-style cosmology JSON; omit for Planck18 defaults",
-    )
+    ap.add_argument("--cosmo-json")
     a = ap.parse_args(argv)
-
     cosmo_params = None
     if a.cosmo_json:
         with open(a.cosmo_json) as f:
             cosmo_params = json.load(f)
-
-    scratch = tempfile.mkdtemp(prefix="cl_cov_")
-    src_cov = generate_cl_cov(
-        version=a.ver,
-        output_dir=scratch,
-        cat_config=a.cat_config,
-        nside=a.nside,
-        npatch=a.npatch,
-        blind=a.blind,
-        cosmo_params=cosmo_params,
-        binning=a.binning,
-        nbins=a.nbins,
-        power=a.power,
-    )
-    shutil.move(src_cov, a.out_file)
+    hdu = cl_covariance(a.ver, a.summary, a.cat_config, a.nside, a.blind, cosmo_params, a.binning, a.nbins, a.power)
+    hdu.writeto(a.out_file, overwrite=True)
     print(f"Saved to: {a.out_file}")
-    shutil.rmtree(scratch, ignore_errors=True)
 
 
 if __name__ == "__main__":
-    if "snakemake" in globals():
-        _from_snakemake(snakemake)  # noqa: F821
-    else:
-        _from_cli()
+    main()

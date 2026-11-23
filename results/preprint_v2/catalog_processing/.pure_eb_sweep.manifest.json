@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "output_id": "catalog_processing.pure_eb_sweep",
+  "universe_id": "preprint_v2",
+  "recipe": "set -e\nx=$(mktemp -d) && tar xzf results/preprint_v2/catalog_processing/xi_scan/xi_sweep_bundle.tar.gz -C $x\no=$(mktemp -d)\nversions=$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --nonfiducial)\nfor ver in $versions; do\n  python src/papers/bmodes/scripts/pure_eb_modes.py \\\n    --xi-reporting \"$x/$ver\"_xi_minsep=1.0_maxsep=250.0_nbins=20_npatch=1.txt \\\n    --xi-integration \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n    --integration-method adaptive_dqags \\\n    --integration-limits reporting_extent \\\n    --rebinning-weights none \\\n    --out-file \"$o/$ver\"_pure_eb_data.npz\ndone\ntar czf results/preprint_v2/catalog_processing/pure_eb_sweep.tar.gz -C $o .\n",
+  "definition_version": "sha256:332b51ae5951c3b62336a88beb5d4b9c1519c0df29432874f9007691db671817",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:1df8f4e408ff271f375c752cf831d658b273b7e229885de618638e960cd54590",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "pure_eb_integration_method": "adaptive_dqags",
+    "pure_eb_rebinning_weights": "none",
+    "pure_eb_integration_limits": "reporting_extent",
+    "decomposition_method": "schneider22_integral_transform",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "xi_sweep": "sha256:9c89bc463ad5b603963437b521438c4c07b279cf8296b45ea320acac1e512c34"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T06:40:36.133+00:00",
+  "finished_at": "2026-11-22T06:45:31.438+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

@@ -2,23 +2,27 @@ version: "0.0.14"
 name: "GLASS mocks"
 description: |
   Validation of the B-mode estimators, covariances and PTE
-  convention on 350 systematics-free GLASS lognormal realisations.
-  The realisations contain no B-mode signal, so every B statistic
+  convention on 350 systematics-free GLASS lognormal realizations.
+  The realizations contain no B-mode signal, so every B statistic
   they produce is noise: their scatter is the empirical σ to hold
   the analytic σ against, their per-mock χ² values test the PTE
   convention and calibrate the min-PTE threshold, and their χ²
   correlations measure how independent the six statistics are.
 
-  Each realisation is measured independently (the
+  Each realization is measured independently (the
   [ξ_± ensemble](#inputs.glass_mock_xi_fine)) and carried through the
   same ξ_± → COSEBI and ξ_± → pure-E/B transforms the data use; all
   six statistics are then compared against analytic covariances.
   The key [decision](#decisions.reference_covariance) is which
-  covariance: the realisations carry 17% more galaxies than the
-  data ([finding](#findings.mocks_are_over_constraining)), so they
-  are held against a covariance the same CosmoCov and NaMaster chain
-  builds at the mocks' own noise. The campaign thus tests the
-  covariance machinery, not the data covariance directly: the
+  covariance, and it follows the [suite](#decisions.mock_suite). A
+  suite matched to the data's footprint, count and σ_e is held against
+  the data's own covariances, so the campaign tests the covariance the
+  null tests use. A suite sampled differently, as the published
+  v1.4.6.3_v2 suite is
+  ([mocks_are_over_constraining](#findings.mocks_are_over_constraining)),
+  is held against a covariance the same CosmoCov and NaMaster chain
+  builds at the suite's own noise, and the campaign tests the
+  covariance machinery. Either way the
   [analytic covariances](#../../analyses.covariances.outputs.pure_eb_covariance_reference), not a mock sample
   covariance, enter the PTEs.
 
@@ -32,6 +36,12 @@ inputs:
 
   - id: glass_mock_cl
     from: ../glass_mock_cl
+
+  - id: glass_mock_sampling
+    from: ../glass_mock_sampling
+
+  - id: glass_mock_realization_00001
+    from: ../glass_mock_realization_00001
 
   - id: xi_integration
     from: ../xi_integration
@@ -51,48 +61,24 @@ inputs:
   - id: pure_eb_covariance_reference
     from: ../pure_eb_covariance_reference
 
-  - id: shapepipe_v14_catalogs
-    from: ../shapepipe_v14_catalogs
-
-  - id: glass_mock_realisation_00001
-    from: ../glass_mock_realisation_00001
-
   - id: redshift_distributions
     from: ../redshift_distributions
+
+  - id: survey_areas
+    from: ../survey_areas
 
   - id: cosmology_snapshot
     from: ../cosmology_snapshot
 
 outputs:
 
-  # ── The per-realisation data vectors ─────────────────────────────────────
-
-  - id: glass_mock_xi_fine_check
-    type: metric
-    format: json
-    description: |
-      Realisation 00001 measured here with the same TreeCorr call on the
-      [integration grid](#decisions.integration_grid), differenced against
-      its row of the delivered [fine ξ_± stack](#inputs.glass_mock_xi_fine):
-      per-field maximum differences, whether the bin edges match, and a
-      verdict. It is what licenses reading the stack instead of measuring
-      350 catalogues.
-    inputs: [glass_mock_xi_fine, glass_mock_realisation_00001]
-    decisions: [mock_suite, integration_grid]
-    recipe:
-      command: >
-        python src/workflow/scripts/mock_xi_fine_provenance.py
-        --catalog {inputs.glass_mock_realisation_00001}
-        --xi-ensemble {inputs.glass_mock_xi_fine}
-        --integration-grid {decisions.integration_grid}
-        --out-file {output}
-      resources: { cpus: 8, memory: "20GB" }
+  # ── The per-realization data vectors ─────────────────────────────────────
 
   - id: mock_cosebis_modes
     type: data
     format: npz
     description: |
-      COSEBI E_n / B_n for n = 1 … 20 and all 350 realisations, stacked
+      COSEBI E_n / B_n for n = 1 … 20 and all 350 realizations, stacked
       as a 350 × 20 pair, computed from
       [glass_mock_xi_fine](#inputs.glass_mock_xi_fine) with the same
       `cosmo_numba` call as the data vector, over the
@@ -115,7 +101,7 @@ outputs:
     format: npz
     description: |
       Full-range COSEBI E_n / B_n for n = 1 … 20 and all 350
-      realisations, stacked as a 350 × 20 pair: as
+      realizations, stacked as a 350 × 20 pair: as
       [mock_cosebis_modes](#outputs.mock_cosebis_modes), over the
       1–250 arcmin range of the full-range data PTEs.
     inputs: [glass_mock_xi_fine]
@@ -131,7 +117,7 @@ outputs:
     type: data
     format: npz
     description: |
-      Pure-mode ξ_±^{E,B,amb} for all 350 realisations on the 20-bin
+      Pure-mode ξ_±^{E,B,amb} for all 350 realizations on the 20-bin
       reporting grid, stacked as six 350 × 20 blocks. The reporting
       bins come from
       [glass_mock_xi_reporting](#inputs.glass_mock_xi_reporting) and the transform
@@ -139,7 +125,7 @@ outputs:
       0.5′–300′ grid as the data, under the same
       [quadrature](#decisions.pure_eb_integration_method). Under
       `npairs` [weights](#decisions.pure_eb_rebinning_weights) each
-      realisation is averaged with its own pair counts.
+      realization is averaged with its own pair counts.
     inputs: [glass_mock_xi_fine, glass_mock_xi_reporting]
     decisions: [mock_suite, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, decomposition_method]
     recipe:
@@ -159,25 +145,26 @@ outputs:
     type: data
     format: npz
     description: |
-      Per-realisation results for the six statistics (B_{n≤6},
-      B_{n≤20}, ξ_+^B, ξ_-^B, ξ_tot^B, C_ℓ^BB): each realisation's B
+      Per-realization results for the six statistics (B_{n≤6},
+      B_{n≤20}, ξ_+^B, ξ_-^B, ξ_tot^B, C_ℓ^BB): each realization's B
       vector and its χ² and PTE against the selected reference
       covariance, at the fiducial cuts and over the full range
       (`chi2_full`, `pte_full`, `dof_full`; 1–250 arcmin / 8≤ℓ≤2048).
       Also carries the analytic σ vectors on both ranges, the cut
       masks, and the covariance triple, scale cuts and any skipped
-      realisations. The campaign's σ, χ² and PTE summaries derive from
+      realizations. The campaign's σ, χ² and PTE summaries derive from
       this file.
     inputs: [mock_cosebis_modes, mock_cosebis_modes_full, mock_pure_eb_modes, glass_mock_xi_fine, glass_mock_cl, xi_integration, cov_integration_reference, pure_eb_covariance_reference, cl_cov_reference]
     decisions: [reference_covariance, mock_suite, fiducial_catalog, fiducial_blind, pte_definition, integration_grid]
     recipe:
       command: >
+        c=$(mktemp -d) && tar xzf {inputs.glass_mock_cl} -C $c &&
         python src/workflow/scripts/mock_campaign_analysis.py
         --cosebis-ensemble {inputs.mock_cosebis_modes}
         --cosebis-ensemble-full {inputs.mock_cosebis_modes_full}
         --pure-ensemble {inputs.mock_pure_eb_modes}
         --fine-ensemble {inputs.glass_mock_xi_fine}
-        --cl-dir "$(dirname "$(printf '%s\n' "{inputs.glass_mock_cl}" | head -n1)")"
+        --cl-dir "$c"
         --cosebis-xi-grid {inputs.xi_integration}
         --cosebis-cov {inputs.cov_integration_reference}
         --pure-cov {inputs.pure_eb_covariance_reference}
@@ -187,12 +174,12 @@ outputs:
       resources: { cpus: 1, memory: "16GB" }
 
   - id: mock_min_pte_scale_cut_scan
-    type: metric
+    type: data
     format: json
     description: |
       [mock_min_pte_calibration](#../../analyses.significance.outputs.mock_min_pte_calibration) as
       a function of the scale cut: the same 5%-quantile threshold on
-      the per-realisation minimum PTE, evaluated on all 210 windows of
+      the per-realization minimum PTE, evaluated on all 210 windows of
       the reporting grid `geomspace(1', 250', 21)` rather than at the
       fiducial window alone. Per window it carries θ_min, θ_max, the
       threshold, its 68% bootstrap and order-statistic intervals, the
@@ -201,7 +188,7 @@ outputs:
       the reasons any statistic could not be formed.
 
       The COSEBIs are recomputed in each window from each
-      realisation's [fine ξ_±](#inputs.glass_mock_xi_fine), against a COSEBI
+      realization's [fine ξ_±](#inputs.glass_mock_xi_fine), against a COSEBI
       covariance transformed on that window; holding them at their
       fiducial values would depress the threshold across the plane.
       C_ℓ^BB does not depend on the angular window, so its PTEs come
@@ -215,17 +202,13 @@ outputs:
 
       The 20 single-bin windows are marked `comparable: false` and
       excluded from summaries: the COSEBI basis is too ill-conditioned
-      over one reporting bin (median mock B_{n≤20} PTE 0.13 across
-      them, against 0.41 across the 190 windows of two bins or more,
-      which span 0.23–0.59). On those 190 windows the calibrated
-      threshold lies below the adopted
-      [p_thr = 0.01](#../../analyses.significance.decisions.pte_threshold) on 148, and its 68%
-      bootstrap interval lies wholly above it on 10. It stays ≤ 0.0093
-      over every window with θ_min ≥ 5.24′ and θ_max ≥ 36.20′, a
-      region containing the fiducial window with margin; the
-      excursions at the plane's extremes come from few, highly
-      correlated degrees of freedom at small θ and the known
-      large-scale contamination at large θ_max.
+      over one reporting bin. On the 190 windows of two bins or more,
+      the calibrated threshold lies below the adopted
+      [p_thr = 0.01](#../../analyses.significance.decisions.pte_threshold)
+      on 119 in `baseline` (141 in `published`); the excursions at the
+      plane's extremes come from few, highly correlated degrees of
+      freedom at small θ and the known large-scale contamination at
+      large θ_max.
     inputs: [mock_per_mock_statistics, glass_mock_xi_fine, mock_pure_eb_modes, xi_integration, cov_integration_reference, pure_eb_covariance_reference]
     decisions: [reference_covariance, mock_suite, pte_definition, integration_grid]
     recipe:
@@ -248,7 +231,7 @@ outputs:
       resources: { cpus: 24, memory: "32GB" }
 
   - id: mock_campaign_evidence
-    type: metric
+    type: data
     format: json
     description: |
       The campaign's summary statistics, derived from
@@ -263,7 +246,7 @@ outputs:
       under the `monte_carlo`
       [covariance method](#../../analyses.covariances.decisions.pure_eb_covariance_method), where
       N is its 2000 draws; C_ℓ^BB takes
-      no Hartlap factor, its mock-matched reference being
+      no Hartlap factor, its reference being
       [cl_cov_reference](#inputs.cl_cov_reference). Pure-mode σ is
       reported on all 20 reporting bins and on the fiducial cut, COSEBI
       σ on the fiducial window and C_ℓ^BB σ on the 17 fiducial bands.
@@ -281,10 +264,10 @@ outputs:
     description: |
       Empirical σ over analytic σ, per COSEBI mode on the fiducial
       window, per θ bin for ξ_±^B, and per ℓ band for the 17 fiducial
-      C_ℓ^BB bands, with the fiducial cut shaded. Under
-      `reference_covariance: mockmatched` it tests the analytic
-      covariance amplitude; under `data_covariance` it shows the effect of
-      the galaxy-count mismatch.
+      C_ℓ^BB bands, with the fiducial cut shaded. Against a reference
+      covariance at the suite's own noise it tests the analytic
+      covariance amplitude; against one at a different noise it also
+      carries the noise mismatch.
     inputs: [mock_per_mock_statistics]
     decisions: [reference_covariance]
     recipe:
@@ -302,7 +285,7 @@ outputs:
       the three B statistics — COSEBI modes 1–20 (at the fiducial cuts,
       filled, and over 1–250′, open), ξ_+^B (filled) and ξ_-^B (open)
       on all reporting bins, C_ℓ^BB on all 32 bands — with scales
-      outside the fiducial cuts shaded. Top row: across-realisation
+      outside the fiducial cuts shaded. Top row: across-realization
       mean in units of the analytic σ of the
       [reference covariance](#decisions.reference_covariance), with
       σ_emp/(σ_ana√N) error bars. Bottom row: σ_ana/σ_emp (below one
@@ -324,10 +307,11 @@ outputs:
     decisions: [reference_covariance, mock_suite]
     recipe:
       command: >
+        c=$(mktemp -d) && tar xzf {inputs.glass_mock_cl} -C $c &&
         python src/workflow/scripts/mock_validation_figure.py
         --per-mock-statistics {inputs.mock_per_mock_statistics}
         --campaign-evidence {inputs.mock_campaign_evidence}
-        --cl-dir "$(dirname "$(printf '%s\n' "{inputs.glass_mock_cl}" | head -n1)")"
+        --cl-dir "$c"
         --range full
         --output {output}
       resources: { cpus: 1, memory: "4GB" }
@@ -368,10 +352,10 @@ outputs:
     format: png
     description: |
       Validation of the raw 20-bin ξ_± before any pure-mode or COSEBI
-      filter. Row 1: θξ_±, the across-realisation mean against
+      filter. Row 1: θξ_±, the across-realization mean against
       [the input theory](#outputs.mock_xi_input_theory), band-limited
       at the simulation's ℓ_max and unbanded. Row 2: (mean −
-      theory)/σ_ana, a fraction of a single realisation's error bar,
+      theory)/σ_ana, a fraction of a single realization's error bar,
       with σ_emp/(σ_ana√N) error bars as in
       [mock_validation_figure](#outputs.mock_validation_figure). Row
       3: σ_emp/σ_ana. σ_ana comes from the
@@ -395,13 +379,13 @@ outputs:
       resources: { cpus: 1, memory: "4GB" }
 
   - id: mock_xi_validation_stats
-    type: metric
+    type: data
     format: json
     description: |
       The numbers behind
       [mock_xi_validation_figure](#outputs.mock_xi_validation_figure),
       per reporting bin: mean ξ_± over theory, the residual in
-      units of a single realisation's σ_ana and in units of
+      units of a single realization's σ_ana and in units of
       σ_emp/√N, σ_emp, σ_ana and their ratio. Two further columns:
 
       - The shape-noise σ implied by the measured pair counts,
@@ -414,22 +398,25 @@ outputs:
         delivered count at 1′, falling monotonically to 0.87 at 221′ as
         annuli run off the footprint edge — the geometry effect the
         pure-mode scatter inherits at large θ.
-    inputs: [glass_mock_xi_reporting, mock_xi_input_theory, cov_reporting_reference]
-    decisions: [mock_suite]
+    inputs: [glass_mock_xi_reporting, mock_xi_input_theory, cov_reporting_reference, survey_areas, glass_mock_sampling, glass_mock_realization_00001]
+    decisions: [mock_suite, fiducial_catalog]
     recipe:
       command: >
         python src/workflow/scripts/mock_xi_validation.py
         --reporting-ensemble {inputs.glass_mock_xi_reporting}
         --theory {inputs.mock_xi_input_theory}
         --covariance {inputs.cov_reporting_reference}
+        --survey-properties {decisions.fiducial_catalog}
+        --sampling {inputs.glass_mock_sampling}
+        --realization-summary {inputs.glass_mock_realization_00001}
         --emit stats --out-file {output}
       resources: { cpus: 1, memory: "2GB" }
 
   - id: mock_mean_vector_stats
-    type: metric
+    type: data
     format: json
     description: |
-      Per-statistic mean B across the realisations, averaged over
+      Per-statistic mean B across the realizations, averaged over
       scales, raw and in units of the analytic σ, with its standard
       error and z-score, and the largest absolute normalised mean with
       the mode or bin it falls in.
@@ -454,85 +441,34 @@ outputs:
         --emit stats --out-file {output}
       resources: { cpus: 1, memory: "2GB" }
 
-  # ── The noise budget behind the density finding ──────────────────────────
-
-  - id: mock_footprint_audit
-    type: data
-    format: txt
-    description: |
-      The nside-4096 footprint audit: for the data catalogue and for
-      v2 realisation 00001, the galaxy row count, the number of
-      occupied HEALPix pixels and the sky area they cover, plus the
-      two footprints' overlap and each one's exclusive area. It shows
-      the area conventions in circulation (2405, 2757, 2894, 2949 deg²)
-      describe a single sky, so the noise difference is a pure count
-      ratio.
-    inputs: [shapepipe_v14_catalogs, glass_mock_realisation_00001]
-    decisions: [fiducial_catalog, leakage_correction, mock_suite]
-    recipe:
-      command: >
-        python src/workflow/scripts/mock_footprint_audit.py
-        --cat-config src/cosmo_val/cat_config.yaml
-        --data-version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
-        --mock-version "$(python src/workflow/scripts/decision_values.py reference_catalog mockmatched)"
-        --out-file {output}
-      resources: { cpus: 1, memory: "16GB" }
-
-  - id: mock_vs_data_noise_table
-    type: table
-    format: csv
-    description: |
-      One row per catalogue — the fiducial v1.4.6.3 leak-corrected
-      sample and the v1.4.6.3_v2 GLASS suite — carrying the galaxy
-      count, the occupied nside-4096 sky, the area convention, n_eff
-      under it, the per-component σ_e, and the two ratios that follow:
-      noise power σ_e²/N and its square, the B-mode variance ratio
-      (a mock B variance is noise-dominated, so it scales as
-      (σ_e²/N)²). The noise of each row is that of a
-      [reference_covariance](#decisions.reference_covariance) option,
-      whatever the selection, and the counts come from the
-      [footprint audit](#outputs.mock_footprint_audit); the data lie inside
-      the mock mask to within 0.3 deg², so the area cancels.
-
-      This is the prediction in
-      [mocks_are_over_constraining](#findings.mocks_are_over_constraining):
-      mock BB variance 0.7389 of the data's, tested against the
-      measured ratios in
-      [clbb_variance_ratios](#outputs.clbb_variance_ratios).
-    inputs: [mock_footprint_audit]
-    decisions: [mock_suite, fiducial_catalog]
-    recipe:
-      command: >
-        python src/workflow/scripts/mock_vs_data_noise_table.py
-        --footprint-audit {inputs.mock_footprint_audit}
-        --out-file {output}
-      resources: { cpus: 1, memory: "2GB" }
-
   - id: clbb_variance_ratios
-    type: metric
+    type: data
     format: json
     description: |
       The measured mock-to-data C_ℓ^BB variance ratio over the 17
       bandpowers inside 300 ≤ ℓ ≤ 1600, two ways. The machinery ratio
-      is the diagonal of
-      [cl_cov_reference](#inputs.cl_cov_reference) over that of
+      is the diagonal of the
+      [reference covariance](#inputs.cl_cov_reference) over that of
       the data's [cl_cov_reporting](#inputs.cl_cov_reporting): what the
-      covariance chain predicts at the mocks' noise. The empirical
-      ratio is the sample variance of the suite's BB bandpowers
+      covariance chain predicts at the reference's noise, unity under
+      `data_covariance` by construction. The empirical ratio is the
+      sample variance of the suite's BB bandpowers
       ([glass_mock_cl](#inputs.glass_mock_cl)) over the same data
       diagonal. With no B signal, both are noise-dominated ratios.
-      Mean, median and per-band values. It motivates
-      [reference_covariance](#decisions.reference_covariance) under
-      `mockmatched`; under `data_covariance` the machinery ratio is unity
-      by construction.
+      Mean, median and per-band values. For a suite with the data's
+      noise the empirical ratio tests the data's C_ℓ^BB covariance
+      directly; for one sampled differently it measures the noise
+      difference the [reference covariance](#decisions.reference_covariance)
+      must follow.
     inputs: [cl_cov_reference, cl_cov_reporting, glass_mock_cl]
     decisions: [mock_suite, fiducial_catalog, fiducial_blind]
     recipe:
       command: >
+        c=$(mktemp -d) && tar xzf {inputs.glass_mock_cl} -C $c &&
         python src/workflow/scripts/clbb_variance_ratios.py
         --cl-cov-reference {inputs.cl_cov_reference}
         --cl-cov-data {inputs.cl_cov_reporting}
-        --cl-files "{inputs.glass_mock_cl}"
+        --cl-files "$c/cl_glass_mock_*_4096.npy"
         --out-file {output}
       resources: { cpus: 1, memory: "4GB" }
 
@@ -559,8 +495,6 @@ decisions:
     from: ../../reference_covariance
   mock_suite:
     from: ../../mock_suite
-  leakage_correction:
-    from: ../../leakage_correction
 
 prior_insights:
 
@@ -609,8 +543,8 @@ findings:
     id: mock_xi_matches_input_theory_above_band_limit
     label: "Mock ξ_± matches input theory above the band limit"
     claim: |
-      Above ≈6′ the across-realisation mean ξ_± of the GLASS
-      realisations reproduces the theory the suite was generated from
+      Above ≈6′ the across-realization mean ξ_± of the GLASS
+      realizations reproduces the theory the suite was generated from
       to within a few per cent with no trend, so the mocks carry no
       ξ_± bias into the null tests. Below ≈6′ they depart from the
       unbanded prediction, ξ_- falling away by up to two orders of
@@ -618,7 +552,7 @@ findings:
       band-limited at ℓ_max = NSide = 4096; these scales lie outside
       the fiducial cut.
     notes: |
-      350 realisations. Inside the 12′–83′ window |mean/theory − 1| ≤
+      350 realizations. Inside the 12′–83′ window |mean/theory − 1| ≤
       0.03 for ξ_+ and ≤ 0.04 for ξ_-; bin by bin |mean − theory| ≤ 0.33
       σ_ana (ξ_+) and ≤ 0.46 σ_ana (ξ_-) against an error of the mean
       of ≈0.05 σ_ana, scattered in sign. That is the size of the
@@ -658,32 +592,30 @@ findings:
       the mocks' raw ξ_± scatter matches the analytic Gaussian σ inside
       the fiducial window, but above 100′ the ξ_+ scatter falls below
       it while ξ_- stays near unity. The deficit is neither a density
-      nor a footprint effect, and reads as the realisations carrying
+      nor a footprint effect, and reads as the realizations carrying
       less large-scale sample variance than the analytic covariance
       predicts — a reading of the residual, not an established
       mechanism.
     notes: |
-      σ_emp/σ_ana inside 12′–83′: 0.94–1.03 (ξ_+), 0.99–1.12 (ξ_-).
-      Against the data's Gaussian reporting-grid covariance the same
-      ratios read 0.90–0.98 and 0.87–0.97, the suite's galaxy excess
-      ([mocks_are_over_constraining](#findings.mocks_are_over_constraining)),
-      which is why mock validation must not use it. Above 96′ ξ_- sits
-      at 0.98–1.07 and ξ_+ at 0.82–0.86.
+      In the data-matched `baseline` suite against the data's Gaussian
+      covariance, σ_emp/σ_ana inside 12′–83′ reads 0.91–1.09 (ξ_+) and
+      1.00–1.06 (ξ_-); above 96′ ξ_- sits at 1.02–1.09 and ξ_+ at
+      0.86–0.93.
 
       Not footprint geometry: at 221′ the implied galaxy count is 13%
-      low, a 24% pair deficit, but shape noise is only 5.7% of the ξ_+
-      variance there, so it moves σ by 0.7% (about 1% or less at every
-      separation). ξ_+ above 100′
-      draws on the lowest multipoles, where a lognormal shell
-      construction on a single footprint is least trusted.
+      low, a 24% pair deficit, but shape noise is only a small share of
+      the ξ_+ variance there, so it moves σ by about 1% or less at
+      every separation. ξ_+ above 100′ draws on the lowest multipoles,
+      where a lognormal shell construction on a single footprint is
+      least trusted.
 
       The pair counts themselves fall away from the uniform-density,
       no-edge prediction: the implied galaxy count per bin declines
       monotonically from 1.02 of the delivered count at 1′ to 0.87 at
-      221′. That decline (not its absolute level, which floats with the area
-      convention) is the footprint-edge effect the noise-only pure-mode
-      statistics inherit at large θ; it is invisible in raw ξ_± for
-      the reason above.
+      221′ (both suites). That decline (not its absolute level, which
+      floats with the area convention) is the footprint-edge effect the
+      noise-only pure-mode statistics inherit at large θ; it is
+      invisible in raw ξ_± for the reason above.
     created_at: "2026-09-13T00:00:00Z"
     derived: true
     evidence:
@@ -692,51 +624,43 @@ findings:
 
   mocks_are_over_constraining:
     id: mocks_are_over_constraining
-    label: "Mock galaxy density 17% above the data's"
+    label: "The v1.4.6.3_v2 suite's galaxy density is 17% above the data's"
     claim: |
-      Because of an error in the catalog generation, the GLASS
-      realizations' galaxy number density is 17% higher than the
-      data's, so their shape noise and B-mode scatter are lower. Mock
-      scatter is therefore compared only against analytic covariances
-      recomputed at the realizations' galaxy density.
+      Because of an error in the catalog generation, the galaxy number
+      density of the published v1.4.6.3_v2 GLASS realizations is 17%
+      higher than the data's, so their shape noise and B-mode scatter
+      are lower. Scatter from that suite is therefore compared only
+      against analytic covariances recomputed at the realizations'
+      galaxy density, whereas the data-matched `baseline` suite is held
+      directly against the data covariances.
     notes: |
-      **Size.** On a footprint containing the data's to within 0.3
-      deg², the v1.4.6.3_v2 suite holds 60 423 575 unit-weight galaxies
-      (realisation 00001) against the fiducial catalogue's 51.65 million
-      weight-effective galaxies. Per-component σ_e agrees to 0.2%
-      (0.267568 data, 0.268175 mock), so the count ratio is nearly the
-      whole noise difference:
-      predicted shape-noise power σ_e²/N is 0.8596 of the data's and
-      the (pure-noise) B-mode variance 0.7389 of it
-      ([mock_vs_data_noise_table](#outputs.mock_vs_data_noise_table)).
-      Measured, as 17-band means over 300 ≤ ℓ ≤ 1600
-      ([clbb_variance_ratios](#outputs.clbb_variance_ratios)): the
-      covariance machinery at the mocks' noise gives a C_ℓ^BB variance
-      ratio of 0.725, and the 350 realisations scatter at 0.716 of the
-      data's variance. Held against the data covariance, the mock
-      scatter would sit roughly 15% below the analytic σ for a reason
-      unrelated to the covariance's accuracy;
-      [reference_covariance](#decisions.reference_covariance) =
-      `mockmatched` avoids this.
+      **Size.** The `v1.4.6.3_v2` suite samples 6.0905 arcmin⁻²
+      unit-weight galaxies on the 2757.25 deg² of occupied v1.4.6
+      pixels, about 60.4 M per realization, against the fiducial
+      catalog's 51.65 M weight-effective galaxies on the same sky, with
+      per-component σ_e 0.2684 against the data's 0.2676. The count
+      ratio is nearly the whole noise difference, and a pure-noise
+      B-mode variance scales as its square. Measured as 17-band means
+      over 300 ≤ ℓ ≤ 1600
+      ([clbb_variance_ratios](#outputs.clbb_variance_ratios)): in
+      `published` the covariance machinery at the suite's noise gives a
+      C_ℓ^BB variance ratio of 0.728 of the data's, and the 350
+      realizations scatter at 0.706. In the data-matched `baseline`
+      suite the machinery ratio is 1.000 by construction and the 350
+      realizations scatter at 0.967 of the data covariance.
 
       **Origin.** The generator (`make_unions_glass_sim.py`) defaults
-      `--neff` to 6.0905 arcmin⁻², a catalogue n_eff from the earlier
-      2405 deg² area (the fiducial catalogue's is 4.957 on 2894 deg²),
+      `--neff` to 6.0905 arcmin⁻², a catalog n_eff from the earlier
+      2405 deg² area (the fiducial catalog's is 4.957 on 2894 deg²),
       and the run scripts do not override it. It applies that density to an
       occupied-pixel nside-4096 mask of 2757.25 deg²: 6.0905 × 2757.25 ×
-      3600 = 60.45 M, against 60.27–60.42 M realised per realisation.
-      The catalogue's A = 2894.03 deg² is the full footprint mask, in
+      3600 = 60.45 M, against 60.27–60.42 M realised per realization.
+      The catalog's A = 2894.03 deg² is the full footprint mask, in
       which roughly 5% of pixels hold no galaxy; data galaxies occupy
-      2750.65 deg² of it. Paper III and Paper IV describe the mocks as
+      2750.65 deg² of it, so n_eff × A, not n_eff, is the comparable
+      quantity. Paper III and Paper IV describe the mocks as
       matching the data's number density; neither prints a numeric
       mock density, and Sacha Guerrini has confirmed the excess.
-
-      **Areas.** Quoted areas range over 2405, 2757, 2894 and 2949 deg²
-      but describe one sky: data galaxies occupy 2750.65 deg², mock
-      galaxies 2709.91 deg², their overlap 2703.17 deg², and only 0.26
-      deg² of the data footprint lies outside the mock mask. n_eff × A
-      is the convention-free quantity (4.9573 arcmin⁻² × 2894.03 deg²
-      and the weighted H12 4.8636 × 2949.79 deg² both give 51.65 M).
 
       **Paper IV.** Paper IV finds its Gaussian iNKA covariance
       overestimates the small-scale variance relative to the GLASS
@@ -744,34 +668,19 @@ findings:
       quotes 15% against the mocks), attributing it to iNKA's
       treatment of a spatially varying number density
       ([paper_iv_inka_overestimates_variance](#prior_insights.paper_iv_inka_overestimates_variance)).
-      The density excess makes the mocks' variance ~26% low by
-      construction, an independent contribution in the same direction;
-      part of that gap is plausibly the mocks being under-noised. The
-      two effects are additive and nothing here quantifies the split.
-
-      **The excluded v1.4.6 suite** ([mock_suite](#decisions.mock_suite))
-      carries 35 078 729 galaxies, 32% fewer than the data, on a
-      1600.33 deg² mask: the same 6.0905 default on a smaller sky
-      (6.0905 × 1600.33 × 3600 = 35.09 M). Nothing in the campaign rests
-      on it.
+      The density excess makes the `v1.4.6.3_v2` mocks' variance ~27%
+      low by construction, an independent contribution in the same
+      direction; part of that gap is plausibly the mocks being
+      under-noised. The two effects are additive and nothing here
+      quantifies the split.
     created_at: "2026-08-29T00:00:00Z"
     derived: true
     evidence:
       - id: ev1
-        artifact: mock_vs_data_noise_table
-        quote:
-          exact: "0.85961"
+        artifact: clbb_variance_ratios
       - id: ev2
-        artifact: clbb_variance_ratios
-        quote:
-          exact: '"machinery_variance_ratio_mean": 0.7249533827835264'
-      - id: ev3
-        artifact: clbb_variance_ratios
-        quote:
-          exact: '"empirical_variance_ratio_mean": 0.7157060122347197'
-      - id: ev4
         artifact: mock_sigma_ratio_figure
-    scope: "The delivered GLASS v1.4.6.3_v2 suite against the v1.4.6.3 leak-corrected fiducial catalog; galaxy counts, σ_e and footprint only, and the shape-noise scaling that follows from them."
+    scope: "The published GLASS v1.4.6.3_v2 suite against the v1.4.6.3 leak-corrected fiducial catalog (`published` machinery/empirical 0.728/0.706; data-matched `baseline` 1.000/0.967)."
 
   covariance_amplitude_validated:
     id: covariance_amplitude_validated
@@ -784,38 +693,33 @@ findings:
       which PSF leakage already excludes (Paper I), so the
       miscalibration does not affect the choice of scale cuts.
     notes: |
-      Median ratio of analytic to mock σ over bins (paper): 0.92–0.95
-      in configuration space, 1.01 in harmonic space. Outside the cuts
-      the analytic σ is about 17% too small for the first COSEBI mode
-      and for ξ_±^B above 100′, and too large for C_ℓ^BB below ℓ ≈ 100,
-      where E-to-B leakage is treated only approximately (Nicola et al.
-      2021).
+      In the data-matched `baseline` suite held directly against the
+      data covariances, as σ_emp/σ_ana (the inverse of the paper's
+      σ_ana/σ_emp ratio): COSEBI B_1–B_20 median 1.041 (range
+      0.938–1.115); ξ_+^B over the seven fiducial-cut θ bins median
+      1.099 (0.997–1.146); ξ_-^B median 1.031 (0.971–1.062); C_ℓ^BB
+      over the 17 fiducial-cut bands median 0.981 (0.934–1.056).
+      Inverted, these are σ_ana/σ_emp = 0.96, 0.91, 0.97 and 1.02
+      (against 0.94, 0.90, 0.95 and 1.03 in `published`).
 
-      From the 350 GLASS v1.4.6.3_v2 realisations against the
-      mock-matched reference covariance, as σ_emp/σ_ana (the inverse of
-      the paper's ratio): COSEBI B_1–B_20 median 1.055 (range
-      0.974–1.086); ξ_+^B over the seven fiducial-cut θ bins median
-      1.087 (1.000–1.164); ξ_-^B median 1.059 (0.978–1.127); C_ℓ^BB over
-      the 17 fiducial-cut bands median 0.993 (0.926–1.086). Inverted,
-      these are the paper's 0.95, 0.92, 0.94 and 1.01.
-
-      This validates the covariance machinery: the same CosmoCov /
-      NaMaster chain that builds the fiducial covariance, pointed at
-      the mocks' noise, reproduces their scatter to better than 10% in
-      the median and within 17% in every fiducial bin. It does not
-      say the mock and data covariances agree; they differ by the
-      galaxy-count excess.
+      Outside the cuts the analytic σ is about 13–17% too small for the
+      first COSEBI mode and for ξ_±^B above 100′, and too large for
+      C_ℓ^BB below ℓ ≈ 100, where E-to-B leakage is treated only
+      approximately (Nicola et al. 2021). Because `baseline` compares
+      against the data's own covariances directly, it validates the
+      covariances entering the null tests, not just the covariance
+      machinery.
     created_at: "2026-08-29T00:00:00Z"
     evidence:
       - id: ev1
         artifact: mock_campaign_evidence
         quote:
-          exact: '"median": 1.0550671384448764'
+          exact: '"median": 1.0407183334974905'
       - id: ev2
         artifact: mock_campaign_evidence
         quote:
-          exact: '"median": 0.9926463379482149'
-    scope: "350 GLASS v1.4.6.3_v2 realisations, mock-matched reference covariance, fiducial scale cuts."
+          exact: '"median": 0.9812997317220769'
+    scope: "350 data-matched GLASS realizations against the data covariances (`baseline`), fiducial scale cuts (with `published` v1.4.6.3_v2 values noted)."
 
   chi2_machinery_conservative:
     id: chi2_machinery_conservative
@@ -828,33 +732,29 @@ findings:
       covariance would generally pass with a more complete covariance
       estimate, as the simulations confirm.
     notes: |
-      The paper puts the non-Gaussian share of the ξ_± diagonal
-      variance within the fiducial cuts at about 9% (see
+      The non-Gaussian share of the ξ_± diagonal variance within the
+      fiducial cuts is 11% (see
       [mock_ptes_skew_low_by_ng_term](#../../findings.mock_ptes_skew_low_by_ng_term)).
 
-      Across the 350 GLASS v1.4.6.3_v2 realisations, against the
-      mock-matched reference covariance, the mean χ² exceeds ν for
-      five of the six statistics — 6.63 against ν = 6 for B_{n≤6},
-      21.46 against 20 for B_{n≤20}, 8.38 against 7 for ξ_+^B, 7.91
-      against 7 for ξ_-^B, 16.07 against 14 for ξ_tot^B — and falls
-      just below for C_ℓ^BB, 16.78 against 17, whose PTEs pass a KS
-      test of uniformity at p = 0.79. A mean χ² above ν makes the
-      reported PTEs lower than the true tail probabilities. The
-      `data_covariance` selection of
-      [reference_covariance](#decisions.reference_covariance) would
-      lower these means by the galaxy-count difference rather than
-      any covariance error; it is not run on this suite.
+      Across the 350 data-matched `baseline` realizations against the
+      data covariances, the mean χ² exceeds ν for all five
+      configuration-space statistics — 6.42 against ν = 6 for B_{n≤6},
+      21.16 against 20 for B_{n≤20}, 8.33 against 7 for ξ_+^B, 7.32
+      against 7 for ξ_-^B, 15.73 against 14 for ξ_tot^B — and sits
+      slightly below for C_ℓ^BB, 16.40 against 17 (`published`: 6.84,
+      22.12, 8.64, 7.73, 16.04, 16.47). A mean χ² above ν makes the
+      reported PTEs lower than the true tail probabilities.
     created_at: "2026-08-29T00:00:00Z"
     evidence:
       - id: ev1
         artifact: mock_campaign_evidence
         quote:
-          exact: '"chi2_mean": 6.631945648377122'
+          exact: '"chi2_mean": 6.418132939084542'
       - id: ev2
         artifact: mock_campaign_evidence
         quote:
-          exact: '"chi2_mean": 16.775046279157934'
-    scope: "350 GLASS v1.4.6.3_v2 realisations at fiducial scale cuts, mock-matched reference covariance."
+          exact: '"chi2_mean": 16.396916247026443'
+    scope: "350 data-matched GLASS realizations at fiducial scale cuts against data covariances (`baseline`)."
 
   tests_are_not_redundant:
     id: tests_are_not_redundant
@@ -868,18 +768,18 @@ findings:
       calibrated on the mocks
       ([pte_threshold](#../../analyses.significance.decisions.pte_threshold)).
     notes: |
-      χ² Pearson correlations across the 350 v1.4.6.3_v2 realisations
-      (`correlations.chi2.pearson` in `mock_campaign_evidence`).
-      Different families, 0.25–0.53: 0.41 B_{n≤6}–ξ_+^B, 0.37
-      B_{n≤6}–C_ℓ^BB, 0.35 ξ_+^B–C_ℓ^BB, 0.46 ξ_-^B–C_ℓ^BB, 0.53
-      ξ_tot^B–C_ℓ^BB. Shared data vector: 0.72 ξ_+^B–ξ_tot^B and 0.68
-      ξ_-^B–ξ_tot^B (nested by construction), 0.53 B_{n≤6}–B_{n≤20}.
-      The PTE Pearson matrix tells the same story (0.37 for B_{n≤6}
-      with C_ℓ^BB).
+      χ² Pearson correlations across the 350 data-matched `baseline`
+      realizations (`correlations.chi2.pearson_matrix` in
+      `mock_campaign_evidence`). Different families, 0.21–0.42: 0.37
+      B_{n≤6}–ξ_+^B, 0.28 B_{n≤6}–C_ℓ^BB, 0.27 ξ_+^B–C_ℓ^BB, 0.35
+      ξ_-^B–C_ℓ^BB, 0.41 ξ_tot^B–C_ℓ^BB. Shared data vector: 0.74
+      ξ_+^B–ξ_tot^B and 0.64 ξ_-^B–ξ_tot^B (nested by construction),
+      0.53 B_{n≤6}–B_{n≤20}. The PTE Pearson matrix tells the same
+      story (0.29 for B_{n≤6} with C_ℓ^BB).
     created_at: "2026-08-29T00:00:00Z"
     evidence:
       - id: ev1
         artifact: mock_campaign_evidence
         quote:
-          exact: "0.723441470177607"
-    scope: "350 GLASS v1.4.6.3_v2 realisations, fiducial scale cuts, six-statistic χ² and PTE stacks."
+          exact: "0.7377686873430731"
+    scope: "350 data-matched GLASS realizations (`baseline`), fiducial scale cuts, six-statistic χ² and PTE stacks."

@@ -52,34 +52,34 @@ clPteEightFull,0.11,0.11
 clPteElevenThreeFid,5.25 × 10⁻¹⁰,5.25e-10
 clPteElevenThreeFull,8.62 × 10⁻¹³,8.62e-13
 mockNRealizations,350,350.0
-mockPGlobal,14%,14.0
-mockPGlobalCount,48,48.0
+mockPGlobal,13%,13.0
+mockPGlobalCount,45,45.0
 mockMinPteThreshold,0.01,0.01
-mockMinPteFloor,0.004,0.004
+mockMinPteFloor,0.007,0.007
 fiducialMinPte,0.019,0.019
 fiducialMinPteStat,$\xi_-^{\mathrm{B}}$,
 mockPGlobalFull,0%,0.0
-mockMinPteFloorFull,0.002,0.002
+mockMinPteFloorFull,0.004,0.004
 fullMinPte,1.37 × 10⁻⁵,1.37e-05
 fiducialMinPteNuPenalty,0.005,0.005
 leakCorrMaxPteShift,0.093,0.093
-mockSigmaRatioPureMin,0.92,0.92
-mockSigmaRatioPureMax,0.98,0.98
-mockSigmaRatioCosebis,0.95,0.95
-mockSigmaRatioCl,1.00,1.0
-mockChiTwoNuConfigMin,1.08,1.08
-mockChiTwoNuConfigMax,1.26,1.26
-mockAlphaFiducial,10%,10.0
+mockSigmaRatioPureMin,0.91,0.91
+mockSigmaRatioPureMax,0.97,0.97
+mockSigmaRatioCosebis,0.96,0.96
+mockSigmaRatioCl,1.02,1.02
+mockChiTwoNuConfigMin,1.05,1.05
+mockChiTwoNuConfigMax,1.19,1.19
+mockAlphaFiducial,7%,7.0
 surveyArea,2894,2894.0
 surveyNeff,4.96,4.96
 surveySigmaE,0.27,0.27
 cosebisFirstModeSignificanceFull,4.1,4.1
 cosebisFirstModeSignificanceFid,0.79,0.79
-mockCosebisFirstModeTighter,14%,14.0
-mockCosebisFirstModeSignificance,3.5,3.5
-mockPureLargeThetaTighter,19%,19.0
-mockMeanBiasCosebis,0.09,0.09
-mockDensityExcess,17%,17.0
+mockCosebisFirstModeTighter,13%,13.0
+mockCosebisFirstModeSignificance,3.6,3.6
+mockPureLargeThetaTighter,17%,17.0
+mockMeanBiasCosebis,0.14,0.14
+mockDensityExcess,0%,0.0
 ngFractionDiagonalAll,8%,8.0
 ngFractionDiagonalFiducial,11%,11.0
 harmCosebisPteSixThreeFull,1.62 × 10⁻⁵,1.62e-05

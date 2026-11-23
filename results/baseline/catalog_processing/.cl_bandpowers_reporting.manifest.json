@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "output_id": "catalog_processing.cl_bandpowers_reporting",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/generate_cl.py --ver \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind blind_a --out-file results/baseline/catalog_processing/cl_bandpowers_reporting.fits\n",
+  "definition_version": "sha256:87def5f418f0a0fe6e2ec7d6014428372e859824330af1393c4d47040c5929a2",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:f27662b55fe2bee589a530db9f1a1c8f1c116bbb7f6910de9f58326960bfc334",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "estimator_choice": "wolz25_catalog_based",
+    "bandpower_binning": "bandpowers_32_powspace",
+    "noise_bias_correction": "analytic_shot_noise",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "shapepipe_v14_catalogs": "spelling:sha256:ddcb9bb187a44cd4aa678855597346a6b0bb4ad3f2056a08cfb7714923d2457a"
+  },
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-20T15:31:29.770+00:00",
+  "finished_at": "2026-11-20T15:34:07.101+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

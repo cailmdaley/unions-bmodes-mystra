@@ -4,26 +4,26 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout cl_cov --fiducial-catalog size_cut --leakage-correction applied --harmonic-validation-binning bins_96 --names cl_cov_sp_v1p4p5_nbins32 cl_cov_sp_v1p4p5_leak_corr_nbins32 cl_cov_fiducial_counterpart_nbins32 cl_cov_sp_v1p4p8_nbins32 cl_cov_sp_v1p4p8_leak_corr_nbins32 cl_cov_sp_v1p4p11p3_nbins32 cl_cov_sp_v1p4p11p3_leak_corr_nbins32 cl_cov_sp_v1p4p5_fine cl_cov_sp_v1p4p8_fine cl_cov_sp_v1p4p11p3_fine --members results/baseline/covariances/cl_cov_scan/cl_cov_sp_v1p4p5_nbins32.fits results/baseline/covariances/cl_cov_scan/cl_cov_sp_v1p4p5_leak_corr_nbins32.fits results/baseline/covariances/cl_cov_scan/cl_cov_fiducial_counterpart_nbins32.fits results/baseline/covariances/cl_cov_scan/cl_cov_sp_v1p4p8_nbins32.fits results/baseline/covariances/cl_cov_scan/cl_cov_sp_v1p4p8_leak_corr_nbins32.fits results/baseline/covariances/cl_cov_scan/cl_cov_sp_v1p4p11p3_nbins32.fits results/baseline/covariances/cl_cov_scan/cl_cov_sp_v1p4p11p3_leak_corr_nbins32.fits results/baseline/covariances/cl_cov_scan/cl_cov_sp_v1p4p5_fine.fits results/baseline/covariances/cl_cov_scan/cl_cov_sp_v1p4p8_fine.fits results/baseline/covariances/cl_cov_scan/cl_cov_sp_v1p4p11p3_fine.fits --out-file results/baseline/covariances/cl_cov_scan/cl_cov_sweep_bundle.tar.gz\n",
   "definition_version": "sha256:3f4632fea3f45556f1fb97cce192bca4158be682e35cb29232baa57a59db63ce",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
-  "data_version": "sha256:3ec979b9128065e4f013879b053a9babe794ebcb959718a5d06000adf0041338",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:04c212938cd41486d713383c16cb4d5e0938102832620ea041ad28646723463c",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "leakage_correction": "applied",
     "harmonic_validation_binning": "bins_96"
   },
   "input_versions": {
-    "cl_cov_sp_v1p4p5_nbins32": "sha256:8c45906a2e747c873c667b9d700c1d273617524933284e2df0531238808e05f5",
+    "cl_cov_sp_v1p4p5_nbins32": "sha256:5be51dcac381fabb0fbfc0a1a6d694deb5e95b4211999c7daeabefbe0fdc7f90",
     "cl_cov_sp_v1p4p5_leak_corr_nbins32": "sha256:2ba3e03ba507981e80c568009cf23ba0d26b2d1001398ade8f64db079a6364c1",
-    "cl_cov_fiducial_counterpart_nbins32": "sha256:8e9aceed816605ca4803d4516acfbe2b36f2987fbb8aa09819a24418110e6bf3",
+    "cl_cov_fiducial_counterpart_nbins32": "sha256:1eb9593afa799ebe5a0fd799f8008c6356c5cfb1643a44e74a2de07568ec2424",
     "cl_cov_sp_v1p4p8_nbins32": "sha256:bc11f2db56983612cf6777b3a964d96c20ccfb3bea98e1e16ab47cfa720c18e2",
-    "cl_cov_sp_v1p4p8_leak_corr_nbins32": "sha256:fcf47bf60df28dcc3601f8eb97363f57c58d4c9a8bb545c2bab0b0f5387794b2",
-    "cl_cov_sp_v1p4p11p3_nbins32": "sha256:d2b9b0b4bdd9d8d8494bc7731d60ec50bae605a99abf68b102ce29398db37e34",
-    "cl_cov_sp_v1p4p11p3_leak_corr_nbins32": "sha256:d1c0a3849130f16a31c2719746d5bb6f30ddc1accfc1f2991dfd6e807f398eb1",
+    "cl_cov_sp_v1p4p8_leak_corr_nbins32": "sha256:a2c0d874caf2ba64939c7e91a6836d15cff41f720f960feb0f4fe200945f6037",
+    "cl_cov_sp_v1p4p11p3_nbins32": "sha256:68b0746ef9ea62fb3c788063670c3a1a8f6fb03a30689204c59a0dcf865b6b4c",
+    "cl_cov_sp_v1p4p11p3_leak_corr_nbins32": "sha256:1f63158f0a7684b850d71ebc45f76085871441e8a37d3e591ef1d8b25afdebd5",
     "cl_cov_sp_v1p4p5_fine": "sha256:933f11e28e6da1c99e54a759d92542ccdd336c53e7950663c7beca68315ff3ec",
-    "cl_cov_sp_v1p4p8_fine": "sha256:d067183421c191c9cb27976a6a3bcadd04cda21075d18654316a37316d749afb",
-    "cl_cov_sp_v1p4p11p3_fine": "sha256:f50abb3270b023a41255fea90e78af6e6b2469e8954527d991cf1ae85875dae1"
+    "cl_cov_sp_v1p4p8_fine": "sha256:967a01bac468bb7baaf3703d2074de000b64daac1fa75f088c97577fc2bf4ff1",
+    "cl_cov_sp_v1p4p11p3_fine": "sha256:989840b4eaa47e9a714be2bf98bdf7234883edce2086a1b5247b79f4b244826d"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -33,8 +33,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T11:38:07.194+00:00",
-  "finished_at": "2026-11-13T11:38:09.347+00:00",
+  "started_at": "2026-11-21T02:01:33.084+00:00",
+  "finished_at": "2026-11-21T02:01:40.002+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

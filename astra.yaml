@@ -15,22 +15,25 @@ description: |
 
 # -----------------------------------------------------------------------------
 # Top-level inputs: what came from outside this analysis, the catalogs of Paper I,
-# the n(z) and the GLASS suite of Paper III.
+# the n(z) and the survey areas.
 # -----------------------------------------------------------------------------
 inputs:
   - id: shapepipe_v14_catalogs
     type: data
     description: |
       ShapePipe v1.4 cosmic-shear catalogs from Paper I
-      (Hervas-Peters et al. 2026, Table H.1). Four variants enter:
+      (Hervas-Peters et al. 2026, Table H.1). Four variants enter the
+      null tests:
       initial (size cut r_h,gal/r_h,psf > 0.5), size-cut (> 0.707;
       fiducial), masked (size-cut plus stellar-halo masking, 13%
       area loss) and relaxed-flags (size-cut with relaxed
       SExtractor deblending flags, +26% n_eff). Each comes with and
       without the object-wise PSF-leakage correction; the corrected
-      versions are fiducial. The files are the released cut catalogues
-      at `vos:cfis/weak_lensing/ShapePipe/v1.4.x/v{version}/`;
-      `src/cosmo_val/cat_config.yaml` holds every variant's path.
+      versions are fiducial. A fifth, v1.4.6, is the footprint of the
+      [published GLASS suite](#decisions.mock_suite). The files are the
+      released cut catalogs at
+      `vos:cfis/weak_lensing/ShapePipe/v1.4.x/v{version}/`;
+      `src/cosmo_val/cat_config.yaml` holds every null-test variant's path.
     source: "data/v1.4.x/v{version}/unions_shapepipe_cut_struc_2024_v{version}.fits"
 
   - id: redshift_distributions
@@ -45,52 +48,20 @@ inputs:
       ([bmode_null_tests_insensitive_to_blinding](#findings.bmode_null_tests_insensitive_to_blinding)).
     source: "data/nz/nz_SP_v1.4.6.3_{blind}.txt"
 
-  - id: glass_mock_xi_fine
+  - id: survey_areas
     type: data
     description: |
-      TreeCorr ξ_±(θ) of each of the 350 realisations of the GLASS mock
-      suite described in Paper III, regenerated on fir with the published
-      settings (seeds 1000000+N) and measured from its HEALPix-4096
-      catalogue (`RA`, `Dec`, `e1`, `e2`, `w`; about 60 M galaxies) on
-      exactly the data's 1000-bin integration grid, 0.5′–300′, with no
-      response correction or leakage subtraction, since the
-      realisations carry input shears and no PSF leakage. Stacked
-      (`meanr`, `xip`, `xim`, `npairs`, `weight` per realisation, with
-      the mock IDs). Both config-space transforms of the mocks
-      integrate over this grid, which the 20-bin
-      [reporting ξ_±](#inputs.glass_mock_xi_reporting) cannot supply.
-    source: "data/glass_mock_v1.4.6.3_v2/mock_xi_fine.npz"
-
-  - id: glass_mock_xi_reporting
-    type: data
-    description: |
-      The 20-bin TreeCorr ξ_± of each realisation on the
-      reporting grid, stacked in the layout of
-      [glass_mock_xi_fine](#inputs.glass_mock_xi_fine). It defines the
-      reporting bins of the pure-E/B transform, whose integrals run
-      over the fine ξ_±.
-    source: "data/glass_mock_v1.4.6.3_v2/mock_xi_reporting.npz"
-
-  - id: glass_mock_cl
-    type: data
-    description: |
-      NaMaster Cℓ bandpowers per GLASS realisation,
-      on the data's 32 √ℓ-spaced bands (rows ℓ, EE, EB, BE, BB). Their
-      BB row is every mock Cℓ^BB result: the harmonic column of the
-      per-realisation campaign, the Cℓ panels of the mock-validation
-      figure, and the measured mock-to-data BB variance ratio.
-    source: "data/glass_mock_v1.4.6.3_v2/cl/cl_glass_mock_*_4096.npy"
-
-  - id: glass_mock_realisation_00001
-    type: data
-    description: |
-      The catalogue of GLASS realisation 00001, the one mock the
-      [mock-matched Cℓ covariance](#decisions.reference_covariance) and
-      the footprint audit read: 60 414 487 unit-weight rows against
-      the fiducial catalog's 61 378 891 rows / 51.65 M weight-effective
-      galaxies on the same footprint; the excluded
-      [v1.4.6 suite](#decisions.mock_suite) holds 35 078 729.
-    source: "data/glass_mock_v1.4.6.3_v2/unions_glass_sim_00001_4096.fits"
+      The survey area of each catalog, in deg²: 2894.03 for every
+      variant but the masked one (2517.02). The values are Paper I's,
+      measured on a high-resolution HEALPix footprint that combines the
+      structural masks with a binned comprehensive catalog, which
+      cannot be remade from the catalogs here. They set the area of
+      every CosmoCov covariance and of every quoted density. The
+      galaxies occupy 3–5% less (2750.65 deg² for the fiducial catalog
+      at nside 4096, from the
+      [catalog summary](#analyses.catalog_processing.outputs.catalog_summary)),
+      so the area is a convention, shared with Papers III and IV.
+    source: "data/survey_areas.yaml"
 
 # -----------------------------------------------------------------------------
 # Top-level outputs: every figure, table and metric the report shows or the
@@ -127,17 +98,17 @@ outputs:
   # The blind-independence check behind the single-blind choice.
   - {id: bb_covariance_blind_independence_evidence, from: validation.bb_covariance_blind_independence_evidence}
 
-  # Tables and metrics the text quotes.
-  - {id: primary_null_test_report, from: significance.primary_null_test_report}
+  # Headline PTE table.
+  - {id: pte_table_appendix, from: significance.pte_table_appendix}
+
+  # Supporting data products cited by the report's inline macros and findings
+  # (type: data, so Studio shows them under Data rather than Results).
+  - {id: paper_claims, from: significance.paper_claims}
   - {id: mock_min_pte_calibration, from: significance.mock_min_pte_calibration}
   - {id: cosebis_first_mode_significance, from: significance.cosebis_first_mode_significance}
-  - {id: paper_claims, from: significance.paper_claims}
-  - {id: pte_table_appendix, from: significance.pte_table_appendix}
-  - {id: pte_table_tex, from: significance.pte_table_tex}
   - {id: nu_penalty_verdicts, from: significance.nu_penalty_verdicts}
   - {id: cosebis_harmonic_config, from: significance.cosebis_harmonic_config}
   - {id: mock_campaign_evidence, from: validation.mock_campaign_evidence}
-  - {id: integration_grid_convergence, from: validation.integration_grid_convergence}
 
 # -----------------------------------------------------------------------------
 # Top-level decisions: the choices shared across the analysis (catalog,
@@ -252,7 +223,7 @@ decisions:
       it the map is weakly non-linear: on noisy input the quadrature
       error correlates with the noise and rectifies into a spurious
       small-θ B mode. The same error is independent noise in every
-      realisation, so it also inflates every Monte-Carlo-propagated
+      realization, so it also inflates every Monte-Carlo-propagated
       covariance. This decision therefore forks the data vectors, the
       mock scatter and the covariance together.
 
@@ -408,7 +379,7 @@ decisions:
       The adopted count is the one validated on the GLASS mocks, where
       the low-order modes agree with the configuration-space path. The
       coarser bandpowers of the
-      [Cℓ null test](#analyses.data_vectors.outputs.cl_bandpowers_reporting)
+      [Cℓ null test](#analyses.catalog_processing.outputs.cl_bandpowers_reporting)
       do not resolve the higher-order oscillations.
     default: bins_96
     options:
@@ -536,7 +507,7 @@ decisions:
         label: "Monte-Carlo noise-bias estimator"
         description: |
           Subtracts the mean Cℓ of ellipticity-randomised
-          realisations.
+          realizations.
 
   reporting_binning:
     label: "Reporting-grid angular binning"
@@ -631,56 +602,59 @@ decisions:
     tags: [covariance_model]
     rationale: |
       Which analytic covariance the mocks' empirical scatter is held
-      against. The realisations carry more galaxies than the data
-      ([mocks_are_over_constraining](#analyses.validation.analyses.glass_mocks.findings.mocks_are_over_constraining)),
-      so against the data covariance they would measure that count
-      mismatch rather than the covariance's accuracy. The campaign
-      therefore tests the covariance *machinery*: the same code that
-      builds the fiducial covariance, run at the mocks' own noise, held
-      against the mock scatter. The reference covariances are the fiducial
-      recipes under this decision, and stand apart from the
-      [data covariances](#analyses.covariances.outputs.pure_eb_covariance), which the null tests read
-      under either selection. Mock-matching is two rebuilds of the fiducial
-      primitives:
+      against. A signal-free suite's B-mode scatter is its shape noise,
+      so the scatter tests a covariance only if the two share a noise
+      level. A suite matched to the data's footprint, count and σ_e
+      ([mock_suite](#decisions.mock_suite)) shares the data's, and is
+      held against the data covariances themselves: the comparison
+      then tests the covariance the null tests use. A suite sampled
+      differently would, against the data covariance, measure its
+      noise mismatch rather than the covariance's accuracy
+      ([mocks_are_over_constraining](#analyses.validation.analyses.glass_mocks.findings.mocks_are_over_constraining));
+      it is held instead against the covariance *machinery*, the same
+      code that builds the fiducial covariance run at the suite's own
+      noise. The null tests read the
+      [data covariances](#analyses.covariances.outputs.pure_eb_covariance)
+      under either selection; the reference covariances are those same
+      covariances when the suite matches the data, and otherwise two
+      rebuilds of the fiducial primitives at the suite's noise:
 
-      | statistic | mock-matched reference | traces to |
+      | statistic | reference | traces to |
       |---|---|---|
       | COSEBIs | the ξ_± covariance transformed by `cosebis_covariance_from_xipm_covariance` | the CosmoCov run |
       | ξ_+^B, ξ_-^B, ξ_tot^B | [pure_eb_covariance_reference](#analyses.covariances.outputs.pure_eb_covariance_reference), its propagation through the pure-mode transform | the CosmoCov run |
-      | C_ℓ^BB | [cl_cov_reference](#analyses.covariances.outputs.cl_cov_reference), NaMaster iNKA on a mock catalogue | itself |
+      | C_ℓ^BB | [cl_cov_reference](#analyses.covariances.outputs.cl_cov_reference), NaMaster iNKA on a catalog's count map and shot noise | itself |
 
       Five of the six statistics trace to one artifact, the
-      [CosmoCov ξ_± run at the mocks' noise](#analyses.covariances.outputs.cov_integration_reference),
+      [CosmoCov ξ_± run at the reference noise](#analyses.covariances.outputs.cov_integration_reference),
       transformed for COSEBIs and propagated through the Schneider
       (2022) filters for the pure modes. C_ℓ^BB needs no density
-      parameter: NaMaster reads the mock catalogue's weighted count map
-      and noise bias directly.
+      parameter: NaMaster takes the weighted count map and noise bias
+      of one realization's catalog summary.
 
       The CosmoCov rebuild changes only the noise. Shot noise depends
       on the product of galaxy density and area, so the area
       convention cancels there, and both CosmoCov runs use the same
-      sky fraction in the cosmic-variance term. Mock and data occupy
-      one footprint and agree in σ_e, so the galaxy-count ratio sets
-      the noise difference, and the machinery at the mocks' noise
-      reproduces the mocks' B-mode variance
+      sky fraction in the cosmic-variance term. A suite on the data's
+      footprint with the data's σ_e differs from it in noise by its
+      galaxy-count ratio alone, which is what the rebuild follows
       ([clbb_variance_ratios](#analyses.validation.analyses.glass_mocks.outputs.clbb_variance_ratios)).
-
-      `mockmatched` is the default. `data_covariance` is a diagnostic: it holds
-      the six statistics, the scale-cut scan and the raw ξ_± check against
-      covariances at the data's noise, so their σ ratios show the galaxy-count
-      mismatch.
-    default: mockmatched
+      The data covariance is preferred whenever the suite allows it,
+      since it validates the covariance the significance rests on
+      rather than the code that built it.
+    default: data_covariance
     options:
       mockmatched:
         label: "Mock-matched"
         description: |
-          The fiducial covariance machinery run at the mocks' own
-          noise: CosmoCov at the suite's n_eff and σ_e, its pure-mode
-          propagation, and NaMaster on a mock catalogue.
+          The fiducial covariance machinery run at the noise of the
+          v1.4.6.3_v2 suite: CosmoCov at that suite's n_eff and σ_e, its
+          pure-mode propagation, and NaMaster on the count map and shot
+          noise of its realization 00001.
 
           CosmoCov keeps the data's `area = 2894.03` deg² and sets
           `source_n_gal = 5.793 arcmin⁻²` (60.36 M galaxies over that
-          area, 0.1% below the 60 423 575 of realisation 00001) and
+          area, 0.1% below the 60 423 575 of realization 00001) and
           `sigma_e = 0.37926`. The area is the footprint convention
           shared with Papers III and IV rather than the 2750.65 deg²
           the galaxies occupy, a choice worth about 5% of the
@@ -688,42 +662,55 @@ decisions:
       data_covariance:
         label: "Data covariance"
         description: |
-          The same recipes at the fiducial v1.4.6.3 leak-corrected
-          catalog's noise, at blind A; diagnostic only, since it
-          measures the galaxy-count difference rather than the
-          covariance's accuracy.
+          The data's own covariances, for the fiducial v1.4.6.3
+          leak-corrected catalog at blind A, taken as the reference
+          unchanged. Held against a data-matched suite, the mock scatter
+          tests them directly; held against a suite sampled differently,
+          it measures that suite's noise mismatch.
   mock_suite:
-    label: "GLASS realisation suite"
+    label: "GLASS realization suite"
     tags: [covariance_model]
     rationale: |
-      Which suite of GLASS lognormal realisations to validate on. A
-      suite tests the covariance on the sky the null tests use only if
-      it sits on the data's footprint with a galaxy count close to the
-      catalog's. The v1.4.6.3_v2 suite is generated on the fiducial
-      catalog's footprint and backs every product here. The v1.4.6
-      suite is excluded: it sits on a smaller mask that is not the
-      data's footprint and carries far fewer galaxies than the
-      catalog.
-    default: v1_4_6_3_v2
+      Which suite of GLASS lognormal realizations the covariances and the
+      null-test thresholds are validated on. A suite tests the covariance
+      on the sky the null tests use only if it sits on the data's footprint
+      with the data's shape noise: the B-mode variance of a signal-free
+      field is shape noise, so a suite with more galaxies or a smaller σ_e
+      than the catalog has a smaller scatter than the data's covariance
+      predicts, and the comparison measures that mismatch rather than the
+      covariance. Matching the suite to the fiducial catalog, on its own
+      footprint at its weight-effective count and σ_e, lets the mock
+      scatter be held against the data's own covariance. A suite sampled
+      differently can still validate the covariance *machinery*, run at the
+      suite's noise ([reference_covariance](#decisions.reference_covariance)).
+    default: data_matched
     options:
+      data_matched:
+        label: "Data-matched suite"
+        insights: [tessore23_glass_lognormal_mocks]
+        description: |
+          350 realizations at the published generation settings, sampled
+          on the fiducial catalog's footprint (its occupied nside-4096
+          pixels) at the density and per-component σ_e derived from the
+          catalog ([glass_mock_sampling](#analyses.mocks.analyses.generation.outputs.glass_mock_sampling)),
+          so each realization's expected count is the catalog's
+          weight-effective count. Seeds 1 000 000 + N.
       v1_4_6_3_v2:
         label: "v1.4.6.3_v2 suite"
         insights: [tessore23_glass_lognormal_mocks]
         description: |
-          350 realisations of about 60.4 M unit-weight galaxies
-          (60 423 575 in realisation 00001) on the fiducial footprint,
-          17% more than the data's 51.65 M weight-effective galaxies;
-          ships catalogues, 20-bin ξ_± and per-mock Cℓ, with a directly
-          computed mock C_ℓ^BB covariance
-          ([cl_cov_reference](#analyses.covariances.outputs.cl_cov_reference)).
+          The suite the paper was published with: 350 realizations of
+          about 60.4 M unit-weight galaxies at 6.0905 arcmin⁻² and
+          σ_e = 0.2684 per component, on the v1.4.6 cut catalog's
+          footprint (2757.25 deg²), 17% more than the fiducial catalog's
+          51.65 M weight-effective galaxies. Seeds 1 000 000 + N.
       v1_4_6:
         label: "v1.4.6 suite"
         excluded: true
         excluded_reason: |
-          35 078 729 galaxies per realisation on a 1600.33 deg² mask
+          35 078 729 galaxies per realization on a 1600.33 deg² mask
           that is not the data's footprint (the generator's default
-          6.0905 arcmin⁻² on a smaller sky); the v1.4.6.3_v2 suite
-          sits far closer to the catalog's count.
+          6.0905 arcmin⁻² on a smaller sky).
 
 # -----------------------------------------------------------------------------
 # Findings: claims derived from this analysis's own measurements. Evidence
@@ -745,14 +732,16 @@ findings:
     notes: |
       Size-cut catalog at the fiducial cuts: ξ_+^B 0.82, ξ_-^B 0.019,
       ξ_tot^B 0.039, COSEBIs n ≤ 6 0.78, C_ℓ^BB 0.30. The minimum,
-      0.019, passes the 0.01 threshold; 38 of 350 systematics-free
-      GLASS realizations (11%) have a lower minimum PTE. On the full
-      range ξ_+^B (0.0026), ξ_-^B (0.0019) and COSEBIs n ≤ 6 (1.4×10⁻⁵)
-      fail. Treating the two scale-cut boundaries as fitted parameters
+      0.019, passes the 0.01 threshold; in the data-matched `baseline`
+      suite 45 of 350 systematics-free GLASS realizations (13%; 50/350,
+      14%, in `published`) have a lower minimum PTE. On the full range
+      ξ_+^B (0.0026), ξ_-^B (0.0019) and COSEBIs n ≤ 6 (1.4×10⁻⁵) fail.
+      Treating the two scale-cut boundaries as fitted parameters
       (ν → ν−2) is the most pessimistic degrees-of-freedom treatment;
       it lowers every PTE, and only ξ_-^B falls below 0.01, to 0.005
       ([nu_penalty_verdicts](#outputs.nu_penalty_verdicts)), just below
-      the 0.006 threshold calibrated at these cuts.
+      the 0.0065 (`0.007` rounded) threshold calibrated at these cuts
+      in `baseline` (`0.0039` in `published`).
     created_at: "2026-04-25T00:00:00Z"
     evidence:
       - id: ev1
@@ -762,10 +751,12 @@ findings:
       - id: ev2
         artifact: mock_min_pte_calibration
         quote:
-          exact: '"p_global_one_sided_count": 38'
+          exact: '"p_global_one_sided_count": 45'
       - id: ev3
         artifact: fig_pure_eb_decomposition
       - id: ev4
+        artifact: fig_mock_min_pte
+      - id: ev5
         artifact: nu_penalty_verdicts
         quote:
           exact: "Size_cuts,SP_v1.4.6.3_leak_corr,fiducial,xim_B,7,5,16.7177,0.0193098,0.00506742,0.0142423,0,0,0"
@@ -850,7 +841,7 @@ findings:
     notes: |
       Fiducial-cut failures (PTE < 0.01): initial ξ_-^B 0.0012,
       ξ_tot^B 0.0014, C_ℓ^BB 0.0031; masked ξ_-^B 0.0036; relaxed
-      flags ξ_-^B 7.5×10⁻⁵, ξ_tot^B 6.7×10⁻⁵, C_ℓ^BB 5.9×10⁻¹⁰. Why
+      flags ξ_-^B 7.5×10⁻⁵, ξ_tot^B 6.7×10⁻⁵, C_ℓ^BB 5.3×10⁻¹⁰. Why
       masking fails ξ_-^B is undetermined: the irregular mask may
       leave more modes ambiguous, or removing noisy regions near bright
       stars may raise the significance of contamination elsewhere. The
@@ -861,15 +852,15 @@ findings:
       - id: ev1
         artifact: pte_table_appendix
         quote:
-          exact: "Masked,SP_v1.4.8_leak_corr,Fiducial,0.604,0.811,0.864,0.00359,0.0401,0.441"
+          exact: "Masked,SP_v1.4.8_leak_corr,Fiducial,0.604,0.811,0.864,0.00359,0.0401,0.434"
       - id: ev2
         artifact: pte_table_appendix
         quote:
-          exact: "Relaxed_flags,SP_v1.4.11.3_leak_corr,Fiducial,0.824,0.831,0.418,7.48e-05,6.68e-05,5.85e-10"
+          exact: "Relaxed_flags,SP_v1.4.11.3_leak_corr,Fiducial,0.824,0.831,0.418,7.48e-05,6.68e-05,5.25e-10"
       - id: ev3
         artifact: pte_table_appendix
         quote:
-          exact: "Initial,SP_v1.4.5_leak_corr,Fiducial,0.938,0.611,0.526,0.00119,0.00138,0.00311"
+          exact: "Initial,SP_v1.4.5_leak_corr,Fiducial,0.938,0.611,0.526,0.00119,0.00138,0.00309"
       - id: ev4
         artifact: fig_versions_pure_eb
     scope: "Four ShapePipe v1.4 leakage-corrected variants at the fiducial cuts."
@@ -903,45 +894,52 @@ findings:
       threshold p_thr on the same realizations partially absorbs this
       skew.
     notes: |
-      350 GLASS v1.4.6.3_v2 realisations against the mock-matched
-      reference covariance
-      ([mock_campaign_evidence](#outputs.mock_campaign_evidence)).
-      ⟨χ²⟩/ν: B_{n≤6} 1.105, B_{n≤20} 1.073, ξ_+^B 1.197, ξ_-^B
-      1.131, ξ_tot^B 1.148, C_ℓ^BB 0.987 (the paper's 1.07–1.20 for
-      configuration space). KS p-values for PTE uniformity: B_{n≤6}
-      2.7×10⁻³, B_{n≤20} 9.2×10⁻⁵, ξ_+^B 2.4×10⁻⁹, ξ_-^B 1.4×10⁻⁴,
-      ξ_tot^B 2.8×10⁻¹⁰, C_ℓ^BB 0.79.
+      In the data-matched `baseline` suite (350 realizations held
+      directly against the data covariances,
+      [mock_campaign_evidence](#outputs.mock_campaign_evidence)),
+      ⟨χ²⟩/ν reads: B_{n≤6} 1.070, B_{n≤20} 1.058, ξ_+^B 1.190, ξ_-^B
+      1.046, ξ_tot^B 1.124, C_ℓ^BB 0.965 (1.05–1.19 across
+      configuration space; 1.10–1.23 in `published`). KS p-values for
+      PTE uniformity: B_{n≤6} 3.9×10⁻³, B_{n≤20} 0.021, ξ_+^B
+      6.1×10⁻⁷, ξ_-^B 0.19, ξ_tot^B 4.4×10⁻⁶, C_ℓ^BB 0.023 (0.11 in
+      `published`).
 
       The configuration-space excess has the size of the non-Gaussian
       term the Gaussian covariance omits, a comparison of size that the
       paper does not make into an attribution: on the 20-bin reporting
-      grid the (G+NG)/G diagonal ratio inside 12′–83′ averages 1.102
-      (ξ_+) and 1.105 (ξ_-), a non-Gaussian share of 9% of the diagonal
-      variance there and 7% over all bins.
+      grid the (G+NG)/G diagonal ratio inside 12′–83′ averages 1.121
+      (ξ_+) and 1.123 (ξ_-), a non-Gaussian share of 11% of the
+      diagonal variance there and 8% over all bins.
 
       p_thr is set so a clean sample fails 5% of the time; the paper
       adopts p_thr = 0.01, conservative for nearly all scale-cut
-      combinations, against a calibrated 0.006 at the fiducial cuts
-      ([mock_min_pte_calibration](#outputs.mock_min_pte_calibration)).
+      combinations, against a calibrated 0.0065 (`0.007` rounded) at
+      the fiducial cuts in `baseline` (`0.0039` in `published`,
+      [mock_min_pte_calibration](#outputs.mock_min_pte_calibration)).
       The observed minimum, ξ_-^B at 0.0193, sits at or above the
-      minimum of 38 of 350 clean realisations (10.9% one-sided; 58,
-      16.6%, two-sided); the 5% threshold is 0.0058 one-sided (68%
-      interval 0.0044–0.0076) and 0.0034 two-sided.
+      minimum of 45 of 350 clean realizations in `baseline` (12.9%
+      one-sided; 70, 20.0%, two-sided; 50/350, 14.3%, in `published`);
+      the 5% threshold is 0.0065 one-sided (68% interval 0.0043–0.0095)
+      and 0.0038 two-sided.
     created_at: "2026-08-31T00:00:00Z"
     evidence:
       - id: ev1
         artifact: mock_campaign_evidence
         quote:
-          exact: '"chi2_mean": 8.379664071517078'
+          exact: '"chi2_mean": 8.328292447802596'
       - id: ev2
         artifact: mock_campaign_evidence
         quote:
-          exact: '"pvalue": 0.7939539191651337'
+          exact: '"chi2_mean": 16.396916247026443'
       - id: ev3
         artifact: mock_min_pte_calibration
         quote:
-          exact: '"threshold_one_sided": 0.005773478384709811'
-    scope: "v1.4.6.3_v2 suite, mock-matched reference covariances, adopted scale cuts, adopted estimators."
+          exact: '"threshold_one_sided": 0.00650753508226542'
+      - id: ev4
+        artifact: fig_mock_validation
+      - id: ev5
+        artifact: fig_mock_min_pte
+    scope: "Data-matched `baseline` suite against data covariances (and `published` v1.4.6.3_v2 suite against mock-matched covariances), adopted scale cuts, adopted estimators."
 
 # -----------------------------------------------------------------------------
 # Prior insights: quote evidence from the literature. Covers the three
@@ -960,7 +958,7 @@ findings:
 # NKA's failure on B-mode spectra and at ℓ ≲ 50, Nicola 2021 for the improved
 # NKA (the estimator actually used) and its residual low-ℓ and E/B-mixing
 # errors, Alonso 2019 for why an unpurified Cℓ^BB variance is dominated by
-# leaked E modes, and Wolz 2026 for the catalogue-based iNKA's ℓ ≳ 10
+# leaked E modes, and Wolz 2026 for the catalog-based iNKA's ℓ ≳ 10
 # B-mode validity floor. Together these motivate validating the covariance on
 # the GLASS mocks; none of them predicts the size of the effect for a footprint
 # as small and fragmented as UNIONS.
@@ -968,6 +966,7 @@ findings:
 prior_insights:
   asgari19a_cosebis_nmax20_for_systematics:
     id: asgari19a_cosebis_nmax20_for_systematics
+    label: "Twenty COSEBI modes cover cosmology and systematics (Asgari et al. 2019)"
     claim: |
       COSEBI E-mode predictions vanish beyond the first ~7 modes, so
       high modes carry no cosmological information, but systematic
@@ -1000,6 +999,7 @@ prior_insights:
 
   schneider22_pure_modes_direct_from_xi:
     id: schneider22_pure_modes_direct_from_xi
+    label: "Pure modes come straight from ξ± (Schneider et al. 2022)"
     claim: |
       Pure-mode correlation functions and COSEBIs carry the same
       information, but the pure modes can be computed directly from
@@ -1024,6 +1024,7 @@ prior_insights:
 
   guinot26_cosmo_numba_precision:
     id: guinot26_cosmo_numba_precision
+    label: "cosmo-numba computes COSEBIs and pure modes at the needed precision (Guinot et al. 2026)"
     claim: |
       `cosmo-numba` computes COSEBIs, whose weight functions need
       ~80-digit precision (float64 is not sufficient; at that
@@ -1048,6 +1049,7 @@ prior_insights:
 
   hartlap07_correction:
     id: hartlap07_correction
+    label: "Inverted sample covariances need the Hartlap factor (Hartlap et al. 2007)"
     claim: |
       The inverse of a covariance estimated from N independent
       Gaussian samples of a length-p data vector is biased; the
@@ -1075,6 +1077,7 @@ prior_insights:
 
   pure_mode_decomposition_unique_on_finite_interval:
     id: pure_mode_decomposition_unique_on_finite_interval
+    label: "ξ± on a finite interval split uniquely into pure modes"
     claim: |
       Measured ξ_±(θ) on a finite interval [θ_min, θ_max]
       decompose uniquely into pure-mode functions, ξ_+ = ξ_+^E +
@@ -1102,6 +1105,7 @@ prior_insights:
 
   repeating_additive_bias_signature:
     id: repeating_additive_bias_signature
+    label: "A CCD-scale additive pattern leaves oscillating COSEBI B modes"
     claim: |
       A repeating additive shear pattern fixed in instrument
       coordinates (CCD scale) produces an oscillatory COSEBI B-mode
@@ -1121,6 +1125,7 @@ prior_insights:
 
   cosebis_complete_eb_separation:
     id: cosebis_complete_eb_separation
+    label: "COSEBIs separate E and B completely on a finite interval"
     claim: |
       COSEBIs give a complete E/B decomposition of ξ_±(θ) on a
       finite interval, with weight functions polynomial in θ
@@ -1160,10 +1165,11 @@ prior_insights:
     scope: "Cosmic-shear ξ_± on a finite interval (Schneider, Eifler & Krause 2010, A&A 520, A116)"
     notes: |
       Underwrites the logarithmic basis of the
-      [COSEBI data vector](#analyses.data_vectors.outputs.cosebis_modes_data).
+      [COSEBI data vector](#analyses.catalog_processing.outputs.cosebis_modes_data).
 
   hybrideb_filter_optimisation_alternative:
     id: hybrideb_filter_optimisation_alternative
+    label: "HybridEB band powers are another linear E/B filter of ξ±"
     claim: |
       The HybridEB estimator separates E and B modes into Fourier
       band powers built as linear combinations of binned ξ_±(θ) on a
@@ -1201,6 +1207,7 @@ prior_insights:
 
   wolz25_catalog_based_pseudo_cl:
     id: wolz25_catalog_based_pseudo_cl
+    label: "Catalog-based pseudo-Cℓ avoids pixelisation (Wolz et al. 2025)"
     claim: |
       Catalog-based pseudo-Cℓ evaluates spherical-harmonic
       transforms directly at the source positions, with an analytic
@@ -1238,13 +1245,14 @@ prior_insights:
           page: 1
     scope: "Fields sampled at catalog positions (Wolz, Alonso & Nicola 2025, JCAP 01, 028)"
     notes: |
-      The basis of the [harmonic-space measurement](#analyses.data_vectors.outputs.cl_bandpowers_reporting)'s
+      The basis of the [harmonic-space measurement](#analyses.catalog_processing.outputs.cl_bandpowers_reporting)'s
       Cℓ^EB / Cℓ^BB bandpowers and their shot-noise correction,
       following Paper IV's implementation (spin-2 transforms via
       `ducc`, NaMaster mode-coupling decoupling).
 
   efstathiou04_nka_narrow_window_condition:
     id: efstathiou04_nka_narrow_window_condition
+    label: "The narrow-kernel covariance needs narrow mask windows (Efstathiou 2004)"
     claim: |
       The analytic pseudo-Cℓ covariance behind the narrow-kernel
       approximation assumes mask windows narrow compared with the
@@ -1266,6 +1274,7 @@ prior_insights:
 
   alonso19_unpurified_bb_variance_dominated_by_leaked_e:
     id: alonso19_unpurified_bb_variance_dominated_by_leaked_e
+    label: "Leaked E modes dominate unpurified Cℓ^BB variance (Alonso et al. 2019)"
     claim: |
       Without map-level E/B purification, the variance of the
       pseudo-Cℓ BB estimator is dominated by the variance of
@@ -1299,6 +1308,7 @@ prior_insights:
 
   gg19_nka_bb_covariance_unreliable:
     id: gg19_nka_bb_covariance_unreliable
+    label: "The narrow-kernel covariance fails for B-mode spectra (García-García et al. 2019)"
     claim: |
       The narrow-kernel approximation mis-describes the pseudo-Cℓ
       covariance of any spectrum involving B modes: mask-leaked E
@@ -1343,6 +1353,7 @@ prior_insights:
 
   gg19_nka_inaccurate_at_largest_scales:
     id: gg19_nka_inaccurate_at_largest_scales
+    label: "The narrow-kernel covariance fails below ℓ ≈ 50 (García-García et al. 2019)"
     claim: |
       The NKA pseudo-Cℓ covariance is also inaccurate on the
       largest scales (ℓ ≲ 50), where the recommended remedy is fast
@@ -1381,6 +1392,7 @@ prior_insights:
 
   nicola21_inka_lowest_bandpower_overestimate:
     id: nicola21_inka_lowest_bandpower_overestimate
+    label: "The improved NKA overestimates the lowest bandpower (Nicola et al. 2021)"
     claim: |
       The improved NKA (iNKA), which uses mode-coupled input
       spectra as NaMaster's `gaussian_covariance` does, still
@@ -1439,8 +1451,9 @@ prior_insights:
 
   namaster26_catalog_inka_bb_low_ell_limit:
     id: namaster26_catalog_inka_bb_low_ell_limit
+    label: "Catalog iNKA holds for B modes only above ℓ ≈ 10 (Wolz et al. 2026)"
     claim: |
-      For catalogue-based pseudo-Cℓ, the estimator family of the
+      For catalog-based pseudo-Cℓ, the estimator family of the
       UNIONS Cℓ, the analytic iNKA covariance matches 1000
       simulations on all scales for E modes but only for ℓ ≳ 10
       for B modes, the kind of low-ℓ B-mode failure the UNIONS mocks
@@ -1471,6 +1484,7 @@ prior_insights:
 
   stebbins96_scalar_perturbations_give_no_bmodes:
     id: stebbins96_scalar_perturbations_give_no_bmodes
+    label: "Density perturbations make no B modes (Stebbins 1996)"
     claim: |
       In the weak-lensing limit, scalar (density) perturbations
       produce only scalar (E-mode) shear; vector and tensor
@@ -1496,6 +1510,7 @@ prior_insights:
 
   higher_order_lensing_bmodes_negligible:
     id: higher_order_lensing_bmodes_negligible
+    label: "Higher-order lensing B modes are negligible"
     claim: |
       Lensing B modes beyond first order (Born corrections,
       lens–lens coupling, source-redshift clustering) are at least
@@ -1530,6 +1545,7 @@ prior_insights:
 
   guerrini25_psf_errors_contaminate_xi:
     id: guerrini25_psf_errors_contaminate_xi
+    label: "PSF errors leak into ξ± on UNIONS (Guerrini et al. 2025)"
     claim: |
       PSF-model errors add systematics to the shear two-point
       correlation function; galaxy–PSF (τ) and PSF–PSF (ρ)
@@ -1558,12 +1574,13 @@ prior_insights:
 
   tessore23_glass_lognormal_mocks:
     id: tessore23_glass_lognormal_mocks
+    label: "GLASS lognormal light cones reproduce two-point statistics (Tessore et al. 2023)"
     claim: |
       GLASS builds a light cone of matter and weak-lensing fields as
       nested shells, transforming Gaussian random fields (including
       lognormal) to essentially arbitrary precision, and reproduces
       the two-point statistics of clustering and weak lensing at the
-      per-cent level. Its realisations are therefore an adequate
+      per-cent level. Its realizations are therefore an adequate
       systematics-free reference for B-mode estimator and covariance
       validation, but carry only lognormal non-Gaussianity.
     created_at: "2026-10-31T00:00:00Z"
@@ -1597,5 +1614,8 @@ analyses:
   covariances:
     path: ./analyses/covariances
 
-  data_vectors:
-    path: ./analyses/data_vectors
+  catalog_processing:
+    path: ./analyses/catalog_processing
+
+  mocks:
+    path: ./analyses/mocks

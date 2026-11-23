@@ -21,7 +21,6 @@ sys.path[:0] = [str(ROOT / "src/papers/bmodes/scripts"), str(ROOT / "src/workflo
 import catalog_versions
 import decision_values as dv
 import generate_cosmocov_ini
-import mock_vs_data_noise_table
 import scale_cuts
 
 # Every decision defined anywhere in the tree, by id (aliases skipped).
@@ -35,8 +34,7 @@ DECISIONS = {
 CAT_CONFIG = yaml.safe_load((ROOT / "src/cosmo_val/cat_config.yaml").read_text())
 
 # Tables keyed by the options of a decision other than their namesake.
-KEYED_BY = {"nz_file": "fiducial_blind", "survey_properties": "fiducial_catalog",
-            "reference_catalog": "reference_covariance"}
+KEYED_BY = {"nz_file": "fiducial_blind", "survey_properties": "fiducial_catalog"}
 
 FIDUCIAL_NZ = "data/nz/nz_SP_v1.4.6.3_{}.txt"
 
@@ -47,7 +45,7 @@ PUBLISHED = {
     "nz_file": ("blind_a", FIDUCIAL_NZ.format("A")),
     "survey_properties": ("size_cut", (2894.0303815287743, 4.957279270321334, 0.3783979556382064)),
     "reference_covariance": ("mockmatched", (2894.0303815287743, 5.793082, 0.3792561)),
-    "reference_catalog": ("mockmatched", "SP_v1.4.6.3_glass_mock_v2"),
+    "mock_suite": ("v1_4_6_3_v2", ("1.4.6", 6.0905, 0.2684)),
     "reporting_binning": ("bins_20", (1.0, 250.0, 20)),
     "integration_grid": ("bins_1000", (0.5, 300.0, 1000)),
     "patch_count": ("npatch_1", 1),
@@ -78,10 +76,6 @@ class Tables(unittest.TestCase):
                     cov_th = CAT_CONFIG[version.removesuffix("_leak_corr")]["cov_th"]
                     self.assertEqual(dv.survey_properties(version),
                                      (cov_th["A"], cov_th["n_e"], cov_th["sigma_e"]), version)
-
-    def test_reference_catalogs_are_in_cat_config(self):
-        for option, version in dv.REFERENCE_CATALOG.items():
-            self.assertIn(version.removesuffix("_leak_corr"), CAT_CONFIG, option)
 
     def test_published_values(self):
         self.assertEqual(set(PUBLISHED), set(dv.TABLES))
@@ -117,7 +111,7 @@ class Tables(unittest.TestCase):
 
 
 class ReferenceNoise(unittest.TestCase):
-    RECORDED_INI = ROOT / "analyses/covariances/results/baseline/cov_integration_g/covariance.ini"
+    RECORDED_INI = ROOT / "tools/fixtures/recorded_cov_integration_g.ini"
 
     def recorded(self):
         # The recorded run read the same n(z) file from its candide path, and named
@@ -131,7 +125,7 @@ class ReferenceNoise(unittest.TestCase):
     def ini(self, tmp, *flags):
         generate_cosmocov_ini.main([
             "--version", "SP_v1.4.6.3_leak_corr", "--blind", "blind_a",
-            "--planck18-json", str(ROOT / "analyses/covariances/results/baseline/cosmology_snapshot/planck18.json"),
+            "--planck18-json", str(ROOT / "tools/fixtures/recorded_planck18.json"),
             "--min-sep", "0.5", "--max-sep", "300.0", "--nbins", "1000", "--gaussian", "g",
             "--nz", dv.NZ_FILE["blind_a"], "--out-ini", f"{tmp}/covariance.ini", *flags,
         ])
@@ -150,15 +144,6 @@ class ReferenceNoise(unittest.TestCase):
                        if new != old]
         self.assertEqual(changed, ["sigma_e : 0.3792561", "source_n_gal : 5.793082", "lens_n_gal : 5.793082"])
 
-    def test_noise_table_ratios(self):
-        audit = dict(data_galaxies=61378891, data_area_deg2=2750.65, mock_galaxies=60423575, mock_area_deg2=2709.91)
-        mock = mock_vs_data_noise_table.build_rows(
-            dv.REFERENCE_COVARIANCE["data_covariance"], dv.REFERENCE_COVARIANCE["mockmatched"], audit)[1]
-        self.assertEqual(f"{mock['noise_power_ratio_to_data']:.6g}", "0.85961")
-        self.assertEqual(f"{mock['bb_variance_ratio_to_data']:.6g}", "0.738929")
-        self.assertEqual(mock["galaxies_from_n_gal_convention"], 60355279)
-
-
 class Roster(unittest.TestCase):
     def test_scan_matrices_stay_inside_the_roster(self):
         sidecars = list((ROOT / "analyses").rglob("*.sweep.yaml"))
@@ -173,7 +158,7 @@ class Roster(unittest.TestCase):
 
     def test_xi_scan_matrix_is_the_scan_slots(self):
         matrix = yaml.safe_load(
-            (ROOT / "analyses/data_vectors/analyses/xi_scan/xi_scan.sweep.yaml").read_text()
+            (ROOT / "analyses/catalog_processing/analyses/xi_scan/xi_scan.sweep.yaml").read_text()
         )["matrix"]
         slots = catalog_versions.Catalogs("size_cut", "applied").scan_slots
         self.assertEqual(set(matrix["version"]), set(slots))

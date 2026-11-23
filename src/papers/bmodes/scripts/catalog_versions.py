@@ -1,12 +1,12 @@
 """The catalog versions a Paper II analysis compares, and their labels.
 
-`fiducial_catalog` and `leakage_correction` select the primary shear catalogue.
+`fiducial_catalog` and `leakage_correction` select the primary shear catalog.
 The comparison roster is fixed in every universe; tools/test_decision_values.py
 keeps it equal to the sweep matrices. A scan slot keeps its role when the
-primary catalogue is raw: the fixed slots stay, and `scan_version` resolves
-which catalogue each one holds.
+primary catalog is raw: the fixed slots stay, and `scan_version` resolves
+which catalog each one holds.
 
-As a CLI it prints the fiducial version, or the catalogue of one scan slot,
+As a CLI it prints the fiducial version, or the catalog of one scan slot,
 which is how recipes name a version:
 
     python catalog_versions.py size_cut applied
@@ -75,7 +75,7 @@ class Catalogs:
         return Catalogs(self.catalog, "applied").nonfiducial
 
     def scan_version(self, version, fine=False):
-        """The catalogue a scan slot holds; the primary variant is produced separately."""
+        """The catalog a scan slot holds; the primary variant is produced separately."""
         if self.corrected:
             return version
         if fine:
@@ -96,7 +96,7 @@ def _from_cli(argv=None):
     ap = argparse.ArgumentParser(description="Print a Paper II catalog version.")
     ap.add_argument("catalog", choices=FIDUCIAL_CATALOG)
     ap.add_argument("leakage", choices=["applied", "uncorrected"])
-    ap.add_argument("--scan-version", help="Resolve a fixed scan slot's catalogue")
+    ap.add_argument("--scan-version", help="Resolve a fixed scan slot's catalog")
     ap.add_argument("--fine-grid", action="store_true")
     ap.add_argument("--nonfiducial", action="store_true", help="List the non-fiducial versions")
     ap.add_argument("--comparison", action="store_true",

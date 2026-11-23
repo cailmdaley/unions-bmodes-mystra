@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "validation.bb_covariance_blind_independence_evidence",
+  "universe_id": "published",
+  "recipe": "d=$(mktemp -d) && tar xzf results/published/covariances/blind_cov_scan/blind_cov_sweep_bundle.tar.gz -C $d && python src/papers/bmodes/scripts/bb_covariance_blind_independence.py --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 --covariance-dir $d --xi-integration results/published/catalog_processing/xi_integration.txt --cl-bandpowers results/published/catalog_processing/cl_bandpowers_reporting.fits --out-file results/published/validation/bb_covariance_blind_independence_evidence.png\n",
+  "definition_version": "sha256:38baff5cfb5d4d4151a5e84fe1ef37ccd821afa428d0f075bbbff443383132da",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:d27cf0123282eeb93a868c85802a31116e93c3ffef2f4885d28376832aa4d4a0",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied",
+    "reporting_binning": "bins_20",
+    "integration_grid": "bins_1000",
+    "mode_count": "n_max_20"
+  },
+  "input_versions": {
+    "blind_cov_sweep": "sha256:1226400c996015be02291f836202572fd2383ad93e918d600b2df19ae11af3ed",
+    "xi_integration": "sha256:1f5f0f013b61307d6e5506eaea3e3bf04a2ec70bb8013594f5e1423855083e4e",
+    "cl_bandpowers_reporting": "sha256:2610ff5c10757a86107fe9beb12ce5edabfc2b4bf2d74605bbe2b779e668dae9"
+  },
+  "git_sha": "0f1a526566e68182e80ac2473546f110025fb052",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T20:48:48.809+00:00",
+  "finished_at": "2026-11-23T20:50:40.164+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

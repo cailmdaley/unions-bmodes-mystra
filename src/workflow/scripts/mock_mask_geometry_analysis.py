@@ -1,6 +1,6 @@
 """Test whether the v1.4.8 star-mask footprint leaks pure B modes geometrically.
 
-Are the masked catalogue's ξ± pure-mode B failures contamination or geometry?
+Are the masked catalog's ξ± pure-mode B failures contamination or geometry?
 GLASS lognormal mocks are systematics-free and
 carry no B power by construction, so any pure-B signal they develop under a
 footprint is purely an estimator/geometry effect (ambiguous-mode leakage from
@@ -20,7 +20,7 @@ and the v1.4.8 masked one -- and compared four ways:
    factor that covariance artifact records.
 
 Compute and reporting are separate invocations.  ``--emit-stats PATH`` reads
-the two pure-mode ensembles and writes one npz -- the per-realisation χ²/PTE
+the two pure-mode ensembles and writes one npz -- the per-realization χ²/PTE
 table plus the full report as a JSON payload.  ``--from-stats PATH --emit
 {evidence,figure} --out-file F`` then writes exactly one file from it,
 recomputing nothing.
@@ -414,7 +414,7 @@ def compute_statistics(fiducial_ensemble, masked_ensemble, pure_cov, out_path, l
 
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    # The report travels with the per-realisation table so that both reporting
+    # The report travels with the per-realization table so that both reporting
     # passes are functions of this one file.
     np.savez_compressed(
         out_path,
@@ -463,7 +463,7 @@ def _parser(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--emit-stats",
-        help="Compute pass: write the per-realisation statistics npz here.",
+        help="Compute pass: write the per-realization statistics npz here.",
     )
     parser.add_argument(
         "--fiducial-ensemble",

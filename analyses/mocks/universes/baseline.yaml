@@ -1,0 +1,9 @@
+id: baseline
+description: |
+  The data-matched GLASS suite: 350 realizations on the fiducial catalog's
+  footprint at its weight-effective count and shape dispersion, measured
+  with the data's recipes.
+decisions: {}
+analyses:
+  generation:
+    universe: baseline

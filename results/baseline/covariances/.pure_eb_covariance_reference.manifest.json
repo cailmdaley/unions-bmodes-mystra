@@ -2,15 +2,15 @@
   "schema_version": 1,
   "output_id": "covariances.pure_eb_covariance_reference",
   "universe_id": "baseline",
-  "recipe": "bash src/papers/bmodes/scripts/run_pure_eb_covariance.sh --version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --blind \"$(python src/workflow/scripts/decision_values.py fiducial_blind blind_a)\" --cat-config src/cosmo_val/cat_config.yaml --xi-reporting results/baseline/data_vectors/xi_reporting.txt --xi-integration results/baseline/data_vectors/xi_integration.txt --cov-integration results/baseline/covariances/cov_integration_reference.txt --integration-method fixed_operator --integration-limits fine_grid_extent --rebinning-weights npairs --covariance-method exact_linear --out-file results/baseline/covariances/pure_eb_covariance_reference.npz\n",
-  "definition_version": "sha256:82301c9d582930840c4c1ac4a2e8af024075432698c0c324ba0348f5101057f9",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
-  "data_version": "sha256:6dc81b2c45668c68f649f321b278cea18d1a8bd0547536718e716d9151390b60",
+  "recipe": "if [ data_covariance = data_covariance ]; then\n  cp results/baseline/covariances/pure_eb_covariance.npz results/baseline/covariances/pure_eb_covariance_reference.npz\nelse\n  bash src/papers/bmodes/scripts/run_pure_eb_covariance.sh \\\n    --version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --blind \"$(python src/workflow/scripts/decision_values.py fiducial_blind blind_a)\" \\\n    --cat-config src/cosmo_val/cat_config.yaml \\\n    --xi-reporting results/baseline/catalog_processing/xi_reporting.txt \\\n    --xi-integration results/baseline/catalog_processing/xi_integration.txt \\\n    --cov-integration results/baseline/covariances/cov_integration_reference.txt \\\n    --integration-method fixed_operator \\\n    --integration-limits fine_grid_extent \\\n    --rebinning-weights npairs \\\n    --covariance-method exact_linear \\\n    --out-file results/baseline/covariances/pure_eb_covariance_reference.npz\nfi\n",
+  "definition_version": "sha256:0ada1e30c0878eaf734b03829874a7ebc4e30654d499ce3bc304456beaa9f14c",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:f02851765875fefaf415c0eb00e7a1ac0dba9668d31fa8eb5764018d08efd729",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a",
-    "reference_covariance": "mockmatched",
-    "mock_suite": "v1_4_6_3_v2",
+    "reference_covariance": "data_covariance",
+    "mock_suite": "data_matched",
     "pure_eb_integration_method": "fixed_operator",
     "pure_eb_rebinning_weights": "npairs",
     "pure_eb_integration_limits": "fine_grid_extent",
@@ -20,12 +20,13 @@
     "integration_grid": "bins_1000"
   },
   "input_versions": {
-    "xi_reporting": "sha256:8a9d59dfb380aa4f43db124d64f6639f60e0a56ccdb6746fb718eb8cf1d6eb95",
-    "xi_integration": "sha256:8aad521c25174deae913ced1dc8d416edd5662de2a436dc57999cb475b376130",
-    "cov_integration_reference": "sha256:5b205a01120a8055969bf92bd07d5334e453359f6b4ad7711a2fc6dc6a302120",
+    "pure_eb_covariance": "sha256:f02851765875fefaf415c0eb00e7a1ac0dba9668d31fa8eb5764018d08efd729",
+    "xi_reporting": "sha256:d36fd4f4c065c7ad9c0ab5198cda7ff4b9110df261ca0b8288c3a79a735c0fa2",
+    "xi_integration": "sha256:1f5f0f013b61307d6e5506eaea3e3bf04a2ec70bb8013594f5e1423855083e4e",
+    "cov_integration_reference": "sha256:d2127e272d367378b381e18385b200ed4218b36ce9484803b2cdc94f4af5e646",
     "redshift_distributions": "spelling:sha256:11ef1341c9f8ea8d3d7fb69db5d38885a4f438092cb4096978145b98d45b8e43"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -35,8 +36,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T12:56:11.197+00:00",
-  "finished_at": "2026-11-13T12:56:52.450+00:00",
+  "started_at": "2026-11-22T21:29:44.832+00:00",
+  "finished_at": "2026-11-22T21:29:45.432+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

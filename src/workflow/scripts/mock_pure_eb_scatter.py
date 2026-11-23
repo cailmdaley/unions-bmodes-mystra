@@ -107,7 +107,7 @@ def compute_from_grids(
     geometry: str | None = None,
     local_from_eval_grid: bool = False,
 ) -> dict:
-    """Transform one realisation's fine/reporting ξ± pair into pure modes."""
+    """Transform one realization's fine/reporting ξ± pair into pure modes."""
 
     # Match calculate_pure_eb_correlation: tmin/tmax are the actual reporting
     # bin edges, not the nominal constructor arguments.  Explicit casts also
@@ -288,7 +288,7 @@ def compute_one(
 
 
 def _ensemble_worker(index):
-    """One realisation, reading the ensembles the pool initializer shared."""
+    """One realization, reading the ensembles the pool initializer shared."""
 
     state = mock_scatter_pool.state()
     return compute_from_grids(
@@ -316,7 +316,7 @@ def compute_ensemble(
     geometry: str | None = None,
     local_from_eval_grid: bool = False,
 ) -> Path:
-    """Transform every realisation of a fine/reporting ensemble pair."""
+    """Transform every realization of a fine/reporting ensemble pair."""
 
     with np.load(fine_ensemble_path, allow_pickle=False) as fine, np.load(
         reporting_ensemble_path, allow_pickle=False
@@ -328,22 +328,22 @@ def compute_ensemble(
         missing = sorted(set(fine_ids) - set(reporting_ids))
         if missing:
             raise ValueError(
-                "reporting ensemble lacks realisations present in the fine "
+                "reporting ensemble lacks realizations present in the fine "
                 f"ensemble: {missing[:10]}"
             )
         reporting_index = np.asarray(
             [reporting_ids.index(mock_id) for mock_id in fine_ids]
         )
         # Materialise before forking: the workers share these arrays by fork
-        # rather than pickling a lazy npz handle per realisation.
+        # rather than pickling a lazy npz handle per realization.
         keys = ("meanr", "xip", "xim", "npairs", "left_edges", "right_edges")
-        per_realisation = ("meanr", "xip", "xim", "npairs")
+        per_realization = ("meanr", "xip", "xim", "npairs")
         state = {
             "mock_ids": fine_ids,
             "fine": {key: np.asarray(fine[key]) for key in keys},
             "reporting": {
                 key: np.asarray(reporting[key])[reporting_index]
-                if key in per_realisation
+                if key in per_realization
                 else np.asarray(reporting[key])
                 for key in keys
             },
@@ -354,7 +354,7 @@ def compute_ensemble(
             "geometry": geometry,
             "local_from_eval_grid": local_from_eval_grid,
         }
-    results = mock_scatter_pool.map_realisations(
+    results = mock_scatter_pool.map_realizations(
         _ensemble_worker, range(len(fine_ids)), state
     )
 
@@ -378,7 +378,7 @@ def compute_ensemble(
         **stacked,
     )
     print(
-        f"Saved {output_path}: {len(fine_ids)} realisations, "
+        f"Saved {output_path}: {len(fine_ids)} realizations, "
         f"ntheta={first['theta'].size}, "
         f"theta=[{first['tmin']:.6g}, {first['tmax']:.6g}] arcmin",
         flush=True,

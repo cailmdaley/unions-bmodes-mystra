@@ -1,6 +1,6 @@
 """Mean B-mode data vector across GLASS mocks, per statistic.
 
-Reads the campaign compute pass's per-realisation statistics npz -- which
+Reads the campaign compute pass's per-realization statistics npz -- which
 carries the analytic sigma vectors alongside the empirical stack -- and plots
 the across-realization mean of each B statistic in units of the analytic
 (data) sigma, with sigma_emp/(sigma_ana sqrt(N)) error bars in the same

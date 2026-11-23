@@ -2,10 +2,10 @@
   "schema_version": 1,
   "output_id": "covariances.cl_cov_reporting",
   "universe_id": "baseline",
-  "recipe": "python src/workflow/scripts/generate_cl_cov.py --ver \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind blind_a --out-file results/baseline/covariances/cl_cov_reporting.fits\n",
-  "definition_version": "sha256:3e4814ab59c5289bb43448dd92b4abab01e48d28217865463aa98d1b0e36053d",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
-  "data_version": "sha256:76c73b28a865f3b476270354bb2a2b2164070b203cc1d435a32bc69a96bb500f",
+  "recipe": "python src/workflow/scripts/generate_cl_cov.py --ver \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --summary results/baseline/catalog_processing/catalog_summary.npz --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind blind_a --out-file results/baseline/covariances/cl_cov_reporting.fits\n",
+  "definition_version": "sha256:4649658e10a7676ba791c45f96826fdc7c1b372a9a771af57b1c655911ec31d3",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:4d33c2bb912fc43993a9b246fafe47720cc79d951afe04ce32e3208a978adabd",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a",
@@ -15,10 +15,10 @@
     "fiducial_cosmology": "planck18"
   },
   "input_versions": {
-    "shapepipe_v14_catalogs": "spelling:sha256:ddcb9bb187a44cd4aa678855597346a6b0bb4ad3f2056a08cfb7714923d2457a",
+    "catalog_summary": "sha256:dd5e46c738ae810b7b32773e42863057d03a64b316bb91f8063667be5021e160",
     "redshift_distributions": "spelling:sha256:11ef1341c9f8ea8d3d7fb69db5d38885a4f438092cb4096978145b98d45b8e43"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -28,8 +28,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T11:35:27.466+00:00",
-  "finished_at": "2026-11-13T11:53:56.827+00:00",
+  "started_at": "2026-11-21T01:26:31.378+00:00",
+  "finished_at": "2026-11-21T01:27:44.761+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

@@ -25,7 +25,7 @@ find "$mirror" -name '*cov_tmp*' \( -type f -o -type l \) -delete
 # results/<universe>/<file>. Every file under the size cap is copied,
 # which covers the report's figures and values and the inventory's metrics and
 # evidence. Inside the sweeps only json, csv and png are copied, so
-# per-realisation data stay in the private repository, as do the large
+# per-realization data stay in the private repository, as do the large
 # integration tables. A file whose annex content is absent stays pending.
 max_bytes=${MIRROR_MAX_BYTES:-2000000}
 copy_artifact() {
@@ -41,7 +41,7 @@ copy_artifact() {
   rm -f "$output"
   cp -L -- "$input" "$output"
 }
-for universe in baseline submitted; do
+for universe in baseline published preprint_v2; do
   while IFS= read -r -d '' input; do
     rel=${input#"$source_results/$universe"/}
     dir=$(dirname "$rel")

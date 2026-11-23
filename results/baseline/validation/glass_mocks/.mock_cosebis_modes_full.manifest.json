@@ -2,17 +2,17 @@
   "schema_version": 1,
   "output_id": "validation.glass_mocks.mock_cosebis_modes_full",
   "universe_id": "baseline",
-  "recipe": "python src/workflow/scripts/mock_cosebis_scatter.py --xi-ensemble data/glass_mock_v1.4.6.3_v2/mock_xi_fine.npz --out-file results/baseline/validation/glass_mocks/mock_cosebis_modes_full.npz --nmodes 20 --theta-min 1.0 --theta-max 250.0\n",
-  "definition_version": "sha256:01d9c545934700990818af75c7023cfa7345598e1f6b28edc7e851e94e2e8fc2",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
-  "data_version": "sha256:970ace5e5146f5680c4cb8877aa8133bb57ec179390c792d06745e031e4d1870",
+  "recipe": "python src/workflow/scripts/mock_cosebis_scatter.py --xi-ensemble results/baseline/mocks/glass_mock_xi_fine.npz --out-file results/baseline/validation/glass_mocks/mock_cosebis_modes_full.npz --nmodes 20 --theta-min 1.0 --theta-max 250.0\n",
+  "definition_version": "sha256:7912a23c4bb6fb6788548cf3c1efd926a07177a6c9eba7cea3f6256ba56aa8b3",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:0be248b308c614345f2c6209d524a1664b4bfc23cb1a88e785037b5e39e250c8",
   "decisions": {
-    "mock_suite": "v1_4_6_3_v2"
+    "mock_suite": "data_matched"
   },
   "input_versions": {
-    "glass_mock_xi_fine": "sha256:d54e74db9146ec2b395fa38616f41f734a05e545574c6e5b3709c02df50f80d8"
+    "glass_mock_xi_fine": "sha256:bab70b08c72ae34f1f157f9d1197bb1729c1d0a2fa2dfe87e328a570410739b4"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -22,8 +22,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T11:35:27.572+00:00",
-  "finished_at": "2026-11-13T11:40:09.469+00:00",
+  "started_at": "2026-11-22T22:52:33.391+00:00",
+  "finished_at": "2026-11-22T22:57:15.177+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

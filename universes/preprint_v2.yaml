@@ -1,0 +1,48 @@
+id: preprint_v2
+description: |
+  The selection of the paper before the referee report, arXiv
+  2604.03227v2: adaptive-quadrature pointwise pure
+  E/B modes with a Monte Carlo covariance and the nominal 0.05 PTE
+  threshold. The accepted paper is `published`. Both universes validate
+  on the published v1.4.6.3_v2 GLASS suite against covariances rebuilt
+  at its noise, so the mock-based outputs here are the submitted choices
+  on that suite rather than the submitted paper's v1.4.6 mocks.
+
+  Its pure-mode fiducial window is the declared 12'–83' (seven reporting
+  bins). The submitted paper's printed fiducial pure-mode PTEs read an
+  eighth bin, 9.1'–83' (ξ_tot^B 0.18 there, 0.16 here); its full-range
+  PTEs are the same.
+
+decisions:
+  fiducial_catalog: size_cut
+  leakage_correction: applied
+  fiducial_blind: blind_a
+  integration_grid: bins_1000
+  # cosmo_numba's get_pure_EB_modes, integrated with QUADPACK dqags.
+  pure_eb_integration_method: adaptive_dqags
+  # The pointwise chain evaluates the transform at the 20 reporting bin centres,
+  # so nothing is rebinned; the only selection consistent with adaptive_dqags.
+  pure_eb_rebinning_weights: none
+  # The transform limits [1', 250'].
+  pure_eb_integration_limits: reporting_extent
+  harmonic_validation_binning: bins_96
+  pte_definition: chi2_tail
+  bandpower_binning: bandpowers_32_powspace
+  noise_bias_correction: analytic_shot_noise
+  reporting_binning: bins_20
+  decomposition_method: schneider22_integral_transform
+  mode_count: n_max_20
+  reference_covariance: mockmatched
+  mock_suite: v1_4_6_3_v2
+
+analyses:
+  covariances:
+    universe: preprint_v2
+  catalog_processing:
+    universe: preprint_v2
+  mocks:
+    universe: preprint_v2
+  validation:
+    universe: preprint_v2
+  significance:
+    universe: preprint_v2

@@ -2,13 +2,13 @@
 
 One row per decision variant, over two shared columns:
 
-* left   -- the across-realisation mean xi_+^B / xi_-^B in units of the
+* left   -- the across-realization mean xi_+^B / xi_-^B in units of the
             analytic (data) sigma, with sigma_emp/(sigma_ana sqrt(N)) error
             bars.  The mocks carry no B power, so any excursion from zero is
             that variant's own rectification bias, and the y-axis reads as
             "fraction of a data error bar";
 * right  -- the empirical-over-analytic sigma ratio, with the 1/sqrt(2(N-1))
-            sampling error of an N-realisation standard deviation.  Says
+            sampling error of an N-realization standard deviation.  Says
             whether the variant's propagated covariance has the right
             amplitude.
 

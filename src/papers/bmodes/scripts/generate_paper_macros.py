@@ -14,7 +14,7 @@ from pathlib import Path
 
 from numerics import resolve_pte_threshold
 from catalog_versions import VERSIONS, add_catalog_arguments, catalogs_from
-from decision_values import REPORTING_BINNING, SURVEY_PROPERTIES
+from decision_values import REFERENCE_COVARIANCE, REPORTING_BINNING, SURVEY_PROPERTIES
 
 
 # Version number to word mapping for TeX-safe macro names
@@ -105,7 +105,7 @@ def generate_macros(
     cosebis_covariance_path: Path = None,
     mock_per_mock_statistics_path: Path = None,
     mock_mean_vector_stats_path: Path = None,
-    mock_noise_table_path: Path = None,
+    reference_noise=None,
     cov_reporting_g_path: Path = None,
     cov_reporting_ng_path: Path = None,
 ):
@@ -462,7 +462,7 @@ def generate_macros(
         macros.append("")
 
     # Minimum over the six statistics of the ν−2 PTE (both fiducial scale-cut
-    # boundaries treated as fitted), fiducial catalogue at the fiducial cuts:
+    # boundaries treated as fitted), fiducial catalog at the fiducial cuts:
     # the same computation as the nu_penalty_verdicts table, on the same two
     # PTE payloads.
     if reporting is not None and config_pte_path.exists() and harmonic_pte_path.exists():
@@ -484,7 +484,7 @@ def generate_macros(
             )
             if row["version_full"] == fiducial_version and row["cut"] == "fiducial"
         ]
-        macros.append("% minimum ν−2 PTE at the fiducial cuts (fiducial catalogue)")
+        macros.append("% minimum ν−2 PTE at the fiducial cuts (fiducial catalog)")
         macros.append(
             "\\newcommand{\\fiducialMinPteNuPenalty}"
             f"{{{_format_value(min(float(row['pte_penalized']) for row in rows))}}}"
@@ -492,7 +492,7 @@ def generate_macros(
         macros.append("")
 
     # Object-wise PSF-leakage correction: the largest PTE shift it induces,
-    # over catalogue versions, statistics and both windows.
+    # over catalog versions, statistics and both windows.
     if config_pte_path.exists() and harmonic_pte_path.exists():
         with open(config_pte_path) as f:
             config_space_versions = json.load(f)["evidence"]["versions"]
@@ -576,7 +576,7 @@ def generate_macros(
             macros.append("")
 
     if survey is not None:
-        macros.append("% survey properties (fiducial catalogue, Table 1 row)")
+        macros.append("% survey properties (fiducial catalog, Table 1 row)")
         macros.append(f"\\newcommand{{\\surveyArea}}{{\\num{{{survey.area:.0f}}}}}")
         macros.append(f"\\newcommand{{\\surveyNeff}}{{\\num{{{survey.n_eff:.2f}}}}}")
         # sigma_e_combined is the two-component dispersion; the paper quotes
@@ -601,7 +601,7 @@ def generate_macros(
             ),
         }
         macros.append(
-            "% COSEBI first-mode significance B_1/sigma_1 (fiducial catalogue, analytic sigma)"
+            "% COSEBI first-mode significance B_1/sigma_1 (fiducial catalog, analytic sigma)"
         )
         macros.append(
             "\\newcommand{\\cosebisFirstModeSignificanceFull}"
@@ -653,20 +653,12 @@ def generate_macros(
         macros.append(f"\\newcommand{{\\mockMeanBiasCosebis}}{{\\num{{{bias:.2f}}}}}")
         macros.append("")
 
-    if mock_noise_table_path is not None and mock_noise_table_path.exists():
-        with open(mock_noise_table_path, newline="") as f:
-            rows = list(csv.DictReader(f))
-        n_eff_mock = next(
-            float(r["n_eff_arcmin2"]) for r in rows if "GLASS" in r["catalogue"]
-        )
-        n_eff_data = next(
-            float(r["n_eff_arcmin2"]) for r in rows if "GLASS" not in r["catalogue"]
-        )
+    if reference_noise is not None:
+        # The reference covariance's galaxy count over the data covariance's,
+        # both on the data's area: the density excess of the mocks it is set for.
+        excess = reference_noise.n_eff / REFERENCE_COVARIANCE["data_covariance"].n_eff - 1
         macros.append("% GLASS mock galaxy density relative to the data")
-        macros.append(
-            "\\newcommand{\\mockDensityExcess}"
-            f"{{{100 * (n_eff_mock / n_eff_data - 1):.0f}\\%}}"
-        )
+        macros.append(f"\\newcommand{{\\mockDensityExcess}}{{{100 * excess:.0f}\\%}}")
         macros.append("")
 
     # Diagonal xi_pm covariance: 20 xi_+ bins then 20 xi_- bins.
@@ -1029,9 +1021,10 @@ def _from_cli(argv=None):
         help="Absolute path to mock_mean_vector_stats.json (ensemble-mean B-mode bias)",
     )
     ap.add_argument(
-        "--mock-noise-table",
+        "--reference-covariance",
+        type=REFERENCE_COVARIANCE.__getitem__,
         default=None,
-        help="Absolute path to mock_vs_data_noise_table.csv (mock vs data n_eff)",
+        help="reference_covariance option whose noise sets the mock density excess macro",
     )
     ap.add_argument(
         "--cov-reporting-g",
@@ -1114,7 +1107,7 @@ def _from_cli(argv=None):
             cosebis_covariance_path=_optional_path(a.cosebis_covariance),
             mock_per_mock_statistics_path=_optional_path(a.mock_per_mock_statistics),
             mock_mean_vector_stats_path=_optional_path(a.mock_mean_vector_stats),
-            mock_noise_table_path=_optional_path(a.mock_noise_table),
+            reference_noise=a.reference_covariance,
             cov_reporting_g_path=_optional_path(a.cov_reporting_g),
             cov_reporting_ng_path=_optional_path(a.cov_reporting_ng),
             reporting=a.reporting_binning,

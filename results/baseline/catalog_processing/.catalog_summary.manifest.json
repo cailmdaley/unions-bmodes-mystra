@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "output_id": "catalog_processing.catalog_summary",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/catalog_summary.py --catalog SP_v1.4.5=data/v1.4.x/v1.4.5/unions_shapepipe_cut_struc_2024_v1.4.5.fits --catalog SP_v1.4.6=data/v1.4.x/v1.4.6/unions_shapepipe_cut_struc_2024_v1.4.6.fits --catalog SP_v1.4.6.3=data/v1.4.x/v1.4.6.3/unions_shapepipe_cut_struc_2024_v1.4.6.3.fits --catalog SP_v1.4.8=data/v1.4.x/v1.4.8/unions_shapepipe_cut_struc_2024_v1.4.8.fits --catalog SP_v1.4.11.3=data/v1.4.x/v1.4.11.3/unions_shapepipe_cut_struc_2024_v1.4.11.3.fits --out-file results/baseline/catalog_processing/catalog_summary.npz\n",
+  "definition_version": "sha256:a628e1508fc1151be7e6ec59f9126029405986e3f303f1c0499c058bf20b8b7f",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:dd5e46c738ae810b7b32773e42863057d03a64b316bb91f8063667be5021e160",
+  "decisions": {},
+  "input_versions": {
+    "shapepipe_v14_catalogs": "spelling:sha256:ddcb9bb187a44cd4aa678855597346a6b0bb4ad3f2056a08cfb7714923d2457a"
+  },
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-21T01:17:39.155+00:00",
+  "finished_at": "2026-11-21T01:20:42.289+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

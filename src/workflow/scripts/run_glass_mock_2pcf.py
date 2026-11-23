@@ -7,7 +7,7 @@ Mock catalogs have columns: RA, Dec, e1, e2, w.
 No response correction or PSF leakage subtraction (these are lognormal mocks).
 
 Recipes call the single-mock form (`--mock-id` + `--out-file`), one sweep member
-per realisation.
+per realization.
 """
 
 import argparse

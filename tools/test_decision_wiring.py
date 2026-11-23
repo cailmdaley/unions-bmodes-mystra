@@ -27,7 +27,6 @@ from catalog_versions import VERSIONS, Catalogs
 import compute_cosebis_pte_single as pairs
 from pure_mode_covariance import MC_SAMPLES
 import generate_cl as cl
-import generate_cl_cov as cl_cov
 import merge_cosebis_pte_rows as merge
 import primary_null_test_report as reporting
 
@@ -68,16 +67,13 @@ class DecisionWiringTests(unittest.TestCase):
         for key in default:
             self.assertEqual(alternative[key], default[key].replace("nbins=96", "nbins=128"))
 
-    def test_estimator_and_noise_reach_existing_primitives(self):
+    def test_estimator_reaches_existing_primitive(self):
         for method in ["catalog"]:
             with tempfile.TemporaryDirectory() as tmp, patch.object(cl, "CosmologyValidation") as cv:
                 cl.generate_cl("test", tmp, "unused", binning="powspace", nbins=128)
                 self.assertEqual(cv.call_args.kwargs["cell_method"], method)
                 self.assertEqual(cv.call_args.kwargs["n_ell_bins"], 128)
                 cv.return_value.calculate_pseudo_cl.assert_called_once()
-            with tempfile.TemporaryDirectory() as tmp, patch.object(cl_cov, "CosmologyValidation") as cv:
-                cl_cov.generate_cl_cov("test", tmp, "unused", nbins=128)
-                cv.return_value.calculate_pseudo_cl_eb_cov.assert_called_once()
 
     def test_bin_count_reaches_the_measurement(self):
         with tempfile.TemporaryDirectory() as tmp:

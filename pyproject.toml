@@ -5,6 +5,11 @@ requires-python = ">=3.12"
 dependencies = [
     "cosmo-numba",
     "sp-validation",
+    # GLASS mock generation (glass_mock_generate.py); matter_cls lives in
+    # glass.ext.camb, and glass reads its cosmology through cosmology.compat.camb.
+    "glass==2026.4",
+    "glass.ext.camb==2023.6",
+    "cosmology.compat.camb==0.2.0",
 ]
 
 [tool.uv]

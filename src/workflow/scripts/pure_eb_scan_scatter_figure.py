@@ -9,7 +9,7 @@ either.  A variant can sit at mean/sigma = 0.1 with an error bar twice
 anyone else's and read as the best row in that figure.
 
 So this one plots the scatter itself.  Per variant, per reporting bin, the
-across-realisation standard deviation of the mock pure-B vector -- the mocks
+across-realization standard deviation of the mock pure-B vector -- the mocks
 carry no B power, so that sigma IS the method's noise -- multiplied by theta
 in arcmin, which flattens the curves enough that seven of them can share one
 pair of axes.  Units are therefore arcmin (theta) times the dimensionless

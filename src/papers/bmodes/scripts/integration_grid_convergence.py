@@ -67,7 +67,7 @@ REPORTED_BLOCKS = ("xip_B", "xim_B", "xip_amb", "xim_amb")
 def _chi2_pte(data, cov, n_eff):
     """χ² and its PTE, Hartlap-corrected when the covariance is MC-estimated.
 
-    *n_eff* is the number of independent realisations behind the covariance, or
+    *n_eff* is the number of independent realizations behind the covariance, or
     ``None`` for a theory covariance, where no sample bias enters and the factor
     is 1 (``calculate_cosebis`` does the same).
     """

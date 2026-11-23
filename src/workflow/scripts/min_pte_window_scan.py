@@ -1,7 +1,7 @@
 """Recompute the calibrated min-PTE threshold on every scale-cut window.
 
 The paper's min-PTE criterion is calibrated on the GLASS mocks at one angular
-window: for each realisation take the minimum PTE across the six null-test
+window: for each realization take the minimum PTE across the six null-test
 statistics, and read the 5% quantile of that distribution.  This script does
 the same thing on every (theta_min, theta_max) pair of the 21-edge reporting
 grid, with the COSEBIs *recomputed in each window* rather than held at their
@@ -23,8 +23,8 @@ Per window:
   taken unchanged from the per-mock statistics npz.
 
 The COSEBI roots and norms are a function of theta_max/theta_min alone, and
-across realisations that ratio varies only at the 1e-7 level, so each window
-needs two root solves for the mock vectors (interpolated per realisation) and
+across realizations that ratio varies only at the 1e-7 level, so each window
+needs two root solves for the mock vectors (interpolated per realization) and
 one for the covariance rather than 351.  Everything else mirrors the pipeline
 call for call; at the fiducial and full-range windows the result reproduces the
 pipeline's own per-mock PTEs to machine precision.
@@ -164,12 +164,12 @@ def load_inputs(args):
 
     # The mock ensembles carry their own ordering; the statistics npz is
     # ordered by sorted, zero-padded id.  Reindex both onto that order so a
-    # row always means the same realisation.
+    # row always means the same realization.
     def reindex(block):
         lookup = {mock_id.zfill(5): i for i, mock_id in enumerate(block["mock_ids"])}
         missing = [m for m in mock_ids if m not in lookup]
         if missing:
-            raise SystemExit(f"realisations missing from an ensemble: {missing[:5]}")
+            raise SystemExit(f"realizations missing from an ensemble: {missing[:5]}")
         return np.asarray([lookup[m] for m in mock_ids], dtype=int)
 
     fine_order = reindex(fine)
@@ -254,7 +254,7 @@ def cosebis_for_window(state, inds, theta_min_edge, theta_max_edge):
     Mirrors ``mock_cosebis_scatter.compute_from_grid`` for the data vectors and
     ``mock_campaign_analysis._load_cosebis_covariance`` for the covariance --
     including the fact that the two use different theta grids (each mock's own
-    pair-weighted meanr, and the data catalogue's).
+    pair-weighted meanr, and the data catalog's).
     """
 
     nmodes = state["nmodes"]
@@ -277,13 +277,13 @@ def cosebis_for_window(state, inds, theta_min_edge, theta_max_edge):
     tmins = theta_mocks.min(axis=1)
     tmaxs = theta_mocks.max(axis=1)
 
-    # The pipeline gives every realisation its own COSEBIS object, built on
-    # that realisation's own pair-weighted theta range.  Solving the roots 350
+    # The pipeline gives every realization its own COSEBIS object, built on
+    # that realization's own pair-weighted theta range.  Solving the roots 350
     # times per window is not affordable (~13 s each), but the roots and norms
-    # are a function of theta_max/theta_min alone, and across realisations that
+    # are a function of theta_max/theta_min alone, and across realizations that
     # ratio spans a relative range of ~4e-7.  Solving at the two ends and
     # interpolating linearly in the ratio reproduces the pipeline's B_n to
-    # ~1e-22 -- six orders of magnitude better than reusing one realisation's
+    # ~1e-22 -- six orders of magnitude better than reusing one realization's
     # roots, and far below the level at which any PTE moves.
     ratios = tmaxs / tmins
     low, high = float(ratios.min()), float(ratios.max())
@@ -304,7 +304,7 @@ def cosebis_for_window(state, inds, theta_min_edge, theta_max_edge):
         else:
             mode_obj.roots = nb.typed.List(list(roots_low))
             mode_obj.norms = norms_low
-        # The z = log(theta / tmin) mapping uses each realisation's own range,
+        # The z = log(theta / tmin) mapping uses each realization's own range,
         # exactly as its own COSEBIS object would have.
         mode_obj.tmin = float(tmins[index])
         mode_obj.tmax = float(tmaxs[index])
@@ -327,7 +327,7 @@ def pure_for_window(state, theta_min_edge, theta_max_edge):
     """The three pure-mode statistics' per-mock PTEs inside one window."""
 
     # The pipeline builds the bin-centre mask once, from the first
-    # realisation's reporting theta, and applies it to every realisation.
+    # realization's reporting theta, and applies it to every realization.
     theta = state["pure_theta"][0]
     mask = (theta >= theta_min_edge) & (theta <= theta_max_edge)
     if not mask.any():
@@ -558,12 +558,12 @@ def _parse_args(argv=None):
         choices=("interpolate_ratio", "shared"),
         default="interpolate_ratio",
         help=(
-            "How each realisation's COSEBI roots/norms are obtained. "
+            "How each realization's COSEBI roots/norms are obtained. "
             "'interpolate_ratio' solves at the two ends of the ensemble's "
             "theta_max/theta_min range and interpolates, reproducing the "
-            "pipeline's per-realisation objects to ~1e-22 in B_n; 'shared' "
-            "uses one solve for all realisations (~1e-16 in B_n, ~2e-5 in "
-            "PTE). Each realisation keeps its own (theta_min, theta_max) "
+            "pipeline's per-realization objects to ~1e-22 in B_n; 'shared' "
+            "uses one solve for all realizations (~1e-16 in B_n, ~2e-5 in "
+            "PTE). Each realization keeps its own (theta_min, theta_max) "
             "either way."
         ),
     )

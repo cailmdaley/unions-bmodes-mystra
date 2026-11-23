@@ -4,13 +4,13 @@
   "universe_id": "baseline",
   "recipe": "python -c \"import json; from sp_validation.cosmology import PLANCK18; d = dict(PLANCK18); d['Omega_v'] = 1 - PLANCK18['Omega_m']; json.dump(d, open('results/baseline/covariances/cosmology_snapshot.json', 'w'), indent=2)\"\n",
   "definition_version": "sha256:e5d72df428a82e03e740e40677f923bfb900c51aa16cdefb425723cfb6fcc321",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
   "data_version": "sha256:c2a2387f4c8a208fbb1cb4e7c6fb11dbf0945b44f4d576380626c21c228c2024",
   "decisions": {
     "fiducial_cosmology": "planck18"
   },
   "input_versions": {},
-  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -20,8 +20,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T03:40:07.394+00:00",
-  "finished_at": "2026-11-13T03:41:10.238+00:00",
+  "started_at": "2026-11-20T15:31:29.797+00:00",
+  "finished_at": "2026-11-20T15:32:37.975+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

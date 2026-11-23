@@ -1,7 +1,7 @@
 {
   "spec_id": "config_space_pte_matrices",
   "spec_path": "papers/bmodes/config/config_space_pte_matrices.md",
-  "generated": "2026-11-13T05:59:25.556651",
+  "generated": "2026-11-22T16:19:42.393850",
   "evidence": {
     "fiducial_version": "SP_v1.4.6.3_leak_corr",
     "versions": {

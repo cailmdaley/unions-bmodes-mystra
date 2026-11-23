@@ -2,20 +2,20 @@
   "schema_version": 1,
   "output_id": "validation.glass_mocks.mock_validation_figure",
   "universe_id": "baseline",
-  "recipe": "python src/workflow/scripts/mock_validation_figure.py --per-mock-statistics results/baseline/validation/glass_mocks/mock_per_mock_statistics.npz --campaign-evidence results/baseline/validation/glass_mocks/mock_campaign_evidence.json --cl-dir \"$(dirname \"$(printf '%s\\n' \"data/glass_mock_v1.4.6.3_v2/cl/cl_glass_mock_*_4096.npy\" | head -n1)\")\" --range full --output results/baseline/validation/glass_mocks/mock_validation_figure.png\n",
-  "definition_version": "sha256:3dca6bfb35100be0def8e34f742978d7413a7057b1444754f0a7e90563e548d6",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
-  "data_version": "sha256:7082610ca93d4a78676c37ee23082e0aceb90d6cfaa8b4f3bfd97f38eec55cf1",
+  "recipe": "c=$(mktemp -d) && tar xzf results/baseline/mocks/glass_mock_cl.tar.gz -C $c && python src/workflow/scripts/mock_validation_figure.py --per-mock-statistics results/baseline/validation/glass_mocks/mock_per_mock_statistics.npz --campaign-evidence results/baseline/validation/glass_mocks/mock_campaign_evidence.json --cl-dir \"$c\" --range full --output results/baseline/validation/glass_mocks/mock_validation_figure.png\n",
+  "definition_version": "sha256:fa9bc3638ba0deb81307adb2b18def72f00c41c6246b20f79ce49a660272ad51",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:3ffe52060cacd4eb2d9b8aef86ba45ae148d3cf93d24a56b28dc3d28bbf1f332",
   "decisions": {
-    "reference_covariance": "mockmatched",
-    "mock_suite": "v1_4_6_3_v2"
+    "reference_covariance": "data_covariance",
+    "mock_suite": "data_matched"
   },
   "input_versions": {
-    "mock_per_mock_statistics": "sha256:e57566d75aeb13c670ff6ec4bb71d1128d49cda2db95a8b3967e230135ac6c79",
-    "mock_campaign_evidence": "sha256:67818029ed6a46e3f62fd01bed5c1e71a0efc8a63502926c7d02f207719f5f21",
-    "glass_mock_cl": "spelling:sha256:7a95094265668606e4e52832fd862759a9b5e1fad70c022654d0c983d0c96a1a"
+    "mock_per_mock_statistics": "sha256:5dc996380d29e4921e21f09110f321986fb4c812ddab94c6ee7ab3bc91410cfd",
+    "mock_campaign_evidence": "sha256:a1e8be78f449b216557327187f6e1815657e43c676974201339ac926eb60294f",
+    "glass_mock_cl": "sha256:746dd98c5b294ac9021ce4ee6e4bd9af1e0b6bc93143b2b7322a3c67d4f33017"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -25,8 +25,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T12:59:49.616+00:00",
-  "finished_at": "2026-11-13T13:00:28.742+00:00",
+  "started_at": "2026-11-22T23:07:25.625+00:00",
+  "finished_at": "2026-11-22T23:07:51.041+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

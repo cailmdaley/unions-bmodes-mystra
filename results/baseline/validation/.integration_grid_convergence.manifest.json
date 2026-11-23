@@ -2,9 +2,9 @@
   "schema_version": 1,
   "output_id": "validation.integration_grid_convergence",
   "universe_id": "baseline",
-  "recipe": "python src/papers/bmodes/scripts/integration_grid_convergence.py --fiducial-catalog size_cut --leakage-correction applied --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 --xi-reporting results/baseline/data_vectors/xi_reporting.txt --xi-1k results/baseline/data_vectors/xi_integration.txt --xi-10k results/baseline/data_vectors/xi_10000_bins.txt --pure-eb-baseline results/baseline/data_vectors/pure_eb_data.npz --pure-eb-covariance results/baseline/covariances/pure_eb_covariance.npz --cosebis-baseline results/baseline/data_vectors/cosebis_modes_data.npz --cosebis-covariance results/baseline/covariances/cosebis_covariance.npz --integration-method fixed_operator --rebinning-weights npairs --integration-limits fine_grid_extent --out-file results/baseline/validation/integration_grid_convergence.json\n",
-  "definition_version": "sha256:394e172159f77faa31a0e6ef5183dc9874bdaebb32f728fdde124a0602599031",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "recipe": "python src/papers/bmodes/scripts/integration_grid_convergence.py --fiducial-catalog size_cut --leakage-correction applied --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 --xi-reporting results/baseline/catalog_processing/xi_reporting.txt --xi-1k results/baseline/catalog_processing/xi_integration.txt --xi-10k results/baseline/catalog_processing/xi_10000_bins.txt --pure-eb-baseline results/baseline/catalog_processing/pure_eb_data.npz --pure-eb-covariance results/baseline/covariances/pure_eb_covariance.npz --cosebis-baseline results/baseline/catalog_processing/cosebis_modes_data.npz --cosebis-covariance results/baseline/covariances/cosebis_covariance.npz --integration-method fixed_operator --rebinning-weights npairs --integration-limits fine_grid_extent --out-file results/baseline/validation/integration_grid_convergence.json\n",
+  "definition_version": "sha256:079dc21edd183082547f2eff08fecd7529729c2858a0a248844d45bf13d459b7",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
   "data_version": "sha256:af1805fb9663a831cfd963df4ab6bd929c826bdba977ecb5b478006ad0dc1b95",
   "decisions": {
     "fiducial_catalog": "size_cut",
@@ -20,15 +20,15 @@
     "integration_grid": "bins_1000"
   },
   "input_versions": {
-    "xi_reporting": "sha256:8a9d59dfb380aa4f43db124d64f6639f60e0a56ccdb6746fb718eb8cf1d6eb95",
-    "xi_integration": "sha256:8aad521c25174deae913ced1dc8d416edd5662de2a436dc57999cb475b376130",
+    "xi_reporting": "sha256:d36fd4f4c065c7ad9c0ab5198cda7ff4b9110df261ca0b8288c3a79a735c0fa2",
+    "xi_integration": "sha256:1f5f0f013b61307d6e5506eaea3e3bf04a2ec70bb8013594f5e1423855083e4e",
     "xi_10000_bins": "sha256:b44a00978a3dde5e0ae4bd9c4b7851a3d1689cefc03f43fdca5c75d33701dc06",
     "pure_eb_data": "sha256:ea60559633c1283ad5289da6b916b7d14503afbfc717269c3ebd3f030eda9a7c",
     "pure_eb_covariance": "sha256:f02851765875fefaf415c0eb00e7a1ac0dba9668d31fa8eb5764018d08efd729",
     "cosebis_modes_data": "sha256:73575032623db6458e66df04b7a46e6b861ec77bbf18709f3c2223913df97ba5",
     "cosebis_covariance": "sha256:ddbba1e098c9147548804e23cb2b7689d09679441c77972c77671e4330e5900f"
   },
-  "git_sha": "ab8b43a0ea47e20b5fc39b7e1297a6a3e0f4007b",
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -38,8 +38,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T16:35:16.294+00:00",
-  "finished_at": "2026-11-13T16:41:43.854+00:00",
+  "started_at": "2026-11-21T21:25:06.572+00:00",
+  "finished_at": "2026-11-21T21:29:17.884+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

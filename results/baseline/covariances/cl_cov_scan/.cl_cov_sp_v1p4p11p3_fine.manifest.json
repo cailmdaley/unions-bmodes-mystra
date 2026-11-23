@@ -2,10 +2,10 @@
   "schema_version": 1,
   "output_id": "covariances.cl_cov_scan.cl_cov_sp_v1p4p11p3_fine",
   "universe_id": "baseline",
-  "recipe": "python src/workflow/scripts/generate_cl_cov.py --ver \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --scan-version SP_v1.4.11.3_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))\" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins \"$(python src/workflow/scripts/decision_values.py harmonic_validation_binning bins_96)\" --power 0.5 --blind blind_a --out-file results/baseline/covariances/cl_cov_scan/cl_cov_sp_v1p4p11p3_fine.fits\n",
-  "definition_version": "sha256:c77f247c9d288fd50f5c60b7f3e20264a27633a86b52e11d7c14ad8122e75a6a",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
-  "data_version": "sha256:f50abb3270b023a41255fea90e78af6e6b2469e8954527d991cf1ae85875dae1",
+  "recipe": "python src/workflow/scripts/generate_cl_cov.py --ver \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --scan-version SP_v1.4.11.3_leak_corr $(if [ fine = fine ]; then printf -- '--fine-grid'; fi))\" --summary results/baseline/catalog_processing/catalog_summary.npz --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --binning powspace --nbins \"$(python src/workflow/scripts/decision_values.py harmonic_validation_binning bins_96)\" --power 0.5 --blind blind_a --out-file results/baseline/covariances/cl_cov_scan/cl_cov_sp_v1p4p11p3_fine.fits\n",
+  "definition_version": "sha256:54691f85bfc011c95ff8665cc7df625fd41ac6fce515229cf5b6d56705d28a4b",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:989840b4eaa47e9a714be2bf98bdf7234883edce2086a1b5247b79f4b244826d",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a",
@@ -15,10 +15,10 @@
     "leakage_correction": "applied"
   },
   "input_versions": {
-    "shapepipe_v14_catalogs": "spelling:sha256:ddcb9bb187a44cd4aa678855597346a6b0bb4ad3f2056a08cfb7714923d2457a",
+    "catalog_summary": "sha256:dd5e46c738ae810b7b32773e42863057d03a64b316bb91f8063667be5021e160",
     "redshift_distributions": "spelling:sha256:11ef1341c9f8ea8d3d7fb69db5d38885a4f438092cb4096978145b98d45b8e43"
   },
-  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -28,8 +28,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T07:11:55.515+00:00",
-  "finished_at": "2026-11-13T07:14:26.786+00:00",
+  "started_at": "2026-11-21T01:23:49.686+00:00",
+  "finished_at": "2026-11-21T01:25:36.068+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

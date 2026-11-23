@@ -1,0 +1,138 @@
+{
+  "ell_cut": [
+    300.0,
+    1600.0
+  ],
+  "n_bands": 17,
+  "n_realizations": 350,
+  "machinery_variance_ratio_mean": 0.7283402261186057,
+  "machinery_variance_ratio_median": 0.7277151628137661,
+  "empirical_variance_ratio_mean": 0.7059645047734397,
+  "empirical_variance_ratio_median": 0.6917491698431425,
+  "per_band": [
+    {
+      "ell_eff": 327.5,
+      "ell_low": 304,
+      "ell_high": 351,
+      "machinery_variance_ratio": 0.7334081604564274,
+      "empirical_variance_ratio": 0.6754810333037197
+    },
+    {
+      "ell_eff": 377.0,
+      "ell_low": 352,
+      "ell_high": 402,
+      "machinery_variance_ratio": 0.7321932815112526,
+      "empirical_variance_ratio": 0.7914981324193879
+    },
+    {
+      "ell_eff": 429.99999999999994,
+      "ell_low": 403,
+      "ell_high": 457,
+      "machinery_variance_ratio": 0.7310419770950316,
+      "empirical_variance_ratio": 0.6457965390869478
+    },
+    {
+      "ell_eff": 487.0,
+      "ell_low": 458,
+      "ell_high": 516,
+      "machinery_variance_ratio": 0.7300894116217591,
+      "empirical_variance_ratio": 0.6810886432777505
+    },
+    {
+      "ell_eff": 547.5,
+      "ell_low": 517,
+      "ell_high": 578,
+      "machinery_variance_ratio": 0.7293542418184246,
+      "empirical_variance_ratio": 0.719182208897704
+    },
+    {
+      "ell_eff": 610.9999999999998,
+      "ell_low": 579,
+      "ell_high": 643,
+      "machinery_variance_ratio": 0.7289790759318412,
+      "empirical_variance_ratio": 0.8366213276264406
+    },
+    {
+      "ell_eff": 678.0000000000003,
+      "ell_low": 644,
+      "ell_high": 712,
+      "machinery_variance_ratio": 0.7284964134818608,
+      "empirical_variance_ratio": 0.7172533552863565
+    },
+    {
+      "ell_eff": 749.0000000000001,
+      "ell_low": 713,
+      "ell_high": 785,
+      "machinery_variance_ratio": 0.7280456079549922,
+      "empirical_variance_ratio": 0.6979521696672493
+    },
+    {
+      "ell_eff": 823.5,
+      "ell_low": 786,
+      "ell_high": 861,
+      "machinery_variance_ratio": 0.7277151628137661,
+      "empirical_variance_ratio": 0.7738927453937877
+    },
+    {
+      "ell_eff": 901.0000000000002,
+      "ell_low": 862,
+      "ell_high": 940,
+      "machinery_variance_ratio": 0.727465414263212,
+      "empirical_variance_ratio": 0.6302163920150928
+    },
+    {
+      "ell_eff": 981.9999999999999,
+      "ell_low": 941,
+      "ell_high": 1023,
+      "machinery_variance_ratio": 0.7271820198727097,
+      "empirical_variance_ratio": 0.7413038650874108
+    },
+    {
+      "ell_eff": 1067.0,
+      "ell_low": 1024,
+      "ell_high": 1110,
+      "machinery_variance_ratio": 0.7268681400725011,
+      "empirical_variance_ratio": 0.6917491698431425
+    },
+    {
+      "ell_eff": 1155.4999999999998,
+      "ell_low": 1111,
+      "ell_high": 1200,
+      "machinery_variance_ratio": 0.726579668181447,
+      "empirical_variance_ratio": 0.6851372557562568
+    },
+    {
+      "ell_eff": 1247.4999999999998,
+      "ell_low": 1201,
+      "ell_high": 1294,
+      "machinery_variance_ratio": 0.7263604737424277,
+      "empirical_variance_ratio": 0.6890702328918037
+    },
+    {
+      "ell_eff": 1343.0000000000007,
+      "ell_low": 1295,
+      "ell_high": 1391,
+      "machinery_variance_ratio": 0.7261934602725358,
+      "empirical_variance_ratio": 0.6567128785318649
+    },
+    {
+      "ell_eff": 1441.5000000000005,
+      "ell_low": 1392,
+      "ell_high": 1491,
+      "machinery_variance_ratio": 0.7260354155075169,
+      "empirical_variance_ratio": 0.6979742843921529
+    },
+    {
+      "ell_eff": 1544.0000000000005,
+      "ell_low": 1492,
+      "ell_high": 1596,
+      "machinery_variance_ratio": 0.7257759194185924,
+      "empirical_variance_ratio": 0.6704663476714074
+    }
+  ],
+  "sources": {
+    "cl_cov_reference": "results/published/covariances/cl_cov_reference.fits",
+    "cl_cov_data": "results/published/covariances/cl_cov_reporting.fits",
+    "cl_files": "350 files matching /project/6033482/cdaley/unions/analyses/paper-ii-fir/UNIONS/pure_eb/.lightcone/lc-home-mi24u7zb/.tmp/tmp.TrRPQvCYqI/cl_glass_mock_*_4096.npy"
+  }
+}

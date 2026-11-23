@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.cosebis_version_comparison_figure",
+  "universe_id": "published",
+  "recipe": "m=$(mktemp -d) && c=$(mktemp -d) && tar xzf results/published/catalog_processing/cosebis_modes_sweep.tar.gz -C $m && tar xzf results/published/covariances/cosebis_covariance_sweep.tar.gz -C $c && python src/papers/bmodes/scripts/cosebis_version_comparison.py --fiducial-catalog size_cut --leakage-correction applied --blind blind_a --reporting-binning bins_20 --mode-count n_max_20 --results-dir $m --cov-dir $c --fiducial-version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --fiducial-modes-path results/published/catalog_processing/cosebis_modes_data.npz --fiducial-covariance-path results/published/covariances/cosebis_covariance.npz --out-file results/published/significance/cosebis_version_comparison_figure.png\n",
+  "definition_version": "sha256:8c2f0da10489b98203732e74ecd3fc88ea35cb29e3c6b04ccd5032ad8ca9f782",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:319be9ccd0c2a79928c242ed0ed857d864985167507051be09fdd5f7a3658efa",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "mode_count": "n_max_20",
+    "leakage_correction": "applied",
+    "reporting_binning": "bins_20"
+  },
+  "input_versions": {
+    "cosebis_modes_data": "sha256:73575032623db6458e66df04b7a46e6b861ec77bbf18709f3c2223913df97ba5",
+    "cosebis_modes_sweep": "sha256:068e56417b0a98c580956c58f0695fb5466d2d138ea3cdf0cd81ff3441cb7f76",
+    "cosebis_covariance": "sha256:ddbba1e098c9147548804e23cb2b7689d09679441c77972c77671e4330e5900f",
+    "cosebis_covariance_sweep": "sha256:4d5b9c3a157e92743d419c745b117c52ff31f82c0dfa1cbffa29a598e923838a"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T21:52:34.336+00:00",
+  "finished_at": "2026-11-22T21:53:46.130+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

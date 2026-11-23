@@ -1,7 +1,8 @@
 id: baseline
 description: |
   Gaussian CosmoCov covariance for all three ξ± pairings, carried exactly
-  through the linear pure-mode transform.
+  through the linear pure-mode transform. The reference covariances are the
+  data's own, against which the data-matched GLASS suite is held.
 decisions:
   covariance_engine: cosmocov
   covariance_class: gaussian_only

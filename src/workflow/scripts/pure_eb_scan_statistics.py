@@ -5,15 +5,15 @@ and the per-variant mock pure-mode ensemble -- and answers, per variant, the
 three questions that decide between the variants:
 
 * **mock bias.**  The mocks carry no B power by construction, so the
-  across-realisation mean of xi_+^B / xi_-^B is that variant's own
+  across-realization mean of xi_+^B / xi_-^B is that variant's own
   rectification.  Reported as chi2/PTE of the mean against the empirical
   covariance of the mean (sigma_emp/sqrt(N)), Hartlap-corrected, plus the
   per-bin mean in units of the analytic sigma.
 * **calibration.**  sigma_emp/sigma_ana per bin, and the KS p-value of the
-  across-realisation PTE distribution against uniform for xi_+^B, xi_-^B and
+  across-realization PTE distribution against uniform for xi_+^B, xi_-^B and
   xi_tot^B.  A variant can be unbiased and still mis-calibrated if its
   propagated covariance has the wrong amplitude.
-* **the data.**  The real catalogue's PTE for the same three statistics at the
+* **the data.**  The real catalog's PTE for the same three statistics at the
   adopted window, computed through that variant's own covariance -- so the
   mock verdict and the number the paper would report are read off one table.
 
@@ -125,7 +125,7 @@ def _mean_vector_chi2(vectors: np.ndarray) -> dict[str, object]:
     n_real, n_bins = vectors.shape
     mean = vectors.mean(axis=0)
     cov_mean = np.cov(vectors, rowvar=False, ddof=1) / n_real
-    # Hartlap on an N-realisation estimate of an n_bins x n_bins covariance.
+    # Hartlap on an N-realization estimate of an n_bins x n_bins covariance.
     hartlap = (n_real - n_bins - 2) / (n_real - 1)
     chi2 = float(mean @ np.linalg.inv(cov_mean) @ mean * hartlap)
     return {
@@ -196,7 +196,7 @@ def _variant_statistics(modes, variant, cov_path, hartlap_n):
                 _finite(value) for value in sigma_emp / sigma_ana / np.sqrt(n_real)
             ],
             "sigma_ratio": [_finite(value) for value in sigma_emp / sigma_ana],
-            # 1/sqrt(2(N-1)) is the sampling error of an N-realisation stddev.
+            # 1/sqrt(2(N-1)) is the sampling error of an N-realization stddev.
             "sigma_ratio_error": _finite(1.0 / np.sqrt(2 * (n_real - 1))),
         }
 

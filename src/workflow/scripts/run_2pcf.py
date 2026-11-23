@@ -43,18 +43,18 @@ def _cap_treecorr_threads():
     treecorr.set_max_omp_threads(int(os.environ.get("OMP_NUM_THREADS", "1")))
 
 
-def _skip_psf_catalogue(cv, ver):
-    """Load only the shear catalogue for this version's ξ± measurement.
+def _skip_psf_catalog(cv, ver):
+    """Load only the shear catalog for this version's ξ± measurement.
 
     ``calculate_2pcf`` opens its data through ``temporarily_read_data()``,
-    whose ``psf=True`` default also reads the star/PSF catalogue for the
+    whose ``psf=True`` default also reads the star/PSF catalog for the
     PSF-leakage statistics. The ξ± measurement itself never touches it: it
     takes RA/Dec, the calibrated shears and the weights from ``dat_shear``
     alone.
 
     Under ``--out-file`` the leakage side products are discarded with the
     scratch directory and nothing downstream consumes them, so that read is
-    pure cost — a second large FITS file, and a dependency on a catalogue
+    pure cost — a second large FITS file, and a dependency on a catalog
     the declared inputs have no reason to carry. Bound per instance, so
     ``--out`` directory mode keeps reading it.
     """
@@ -82,8 +82,8 @@ def run_2pcf(
     patches (1 for the paper fiducial). ``cat_config`` is an absolute path to
     the catalog configuration; ``output_dir`` overrides
     ``cat_config['paths']['output']`` so products land in the run's own tree.
-    ``read_psf=False`` skips the PSF-leakage catalogue read the ξ± itself
-    does not need (see :func:`_skip_psf_catalogue`).
+    ``read_psf=False`` skips the PSF-leakage catalog read the ξ± itself
+    does not need (see :func:`_skip_psf_catalog`).
     """
     _cap_treecorr_threads()
     cv = CosmologyValidation(
@@ -92,7 +92,7 @@ def run_2pcf(
         output_dir=output_dir,
     )
     if not read_psf:
-        _skip_psf_catalogue(cv, ver)
+        _skip_psf_catalog(cv, ver)
     return cv.calculate_2pcf(
         ver=ver,
         npatch=npatch,
@@ -145,9 +145,9 @@ def _from_cli(argv=None):
     out_group.add_argument("--out", help="Output directory (lc {output})")
     out_group.add_argument(
         "--out-file",
-        help="Write the TreeCorr text dump to exactly this path "
-        "(no directory, no siblings — FITS/patches/leakage side "
-        "products are confined to a scratch dir and discarded).",
+        help="Write the TreeCorr text dump, without its covariance block, to "
+        "exactly this path (no directory, no siblings — FITS/patches/leakage "
+        "side products are confined to a scratch dir and discarded).",
     )
     ap.add_argument("--no-fits", action="store_true", help="Skip ξ+/ξ- FITS export")
     a = ap.parse_args(argv)
@@ -171,8 +171,10 @@ def _from_cli(argv=None):
                 / f"{a.ver}_xi_minsep={a.min_sep}_maxsep={a.max_sep}"
                 f"_nbins={a.nbins}_npatch={a.npatch}.txt"
             )
+            # Rewritten without TreeCorr's covariance block, which nothing
+            # reads: a single-patch run's is only the shot-noise diagonal.
             Path(a.out_file).parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(produced, a.out_file)
+            treecorr.GGCorrelation.from_file(str(produced)).write(a.out_file)
         finally:
             shutil.rmtree(scratch, ignore_errors=True)
         return

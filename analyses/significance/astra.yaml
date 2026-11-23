@@ -8,29 +8,32 @@ description: |
   test and the numbers the paper quotes.
 
 inputs:
+  - id: survey_areas
+    from: ../survey_areas
+
   - id: xi_integration
-    from: ../data_vectors.xi_integration
+    from: ../catalog_processing.xi_integration
 
   - id: xi_sweep
-    from: ../data_vectors.xi_sweep
+    from: ../catalog_processing.xi_sweep
 
   - id: pure_eb_data
-    from: ../data_vectors.pure_eb_data
+    from: ../catalog_processing.pure_eb_data
 
   - id: pure_eb_sweep
-    from: ../data_vectors.pure_eb_sweep
+    from: ../catalog_processing.pure_eb_sweep
 
   - id: cosebis_modes_data
-    from: ../data_vectors.cosebis_modes_data
+    from: ../catalog_processing.cosebis_modes_data
 
   - id: cl_bandpowers_reporting
-    from: ../data_vectors.cl_bandpowers_reporting
+    from: ../catalog_processing.cl_bandpowers_reporting
 
   - id: cl_sweep
-    from: ../data_vectors.cl_sweep
+    from: ../catalog_processing.cl_sweep
 
   - id: cosebis_modes_sweep
-    from: ../data_vectors.cosebis_modes_sweep
+    from: ../catalog_processing.cosebis_modes_sweep
 
   - id: pure_eb_covariance
     from: ../covariances.pure_eb_covariance
@@ -73,9 +76,6 @@ inputs:
 
   - id: mock_mean_vector_stats
     from: ../validation.mock_mean_vector_stats
-
-  - id: mock_vs_data_noise_table
-    from: ../validation.mock_vs_data_noise_table
 
   - id: cosebis_harmonic_metrics
     from: ../validation.cosebis_harmonic_metrics
@@ -242,7 +242,7 @@ outputs:
       resources: { cpus: 2, memory: "8GB" }
 
   - id: cosebis_first_mode_significance
-    type: metric
+    type: data
     format: json
     description: |
       First-mode COSEBI B-mode significance B_1/σ_1 for the
@@ -358,7 +358,7 @@ outputs:
     from: cosebis_pte_scan.cosebis_ptes_bundle
 
   - id: config_space_pte_data
-    type: metric
+    type: data
     format: json
     description: |
       ξ_+^B, ξ_-^B, joint ξ_tot^B and COSEBI B_n (n ≤ 6 and n ≤ 20) χ²
@@ -396,7 +396,7 @@ outputs:
       resources: { cpus: 4, memory: "16GB" }
 
   - id: harmonic_space_pte_data
-    type: metric
+    type: data
     format: json
     description: |
       Cℓ^BB χ² PTE matrices over the (ℓ_min, ℓ_max) pair grid of the
@@ -428,10 +428,10 @@ outputs:
       resources: { cpus: 4, memory: "16GB" }
 
   - id: mock_min_pte_calibration
-    type: metric
+    type: data
     format: json
     description: |
-      Calibration of the min-PTE criterion on the clean realisations,
+      Calibration of the min-PTE criterion on the clean realizations,
       at the fiducial cuts (top level) and over the full range
       (`full_range`): the data's minimum PTE across the six
       statistics, the fraction of clean mocks at or below it (one- and
@@ -468,14 +468,14 @@ outputs:
       threshold p_thr = 0.01 (solid gray lines; [global PTE
       threshold](#decisions.pte_threshold)), chosen to be
       conservative across nearly all scale cuts. Red lines mark the
-      minimum PTE of the data, which 11% of realizations fall at or
-      below. The dotted curve shows the expectation for six independent
-      tests. The mocks generally follow this expectation because of two
+      minimum PTE of the data, which 13% of realizations fall at or
+      below in `baseline` (14% in `published`). The dotted curve shows
+      the expectation for six independent tests. The mocks generally follow this expectation because of two
       effects that largely cancel: correlations between the statistics
       raise the minimum PTE, while the slightly underestimated
       configuration-space covariance lowers it.
     inputs: [mock_per_mock_statistics, pure_eb_pte_per_cut, cosebis_pte_per_cut, cl_pte_per_cut]
-    decisions: [pte_threshold, reporting_binning]
+    decisions: [pte_threshold, reporting_binning, fiducial_scale_cuts, mode_subsets]
     recipe:
       command: >
         python src/workflow/scripts/mock_min_pte_calibration.py
@@ -489,7 +489,7 @@ outputs:
       resources: { cpus: 1, memory: "8GB" }
 
   - id: primary_null_test_report
-    type: metric
+    type: data
     format: json
     description: |
       The null test for the selected primary range and COSEBI mode subsets,
@@ -525,7 +525,7 @@ outputs:
       when its minimum PTE is at least p_thr = 0.01; only the fiducial
       catalog at the adopted cuts passes.
     inputs: [config_space_pte_data, harmonic_space_pte_data]
-    decisions: [fiducial_catalog, leakage_correction]
+    decisions: [fiducial_catalog, leakage_correction, fiducial_scale_cuts, mode_subsets]
     recipe:
       command: >
         python src/papers/bmodes/scripts/generate_paper_macros.py
@@ -536,7 +536,7 @@ outputs:
         --out-file {output}
 
   - id: pte_table_tex
-    type: table
+    type: data
     format: tex
     description: |
       LaTeX version of the [PTE table](#outputs.pte_table_appendix),
@@ -549,7 +549,7 @@ outputs:
         --out-file {output}
 
   - id: nu_penalty_verdicts
-    type: table
+    type: data
     format: csv
     description: |
       The ν → ν−2 penalty for treating the two scale-cut boundaries
@@ -579,7 +579,7 @@ outputs:
         --out-file {output}
 
   - id: cosebis_harmonic_config
-    type: table
+    type: data
     format: csv
     description: |
       COSEBI B-mode PTEs computed two ways — from ξ± in
@@ -703,14 +703,16 @@ outputs:
         [mock_per_mock_statistics](#inputs.mock_per_mock_statistics);
       - the ensemble-mean COSEBI bias (`\mockMeanBiasCosebis`) from
         [mock_mean_vector_stats](#inputs.mock_mean_vector_stats);
-      - the mock galaxy-density excess (`\mockDensityExcess`) from
-        [mock_vs_data_noise_table](#inputs.mock_vs_data_noise_table);
+      - the mock galaxy-density excess (`\mockDensityExcess`): the galaxy
+        count behind the [reference covariance](#decisions.reference_covariance)
+        over the data's;
       - the non-Gaussian share of the diagonal ξ± variance over all bins
         and over the fiducial window (`\ngFractionDiagonal{All,Fiducial}`)
         from [cov_reporting_g](#inputs.cov_reporting_g) and
         [cov_reporting_ng](#inputs.cov_reporting_ng).
-    decisions: [pte_threshold, fiducial_catalog, leakage_correction, reporting_binning]
+    decisions: [pte_threshold, fiducial_catalog, leakage_correction, reporting_binning, reference_covariance]
     inputs:
+      - survey_areas
       - config_space_pte_data
       - harmonic_space_pte_data
       - mock_min_pte_calibration
@@ -722,7 +724,6 @@ outputs:
       - cosebis_covariance
       - mock_per_mock_statistics
       - mock_mean_vector_stats
-      - mock_vs_data_noise_table
       - cov_reporting_g
       - cov_reporting_ng
     recipe:
@@ -742,14 +743,14 @@ outputs:
         --cosebis-covariance {inputs.cosebis_covariance}
         --mock-per-mock-statistics {inputs.mock_per_mock_statistics}
         --mock-mean-vector-stats {inputs.mock_mean_vector_stats}
-        --mock-noise-table {inputs.mock_vs_data_noise_table}
+        --reference-covariance {decisions.reference_covariance}
         --cov-reporting-g {inputs.cov_reporting_g}
         --cov-reporting-ng {inputs.cov_reporting_ng}
         --emit macros
         --out-file {output}
 
   - id: paper_claims
-    type: table
+    type: data
     format: csv
     description: |
       The table the paper's text reads its quoted numbers from: one row per
@@ -794,7 +795,7 @@ decisions:
 
       The tables and heatmaps always show both ranges; this decision
       selects which one
-      [primary_null_test_report](#../outputs.primary_null_test_report)
+      [primary_null_test_report](#outputs.primary_null_test_report)
       treats as primary.
     default: adopted
     options:
@@ -895,6 +896,8 @@ decisions:
     from: ../leakage_correction
   reporting_binning:
     from: ../reporting_binning
+  reference_covariance:
+    from: ../reference_covariance
   integration_grid:
     from: ../integration_grid
   mode_count:
@@ -1018,7 +1021,7 @@ prior_insights:
   asgari19a_bmode_verdict_depends_on_statistic:
     id: asgari19a_bmode_verdict_depends_on_statistic
     claim: |
-      A shear catalogue can formally pass one B-mode statistic and
+      A shear catalog can formally pass one B-mode statistic and
       fail another computed from the same data, because each weights
       the B modes differently (KiDS-450 passes COSEBIs but shows a
       2.7σ B mode in compressed COSEBIs). The recommendation is to
@@ -1050,7 +1053,7 @@ prior_insights:
       In a uniform reanalysis of KiDS-1000, DES-Y3 and HSC-Y3, the
       same tomographic bins can pass a pseudo-Cℓ B-mode test and fail
       the HybridEB one: the B-mode verdict depends on the estimator,
-      so passing a single null test does not validate a catalogue.
+      so passing a single null test does not validate a catalog.
     created_at: "2026-10-31T00:00:00Z"
     evidence:
       - id: ev1

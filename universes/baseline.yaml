@@ -1,14 +1,10 @@
 id: baseline
 description: |
-  The selection the accepted paper (A&A, 2026) was computed with:
-  the exactly linear fixed-quadrature Schneider-2022 operator in the
-  single-grid transform-averaged geometry (fine-grid evaluation,
-  `[θ_min, θ_max]` at the fine-grid extent), with the
-  pair-count-weighted mean from the 1000 fine nodes into the 20
-  reporting bins, the exact linear covariance, and the mock-calibrated
-  threshold on the minimum PTE. The selection it revises is the
-  `submitted` universe, which differs in quadrature, geometry,
-  covariance and threshold together.
+  The accepted paper's selection on mocks matched to the data: the
+  data-matched GLASS suite, sampled on the fiducial catalog's footprint at
+  its weight-effective count and shape dispersion, with the mock scatter
+  held against the data's own covariances. It differs from `published` in
+  the mock suite and the reference covariance alone.
 
 decisions:
   fiducial_catalog: size_cut
@@ -28,13 +24,15 @@ decisions:
   reporting_binning: bins_20
   decomposition_method: schneider22_integral_transform
   mode_count: n_max_20
-  reference_covariance: mockmatched
-  mock_suite: v1_4_6_3_v2
+  reference_covariance: data_covariance
+  mock_suite: data_matched
 
 analyses:
   covariances:
     universe: baseline
-  data_vectors:
+  catalog_processing:
+    universe: baseline
+  mocks:
     universe: baseline
   validation:
     universe: baseline

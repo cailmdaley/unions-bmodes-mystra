@@ -1,7 +1,7 @@
 """Isolate the E-to-B mixing term in the analytic C_l^BB bandpower covariance.
 
 Replicates ``CosmologyValidation.calculate_pseudo_cl_eb_cov`` exactly -- same
-mask (the mock catalogue's weighted galaxy-count map), nside, l range, powspace
+mask (the mock catalog's weighted galaxy-count map), nside, l range, powspace
 binning, analytic noise bias, and the ``fiducial_input_inka = "coupled"``
 branch -- but recomputes the covariance under three fiducial E-mode inputs
 while sharing one NmtField / NmtWorkspace / NmtCovarianceWorkspace:
@@ -47,12 +47,12 @@ def main(argv=None):
     ap.add_argument(
         "--mock-catalogs",
         required=True,
-        help="glob over the realisation catalogues (the declared family input)",
+        help="glob over the realization catalogs (the declared family input)",
     )
     ap.add_argument(
-        "--realisation",
+        "--realization",
         default="00001",
-        help="which realisation to build the mask and noise bias from",
+        help="which realization to build the mask and noise bias from",
     )
     ap.add_argument("--redshift-distribution", required=True)
     ap.add_argument("--cl-files", required=True, help="glob for the suite's C_l .npy")
@@ -76,11 +76,11 @@ def main(argv=None):
         get_theo_c_ell(ell=ell, z=z, nz=dndz, backend="ccl", cosmo=get_cosmo()) * pw**2
     )
 
-    # ---- mask and noise bias from the mock catalogue ------------------------
-    matches = [p for p in sorted(glob.glob(a.mock_catalogs)) if a.realisation in p]
+    # ---- mask and noise bias from the mock catalog ------------------------
+    matches = [p for p in sorted(glob.glob(a.mock_catalogs)) if a.realization in p]
     if len(matches) != 1:
         raise SystemExit(
-            f"realisation {a.realisation} matched {len(matches)} of "
+            f"realization {a.realization} matched {len(matches)} of "
             f"{a.mock_catalogs}: {matches}"
         )
     mock_catalog = matches[0]
@@ -164,7 +164,7 @@ def main(argv=None):
     out = {
         "ell_eff": ell_eff.tolist(),
         "reporting_cut": [300.0, 1600.0],
-        "n_realisations": len(files),
+        "n_realizations": len(files),
         "noise_bias": float(noise_bias),
         "gate_max_frac_deviation_from_stored": gate,
         "sigma_BB_stored": sigma_stored.tolist(),
@@ -178,7 +178,7 @@ def main(argv=None):
         },
         "sources": {
             "mock_catalog": mock_catalog,
-            "realisation": a.realisation,
+            "realization": a.realization,
             "redshift_distribution": a.redshift_distribution,
             "cl_files": a.cl_files,
             "cl_cov_mockmatched": a.cl_cov_mockmatched,

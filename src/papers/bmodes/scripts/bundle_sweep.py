@@ -150,7 +150,7 @@ def main(argv=None):
         )
 
     catalogs = catalogs_from(a)
-    # Scan IDs describe fixed roles, even when the primary catalogue is raw.
+    # Scan IDs describe fixed roles, even when the primary catalog is raw.
     versions = catalogs.scan_slots
     expected = (LAYOUTS[a.layout](versions, a.harmonic_validation_binning, catalogs)
                 if harmonic else LAYOUTS[a.layout](versions, catalogs))

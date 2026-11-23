@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.pure_eb_version_comparison_figure",
+  "universe_id": "published",
+  "recipe": "d=$(mktemp -d) && tar xzf results/published/catalog_processing/pure_eb_sweep.tar.gz -C $d && c=$(mktemp -d) && tar xzf results/published/covariances/pure_eb_covariance_sweep.tar.gz -C $c && python src/papers/bmodes/scripts/pure_eb_version_comparison.py --fiducial-catalog size_cut --leakage-correction applied --blind blind_a --reporting-binning bins_20 --results-dir $d --cov-dir $c --fiducial-version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --fiducial-pure-eb-data results/published/catalog_processing/pure_eb_data.npz --fiducial-pure-eb-covariance results/published/covariances/pure_eb_covariance.npz --out-file results/published/significance/pure_eb_version_comparison_figure.png\n",
+  "definition_version": "sha256:88e2b037d50a99a9bae45747aca67ab5e76fddebca30220e4976ff3306ab523f",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:bf5aaacb21b5af9b9001fe9767dacc8c7a329e6eceaa7292043fe8521681a4cd",
+  "decisions": {
+    "pte_definition": "chi2_tail",
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied",
+    "fiducial_blind": "blind_a",
+    "reporting_binning": "bins_20"
+  },
+  "input_versions": {
+    "pure_eb_data": "sha256:ea60559633c1283ad5289da6b916b7d14503afbfc717269c3ebd3f030eda9a7c",
+    "pure_eb_sweep": "sha256:866713fab899d5d177423aea40f4b82a48f165897f6721d3119f3d4a0649a5ce",
+    "pure_eb_covariance": "sha256:f02851765875fefaf415c0eb00e7a1ac0dba9668d31fa8eb5764018d08efd729",
+    "pure_eb_covariance_sweep": "sha256:d6a5fc6a285ba14f7fad7e04d5fa676814d3eee483b1f68c60dd7719b3156bfc"
+  },
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-21T22:07:32.181+00:00",
+  "finished_at": "2026-11-21T22:12:36.911+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

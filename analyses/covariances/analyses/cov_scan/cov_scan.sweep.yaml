@@ -22,6 +22,9 @@ inputs:
   # The one n(z) every version shares.
   - id: redshift_distributions
     from: ../redshift_distributions
+  # Each catalog's survey area, the area of every CosmoCov covariance.
+  - id: survey_areas
+    from: ../survey_areas
 
 decisions:
   integration_grid:
@@ -60,7 +63,7 @@ template:
     ([0.5', 300'], blind A).
     The per-version analogue of
     [cov_integration](#../outputs.cov_integration).
-  inputs: [cosmology_snapshot, redshift_distributions]
+  inputs: [cosmology_snapshot, redshift_distributions, survey_areas]
   decisions: [fiducial_catalog, fiducial_blind, covariance_class, covariance_engine, integration_grid, leakage_correction]
   recipe:
     command: >

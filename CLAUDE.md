@@ -9,20 +9,29 @@ belongs to Papers III and IV.
 
 - `astra.yaml`: root decisions, findings, prior insights and re-exports of the
   report's outputs.
-- `analyses/**/astra.yaml`: the sub-analyses, four at the top, flat apart from
-  `validation/glass_mocks` and the scans, which sit in `analyses/<sub>/analyses/`.
-  README explains the split: every covariance lives in `covariances`,
-  `data_vectors` reads no covariance, and data meet covariance in `significance`.
+- `analyses/**/astra.yaml`: the sub-analyses, five at the top, flat apart from
+  `validation/glass_mocks`, `mocks/generation`, `mocks/glass_suite` and the scans,
+  which sit in `analyses/<sub>/analyses/`. README explains the split: every
+  covariance lives in `covariances`, `catalog_processing` is the only
+  sub-analysis that reads the catalogs and reads no covariance, `mocks`
+  generates and measures the GLASS realizations, and data meet covariance in
+  `significance`.
+- What is stored: products derived directly from a catalog (everything under
+  `results/*/catalog_processing/`, the GLASS members and realization 00001's
+  summary) are plain git, so a clone reruns the rest without the catalogs;
+  everything else is annexed on fir only and regenerates (`.gitattributes`).
 - `<scan>.sweep.yaml`: scan declarations, in each scan's own directory. The
   sibling `astra.yaml` is generated from each; edit the declaration and regenerate
   with `sweep_expand.py` from the `astra-sweep` practice.
-- `universes/`: `baseline` is the accepted paper, `submitted` the paper as
-  submitted. Each sub-analysis has a matching pair under its own `universes/`,
+- `universes/`: `baseline` is the accepted selection on the data-matched
+  GLASS suite, held against the data's own covariances; `published` is the
+  accepted paper and `preprint_v2` the paper before the referee report, both
+  validated on the published GLASS suite. The report renders the
+  alphabetically first universe (MySTRA 0.0.8), so `baseline` must sort first. Each sub-analysis has the same three under its own `universes/`,
   and a parent binds its children by name.
 - `index.md`: the report, which is the accepted paper's text with values and
   figures bound to outputs.
 - `src/`: analysis code, vendored from `sp_validation`.
-- `producers/`: the host MPI job behind `xi_10000_bins`, which `lc` cannot run.
 - `tools/`: repository checks and the mirror sync.
 
 ## Conventions
@@ -47,7 +56,7 @@ belongs to Papers III and IV.
   reason a scientist would accept.
 - `src/workflow/scripts/decision_values.py` maps options to the values scripts
   compute with, including a catalog's n(z) file and survey properties and the
-  noise and catalog of each reference covariance, which recipes read through it
+  noise of each mock-matched reference covariance, which recipes read through it
   and never as spec inputs; `numerics.py` holds the shared null-test numerics.
 
 ## Checks

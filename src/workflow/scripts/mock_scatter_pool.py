@@ -1,7 +1,7 @@
-"""Realisation-level process pool for the GLASS mock scatter scripts.
+"""Realization-level process pool for the GLASS mock scatter scripts.
 
-Both scatter transforms are a serial loop over 350 independent realisations
-whose inner numba kernels parallelise poorly.  Spreading the realisations
+Both scatter transforms are a serial loop over 350 independent realizations
+whose inner numba kernels parallelise poorly.  Spreading the realizations
 over processes and pinning each worker to a single thread uses the
 allocation far better; the pool is ordered (`Pool.map`), so the stacked
 output is bit-identical to the serial loop.
@@ -55,7 +55,7 @@ def state() -> dict:
     return _STATE
 
 
-def map_realisations(worker, indices, state_dict):
+def map_realizations(worker, indices, state_dict):
     """Run *worker* over *indices* in order, with *state_dict* shared by fork."""
 
     workers = pool_size(len(indices))

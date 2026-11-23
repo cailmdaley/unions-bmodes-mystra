@@ -5,16 +5,16 @@ over the harmonic reporting cut 300 <= l <= 1600 (the 17 bandpowers whose
 powspace edges fall entirely inside it):
 
 * the **machinery** ratio — the diagonal of the reference BB covariance,
-  the paper's own covariance primitive pointed at a mock catalogue, over the
+  the paper's own covariance primitive pointed at a mock catalog, over the
   diagonal of the data's.  This is what the covariance chain predicts the
   mocks' scatter should be, with no rescale hand-fed anywhere;
 * the **empirical** ratio — the sample variance of the suite's own BB
-  bandpowers over the same data diagonal.  This is what the realisations
+  bandpowers over the same data diagonal.  This is what the realizations
   actually do, and it is the truth the machinery ratio is checked against.
 
 The mocks carry no B signal by construction, so both quantities are pure
 shape-noise variance ratios and the count mismatch between suite and
-catalogue is the whole of what they measure.
+catalog is the whole of what they measure.
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ def load_bb_covariance(path):
 
 
 def load_mock_bandpowers(pattern):
-    """The suite's BB bandpowers, one row per realisation, plus the l axis."""
+    """The suite's BB bandpowers, one row per realization, plus the l axis."""
 
     files = sorted(glob.glob(pattern))
     if not files:
@@ -76,7 +76,7 @@ def build_ratios(cov_mock, cov_data, bandpowers, ell):
     return {
         "ell_cut": [ELL_MIN, ELL_MAX],
         "n_bands": int(mask.sum()),
-        "n_realisations": int(bandpowers.shape[0]),
+        "n_realizations": int(bandpowers.shape[0]),
         "machinery_variance_ratio_mean": float(np.mean(machinery)),
         "machinery_variance_ratio_median": float(np.median(machinery)),
         "empirical_variance_ratio_mean": float(np.mean(empirical)),
@@ -126,7 +126,7 @@ def main(argv=None):
         f"Saved {out_path}: machinery variance ratio "
         f"{result['machinery_variance_ratio_mean']:.4f}, empirical "
         f"{result['empirical_variance_ratio_mean']:.4f} "
-        f"({result['n_bands']} bands, {result['n_realisations']} realisations)",
+        f"({result['n_bands']} bands, {result['n_realizations']} realizations)",
         flush=True,
     )
 

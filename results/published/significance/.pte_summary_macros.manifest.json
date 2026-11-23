@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.pte_summary_macros",
+  "universe_id": "published",
+  "recipe": "python src/papers/bmodes/scripts/generate_paper_macros.py --fiducial-catalog size_cut --leakage-correction applied --reporting-binning bins_20 --config-space-evidence results/published/significance/config_space_pte_data.json --harmonic-space-evidence results/published/significance/harmonic_space_pte_data.json --mock-min-pte-calibration results/published/significance/mock_min_pte_calibration.json --mock-campaign-evidence results/published/validation/glass_mocks/mock_campaign_evidence.json --mock-scale-cut-scan results/published/validation/glass_mocks/mock_min_pte_scale_cut_scan.json --harmonic-config-fiducial-evidence results/published/validation/cosebis_harmonic_metrics.json --harmonic-config-full-evidence results/published/validation/cosebis_harmonic_metrics_full.json --pte-threshold calibrated_0p01 --survey-properties size_cut --cosebis-modes-data results/published/catalog_processing/cosebis_modes_data.npz --cosebis-covariance results/published/covariances/cosebis_covariance.npz --mock-per-mock-statistics results/published/validation/glass_mocks/mock_per_mock_statistics.npz --mock-mean-vector-stats results/published/validation/glass_mocks/mock_mean_vector_stats.json --reference-covariance mockmatched --cov-reporting-g results/published/covariances/cov_reporting_g.txt --cov-reporting-ng results/published/covariances/cov_reporting_ng.txt --emit macros --out-file results/published/significance/pte_summary_macros.tex\n",
+  "definition_version": "sha256:d57e315ee2f34900ea176435cbd5f44f6de878551763c8af950a285dec383f06",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:b266c306217b3860d55ff12120ace747bf0646f826aca3d91b0e89907518d808",
+  "decisions": {
+    "pte_threshold": "calibrated_0p01",
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied",
+    "reporting_binning": "bins_20",
+    "reference_covariance": "mockmatched"
+  },
+  "input_versions": {
+    "survey_areas": "sha256:4a8decd35573a28df52de9f9ec1aa019e8db7851748735e73316726e6267f94c",
+    "config_space_pte_data": "sha256:b186952f573e7c8e7457f8ded2deffa5d5a035b90260f0f00bb38e3ba86eefb6",
+    "harmonic_space_pte_data": "sha256:63847fd1727b81ca1e727b53b8f8937efaec0bc8236b7d7c258ae0abddd992c0",
+    "mock_min_pte_calibration": "sha256:5c8f5e7213f96b4a777a3d6452470738d721d4e8555896d43d83e94fdde42af8",
+    "mock_campaign_evidence": "sha256:5b6acd0adcc35f08c1dd7aef7547d7a0e1e889ee219b50304b83b734180e453c",
+    "mock_min_pte_scale_cut_scan": "sha256:3edd436675254c9f2a8c6ff9b5b62799ac1a64792d1569d030829c72860b1e51",
+    "cosebis_harmonic_metrics": "sha256:c585510399a13b9cd8a7403b8dd1488cc4a074652f6416059ee0cb3124b62359",
+    "cosebis_harmonic_metrics_full": "sha256:a92effc1ed7e7a0c2d4d1dcae78ac402ccfae3dbd41aaae00df90ce692be8871",
+    "cosebis_modes_data": "sha256:73575032623db6458e66df04b7a46e6b861ec77bbf18709f3c2223913df97ba5",
+    "cosebis_covariance": "sha256:ddbba1e098c9147548804e23cb2b7689d09679441c77972c77671e4330e5900f",
+    "mock_per_mock_statistics": "sha256:fbfc40003bb739128e3279dc4a9cf706fe69b9167243e9cb1b5c0905aed56e4b",
+    "mock_mean_vector_stats": "sha256:69b9477ef889427bb007d300e43088557e16cb2dbfc84fd5cb633442f1c33217",
+    "cov_reporting_g": "sha256:fa5cb724e58e07887e58642e9ea9e85ad3ff0a8445e7f6b5838d648a18ff1cae",
+    "cov_reporting_ng": "sha256:6fa7373f4f0baea3945a1065961c2f65fcb8645f6cda22608d318a583c7a54b1"
+  },
+  "git_sha": "0f1a526566e68182e80ac2473546f110025fb052",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T20:40:38.750+00:00",
+  "finished_at": "2026-11-23T20:40:48.747+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

@@ -162,10 +162,10 @@ def _plot_min_pte(
         COLOR_B = "crimson"
         FIG_WIDTH_SINGLE = 3.54
 
-    # The unbinned empirical CDF in percent: each rise is one realisation, and
+    # The unbinned empirical CDF in percent: each rise is one realization, and
     # its height at x is the suite's false-alarm rate for a threshold x.
     # Log-log, so the trend shows over several decades up to ~100%; x starts at
-    # 1e-3, where the first few single-realisation steps have gone.
+    # 1e-3, where the first few single-realization steps have gone.
     n = one_sided.size
     x = np.concatenate([np.sort(one_sided), [1.0]])
     y = 100.0 * np.concatenate([np.arange(1, n + 1) / n, [1.0]])

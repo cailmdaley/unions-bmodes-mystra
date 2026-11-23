@@ -3,8 +3,8 @@
 The campaign's other validation figures all live downstream of a pure-mode or
 COSEBI filter, so a failure of the *input* -- the 20-bin xi_pm the suite ships
 -- reaches them dressed as an estimator problem.  This is the undressed check:
-the across-realisation mean xi_pm against the theory the mocks were generated
-from ([mock_xi_input_theory]), and the across-realisation scatter against the
+the across-realization mean xi_pm against the theory the mocks were generated
+from ([mock_xi_input_theory]), and the across-realization scatter against the
 analytic CosmoCov sigma the paper quotes for xi_pm on the same grid.
 
 Three rows over two columns (xi_+ | xi_-):
@@ -12,11 +12,11 @@ Three rows over two columns (xi_+ | xi_-):
     1. theta xi_pm -- mock mean with the error of the mean, and the input
        theory as a line;
     2. (mean - theory) / sigma_ana -- the residual as a fraction of a SINGLE
-       realisation's error bar, with sigma_emp/(sigma_ana sqrt(N)) error bars,
+       realization's error bar, with sigma_emp/(sigma_ana sqrt(N)) error bars,
        so the axis reads as "fraction of an error bar" and the significance is
        the error bar rather than the point;
     3. sigma_emp / sigma_ana -- the covariance-amplitude check, with the
-       +-1/sqrt(2(N-1)) sampling error of an N-realisation standard deviation.
+       +-1/sqrt(2(N-1)) sampling error of an N-realization standard deviation.
 
 sigma_ana is the analytic sigma of the reference covariance, rebinned to the
 reporting grid: under ``reference_covariance: mockmatched`` the CosmoCov run
@@ -50,6 +50,7 @@ import numpy as np  # noqa: E402
 SRC = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(SRC / "papers" / "bmodes" / "scripts"))
 import plotting_utils  # noqa: E402
+from decision_values import SURVEY_PROPERTIES  # noqa: E402
 from plotting_utils import PAPER_MPLSTYLE  # noqa: E402
 
 # Colour encodes the mode, as everywhere else in the campaign: these are the
@@ -68,17 +69,25 @@ MARK = {"ls": "none", "markersize": 4.5, "markeredgewidth": 0.8,
 DEG2_PER_ARCMIN2 = 1.0 / 3600.0
 
 
-def uniform_pair_counts(left, right, area_deg2, n_gal):
-    """Pairs an annulus holds for n_gal uniform points on area_deg2.
-
-    N_pair = (N^2 / 2) * Omega_annulus / A, the flat, uniform-density,
-    no-edge prediction.  Inverting it on the measured counts is the cheapest
-    probe of footprint geometry: a survey whose annuli run off the edge
-    returns fewer pairs than this, and the implied N falls with theta.
-    """
-    annulus_deg2 = np.pi * (np.asarray(right) ** 2 - np.asarray(left) ** 2)
-    annulus_deg2 = annulus_deg2 * DEG2_PER_ARCMIN2
-    return 0.5 * n_gal**2 * annulus_deg2 / area_deg2
+def suite_noise(args):
+    """Per-component sigma_e and delivered galaxy count for the active suite."""
+    sampling = json.loads(Path(args.sampling).read_text()) if args.sampling else {}
+    sigma_e = args.sigma_e_component
+    if sigma_e is None:
+        sigma_e = float(sampling["sigma_e"])
+    n_gal = args.n_gal
+    if n_gal is None:
+        if "n_eff_catalog" in sampling:
+            n_gal = float(sampling["n_eff_catalog"])
+        else:
+            with np.load(args.realization_summary, allow_pickle=False) as z:
+                keys = [k for k in z.files if k.endswith("/n")]
+                if len(keys) != 1:
+                    raise SystemExit(
+                        f"expected one '*/n' entry in {args.realization_summary}, got {keys}"
+                    )
+                n_gal = float(z[keys[0]])
+    return sigma_e, n_gal
 
 
 def compute(args):
@@ -104,38 +113,44 @@ def compute(args):
 
     n_real = ensemble["xip"].shape[0]
     npairs = np.asarray(ensemble["npairs"], dtype=float).mean(axis=0)
-    # Shape-noise-only sigma from the ensemble's own measured pairs.  For
-    # unit weights and no intrinsic correlation, Var(xi_+) = sigma_e^4 /
-    # (2 N_pair) with sigma_e the *total* dispersion (two components).
-    sigma_e_total_sq = 2.0 * args.sigma_e_component**2
-    sigma_shot = sigma_e_total_sq / np.sqrt(2.0 * npairs)
-
-    implied_n = np.sqrt(
-        2.0 * npairs * args.area_deg2
-        / (np.pi * (ensemble["right_edges"] ** 2 - ensemble["left_edges"] ** 2)
-           * DEG2_PER_ARCMIN2)
-    )
-
+    sigma_shot = None
     out = {
-        "n_realisations": int(n_real),
+        "n_realizations": int(n_real),
         "theta_arcmin": theta.tolist(),
         "left_edges_arcmin": ensemble["left_edges"].tolist(),
         "right_edges_arcmin": ensemble["right_edges"].tolist(),
         "theta_cut_arcmin": list(THETA_CUT),
         "mean_npairs": npairs.tolist(),
-        "sigma_shot_noise_xip": sigma_shot.tolist(),
-        "implied_n_gal": implied_n.tolist(),
-        "implied_n_gal_over_delivered": (implied_n / args.n_gal).tolist(),
         "provenance": {
             "reporting_ensemble": args.reporting_ensemble,
             "covariance": args.covariance,
             "theory": args.theory,
-            "sigma_e_component": args.sigma_e_component,
-            "area_deg2": args.area_deg2,
-            "n_gal_delivered": args.n_gal,
             "theory_provenance": json.loads(str(theory["provenance"])),
         },
     }
+    if args.emit == "stats":
+        if args.survey_properties is None:
+            raise SystemExit("--survey-properties is required for --emit stats")
+        sigma_e, n_gal = suite_noise(args)
+        # Shape-noise-only sigma from the ensemble's own measured pairs.  For
+        # unit weights and no intrinsic correlation, Var(xi_+) = sigma_e^4 /
+        # (2 N_pair) with sigma_e the *total* dispersion (two components).
+        sigma_e_total_sq = 2.0 * sigma_e**2
+        sigma_shot = sigma_e_total_sq / np.sqrt(2.0 * npairs)
+
+        implied_n = np.sqrt(
+            2.0 * npairs * args.survey_properties.area
+            / (np.pi * (ensemble["right_edges"] ** 2 - ensemble["left_edges"] ** 2)
+               * DEG2_PER_ARCMIN2)
+        )
+        out["sigma_shot_noise_xip"] = sigma_shot.tolist()
+        out["implied_n_gal"] = implied_n.tolist()
+        out["implied_n_gal_over_delivered"] = (implied_n / n_gal).tolist()
+        out["provenance"].update({
+            "sigma_e_component": sigma_e,
+            "area_deg2": args.survey_properties.area,
+            "n_gal_delivered": n_gal,
+        })
 
     series = {}
     for key in ("xip", "xim"):
@@ -161,14 +176,14 @@ def compute(args):
             "theory": model.tolist(),
             "theory_untruncated": model_untruncated.tolist(),
             "mean_over_theory": (mean / model).tolist(),
-            "offset_in_single_realisation_sigma": ((mean - model) / sigma_ana[key]).tolist(),
-            "offset_err_in_single_realisation_sigma": (err / sigma_ana[key]).tolist(),
+            "offset_in_single_realization_sigma": ((mean - model) / sigma_ana[key]).tolist(),
+            "offset_err_in_single_realization_sigma": (err / sigma_ana[key]).tolist(),
             "z_of_mean": ((mean - model) / err).tolist(),
             "sigma_emp": scatter.tolist(),
             "sigma_ana": sigma_ana[key].tolist(),
             "sigma_ratio": (scatter / sigma_ana[key]).tolist(),
             "sigma_emp_over_sigma_shot": (scatter / sigma_shot).tolist()
-            if key == "xip" else None,
+            if key == "xip" and sigma_shot is not None else None,
         }
     out["sigma_ratio_sampling_error"] = float(1.0 / np.sqrt(2.0 * (n_real - 1)))
 
@@ -262,14 +277,18 @@ def main():
     parser.add_argument("--theory", required=True)
     parser.add_argument("--covariance", required=True,
                         help="The reference reporting-grid covariance npz.")
-    parser.add_argument("--sigma-e-component", type=float, default=0.26817,
-                        help="The suite's per-component ellipticity dispersion.")
-    parser.add_argument("--area-deg2", type=float, default=2894.0304,
-                        help="Fiducial footprint area, the convention every "
-                             "density in this analysis is quoted against.")
-    parser.add_argument("--n-gal", type=float, default=60423575.0,
-                        help="Rows per delivered realisation, for the "
-                             "pair-count geometry ratio.")
+    parser.add_argument("--sampling",
+                        help="glass_mock_sampling.json for the active suite (stats only).")
+    parser.add_argument("--realization-summary",
+                        help="glass_mock_realization_00001.npz, used for delivered galaxy "
+                             "count when --sampling has no n_eff_catalog (stats only).")
+    parser.add_argument("--sigma-e-component", type=float, default=None,
+                        help="Override per-component ellipticity dispersion (stats only).")
+    parser.add_argument("--survey-properties", type=SURVEY_PROPERTIES.__getitem__,
+                        help="fiducial_catalog option whose survey area the "
+                             "implied galaxy counts are quoted against (stats only).")
+    parser.add_argument("--n-gal", type=float, default=None,
+                        help="Override delivered galaxy count per realization (stats only).")
     parser.add_argument("--emit", choices=("figure", "stats"), required=True)
     parser.add_argument("--out-file", required=True)
     args = parser.parse_args()

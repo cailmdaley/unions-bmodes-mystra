@@ -2,7 +2,7 @@
 
 The full six-test, two-range evidence stays available as a reference product.
 Dropping a COSEBI subset recalibrates the minimum from stored mock PTE columns;
-it never remeasures or retransforms the mock catalogues.
+it never remeasures or retransforms the mock catalogs.
 """
 import argparse
 import json

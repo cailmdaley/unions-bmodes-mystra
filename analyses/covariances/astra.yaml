@@ -13,26 +13,31 @@ description: |
   them across the n(z) blinds.
 
 inputs:
-  - id: shapepipe_v14_catalogs
-    from: ../shapepipe_v14_catalogs
+  # Count maps and shape-noise sums: the window and noise of the Cℓ covariances.
+  - id: catalog_summary
+    from: ../catalog_processing.catalog_summary
 
-  # Realisation 00001 is the catalog of the mock-matched Cℓ covariance.
-  - id: glass_mock_realisation_00001
-    from: ../glass_mock_realisation_00001
+  # Realization 00001's summary: the window and noise of the mock-matched Cℓ covariance.
+  - id: glass_mock_realization_00001
+    from: ../mocks.glass_mock_realization_00001
 
   - id: redshift_distributions
     from: ../redshift_distributions
     # The theory of the CosmoCov and iNKA covariances, for every catalog version.
 
+  # Each catalog's survey area, the area of every CosmoCov covariance.
+  - id: survey_areas
+    from: ../survey_areas
+
   # Pair counts and bin centres for the transforms; the shear columns are not read.
   - id: xi_reporting
-    from: ../data_vectors.xi_reporting
+    from: ../catalog_processing.xi_reporting
 
   - id: xi_integration
-    from: ../data_vectors.xi_integration
+    from: ../catalog_processing.xi_integration
 
   - id: xi_sweep
-    from: ../data_vectors.xi_sweep
+    from: ../catalog_processing.xi_sweep
 
 outputs:
   - id: cosmology_snapshot
@@ -59,7 +64,7 @@ outputs:
       Together they give the non-Gaussian share of the ξ_±
       diagonal variance quoted in the paper.
     decisions: [fiducial_catalog, fiducial_blind, covariance_engine, reporting_binning, leakage_correction]
-    inputs: [cosmology_snapshot, redshift_distributions]
+    inputs: [cosmology_snapshot, redshift_distributions, survey_areas]
     format: txt
     recipe:
       command: >
@@ -87,7 +92,7 @@ outputs:
       but does not enter the PTEs, which use
       the [selected integration covariance](#decisions.covariance_class).
     decisions: [fiducial_catalog, fiducial_blind, covariance_engine, reporting_binning, leakage_correction]
-    inputs: [cosmology_snapshot, redshift_distributions]
+    inputs: [cosmology_snapshot, redshift_distributions, survey_areas]
     format: txt
     recipe:
       command: >
@@ -112,7 +117,7 @@ outputs:
       Monte Carlo draws, per the
       [construction](#decisions.pure_eb_covariance_method).
     decisions: [fiducial_catalog, fiducial_blind, covariance_class, covariance_engine, integration_grid, leakage_correction]
-    inputs: [cosmology_snapshot, redshift_distributions]
+    inputs: [cosmology_snapshot, redshift_distributions, survey_areas]
     format: txt
     recipe:
       command: >
@@ -131,29 +136,35 @@ outputs:
       [cov_integration](#outputs.cov_integration) at the noise the
       [reference covariance](#decisions.reference_covariance) selects: the
       covariance the GLASS mocks are held against, and the ξ_± half of the
-      mock-matched reference (the pure-E/B half is
+      reference (the pure-E/B half is
       [pure_eb_covariance_reference](#outputs.pure_eb_covariance_reference)).
       Under `mockmatched` that is `source_n_gal = 5.79308 arcmin⁻²` and
       `sigma_e = 0.37926` (0.26817 per component) at the fiducial
-      `area = 2894.0304 deg²`; under `data_covariance` it is the catalog's own.
+      `area = 2894.0304 deg²`; under `data_covariance` it is
+      [cov_integration](#outputs.cov_integration) itself.
 
-      With the area held fixed, that n_gal corresponds to 60.36 M
-      galaxies, 0.1% below the 60 423 575 of realisation 00001, which
-      raises the noise variance by 0.2%. See
+      Under `mockmatched`, with the area held fixed, that n_gal
+      corresponds to 60.36 M galaxies, 0.1% below the 60 423 575 of
+      v1.4.6.3_v2 realization 00001, which raises the noise variance by
+      0.2%. See
       [mocks_are_over_constraining](#../analyses.validation.analyses.glass_mocks.findings.mocks_are_over_constraining).
     decisions: [fiducial_catalog, fiducial_blind, reference_covariance, mock_suite, covariance_class, covariance_engine, integration_grid, leakage_correction]
-    inputs: [cosmology_snapshot, redshift_distributions]
+    inputs: [cov_integration, cosmology_snapshot, redshift_distributions, survey_areas]
     format: txt
     recipe:
-      command: >
-        bash src/workflow/scripts/run_cosmocov_chain.sh
-        --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind}
-        --min-sep 0.5 --max-sep 300.0 --nbins 1000
-        --gaussian {decisions.covariance_class}
-        --reference-covariance {decisions.reference_covariance}
-        --planck18-json {inputs.cosmology_snapshot}
-        --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_blind})"
-        --emit processed --out-file {output}
+      command: |
+        if [ {decisions.reference_covariance} = data_covariance ]; then
+          cp {inputs.cov_integration} {output}
+        else
+          bash src/workflow/scripts/run_cosmocov_chain.sh \
+            --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind {decisions.fiducial_blind} \
+            --min-sep 0.5 --max-sep 300.0 --nbins 1000 \
+            --gaussian {decisions.covariance_class} \
+            --reference-covariance {decisions.reference_covariance} \
+            --planck18-json {inputs.cosmology_snapshot} \
+            --nz "$(python src/workflow/scripts/decision_values.py nz_file {decisions.fiducial_blind})" \
+            --emit processed --out-file {output}
+        fi
       resources: { cpus: 4, memory: "16GB" }
 
   - id: cov_reporting_reference
@@ -185,19 +196,19 @@ outputs:
       Gaussian (NaMaster iNKA) covariance of the Cℓ
       bandpowers for the fiducial catalog at blind A, on the
       32-bandpower √ℓ-spaced grid of
-      [the harmonic-space data vector](#../analyses.data_vectors.outputs.cl_bandpowers_reporting), the prescription
+      [the harmonic-space data vector](#../analyses.catalog_processing.outputs.cl_bandpowers_reporting), the prescription
       Paper IV uses for its BB and EB null tests. It takes a Planck
       2018 theory spectrum plus analytic noise, with the weighted
       galaxy-count map at nside 1024 as the window.
     decisions: [fiducial_catalog, fiducial_blind, bandpower_binning, noise_bias_correction, leakage_correction, fiducial_cosmology]
-    inputs: [shapepipe_v14_catalogs, redshift_distributions]
+    inputs: [catalog_summary, redshift_distributions]
     format: fits
     recipe:
       command: >
         python src/workflow/scripts/generate_cl_cov.py
         --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
-        --cat-config src/cosmo_val/cat_config.yaml
-        --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind}
+        --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml
+        --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind}
         --out-file {output}
       resources: { cpus: 12, memory: "16GB" }
 
@@ -206,19 +217,19 @@ outputs:
     description: |
       As [cl_cov_reporting](#outputs.cl_cov_reporting), on the
       √ℓ-spaced fine grid (96 bandpowers in the fiducial analysis) of
-      [cl_bandpowers_fine](#../analyses.data_vectors.outputs.cl_bandpowers_fine),
+      [cl_bandpowers_fine](#../analyses.catalog_processing.outputs.cl_bandpowers_fine),
       for the harmonic-space COSEBI transform. The other three
       leak-corrected catalogs' counterparts come from the
       [cl_cov_scan sweep](#outputs.cl_cov_sweep).
     decisions: [fiducial_catalog, fiducial_blind, harmonic_validation_binning, noise_bias_correction, leakage_correction, fiducial_cosmology]
-    inputs: [shapepipe_v14_catalogs, redshift_distributions]
+    inputs: [catalog_summary, redshift_distributions]
     format: fits
     recipe:
       command: >
         python src/workflow/scripts/generate_cl_cov.py
         --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
-        --cat-config src/cosmo_val/cat_config.yaml
-        --nside 1024 --npatch 1 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind}
+        --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml
+        --nside 1024 --binning powspace --nbins "$(python src/workflow/scripts/decision_values.py harmonic_validation_binning {decisions.harmonic_validation_binning})" --power 0.5 --blind {decisions.fiducial_blind}
         --out-file {output}
       resources: { cpus: 12, memory: "32GB" }
 
@@ -227,24 +238,30 @@ outputs:
     description: |
       [cl_cov_reporting](#outputs.cl_cov_reporting) on the catalog the
       [reference covariance](#decisions.reference_covariance) selects:
-      realisation 00001 of the [GLASS suite](#decisions.mock_suite) under
-      `mockmatched`, the fiducial catalog under `data_covariance`. The
-      method is catalogue-driven (mask = the weighted galaxy-count map,
-      noise bias Ω_pix ⟨Σ_i w_i² σ_{e,i}²⟩), so the option names a catalog
-      and no number density or area convention enters. The mock's variance
-      ratio to the data is 0.725 over 300 ≤ ℓ ≤ 1600, against the 350
-      realisations' empirical 0.716
+      realization 00001 of the [GLASS suite](#decisions.mock_suite) under
+      `mockmatched`, and cl_cov_reporting itself under `data_covariance`.
+      The method is catalog-driven (mask = the weighted galaxy-count map,
+      noise bias Ω_pix ⟨Σ_i w_i² σ_{e,i}²⟩, both from the catalog's
+      summary), so the option names a catalog and no number density or
+      area convention enters. For the v1.4.6.3_v2
+      suite under `mockmatched`, the mock's variance ratio to the data is
+      0.725 over 300 ≤ ℓ ≤ 1600, against the 350 realizations' empirical
+      0.716
       ([clbb_variance_ratios](#../analyses.validation.analyses.glass_mocks.outputs.clbb_variance_ratios)).
     decisions: [fiducial_blind, reference_covariance, mock_suite, bandpower_binning, noise_bias_correction, fiducial_cosmology]
-    inputs: [shapepipe_v14_catalogs, glass_mock_realisation_00001, redshift_distributions]
+    inputs: [cl_cov_reporting, glass_mock_realization_00001, redshift_distributions]
     format: fits
     recipe:
-      command: >
-        python src/workflow/scripts/generate_cl_cov.py
-        --ver "$(python src/workflow/scripts/decision_values.py reference_catalog {decisions.reference_covariance})"
-        --cat-config src/cosmo_val/cat_config.yaml
-        --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind}
-        --out-file {output}
+      command: |
+        if [ {decisions.reference_covariance} = data_covariance ]; then
+          cp {inputs.cl_cov_reporting} {output}
+        else
+          python src/workflow/scripts/generate_cl_cov.py \
+            --ver SP_v1.4.6.3_glass_mock_v2 --summary {inputs.glass_mock_realization_00001} \
+            --cat-config src/cosmo_val/cat_config.yaml \
+            --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind} \
+            --out-file {output}
+        fi
       resources: { cpus: 12, memory: "16GB" }
 
   - id: cov_sweep
@@ -261,7 +278,7 @@ outputs:
     format: npz
     description: |
       The 120×120 covariance (six 20-bin blocks) of the pure E/B data vector
-      [pure_eb_data](#../analyses.data_vectors.outputs.pure_eb_data) for the
+      [pure_eb_data](#../analyses.catalog_processing.outputs.pure_eb_data) for the
       [fiducial catalog](#../decisions.fiducial_catalog) at blind A, propagated
       from [cov_integration](#outputs.cov_integration) by the selected
       [covariance method](#decisions.pure_eb_covariance_method). The file
@@ -294,23 +311,28 @@ outputs:
       [reference ξ_± covariance](#outputs.cov_integration_reference): the
       same transform M, built from the data's pair counts, or the same Monte
       Carlo chain with the same draws, so the two differ by their input
-      alone. The mocks' noise enters only through that covariance, as it
-      does for COSEBIs.
+      alone. The reference noise enters only through that covariance, as
+      it does for COSEBIs; under `data_covariance` this is
+      pure_eb_covariance itself.
     decisions: [fiducial_catalog, fiducial_blind, reference_covariance, mock_suite, pure_eb_integration_method, pure_eb_rebinning_weights, pure_eb_integration_limits, pure_eb_covariance_method, decomposition_method, leakage_correction, integration_grid]
-    inputs: [xi_reporting, xi_integration, cov_integration_reference, redshift_distributions]
+    inputs: [pure_eb_covariance, xi_reporting, xi_integration, cov_integration_reference, redshift_distributions]
     recipe:
-      command: >
-        bash src/papers/bmodes/scripts/run_pure_eb_covariance.sh
-        --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind "$(python src/workflow/scripts/decision_values.py fiducial_blind {decisions.fiducial_blind})"
-        --cat-config src/cosmo_val/cat_config.yaml
-        --xi-reporting {inputs.xi_reporting}
-        --xi-integration {inputs.xi_integration}
-        --cov-integration {inputs.cov_integration_reference}
-        --integration-method {decisions.pure_eb_integration_method}
-        --integration-limits {decisions.pure_eb_integration_limits}
-        --rebinning-weights {decisions.pure_eb_rebinning_weights}
-        --covariance-method {decisions.pure_eb_covariance_method}
-        --out-file {output}
+      command: |
+        if [ {decisions.reference_covariance} = data_covariance ]; then
+          cp {inputs.pure_eb_covariance} {output}
+        else
+          bash src/papers/bmodes/scripts/run_pure_eb_covariance.sh \
+            --version "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})" --blind "$(python src/workflow/scripts/decision_values.py fiducial_blind {decisions.fiducial_blind})" \
+            --cat-config src/cosmo_val/cat_config.yaml \
+            --xi-reporting {inputs.xi_reporting} \
+            --xi-integration {inputs.xi_integration} \
+            --cov-integration {inputs.cov_integration_reference} \
+            --integration-method {decisions.pure_eb_integration_method} \
+            --integration-limits {decisions.pure_eb_integration_limits} \
+            --rebinning-weights {decisions.pure_eb_rebinning_weights} \
+            --covariance-method {decisions.pure_eb_covariance_method} \
+            --out-file {output}
+        fi
       resources: { cpus: 24, memory: "60GB" }
 
   - id: pure_eb_covariance_sweep
@@ -355,7 +377,7 @@ outputs:
     format: npz
     description: |
       The COSEBI mode covariance T^T C_ξ T of
-      [cosebis_modes_data](#../analyses.data_vectors.outputs.cosebis_modes_data)
+      [cosebis_modes_data](#../analyses.catalog_processing.outputs.cosebis_modes_data)
       at both scale cuts, from [cov_integration](#outputs.cov_integration), with
       the σ_n that normalise B_n / σ_n in the
       [COSEBI data-vector figure](#../outputs.fig_cosebis_fiducial). T depends on
@@ -501,8 +523,9 @@ decisions:
         description: |
           M from the averaged transform applied to the 2000 fine-grid
           unit vectors; C_ξ is the CosmoCov covariance (data) or its
-          mock-matched twin. No Hartlap factor. Under it the
-          data-to-mock-matched B variance ratio is a constant 1.353
+          reference twin. No Hartlap factor. Under it the
+          data-to-mock-matched B variance ratio of the v1.4.6.3_v2 suite
+          is a constant 1.353
           across ξ^B bins, as expected for a shape-noise B-mode
           covariance.
       monte_carlo:
@@ -515,7 +538,7 @@ decisions:
           1e-15, and its differences from the exact matrix all lie
           within 1.5σ of the simulated MC scatter (fiducial ξ_−^B PTE
           0.025 against 0.019, MC scatter 0.004). Its per-bin
-          data-to-mock-matched B variance ratio spreads over
+          data-to-mock-matched B variance ratio of that suite spreads over
           1.23–1.43, which is noise.
         insights: [hartlap07_correction]
 
@@ -574,12 +597,12 @@ decisions:
         label: "GLASS sample covariance"
         description: |
           Sample covariance across the 350 GLASS mock
-          realisations.
+          realizations.
         excluded: true
         excluded_reason: |
           The PTEs follow the analytic prescriptions of Papers III
           and IV, which the mocks validate rather than replace. A
-          350-realisation sample covariance would also be noisy, and
+          350-realization sample covariance would also be noisy, and
           singular on the 1000-bin integration grid.
 
   covariance_class:

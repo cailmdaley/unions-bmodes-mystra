@@ -4,8 +4,8 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout cosebis_ptes --fiducial-catalog size_cut --leakage-correction applied --names cosebis_ptes_sp_v1p4p5 cosebis_ptes_sp_v1p4p5_leak_corr cosebis_ptes_fiducial_counterpart cosebis_ptes_sp_v1p4p8 cosebis_ptes_sp_v1p4p8_leak_corr cosebis_ptes_sp_v1p4p11p3 cosebis_ptes_sp_v1p4p11p3_leak_corr --members results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p5.npz results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p5_leak_corr.npz results/baseline/significance/cosebis_pte_scan/cosebis_ptes_fiducial_counterpart.npz results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8.npz results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p8_leak_corr.npz results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p11p3.npz results/baseline/significance/cosebis_pte_scan/cosebis_ptes_sp_v1p4p11p3_leak_corr.npz --out-file results/baseline/significance/cosebis_pte_scan/cosebis_ptes_bundle.tar.gz\n",
   "definition_version": "sha256:45398b6792eab4e8f173c3d8cb131880c380d51db97ccaf87db80f0f941a6796",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
-  "data_version": "sha256:e4f1dddcdc3f0c1ef11ee9e6c26505725b030b2a6597321c6d788b6c6d24d231",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:b4cdbff52958218af5d3c7929f17acab5b71cdc8e784baf59d6563d49d33ddd5",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "leakage_correction": "applied"
@@ -19,7 +19,7 @@
     "cosebis_ptes_sp_v1p4p11p3": "sha256:399f491c28f2fabd6e5cd26b6fbb49754e0cfd4e40ffa3c547cdae059cd640ff",
     "cosebis_ptes_sp_v1p4p11p3_leak_corr": "sha256:63f15dcb30fbbefe67979cde40752a28f58fccf3f92e2cce03a216590a62e3e9"
   },
-  "git_sha": "33b19a9463430e08ec647a701a29fdc20191e31c",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -29,8 +29,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T08:43:52.441+00:00",
-  "finished_at": "2026-11-13T08:43:54.124+00:00",
+  "started_at": "2026-11-22T23:18:33.511+00:00",
+  "finished_at": "2026-11-22T23:18:39.654+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

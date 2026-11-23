@@ -4,7 +4,7 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/merge_cosebis_pte_rows.py --members results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_00.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_01.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_02.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_03.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_04.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_05.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_06.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_07.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_08.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_09.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_10.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_11.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_12.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_13.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_14.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_15.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_16.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_17.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_18.npz results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_19.npz --out-file results/baseline/significance/cosebis_pte_grid/cosebis_pte_matrix.npz\n",
   "definition_version": "sha256:0c28fcd6c70dfdac220f98f7e452c286b5ea12b2cd35dc547a728f94bff1b542",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
   "data_version": "sha256:9c4b6a384f85ef690bb8c27eab92500d9ead59ccd0b4b1995114b5a1dddb936f",
   "decisions": {},
   "input_versions": {
@@ -29,7 +29,7 @@
     "cosebis_pte_row_18": "sha256:1c83582f5b13d9421de41b22458652abd70c8f256b68ad33666710ca3ad37a7d",
     "cosebis_pte_row_19": "sha256:a3741fee561d186659893d022c6b0f9e1e762449e7144c9839f6d16a7e147560"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -39,8 +39,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T12:58:20.595+00:00",
-  "finished_at": "2026-11-13T12:58:58.102+00:00",
+  "started_at": "2026-11-22T22:03:54.865+00:00",
+  "finished_at": "2026-11-22T22:04:27.296+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",

@@ -4,7 +4,7 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/pure_eb_covariance.py --fiducial-catalog size_cut --leakage-correction applied --pure-eb-covariance results/baseline/covariances/pure_eb_covariance.npz --out-file results/baseline/covariances/pure_eb_covariance_figure.png\n",
   "definition_version": "sha256:3909bff28a376122abd871a86d9c50af67e4b17b94d55f96b0f8cd20db5c3df8",
-  "env_version": "sha256:4ea29c177ff2f6997ab00b7825fc1cd5fa77446ffce3ca924232078bc0592143",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
   "data_version": "sha256:5e6ae0e21f3045439e62ec4b2a39443a1ca37cd0e488f00dc0d6052268d5b1d8",
   "decisions": {
     "fiducial_catalog": "size_cut",
@@ -13,7 +13,7 @@
   "input_versions": {
     "pure_eb_covariance": "sha256:f02851765875fefaf415c0eb00e7a1ac0dba9668d31fa8eb5764018d08efd729"
   },
-  "git_sha": "1c09f495b1cc9a222c08c7c259d5faa8a7bd8e6a",
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
   "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -23,8 +23,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": null
   },
-  "started_at": "2026-11-13T12:56:25.868+00:00",
-  "finished_at": "2026-11-13T12:57:02.640+00:00",
+  "started_at": "2026-11-22T22:03:54.853+00:00",
+  "finished_at": "2026-11-22T22:04:20.945+00:00",
   "uv_version": "0.13.8",
   "image": {
     "tag": "lc-env-74944f7459471224",
