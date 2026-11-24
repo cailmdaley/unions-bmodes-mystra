@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "output_id": "catalog_processing.xi_scan.xi_sweep_bundle",
+  "universe_id": "published",
+  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout xi --fiducial-catalog size_cut --leakage-correction applied --names xi_sp_v1p4p5_reporting xi_sp_v1p4p5_integration xi_sp_v1p4p5_leak_corr_reporting xi_sp_v1p4p5_leak_corr_integration xi_fiducial_counterpart_reporting xi_fiducial_counterpart_integration xi_sp_v1p4p8_reporting xi_sp_v1p4p8_integration xi_sp_v1p4p8_leak_corr_reporting xi_sp_v1p4p8_leak_corr_integration xi_sp_v1p4p11p3_reporting xi_sp_v1p4p11p3_integration xi_sp_v1p4p11p3_leak_corr_reporting xi_sp_v1p4p11p3_leak_corr_integration --members results/published/catalog_processing/xi_scan/xi_sp_v1p4p5_reporting.txt results/published/catalog_processing/xi_scan/xi_sp_v1p4p5_integration.txt results/published/catalog_processing/xi_scan/xi_sp_v1p4p5_leak_corr_reporting.txt results/published/catalog_processing/xi_scan/xi_sp_v1p4p5_leak_corr_integration.txt results/published/catalog_processing/xi_scan/xi_fiducial_counterpart_reporting.txt results/published/catalog_processing/xi_scan/xi_fiducial_counterpart_integration.txt results/published/catalog_processing/xi_scan/xi_sp_v1p4p8_reporting.txt results/published/catalog_processing/xi_scan/xi_sp_v1p4p8_integration.txt results/published/catalog_processing/xi_scan/xi_sp_v1p4p8_leak_corr_reporting.txt results/published/catalog_processing/xi_scan/xi_sp_v1p4p8_leak_corr_integration.txt results/published/catalog_processing/xi_scan/xi_sp_v1p4p11p3_reporting.txt results/published/catalog_processing/xi_scan/xi_sp_v1p4p11p3_integration.txt results/published/catalog_processing/xi_scan/xi_sp_v1p4p11p3_leak_corr_reporting.txt results/published/catalog_processing/xi_scan/xi_sp_v1p4p11p3_leak_corr_integration.txt --out-file results/published/catalog_processing/xi_scan/xi_sweep_bundle.tar.gz\n",
+  "definition_version": "sha256:02a81a7c96fd1861aae5ede63208bdcc684c876706272300b48acd0c679d3255",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:792121b3bc3bb6439a92fc7e6f4f6dcaaca33e907c641767f1ba6ca3aec7a55d",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "xi_sp_v1p4p5_reporting": "sha256:b987823d937dbbeed06839a5cf503230bf7e165e52da538f29a3c6c36ef98360",
+    "xi_sp_v1p4p5_integration": "sha256:d182b6f037df557bfd3f0b411fd871cfef1f408eeebffcf3f2059005bbe89b25",
+    "xi_sp_v1p4p5_leak_corr_reporting": "sha256:7990793ace031525f076b7af872b07ad97a785daea83237e8b12de4f397f9146",
+    "xi_sp_v1p4p5_leak_corr_integration": "sha256:e3875f93cfe22aa5653d0bbac41a2ac90a8997bb7ddda6853ee20d35b7d90e18",
+    "xi_fiducial_counterpart_reporting": "sha256:d1ca4e0f7602f7403f85892d9014c0d90ce224433881614fa5d75495416b245e",
+    "xi_fiducial_counterpart_integration": "sha256:b5e00bbbfbd0e701440a55fbd8b408bb53f72840a0e78f12a919002879e86b5a",
+    "xi_sp_v1p4p8_reporting": "sha256:8ee14ecf209f82cd75b58a0db9e15eeed333569a0046fea5e858f9961eef9226",
+    "xi_sp_v1p4p8_integration": "sha256:3d9edffbacdb57b2e6e01ace69620790c3e713160323da3fbeed4ad216d1eb89",
+    "xi_sp_v1p4p8_leak_corr_reporting": "sha256:96e97ddc685923ef01aa058b16d4dd46fa86415af0e9ba7ecb01f5d3d0f784d3",
+    "xi_sp_v1p4p8_leak_corr_integration": "sha256:3ce9ad8e7e0ba57fb002d68f4dbd75760504300b89d5d4e8b55091e42395dbf5",
+    "xi_sp_v1p4p11p3_reporting": "sha256:327e3988e314b5323e33eb84c9b86e343af115da80eb84b82f6ea9483b07ea57",
+    "xi_sp_v1p4p11p3_integration": "sha256:b1e7a5ab0173c32ff880207bc6e8f340177aabc44b978cc56ea668a96578e702",
+    "xi_sp_v1p4p11p3_leak_corr_reporting": "sha256:2f9de3cc88b4a12e5512c63bbbd15b1b1879e5c9d2c31a3a1e48aab29acdf719",
+    "xi_sp_v1p4p11p3_leak_corr_integration": "sha256:a9b07aa35d9a9eab90f1e806083c0089aee4ec4ed5669ab9679dc1366278e28a"
+  },
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-20T20:00:09.469+00:00",
+  "finished_at": "2026-11-20T20:00:12.474+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

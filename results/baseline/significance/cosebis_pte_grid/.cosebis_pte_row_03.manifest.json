@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.cosebis_pte_grid.cosebis_pte_row_03",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/compute_cosebis_pte_single.py --version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --blind blind_a --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 --xi-integration results/baseline/catalog_processing/xi_integration.txt --cov-integration results/baseline/covariances/cov_integration.txt --row 03 --out-file results/baseline/significance/cosebis_pte_grid/cosebis_pte_row_03.npz\n",
+  "definition_version": "sha256:5d58c8185843ffbf6021157bbf7c19b57c2eef49d5016752908d15761e36bc9e",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:853e8f0efa09ba30818b6cc834b9b2e94ca905c229b238904efdba2d682702e8",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "scale_cut_pair_grid": "production_grid",
+    "pte_definition": "chi2_tail",
+    "leakage_correction": "applied",
+    "reporting_binning": "bins_20",
+    "integration_grid": "bins_1000",
+    "mode_count": "n_max_20"
+  },
+  "input_versions": {
+    "xi_integration": "sha256:1f5f0f013b61307d6e5506eaea3e3bf04a2ec70bb8013594f5e1423855083e4e",
+    "cov_integration": "sha256:d2127e272d367378b381e18385b200ed4218b36ce9484803b2cdc94f4af5e646"
+  },
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-21T02:30:00.852+00:00",
+  "finished_at": "2026-11-21T02:36:07.362+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "validation.glass_mocks.mock_xi_validation_stats",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/workflow/scripts/mock_xi_validation.py --reporting-ensemble results/preprint_v2/mocks/glass_mock_xi_reporting.npz --theory results/preprint_v2/validation/glass_mocks/mock_xi_input_theory.npz --covariance results/preprint_v2/covariances/cov_reporting_reference.npz --survey-properties size_cut --sampling results/preprint_v2/mocks/generation/glass_mock_sampling.json --realization-summary results/preprint_v2/mocks/generation/glass_mock_realization_00001.npz --emit stats --out-file results/preprint_v2/validation/glass_mocks/mock_xi_validation_stats.json\n",
+  "definition_version": "sha256:08a4284dad6e9c8f290095c92cb8e7ea7c7f502a9d76033c224c86d8e970c5f5",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:d1ee56f56f10a88ffc6d27ffe160e05c6f06a5ef592da5f33a8d1a889c1bac5e",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2",
+    "fiducial_catalog": "size_cut"
+  },
+  "input_versions": {
+    "glass_mock_xi_reporting": "sha256:ead0270db702c9ceb8f95e6917e26e04a46d1c79cb257821500971f3cd240d2c",
+    "mock_xi_input_theory": "sha256:67c0f00bef00f7a18d6d687020e489a3b208b3697a6a8e1d2a72cedf49297bd2",
+    "cov_reporting_reference": "sha256:7e84b8dd95c3140b5845bda9acf54b40523e05386faa100bf79c9ba24b4f9ec4",
+    "survey_areas": "sha256:4a8decd35573a28df52de9f9ec1aa019e8db7851748735e73316726e6267f94c",
+    "glass_mock_sampling": "sha256:a4462a502e0a7355e1050174a289697758bd2ef883412674deaa15e86027e692",
+    "glass_mock_realization_00001": "sha256:8a14d91655cffc3670c51370abe9f97f3f5f5abc018f4d5e8a89724396555ac1"
+  },
+  "git_sha": "0f1a526566e68182e80ac2473546f110025fb052",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T22:38:35.683+00:00",
+  "finished_at": "2026-11-23T22:38:46.125+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

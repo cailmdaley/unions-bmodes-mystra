@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.mock_min_pte_figure",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/workflow/scripts/mock_min_pte_calibration.py --per-mock-statistics results/preprint_v2/validation/glass_mocks/mock_per_mock_statistics.npz --pure-eb-pte results/preprint_v2/significance/pure_eb_pte_per_cut.npz --cosebis-pte results/preprint_v2/significance/cosebis_pte_grid/cosebis_pte_matrix.npz --cl-pte results/preprint_v2/significance/cl_pte_per_cut.npz --reporting-binning bins_20 --pte-threshold nominal_0p05 --emit figure --out-file results/preprint_v2/significance/mock_min_pte_figure.png\n",
+  "definition_version": "sha256:d6d6c70c7ef334664197eb47430c3d158e43cb4b7d94c0325b4d32f3a01f0de5",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:32366941bd4c96613c3de2f0d7308e0bec9630bc0e92f4685d735c090101e2c7",
+  "decisions": {
+    "pte_threshold": "nominal_0p05",
+    "reporting_binning": "bins_20",
+    "fiducial_scale_cuts": "adopted",
+    "mode_subsets": "n_le_6_and_n_le_20"
+  },
+  "input_versions": {
+    "mock_per_mock_statistics": "sha256:1d481d5ae42d2208f2270f884a6f9fec7f4e81fe7c89a2fa046e0d3c7520eb04",
+    "pure_eb_pte_per_cut": "sha256:5346e6363a5c9d04eb08160a5caaebbd470cfd21f1d1fef9fd32d96212a3a8a2",
+    "cosebis_pte_per_cut": "sha256:9c4b6a384f85ef690bb8c27eab92500d9ead59ccd0b4b1995114b5a1dddb936f",
+    "cl_pte_per_cut": "sha256:027b72f1d8f42288f3992c8e51a3dbcaeb807246082d85b8a971f4f95113edab"
+  },
+  "git_sha": "0f1a526566e68182e80ac2473546f110025fb052",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T22:42:13.331+00:00",
+  "finished_at": "2026-11-23T22:42:36.371+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

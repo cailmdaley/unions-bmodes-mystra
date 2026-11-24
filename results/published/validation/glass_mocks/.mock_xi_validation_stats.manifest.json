@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "validation.glass_mocks.mock_xi_validation_stats",
+  "universe_id": "published",
+  "recipe": "python src/workflow/scripts/mock_xi_validation.py --reporting-ensemble results/published/mocks/glass_mock_xi_reporting.npz --theory results/published/validation/glass_mocks/mock_xi_input_theory.npz --covariance results/published/covariances/cov_reporting_reference.npz --survey-properties size_cut --sampling results/published/mocks/generation/glass_mock_sampling.json --realization-summary results/published/mocks/generation/glass_mock_realization_00001.npz --emit stats --out-file results/published/validation/glass_mocks/mock_xi_validation_stats.json\n",
+  "definition_version": "sha256:e456fb027a40505f28cbaf813f607927e66ffa3eea8d1d5dffef2a5169dd5017",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:570f88d7df58a747708ecae2ac06c01e6f7ac69a9decef6cf856ea66c3f168db",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2",
+    "fiducial_catalog": "size_cut"
+  },
+  "input_versions": {
+    "glass_mock_xi_reporting": "sha256:d52aaa092453fc5eb9300dbc31dd4f74feb7b87634ad28d0f028d9fd565c1bd3",
+    "mock_xi_input_theory": "sha256:5006529acd0d7b6cf01779c7b8758402a91667e1cd5d2759c1ddba2cf577d083",
+    "cov_reporting_reference": "sha256:df4571d59176c04dfd3cb153e85f8333512f243f219333d6082e747b621f340a",
+    "survey_areas": "sha256:4a8decd35573a28df52de9f9ec1aa019e8db7851748735e73316726e6267f94c",
+    "glass_mock_sampling": "sha256:a4462a502e0a7355e1050174a289697758bd2ef883412674deaa15e86027e692",
+    "glass_mock_realization_00001": "sha256:8a14d91655cffc3670c51370abe9f97f3f5f5abc018f4d5e8a89724396555ac1"
+  },
+  "git_sha": "0f1a526566e68182e80ac2473546f110025fb052",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T20:31:29.271+00:00",
+  "finished_at": "2026-11-23T20:31:47.031+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

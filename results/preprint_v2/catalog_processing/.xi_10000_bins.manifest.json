@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "output_id": "catalog_processing.xi_10000_bins",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/workflow/scripts/run_2pcf_highres.py --cat-config src/cosmo_val/cat_config.yaml --version SP_v1.4.6.3_leak_corr --nbins 10000 --min-sep 0.5 --max-sep 300.0 --out-file results/preprint_v2/catalog_processing/xi_10000_bins.txt\n",
+  "definition_version": "sha256:84dfd7ea0d45fdc1769f26188f8201046ee1ed83226ed03c72ed1c91c09c2418",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:b44a00978a3dde5e0ae4bd9c4b7851a3d1689cefc03f43fdca5c75d33701dc06",
+  "decisions": {
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "shapepipe_v14_catalogs": "spelling:sha256:ddcb9bb187a44cd4aa678855597346a6b0bb4ad3f2056a08cfb7714923d2457a"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T02:45:48.161+00:00",
+  "finished_at": "2026-11-22T05:41:35.582+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

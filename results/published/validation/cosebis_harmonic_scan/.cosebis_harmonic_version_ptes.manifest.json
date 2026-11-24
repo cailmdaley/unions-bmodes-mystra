@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "output_id": "validation.cosebis_harmonic_scan.cosebis_harmonic_version_ptes",
+  "universe_id": "published",
+  "recipe": "python src/papers/bmodes/scripts/merge_harmonic_version_ptes.py --members results/published/validation/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p5.npz results/published/validation/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p8.npz results/published/validation/cosebis_harmonic_scan/harmonic_modes_sp_v1p4p11p3.npz --out-file results/published/validation/cosebis_harmonic_scan/cosebis_harmonic_version_ptes.json\n",
+  "definition_version": "sha256:3e6e210267de0baa720f6a6ec6a4419d5e5d94e24e0572873f4d58a169a04010",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:c06d4c9e7cbbc4cabdf55889040422e619e566d777e89f83d9412a1c31a19063",
+  "decisions": {},
+  "input_versions": {
+    "harmonic_modes_sp_v1p4p5": "sha256:8736434b83f51efa47de41c7f0e3ac45e4b868009871d94de234ca2b97caf019",
+    "harmonic_modes_sp_v1p4p8": "sha256:b603e8f78e61c3bfe98d707e063bdc9ae32801b7614141f8c86dbf29b177a3c1",
+    "harmonic_modes_sp_v1p4p11p3": "sha256:b0fa7b83be68810ffda0925ae222396f9ef45578d3ff198050d43eba215fe260"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T20:07:14.138+00:00",
+  "finished_at": "2026-11-22T20:08:03.670+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

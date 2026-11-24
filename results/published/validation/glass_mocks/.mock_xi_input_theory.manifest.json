@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "output_id": "validation.glass_mocks.mock_xi_input_theory",
+  "universe_id": "published",
+  "recipe": "python src/workflow/scripts/mock_xi_input_theory.py --cosmology-json results/published/covariances/cosmology_snapshot.json --reporting-ensemble results/published/mocks/glass_mock_xi_reporting.npz --cat-config src/cosmo_val/cat_config.yaml --out-file results/published/validation/glass_mocks/mock_xi_input_theory.npz\n",
+  "definition_version": "sha256:5c7c61533d07848db611cae6a16053c39c500e39d5d3220002c6f61cc5dc97d8",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:5006529acd0d7b6cf01779c7b8758402a91667e1cd5d2759c1ddba2cf577d083",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2"
+  },
+  "input_versions": {
+    "glass_mock_xi_reporting": "sha256:d52aaa092453fc5eb9300dbc31dd4f74feb7b87634ad28d0f028d9fd565c1bd3",
+    "cosmology_snapshot": "sha256:c2a2387f4c8a208fbb1cb4e7c6fb11dbf0945b44f4d576380626c21c228c2024",
+    "redshift_distributions": "spelling:sha256:11ef1341c9f8ea8d3d7fb69db5d38885a4f438092cb4096978145b98d45b8e43"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T02:53:17.154+00:00",
+  "finished_at": "2026-11-23T02:55:35.027+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

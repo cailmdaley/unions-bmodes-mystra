@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "output_id": "validation.glass_mocks.mock_cosebis_modes",
+  "universe_id": "published",
+  "recipe": "python src/workflow/scripts/mock_cosebis_scatter.py --xi-ensemble results/published/mocks/glass_mock_xi_fine.npz --out-file results/published/validation/glass_mocks/mock_cosebis_modes.npz --nmodes 20\n",
+  "definition_version": "sha256:7ff3194d447f2c1c7b4865047ef27aa261193f1cf5ef2207f94c7c151682767d",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:91fa3e07297bcfe249d149e0ef430f1109311f3cf6b357fb111eb4d67672cef5",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2"
+  },
+  "input_versions": {
+    "glass_mock_xi_fine": "sha256:96d97fd6e0ea6526aca7c165e38b90b718a165ec4e159bb189d3ab51661c9d8e"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T02:53:16.719+00:00",
+  "finished_at": "2026-11-23T02:57:43.589+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

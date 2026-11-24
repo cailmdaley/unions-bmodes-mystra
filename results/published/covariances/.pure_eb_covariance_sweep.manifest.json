@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "output_id": "covariances.pure_eb_covariance_sweep",
+  "universe_id": "published",
+  "recipe": "set -e\nx=$(mktemp -d) && tar xzf results/published/catalog_processing/xi_scan/xi_sweep_bundle.tar.gz -C $x\nc=$(mktemp -d) && tar xzf results/published/covariances/cov_scan/cov_sweep_bundle.tar.gz -C $c\no=$(mktemp -d)\nb=\"$(python src/workflow/scripts/decision_values.py fiducial_blind blind_a)\"\nversions=$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --nonfiducial)\nfor ver in $versions; do\n  cb=covariance_\"$ver\"_\"$b\"_integration\n  bash src/papers/bmodes/scripts/run_pure_eb_covariance.sh \\\n    --version \"$ver\" --blind \"$b\" \\\n    --cat-config src/cosmo_val/cat_config.yaml \\\n    --xi-reporting \"$x/$ver\"_xi_minsep=1.0_maxsep=250.0_nbins=20_npatch=1.txt \\\n    --xi-integration \"$x/$ver\"_xi_minsep=0.5_maxsep=300.0_nbins=1000_npatch=1.txt \\\n    --cov-integration \"$c/$cb/$cb\"_processed.txt \\\n    --integration-method fixed_operator \\\n    --integration-limits fine_grid_extent \\\n    --rebinning-weights npairs \\\n    --covariance-method exact_linear \\\n    --out-file \"$o/$ver\"_\"$b\"_pure_eb_covariance.npz\ndone\ntar czf results/published/covariances/pure_eb_covariance_sweep.tar.gz -C $o .\n",
+  "definition_version": "sha256:14431d67cf637900e6756c6bfb569fc1c709782d0d9c895870b7f4acc340fc3c",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:d6a5fc6a285ba14f7fad7e04d5fa676814d3eee483b1f68c60dd7719b3156bfc",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "pure_eb_integration_method": "fixed_operator",
+    "pure_eb_rebinning_weights": "npairs",
+    "pure_eb_integration_limits": "fine_grid_extent",
+    "pure_eb_covariance_method": "exact_linear",
+    "decomposition_method": "schneider22_integral_transform",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "xi_sweep": "sha256:792121b3bc3bb6439a92fc7e6f4f6dcaaca33e907c641767f1ba6ca3aec7a55d",
+    "cov_sweep": "sha256:619e67970e9ba8f0a63a898b207bd3d42882ada545f8c073835c8f5c8bb06c55",
+    "redshift_distributions": "spelling:sha256:11ef1341c9f8ea8d3d7fb69db5d38885a4f438092cb4096978145b98d45b8e43"
+  },
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-21T21:49:23.448+00:00",
+  "finished_at": "2026-11-21T21:57:10.560+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

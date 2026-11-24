@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "output_id": "validation.cosebis_harmonic_figure",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/harmonic_config_cosebis_comparison.py --angular-range full --figure-from-modes results/baseline/validation/cosebis_harmonic_modes.npz --out-file results/baseline/validation/cosebis_harmonic_figure.png\n",
+  "definition_version": "sha256:49b60028499a78520bdbc85fec3e35000331c916beccd9496fad7a5df6ccfa17",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:af5fa4fc977f2d3116226d075c303f554e18651f8434fedeef83b3effc7f379a",
+  "decisions": {
+    "fiducial_catalog": "size_cut"
+  },
+  "input_versions": {
+    "cosebis_harmonic_modes": "sha256:f70597092ed74f7820683eb47c21e92f8a9aef4a4fc1a006d34cc8da33563540"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T22:49:22.903+00:00",
+  "finished_at": "2026-11-22T22:52:33.323+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

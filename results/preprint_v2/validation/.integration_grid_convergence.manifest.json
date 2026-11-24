@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "output_id": "validation.integration_grid_convergence",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/papers/bmodes/scripts/integration_grid_convergence.py --fiducial-catalog size_cut --leakage-correction applied --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 --xi-reporting results/preprint_v2/catalog_processing/xi_reporting.txt --xi-1k results/preprint_v2/catalog_processing/xi_integration.txt --xi-10k results/preprint_v2/catalog_processing/xi_10000_bins.txt --pure-eb-baseline results/preprint_v2/catalog_processing/pure_eb_data.npz --pure-eb-covariance results/preprint_v2/covariances/pure_eb_covariance.npz --cosebis-baseline results/preprint_v2/catalog_processing/cosebis_modes_data.npz --cosebis-covariance results/preprint_v2/covariances/cosebis_covariance.npz --integration-method adaptive_dqags --rebinning-weights none --integration-limits reporting_extent --out-file results/preprint_v2/validation/integration_grid_convergence.json\n",
+  "definition_version": "sha256:93262349e8c3c3a85e2c4494d37b3e8c97a711ab6cb474294ad53ad4a863d6bd",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:8821f858c19c155273b6cefae38cdfecfc9bf5829bc0db47039a9ad527f27490",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "pure_eb_integration_method": "adaptive_dqags",
+    "pure_eb_rebinning_weights": "none",
+    "pure_eb_integration_limits": "reporting_extent",
+    "mode_count": "n_max_20",
+    "decomposition_method": "schneider22_integral_transform",
+    "pte_definition": "chi2_tail",
+    "leakage_correction": "applied",
+    "reporting_binning": "bins_20",
+    "integration_grid": "bins_1000"
+  },
+  "input_versions": {
+    "xi_reporting": "sha256:d36fd4f4c065c7ad9c0ab5198cda7ff4b9110df261ca0b8288c3a79a735c0fa2",
+    "xi_integration": "sha256:1f5f0f013b61307d6e5506eaea3e3bf04a2ec70bb8013594f5e1423855083e4e",
+    "xi_10000_bins": "sha256:b44a00978a3dde5e0ae4bd9c4b7851a3d1689cefc03f43fdca5c75d33701dc06",
+    "pure_eb_data": "sha256:63ec67f466ddeb1eaf324e4afb1a062c682e97c03dd2d9e4a14d156f5f84e780",
+    "pure_eb_covariance": "sha256:62cbad153633d290490b406acb6d4b40eb36047c2d1db0a400991e9fe34b02fe",
+    "cosebis_modes_data": "sha256:73575032623db6458e66df04b7a46e6b861ec77bbf18709f3c2223913df97ba5",
+    "cosebis_covariance": "sha256:ddbba1e098c9147548804e23cb2b7689d09679441c77972c77671e4330e5900f"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T22:01:30.999+00:00",
+  "finished_at": "2026-11-22T22:04:04.882+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "output_id": "catalog_processing.xi_reporting",
+  "universe_id": "baseline",
+  "recipe": "tar xzOf data/products/xi_measurements.tar.gz \"./$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)_reporting.txt\" > results/baseline/catalog_processing/xi_reporting.txt\n",
+  "definition_version": "sha256:57736515e0ee86e2009718322c7fbd58e80fa20e4673ccb5d588b86152ec2f17",
+  "env_version": "sha256:bac919eaaa03ff1809d3a3383f5a2c81ccc56b22fa5c017a78b25970b9f298f4",
+  "data_version": "sha256:d36fd4f4c065c7ad9c0ab5198cda7ff4b9110df261ca0b8288c3a79a735c0fa2",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "reporting_binning": "bins_20",
+    "patch_count": "npatch_1",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "xi_measurements": "sha256:f5ebf7992fac427a4cb494d1414e69bd5bdaa591e5b0661a9fbf8b0b7abcfded"
+  },
+  "git_sha": "59ab0c221812f390fae7fa6b5311eb1f110a7d4d",
+  "git_remote": "https://github.com/cailmdaley/unions-bmodes-mystra",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "seatbelt",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": 1
+  },
+  "started_at": "2026-11-24T23:18:11.475+00:00",
+  "finished_at": "2026-11-24T23:18:11.768+00:00",
+  "uv_version": "0.12.5",
+  "image": null
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.paper_claims",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/paper_claims.py extract results/baseline/significance/pte_summary_macros.tex results/baseline/significance/paper_claims.csv",
+  "definition_version": "sha256:91e7f3e2e429bebb4ff8e7c1f798fdab413727860cc238086468da6dcbdf9d70",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:a9d3ccbaf496b4b858882416c61feb9feea1b9e3e5d6542feff7a31f29572f12",
+  "decisions": {},
+  "input_versions": {
+    "pte_summary_macros": "sha256:9ae8c131b674f5fe248c683f6363105456444ced513054c2a6d1117e6405c870"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T23:20:15.457+00:00",
+  "finished_at": "2026-11-22T23:20:16.342+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

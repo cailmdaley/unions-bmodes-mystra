@@ -1,0 +1,138 @@
+{
+  "ell_cut": [
+    300.0,
+    1600.0
+  ],
+  "n_bands": 17,
+  "n_realizations": 350,
+  "machinery_variance_ratio_mean": 1.0,
+  "machinery_variance_ratio_median": 1.0,
+  "empirical_variance_ratio_mean": 0.9670291262322199,
+  "empirical_variance_ratio_median": 0.9629491634778198,
+  "per_band": [
+    {
+      "ell_eff": 327.5,
+      "ell_low": 304,
+      "ell_high": 351,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.8713752416490496
+    },
+    {
+      "ell_eff": 377.0,
+      "ell_low": 352,
+      "ell_high": 402,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9818128518291728
+    },
+    {
+      "ell_eff": 429.99999999999994,
+      "ell_low": 403,
+      "ell_high": 457,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9773266436939161
+    },
+    {
+      "ell_eff": 487.0,
+      "ell_low": 458,
+      "ell_high": 516,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 1.0019601315018014
+    },
+    {
+      "ell_eff": 547.5,
+      "ell_low": 517,
+      "ell_high": 578,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9654427885804756
+    },
+    {
+      "ell_eff": 610.9999999999998,
+      "ell_low": 579,
+      "ell_high": 643,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9430509625628768
+    },
+    {
+      "ell_eff": 678.0000000000003,
+      "ell_low": 644,
+      "ell_high": 712,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9579190487647659
+    },
+    {
+      "ell_eff": 749.0000000000001,
+      "ell_low": 713,
+      "ell_high": 785,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9614555207788726
+    },
+    {
+      "ell_eff": 823.5,
+      "ell_low": 786,
+      "ell_high": 861,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9889449946809135
+    },
+    {
+      "ell_eff": 901.0000000000002,
+      "ell_low": 862,
+      "ell_high": 940,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 1.114245786970306
+    },
+    {
+      "ell_eff": 981.9999999999999,
+      "ell_low": 941,
+      "ell_high": 1023,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9004380140221053
+    },
+    {
+      "ell_eff": 1067.0,
+      "ell_low": 1024,
+      "ell_high": 1110,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9759520437783663
+    },
+    {
+      "ell_eff": 1155.4999999999998,
+      "ell_low": 1111,
+      "ell_high": 1200,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9526908819160345
+    },
+    {
+      "ell_eff": 1247.4999999999998,
+      "ell_low": 1201,
+      "ell_high": 1294,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9629491634778198
+    },
+    {
+      "ell_eff": 1343.0000000000007,
+      "ell_low": 1295,
+      "ell_high": 1391,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9055030777522491
+    },
+    {
+      "ell_eff": 1441.5000000000005,
+      "ell_low": 1392,
+      "ell_high": 1491,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 1.0174303428871532
+    },
+    {
+      "ell_eff": 1544.0000000000005,
+      "ell_low": 1492,
+      "ell_high": 1596,
+      "machinery_variance_ratio": 1.0,
+      "empirical_variance_ratio": 0.9609976511018589
+    }
+  ],
+  "sources": {
+    "cl_cov_reference": "results/baseline/covariances/cl_cov_reference.fits",
+    "cl_cov_data": "results/baseline/covariances/cl_cov_reporting.fits",
+    "cl_files": "350 files matching /project/6033482/cdaley/unions/analyses/paper-ii-fir/UNIONS/pure_eb/.lightcone/lc-home-l03nelgm/.tmp/tmp.vUf2NLAg7J/cl_glass_mock_*_4096.npy"
+  }
+}

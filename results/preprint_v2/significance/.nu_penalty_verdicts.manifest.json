@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.nu_penalty_verdicts",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/papers/bmodes/scripts/emit_nu_penalty_verdicts.py --config-space-evidence results/preprint_v2/significance/config_space_pte_data.json --harmonic-space-evidence results/preprint_v2/significance/harmonic_space_pte_data.json --reporting-binning bins_20 --leakage-correction applied --out-file results/preprint_v2/significance/nu_penalty_verdicts.csv\n",
+  "definition_version": "sha256:a23306c559daec57ec79979d3c94465b2259453f3b493c096f3d50dcf3fcecfc",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:e9627f9e1c0686c2adb802b4e3cbacb16a2bf34486d4e70a51224166a4d1e031",
+  "decisions": {
+    "pte_definition": "chi2_tail",
+    "reporting_binning": "bins_20",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "config_space_pte_data": "sha256:e6c6a33f0edca60ceec1ba9c5d2a5b4f0a3b2dfde71a6740c7cc67a4b8e764a2",
+    "harmonic_space_pte_data": "sha256:29a9fecbea95edb5d0ad15699220b1f45a869d38d132908bcc5945dabc68e0d7"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T22:04:29.724+00:00",
+  "finished_at": "2026-11-22T22:04:43.821+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

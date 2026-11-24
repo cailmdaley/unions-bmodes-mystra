@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "output_id": "mocks.glass_mock_xi_fine",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/workflow/scripts/glass_mock_suite.py --extract mock_xi_fine.npz --suite results/preprint_v2/mocks/glass_suite/glass_suite_bundle.tar.gz --out-file results/preprint_v2/mocks/glass_mock_xi_fine.npz\n",
+  "definition_version": "sha256:55f0cac2ae8fb32895b66ac52ce7c6e06ed690fff460fd8446646b3355aba47d",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:305f39a27ec8a3d08693fea08a128a0126c1c46465a33d9985f1be1ec0632ef7",
+  "decisions": {
+    "mock_suite": "v1_4_6_3_v2",
+    "integration_grid": "bins_1000"
+  },
+  "input_versions": {
+    "glass_mock_suite": "sha256:9f9ef2c5f7af461b9af9802fb2f6ff41933e96a8cf214cf02f941f616066269d"
+  },
+  "git_sha": "0f1a526566e68182e80ac2473546f110025fb052",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T22:36:27.974+00:00",
+  "finished_at": "2026-11-23T22:36:30.814+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

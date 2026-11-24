@@ -1,0 +1,85 @@
+version: "0.0.14"
+name: "GLASS generation inputs"
+description: |
+  What every GLASS realization is drawn from: the galaxy density and shape
+  dispersion they are sampled with, and the matter shell spectra the
+  lognormal fields are drawn from; plus the summary of realization 00001, the
+  one realization whose catalog a covariance reads. The footprint the
+  galaxies are sampled in is the nside-4096 occupancy of the
+  [suite](#decisions.mock_suite)'s footprint catalog in the
+  [catalog summary](#inputs.catalog_summary): the v1.4.6 cut catalog for the
+  published suite (2757.25 deg²), the fiducial catalog for the data-matched
+  one.
+
+inputs:
+  - id: catalog_summary
+    from: ../catalog_summary
+
+  - id: redshift_distributions
+    from: ../redshift_distributions
+
+outputs:
+  - id: glass_mock_sampling
+    type: data
+    format: json
+    description: |
+      The galaxy density (arcmin⁻²) and per-component intrinsic
+      ellipticity dispersion every realization is sampled with. The
+      published suite keeps its 6.0905 arcmin⁻² and 0.2684. The
+      data-matched suite derives both from the fiducial catalog's summary:
+      the density at which a realization's expected count on the footprint
+      equals the catalog's weight-effective count (Σw)²/Σw², and
+      σ_e² = Σw²(e₁² + e₂²)/(2Σw²), the definition behind the data
+      covariance's shape noise, so that mocks and data carry the same shape
+      noise.
+    inputs: [catalog_summary, redshift_distributions]
+    decisions: [mock_suite, fiducial_catalog]
+    recipe:
+      command: >
+        python src/workflow/scripts/glass_mock_sampling.py
+        --suite {decisions.mock_suite} --fiducial-catalog {decisions.fiducial_catalog}
+        --summary {inputs.catalog_summary}
+        --nz "$(python src/workflow/scripts/decision_values.py nz_file blind_a)"
+        --out-file {output}
+      resources: { cpus: 2, memory: "8GB" }
+
+  - id: glass_mock_shell_cls
+    type: data
+    format: npy
+    description: |
+      CAMB matter angular power spectra, non-Limber to ℓ = 4096, for every
+      pair of the 32 linear-window shells (every 200 Mpc in comoving
+      distance to z = 3), in the suite's cosmology. Every realization
+      draws its lognormal matter fields from them.
+    decisions: [mock_suite]
+    recipe:
+      command: >
+        python src/workflow/scripts/glass_mock_shell_cls.py --out-file {output}
+      resources: { cpus: 4, memory: "8GB" }
+
+  - id: glass_mock_realization_00001
+    type: data
+    format: npz
+    description: |
+      The catalog summary of realization 00001, its weighted count map and
+      shape-noise sum in the layout of the
+      [catalog summary](#inputs.catalog_summary): the window and noise of the
+      Cℓ [reference covariance](#../../decisions.reference_covariance) under
+      `mockmatched`. The catalog itself is discarded.
+    inputs: [catalog_summary, glass_mock_shell_cls, glass_mock_sampling, redshift_distributions]
+    decisions: [mock_suite, fiducial_catalog]
+    recipe:
+      command: >
+        python src/workflow/scripts/glass_mock_summary.py --number 1 --key SP_v1.4.6.3_glass_mock_v2
+        --summary {inputs.catalog_summary}
+        --suite {decisions.mock_suite} --fiducial-catalog {decisions.fiducial_catalog}
+        --shell-cls {inputs.glass_mock_shell_cls} --sampling {inputs.glass_mock_sampling}
+        --nz "$(python src/workflow/scripts/decision_values.py nz_file blind_a)"
+        --out-file {output}
+      resources: { cpus: 4, memory: "8GB" }
+
+decisions:
+  mock_suite:
+    from: ../mock_suite
+  fiducial_catalog:
+    from: ../fiducial_catalog

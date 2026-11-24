@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.cosebis_first_mode_significance",
+  "universe_id": "published",
+  "recipe": "python src/papers/bmodes/scripts/emit_cosebis_first_mode_significance.py --cosebis-modes-npz results/published/catalog_processing/cosebis_modes_data.npz --cosebis-covariance-npz results/published/covariances/cosebis_covariance.npz --out-file results/published/significance/cosebis_first_mode_significance.json\n",
+  "definition_version": "sha256:15e19a584712669bdce2c8102d83f8ab79c6e51f214f439fb81046bc2311a219",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:fb4f55bf304e183449b28565cab14221108c732a4a07b1130fb5f27bd5f1fb18",
+  "decisions": {},
+  "input_versions": {
+    "cosebis_modes_data": "sha256:73575032623db6458e66df04b7a46e6b861ec77bbf18709f3c2223913df97ba5",
+    "cosebis_covariance": "sha256:ddbba1e098c9147548804e23cb2b7689d09679441c77972c77671e4330e5900f"
+  },
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-21T21:23:01.945+00:00",
+  "finished_at": "2026-11-21T21:23:11.689+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

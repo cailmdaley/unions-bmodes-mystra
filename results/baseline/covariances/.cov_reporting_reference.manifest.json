@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "output_id": "covariances.cov_reporting_reference",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/xi_reporting_covariance.py --covariance results/baseline/covariances/cov_integration_reference.txt --reporting-binning bins_20 --integration-grid bins_1000 --out-file results/baseline/covariances/cov_reporting_reference.npz\n",
+  "definition_version": "sha256:a5ad7fe8d71d514212ec78866e3e65da75bdc21beb245c7facdc4208a09d4576",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:f4d77009a8ba7dffed30f7fb9970c2be783c8efb8c5fd078c8b1db7b900a93b7",
+  "decisions": {
+    "reference_covariance": "data_covariance",
+    "mock_suite": "data_matched",
+    "integration_grid": "bins_1000",
+    "reporting_binning": "bins_20"
+  },
+  "input_versions": {
+    "cov_integration_reference": "sha256:d2127e272d367378b381e18385b200ed4218b36ce9484803b2cdc94f4af5e646"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T23:12:47.001+00:00",
+  "finished_at": "2026-11-22T23:12:49.919+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

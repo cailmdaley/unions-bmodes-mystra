@@ -1,0 +1,8 @@
+id: published
+description: |
+  The v1.4.6.3_v2 GLASS suite as published: 350 realizations generated
+  on the v1.4.6 footprint and measured with the data's recipes.
+decisions: {}
+analyses:
+  generation:
+    universe: published

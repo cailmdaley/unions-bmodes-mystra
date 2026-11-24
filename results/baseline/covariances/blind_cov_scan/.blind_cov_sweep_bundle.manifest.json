@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "output_id": "covariances.blind_cov_scan.blind_cov_sweep_bundle",
+  "universe_id": "baseline",
+  "recipe": "set -e\no=$(mktemp -d)\nfor member in results/baseline/covariances/blind_cov_scan/blind_covariances_blind_a.tar.gz results/baseline/covariances/blind_cov_scan/blind_covariances_blind_b.tar.gz results/baseline/covariances/blind_cov_scan/blind_covariances_blind_c.tar.gz; do tar xzf \"$member\" -C $o; done\ntar czf results/baseline/covariances/blind_cov_scan/blind_cov_sweep_bundle.tar.gz -C $o .\n",
+  "definition_version": "sha256:01a1ba3fe84c07181976195c859966b237307d0c2d8833cfff73f17a40065b69",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:a327742d6e5789abe21ce1d2f69722c719a7e585f90efcf7b9c328455d6551cf",
+  "decisions": {},
+  "input_versions": {
+    "blind_covariances_blind_a": "sha256:c88b43c4acdd292cd5e453741cd1012e3d9a70af184b5f33d762f04d4b2886f7",
+    "blind_covariances_blind_b": "sha256:2932344e96d523f5f2c5e2666803342b734372bbc154ca256ce5753bc073dbc4",
+    "blind_covariances_blind_c": "sha256:6f932e3fcfdfd864455c50eabb5e7eea26a6d1a35c81a2785c08fb65b33aae51"
+  },
+  "git_sha": "0f1a526566e68182e80ac2473546f110025fb052",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T20:32:50.611+00:00",
+  "finished_at": "2026-11-23T20:33:04.455+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

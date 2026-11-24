@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "output_id": "covariances.cov_scan.cov_sweep_bundle",
+  "universe_id": "baseline",
+  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout cov --fiducial-catalog size_cut --leakage-correction applied --names cov_sp_v1p4p5 cov_sp_v1p4p5_leak_corr cov_fiducial_counterpart cov_sp_v1p4p8 cov_sp_v1p4p8_leak_corr cov_sp_v1p4p11p3 cov_sp_v1p4p11p3_leak_corr --members results/baseline/covariances/cov_scan/cov_sp_v1p4p5.txt results/baseline/covariances/cov_scan/cov_sp_v1p4p5_leak_corr.txt results/baseline/covariances/cov_scan/cov_fiducial_counterpart.txt results/baseline/covariances/cov_scan/cov_sp_v1p4p8.txt results/baseline/covariances/cov_scan/cov_sp_v1p4p8_leak_corr.txt results/baseline/covariances/cov_scan/cov_sp_v1p4p11p3.txt results/baseline/covariances/cov_scan/cov_sp_v1p4p11p3_leak_corr.txt --out-file results/baseline/covariances/cov_scan/cov_sweep_bundle.tar.gz\n",
+  "definition_version": "sha256:0dc29a7266124e238e581b40849e22966150c6acd2cee291642ea9d4c2b1b11c",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:a64d94c7dafda7598e1e8dcf51103315c1942ee7fb3e26f55ac683e8c19e5e9d",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "cov_sp_v1p4p5": "sha256:cc8f5f8bc0d3a029d7bb5c331631500967ca4eaded00739a8d0f4dcec5b8f90c",
+    "cov_sp_v1p4p5_leak_corr": "sha256:cc8f5f8bc0d3a029d7bb5c331631500967ca4eaded00739a8d0f4dcec5b8f90c",
+    "cov_fiducial_counterpart": "sha256:d2127e272d367378b381e18385b200ed4218b36ce9484803b2cdc94f4af5e646",
+    "cov_sp_v1p4p8": "sha256:ee0d3af20597bf222b0acde108714bc1bdb37e95c603ca452b1384a0cb756b47",
+    "cov_sp_v1p4p8_leak_corr": "sha256:ee0d3af20597bf222b0acde108714bc1bdb37e95c603ca452b1384a0cb756b47",
+    "cov_sp_v1p4p11p3": "sha256:ac1c9f3c81367867be545167a28a1f3cc16f470199c68c2e3965c175e5166dd4",
+    "cov_sp_v1p4p11p3_leak_corr": "sha256:ac1c9f3c81367867be545167a28a1f3cc16f470199c68c2e3965c175e5166dd4"
+  },
+  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-21T09:58:44.830+00:00",
+  "finished_at": "2026-11-21T10:02:41.245+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

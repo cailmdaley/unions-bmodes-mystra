@@ -1,0 +1,6 @@
+id: baseline
+description: |
+  GLASS mock validation on the data-matched suite, whose shape noise is the
+  fiducial catalog's, with the mock scatter held against the data's own
+  covariance.
+decisions: {}

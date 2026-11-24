@@ -1,0 +1,138 @@
+"""Generate a CosmoCov ``.ini`` for one (version, blind, grid, flavour).
+
+Cosmology is read from the frozen ``planck18.json`` snapshot (the
+cosmology_snapshot output — source of truth is sp_validation.cosmology.PLANCK18);
+survey (area, n_eff, sigma_e) from ``decision_values.survey_properties``, or
+from the ``reference_covariance`` option ``--reference-covariance`` names; n(z) from ``--nz`` when given, otherwise the blind's
+``decision_values.NZ_PATH``. No footprint file is named, so the super-sample term
+uses CosmoCov's circular window of the survey area and the Gaussian terms the area
+alone.
+
+    python generate_cosmocov_ini.py \
+        --version SP_v1.4.6.3_leak_corr --blind blind_a \
+        --planck18-json <cosmology_snapshot>/planck18.json \
+        --min-sep 0.5 --max-sep 300.0 --nbins 1000 --gaussian g \
+        --out-ini <path/to/covariance.ini>
+"""
+
+import argparse
+import json
+import os
+
+from decision_values import FIDUCIAL_BLIND, NZ_PATH, REFERENCE_COVARIANCE, survey_properties
+
+
+# `c_footprint_file` names no file: a nonexistent one selects CosmoCov's
+# circular-area window, where a blank value would make it reuse the n(z) path.
+INI_TEMPLATE = """\
+#
+# Cosmological parameters
+#
+Omega_m : {Omega_m}
+Omega_v : {Omega_v}
+sigma_8 : {sigma_8}
+n_spec : {n_s}
+w0 : -1
+wa : 0
+omb : {Omega_b}
+h0 : {h}
+
+
+# Survey and galaxy parameters
+#
+# area in degrees
+# n_gal,lens_n_gal in gals/arcmin^2
+
+area : {area}
+sourcephotoz : multihisto
+lensphotoz : multihisto
+source_tomobins : 1
+lens_tomobins : 1
+sigma_e : {sigma_e}
+source_n_gal : {n_e}
+lens_n_gal : {n_e}
+
+
+shear_REDSHIFT_FILE : {nz}
+clustering_REDSHIFT_FILE : {nz}
+c_footprint_file : no_footprint_mask
+
+
+# IA parameters
+IA : 1
+A_ia : 0.0
+eta_ia : 0.0
+
+
+# Covariance parameters
+#
+# tmin,tmax in arcminutes
+tmin : {min_sep}
+tmax : {max_sep}
+ntheta : {nbins}
+ng : {ng}
+cng : {ng}
+
+
+outdir : ./
+filename : cov_tmp
+ss : true
+ls : false
+ll : false
+"""
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--version", required=True)
+    ap.add_argument("--blind", type=FIDUCIAL_BLIND.__getitem__, required=True)
+    ap.add_argument("--planck18-json", required=True)
+    ap.add_argument("--min-sep", required=True, help="tmin arcmin (string, e.g. 0.5)")
+    ap.add_argument("--max-sep", required=True, help="tmax arcmin (string, e.g. 300.0)")
+    ap.add_argument("--nbins", required=True, help="ntheta (string, e.g. 1000)")
+    ap.add_argument("--gaussian", required=True, choices=["g", "ng"])
+    ap.add_argument(
+        "--nz",
+        default=None,
+        help="n(z) file (default: the blind's decision_values.NZ_PATH)",
+    )
+    ap.add_argument(
+        "--reference-covariance",
+        type=REFERENCE_COVARIANCE.__getitem__,
+        help="reference_covariance option setting the survey block "
+        "(default: the catalog's own survey properties)",
+    )
+    ap.add_argument("--out-ini", required=True)
+    a = ap.parse_args(argv)
+
+    with open(a.planck18_json) as f:
+        cosmo = json.load(f)
+    survey = a.reference_covariance or survey_properties(a.version)
+
+    ng_value = "1" if a.gaussian == "ng" else "0"
+
+    ini = INI_TEMPLATE.format(
+        Omega_m=cosmo["Omega_m"],
+        Omega_v=cosmo["Omega_v"],
+        sigma_8=cosmo["sigma_8"],
+        n_s=cosmo["n_s"],
+        Omega_b=cosmo["Omega_b"],
+        h=cosmo["h"],
+        area=survey.area,
+        sigma_e=survey.sigma_e_combined,
+        n_e=survey.n_eff,
+        nz=a.nz or NZ_PATH.format(blind=a.blind),
+        min_sep=a.min_sep,
+        max_sep=a.max_sep,
+        nbins=a.nbins,
+        ng=ng_value,
+    )
+
+    os.makedirs(os.path.dirname(os.path.abspath(a.out_ini)), exist_ok=True)
+    with open(a.out_ini, "w") as f:
+        f.write(ini)
+    print(f"Wrote {a.out_ini}")
+
+
+if __name__ == "__main__":
+    main()

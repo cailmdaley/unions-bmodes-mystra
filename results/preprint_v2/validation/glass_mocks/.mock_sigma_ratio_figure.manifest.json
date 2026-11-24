@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "output_id": "validation.glass_mocks.mock_sigma_ratio_figure",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/workflow/scripts/mock_campaign_analysis.py --from-stats results/preprint_v2/validation/glass_mocks/mock_per_mock_statistics.npz --emit sigma-ratio-figure --out-file results/preprint_v2/validation/glass_mocks/mock_sigma_ratio_figure.pdf\n",
+  "definition_version": "sha256:7fb92e0c02b2c281f5c2467cbfbf8216372ed06fd9602b6fcadda5c95f533f64",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:62ab9f149baf08ec7bbb9c3c86d1373486a0eb1653db6ad440d8ef88740e3c9c",
+  "decisions": {
+    "reference_covariance": "mockmatched"
+  },
+  "input_versions": {
+    "mock_per_mock_statistics": "sha256:1d481d5ae42d2208f2270f884a6f9fec7f4e81fe7c89a2fa046e0d3c7520eb04"
+  },
+  "git_sha": "0f1a526566e68182e80ac2473546f110025fb052",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T22:42:13.331+00:00",
+  "finished_at": "2026-11-23T22:43:07.503+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

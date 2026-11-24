@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "output_id": "covariances.cl_cov_scan.cl_cov_sweep_bundle",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/papers/bmodes/scripts/bundle_sweep.py --layout cl_cov --fiducial-catalog size_cut --leakage-correction applied --harmonic-validation-binning bins_96 --names cl_cov_sp_v1p4p5_nbins32 cl_cov_sp_v1p4p5_leak_corr_nbins32 cl_cov_fiducial_counterpart_nbins32 cl_cov_sp_v1p4p8_nbins32 cl_cov_sp_v1p4p8_leak_corr_nbins32 cl_cov_sp_v1p4p11p3_nbins32 cl_cov_sp_v1p4p11p3_leak_corr_nbins32 cl_cov_sp_v1p4p5_fine cl_cov_sp_v1p4p8_fine cl_cov_sp_v1p4p11p3_fine --members results/preprint_v2/covariances/cl_cov_scan/cl_cov_sp_v1p4p5_nbins32.fits results/preprint_v2/covariances/cl_cov_scan/cl_cov_sp_v1p4p5_leak_corr_nbins32.fits results/preprint_v2/covariances/cl_cov_scan/cl_cov_fiducial_counterpart_nbins32.fits results/preprint_v2/covariances/cl_cov_scan/cl_cov_sp_v1p4p8_nbins32.fits results/preprint_v2/covariances/cl_cov_scan/cl_cov_sp_v1p4p8_leak_corr_nbins32.fits results/preprint_v2/covariances/cl_cov_scan/cl_cov_sp_v1p4p11p3_nbins32.fits results/preprint_v2/covariances/cl_cov_scan/cl_cov_sp_v1p4p11p3_leak_corr_nbins32.fits results/preprint_v2/covariances/cl_cov_scan/cl_cov_sp_v1p4p5_fine.fits results/preprint_v2/covariances/cl_cov_scan/cl_cov_sp_v1p4p8_fine.fits results/preprint_v2/covariances/cl_cov_scan/cl_cov_sp_v1p4p11p3_fine.fits --out-file results/preprint_v2/covariances/cl_cov_scan/cl_cov_sweep_bundle.tar.gz\n",
+  "definition_version": "sha256:9d5a9a603b20e55ccb4c6823654acfce3353931c2bc5717cfcf55fdbbd4e7c68",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:b7378d3a6bc32b163c7692c054dd0043279c444a4bedb835076b05fb54349014",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied",
+    "harmonic_validation_binning": "bins_96"
+  },
+  "input_versions": {
+    "cl_cov_sp_v1p4p5_nbins32": "sha256:5be51dcac381fabb0fbfc0a1a6d694deb5e95b4211999c7daeabefbe0fdc7f90",
+    "cl_cov_sp_v1p4p5_leak_corr_nbins32": "sha256:2ba3e03ba507981e80c568009cf23ba0d26b2d1001398ade8f64db079a6364c1",
+    "cl_cov_fiducial_counterpart_nbins32": "sha256:1eb9593afa799ebe5a0fd799f8008c6356c5cfb1643a44e74a2de07568ec2424",
+    "cl_cov_sp_v1p4p8_nbins32": "sha256:bc11f2db56983612cf6777b3a964d96c20ccfb3bea98e1e16ab47cfa720c18e2",
+    "cl_cov_sp_v1p4p8_leak_corr_nbins32": "sha256:a2c0d874caf2ba64939c7e91a6836d15cff41f720f960feb0f4fe200945f6037",
+    "cl_cov_sp_v1p4p11p3_nbins32": "sha256:68b0746ef9ea62fb3c788063670c3a1a8f6fb03a30689204c59a0dcf865b6b4c",
+    "cl_cov_sp_v1p4p11p3_leak_corr_nbins32": "sha256:1f63158f0a7684b850d71ebc45f76085871441e8a37d3e591ef1d8b25afdebd5",
+    "cl_cov_sp_v1p4p5_fine": "sha256:933f11e28e6da1c99e54a759d92542ccdd336c53e7950663c7beca68315ff3ec",
+    "cl_cov_sp_v1p4p8_fine": "sha256:967a01bac468bb7baaf3703d2074de000b64daac1fa75f088c97577fc2bf4ff1",
+    "cl_cov_sp_v1p4p11p3_fine": "sha256:989840b4eaa47e9a714be2bf98bdf7234883edce2086a1b5247b79f4b244826d"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T02:55:56.833+00:00",
+  "finished_at": "2026-11-22T02:55:58.419+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

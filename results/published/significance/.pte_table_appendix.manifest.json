@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.pte_table_appendix",
+  "universe_id": "published",
+  "recipe": "python src/papers/bmodes/scripts/generate_paper_macros.py --fiducial-catalog size_cut --leakage-correction applied --config-space-evidence results/published/significance/config_space_pte_data.json --harmonic-space-evidence results/published/significance/harmonic_space_pte_data.json --emit table --out-file results/published/significance/pte_table_appendix.csv\n",
+  "definition_version": "sha256:639ac4d5680308379ee30253981919b14f1118c08267d1651c0044cf7cc2bf03",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:28d831ad28816dd8a9030418fc2dbdf03cea10c0427c9fc862a485fbbaa23ffe",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied",
+    "fiducial_scale_cuts": "adopted",
+    "mode_subsets": "n_le_6_and_n_le_20"
+  },
+  "input_versions": {
+    "config_space_pte_data": "sha256:b186952f573e7c8e7457f8ded2deffa5d5a035b90260f0f00bb38e3ba86eefb6",
+    "harmonic_space_pte_data": "sha256:63847fd1727b81ca1e727b53b8f8937efaec0bc8236b7d7c258ae0abddd992c0"
+  },
+  "git_sha": "0f1a526566e68182e80ac2473546f110025fb052",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T20:40:38.750+00:00",
+  "finished_at": "2026-11-23T20:40:47.999+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

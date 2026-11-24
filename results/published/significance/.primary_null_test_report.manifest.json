@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.primary_null_test_report",
+  "universe_id": "published",
+  "recipe": "python src/papers/bmodes/scripts/primary_null_test_report.py --calibration results/published/significance/mock_min_pte_calibration.json --per-mock-statistics results/published/validation/glass_mocks/mock_per_mock_statistics.npz --fiducial-scale-cuts adopted --mode-subsets n_le_6_and_n_le_20 --out-file results/published/significance/primary_null_test_report.json\n",
+  "definition_version": "sha256:3abd89eda9dd2a21b7720c5f924366a4673218be7745c3025d5be1cdd4963c96",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:0e71460ed1a9929602ac5713833d41d7271dba11ef6634a8e67e2a0049450eb9",
+  "decisions": {
+    "fiducial_scale_cuts": "adopted",
+    "mode_subsets": "n_le_6_and_n_le_20"
+  },
+  "input_versions": {
+    "mock_min_pte_calibration": "sha256:5c8f5e7213f96b4a777a3d6452470738d721d4e8555896d43d83e94fdde42af8",
+    "mock_per_mock_statistics": "sha256:fbfc40003bb739128e3279dc4a9cf706fe69b9167243e9cb1b5c0905aed56e4b"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T02:59:24.319+00:00",
+  "finished_at": "2026-11-23T02:59:29.216+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

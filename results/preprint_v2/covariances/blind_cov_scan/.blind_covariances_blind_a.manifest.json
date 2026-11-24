@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "output_id": "covariances.blind_cov_scan.blind_covariances_blind_a",
+  "universe_id": "preprint_v2",
+  "recipe": "set -e\nversion=$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\no=$(mktemp -d)\nbash src/workflow/scripts/run_cosmocov_chain.sh \\\n  --version \"$version\" --blind blind_a \\\n  --min-sep 0.5 --max-sep 300.0 --nbins 1000 \\\n  --gaussian gaussian_only \\\n  --planck18-json results/preprint_v2/covariances/cosmology_snapshot.json \\\n  --emit processed --out-file \"$o\"/cov_integration_blind_a.txt\nbash src/papers/bmodes/scripts/run_pure_eb_covariance.sh \\\n  --version \"$version\" --blind \"$(python src/workflow/scripts/decision_values.py fiducial_blind blind_a)\" \\\n  --cat-config src/cosmo_val/cat_config.yaml \\\n  --xi-reporting results/preprint_v2/catalog_processing/xi_reporting.txt \\\n  --xi-integration results/preprint_v2/catalog_processing/xi_integration.txt \\\n  --cov-integration \"$o\"/cov_integration_blind_a.txt \\\n  --integration-method adaptive_dqags \\\n  --integration-limits reporting_extent \\\n  --rebinning-weights none \\\n  --covariance-method monte_carlo \\\n  --out-file \"$o\"/pure_eb_covariance_blind_a.npz\npython src/workflow/scripts/generate_cl_cov.py \\\n  --ver \"$version\" --summary results/preprint_v2/catalog_processing/catalog_summary.npz \\\n  --cat-config src/cosmo_val/cat_config.yaml \\\n  --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind blind_a \\\n  --out-file \"$o\"/cl_cov_blind_a.fits\ntar czf results/preprint_v2/covariances/blind_cov_scan/blind_covariances_blind_a.tar.gz -C $o .\n",
+  "definition_version": "sha256:a1e74657379acbc3dfba47cd057620b9ed412f0665cf152df8722bf6162719af",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:f3e14207ae0a0b158b3e5c10213a3371cf6fe8c643575caff47931c647eca2aa",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied",
+    "covariance_class": "gaussian_only",
+    "covariance_engine": "cosmocov",
+    "integration_grid": "bins_1000",
+    "bandpower_binning": "bandpowers_32_powspace",
+    "noise_bias_correction": "analytic_shot_noise",
+    "fiducial_cosmology": "planck18",
+    "pure_eb_integration_method": "adaptive_dqags",
+    "pure_eb_rebinning_weights": "none",
+    "pure_eb_integration_limits": "reporting_extent",
+    "pure_eb_covariance_method": "monte_carlo",
+    "decomposition_method": "schneider22_integral_transform"
+  },
+  "input_versions": {
+    "cosmology_snapshot": "sha256:c2a2387f4c8a208fbb1cb4e7c6fb11dbf0945b44f4d576380626c21c228c2024",
+    "redshift_distributions": "spelling:sha256:11ef1341c9f8ea8d3d7fb69db5d38885a4f438092cb4096978145b98d45b8e43",
+    "survey_areas": "sha256:4a8decd35573a28df52de9f9ec1aa019e8db7851748735e73316726e6267f94c",
+    "catalog_summary": "sha256:dd5e46c738ae810b7b32773e42863057d03a64b316bb91f8063667be5021e160",
+    "xi_reporting": "sha256:d36fd4f4c065c7ad9c0ab5198cda7ff4b9110df261ca0b8288c3a79a735c0fa2",
+    "xi_integration": "sha256:1f5f0f013b61307d6e5506eaea3e3bf04a2ec70bb8013594f5e1423855083e4e"
+  },
+  "git_sha": "0f1a526566e68182e80ac2473546f110025fb052",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T20:29:45.976+00:00",
+  "finished_at": "2026-11-23T20:37:14.821+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

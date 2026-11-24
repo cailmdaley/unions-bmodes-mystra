@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "output_id": "validation.glass_mocks.mock_validation_figure",
+  "universe_id": "preprint_v2",
+  "recipe": "c=$(mktemp -d) && tar xzf results/preprint_v2/mocks/glass_mock_cl.tar.gz -C $c && python src/workflow/scripts/mock_validation_figure.py --per-mock-statistics results/preprint_v2/validation/glass_mocks/mock_per_mock_statistics.npz --campaign-evidence results/preprint_v2/validation/glass_mocks/mock_campaign_evidence.json --cl-dir \"$c\" --range full --output results/preprint_v2/validation/glass_mocks/mock_validation_figure.png\n",
+  "definition_version": "sha256:401debb1a98f8a36e1348aec2090b0d4778508c4dfff6589068aba3eabd58df9",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:882dcf0a41b13a45acda112cf35e7d19a2325fc232fcb8e9ac0b70e1f3295ec5",
+  "decisions": {
+    "reference_covariance": "mockmatched",
+    "mock_suite": "v1_4_6_3_v2"
+  },
+  "input_versions": {
+    "mock_per_mock_statistics": "sha256:1d481d5ae42d2208f2270f884a6f9fec7f4e81fe7c89a2fa046e0d3c7520eb04",
+    "mock_campaign_evidence": "sha256:acd119cc11c43a65f7d38e1a66b6cb18b11c7bf74a0e941b54930f178dd23956",
+    "glass_mock_cl": "sha256:cdf0aaff4e2160c50e37ae7cf549a789bf89ad0f88eb9dbfaddbe9d11e608573"
+  },
+  "git_sha": "0f1a526566e68182e80ac2473546f110025fb052",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-23T22:42:50.854+00:00",
+  "finished_at": "2026-11-23T22:43:20.344+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

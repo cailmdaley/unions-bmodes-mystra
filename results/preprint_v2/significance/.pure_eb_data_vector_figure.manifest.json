@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.pure_eb_data_vector_figure",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/papers/bmodes/scripts/pure_eb_data_vector.py --fiducial-catalog size_cut --leakage-correction applied --blind blind_a --reporting-binning bins_20 --pure-eb-data results/preprint_v2/catalog_processing/pure_eb_data.npz --pure-eb-covariance results/preprint_v2/covariances/pure_eb_covariance.npz --reporting-cov results/preprint_v2/covariances/cov_reporting_ng.txt --out-file results/preprint_v2/significance/pure_eb_data_vector_figure.png\n",
+  "definition_version": "sha256:213af4a3f5779129c93dccee0ac02fe434600cf85bc5fdebf5274f6b298f7f2c",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:40c15c45539fcaac0b8d3264429b140f9e96f073f8b995e780911df3d4ddc853",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "pte_definition": "chi2_tail",
+    "leakage_correction": "applied",
+    "fiducial_blind": "blind_a",
+    "reporting_binning": "bins_20"
+  },
+  "input_versions": {
+    "pure_eb_data": "sha256:63ec67f466ddeb1eaf324e4afb1a062c682e97c03dd2d9e4a14d156f5f84e780",
+    "pure_eb_covariance": "sha256:62cbad153633d290490b406acb6d4b40eb36047c2d1db0a400991e9fe34b02fe",
+    "cov_reporting_ng": "sha256:6fa7373f4f0baea3945a1065961c2f65fcb8645f6cda22608d318a583c7a54b1"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T22:01:30.998+00:00",
+  "finished_at": "2026-11-22T22:02:03.612+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

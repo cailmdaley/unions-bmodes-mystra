@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "output_id": "catalog_processing.cl_scan.cl_sp_v1p4p8_leak_corr_nbins32",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/workflow/scripts/generate_cl.py --ver \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --scan-version SP_v1.4.8_leak_corr $(if [ nbins32 = fine ]; then printf -- '--fine-grid'; fi))\" --cat-config src/cosmo_val/cat_config.yaml --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind blind_a --out-file results/preprint_v2/catalog_processing/cl_scan/cl_sp_v1p4p8_leak_corr_nbins32.fits\n",
+  "definition_version": "sha256:c702cb6bdef406cb91bfd7d56474affc74215fc9e98a3e686a9586d055f19703",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:d4a9b316dd300e0c41d0193991d8b24271eaa2574032afc81685257cf590ea34",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "noise_bias_correction": "analytic_shot_noise",
+    "bandpower_binning": "bandpowers_32_powspace",
+    "estimator_choice": "wolz25_catalog_based",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "shapepipe_v14_catalogs": "spelling:sha256:ddcb9bb187a44cd4aa678855597346a6b0bb4ad3f2056a08cfb7714923d2457a"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T02:45:48.143+00:00",
+  "finished_at": "2026-11-22T02:47:49.217+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

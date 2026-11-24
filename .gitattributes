@@ -1,0 +1,44 @@
+# lightcone-cli — what git-annex stores, and what git carries.
+#
+# `filter=annex` is what makes an ordinary `git add` route content to the
+# annex, so nobody has to run git-annex by hand. `annex.largefiles` then
+# decides what counts as content: the default is nothing, and only outputs
+# and declared inputs opt out. Last matching line wins.
+#
+# Manifests are exempted back out because they must be readable on a clone
+# that has fetched no annex content.
+* annex.largefiles=nothing
+* filter=annex
+results/** annex.largefiles=anything
+data/** annex.largefiles=anything
+data/README.md annex.largefiles=nothing
+data/survey_areas.yaml annex.largefiles=nothing
+.datalad/environments/*/image annex.largefiles=anything
+results/**/.*.manifest.json annex.largefiles=nothing
+
+# MySTRA reads results/<universe>/<id>/ directly, and the deploy mirror ships
+# the tree with `git archive`, which does NOT smudge annex pointers. Anything
+# the report resolves must therefore be an inline git blob: annexed, it reaches
+# the browser as a 100-byte /annex/objects/... text file and the figure is blank
+# or the {astra:value} unresolvable. Only the report-facing directory view is
+# exempted here; the flat outputs beside them stay annexed.
+results/*/fig_*/** annex.largefiles=nothing
+results/*/pte_table_appendix/** annex.largefiles=nothing
+results/*/pte_combined_dof_penalized/** annex.largefiles=nothing
+results/*/cosebis_harmonic_config/** annex.largefiles=nothing
+results/*/cosebis_first_mode_significance/** annex.largefiles=nothing
+
+# Everything derived directly from a catalog, real or GLASS, is plain git, so a
+# clone reruns everything downstream without the catalogs: catalog processing,
+# the GLASS members and the summary of realization 00001. The catalogs
+# themselves (data/) and everything else in results/ stay annexed and regenerate.
+results/*/catalog_processing/** annex.largefiles=nothing
+results/*/mocks/glass_suite/realization_* annex.largefiles=nothing
+results/*/mocks/generation/glass_mock_realization_00001.npz annex.largefiles=nothing
+
+# This laptop branch travels through GitHub whole: every product and delivered
+# input is plain git, so a clone needs no annex remote.
+results/** annex.largefiles=nothing
+data/** annex.largefiles=nothing
+# The 100 MB covariance text is remade in seconds from data/products.
+results/**/cov_integration*.txt annex.largefiles=anything

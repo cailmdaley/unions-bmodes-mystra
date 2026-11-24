@@ -1,0 +1,40 @@
+id: baseline
+description: |
+  The accepted paper's selection on mocks matched to the data: the
+  data-matched GLASS suite, sampled on the fiducial catalog's footprint at
+  its weight-effective count and shape dispersion, with the mock scatter
+  held against the data's own covariances. It differs from `published` in
+  the mock suite and the reference covariance alone.
+
+decisions:
+  fiducial_catalog: size_cut
+  leakage_correction: applied
+  fiducial_blind: blind_a
+  integration_grid: bins_1000
+  # The operator and its geometry are described on the root decision's option.
+  pure_eb_integration_method: fixed_operator
+  # Pair-count weighting: the averaged local term is the reporting-bin ξ.
+  pure_eb_rebinning_weights: npairs
+  # Wide [grid floor, 300'] window: retain support below the 1' reporting floor.
+  pure_eb_integration_limits: fine_grid_extent
+  harmonic_validation_binning: bins_96
+  pte_definition: chi2_tail
+  bandpower_binning: bandpowers_32_powspace
+  noise_bias_correction: analytic_shot_noise
+  reporting_binning: bins_20
+  decomposition_method: schneider22_integral_transform
+  mode_count: n_max_20
+  reference_covariance: data_covariance
+  mock_suite: data_matched
+
+analyses:
+  covariances:
+    universe: baseline
+  catalog_processing:
+    universe: baseline
+  mocks:
+    universe: baseline
+  validation:
+    universe: baseline
+  significance:
+    universe: baseline

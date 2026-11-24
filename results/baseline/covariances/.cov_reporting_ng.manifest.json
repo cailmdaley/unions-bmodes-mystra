@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "output_id": "covariances.cov_reporting_ng",
+  "universe_id": "baseline",
+  "recipe": "python src/workflow/scripts/delivered_covariance.py --covariances data/products/xi_covariances.tar --grid reporting_ng --fiducial-catalog size_cut --out-file results/baseline/covariances/cov_reporting_ng.txt\n",
+  "definition_version": "sha256:a0a2600695977c6ee1a2bb89512812af3a7ee10cabe0d6e9f0dbb63f58f4884e",
+  "env_version": "sha256:bac919eaaa03ff1809d3a3383f5a2c81ccc56b22fa5c017a78b25970b9f298f4",
+  "data_version": "sha256:6fa7373f4f0baea3945a1065961c2f65fcb8645f6cda22608d318a583c7a54b1",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "fiducial_blind": "blind_a",
+    "covariance_engine": "cosmocov",
+    "reporting_binning": "bins_20",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "xi_covariances": "sha256:1a83f454319a355ee03117ab0ddad5019f79b1f02577a2cd4c012b33d39e1b6b"
+  },
+  "git_sha": "98186a52e4a145cd673491e212cc04d89e0fff91",
+  "git_remote": "https://github.com/cailmdaley/unions-bmodes-mystra",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "seatbelt",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": 1
+  },
+  "started_at": "2026-11-24T23:26:28.982+00:00",
+  "finished_at": "2026-11-24T23:26:30.333+00:00",
+  "uv_version": "0.12.5",
+  "image": null
+}

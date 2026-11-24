@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "output_id": "catalog_processing.xi_scan.xi_sp_v1p4p5_integration",
+  "universe_id": "preprint_v2",
+  "recipe": "python src/workflow/scripts/run_2pcf.py --ver \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied --scan-version SP_v1.4.5)\" --min-sep 0.5 --max-sep 300.0 --nbins 1000 --npatch 1 --cat-config src/cosmo_val/cat_config.yaml --no-fits --out-file results/preprint_v2/catalog_processing/xi_scan/xi_sp_v1p4p5_integration.txt\n",
+  "definition_version": "sha256:ceb627bfe712b157a683529c8c128be3ce59dba543c244805e77663cfab275eb",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:d182b6f037df557bfd3f0b411fd871cfef1f408eeebffcf3f2059005bbe89b25",
+  "decisions": {
+    "fiducial_catalog": "size_cut",
+    "patch_count": "npatch_1",
+    "integration_grid": "bins_1000",
+    "leakage_correction": "applied"
+  },
+  "input_versions": {
+    "shapepipe_v14_catalogs": "spelling:sha256:ddcb9bb187a44cd4aa678855597346a6b0bb4ad3f2056a08cfb7714923d2457a"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T02:45:48.160+00:00",
+  "finished_at": "2026-11-22T04:34:40.038+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

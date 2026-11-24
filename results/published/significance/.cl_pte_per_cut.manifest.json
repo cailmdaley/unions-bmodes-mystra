@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_id": "significance.cl_pte_per_cut",
+  "universe_id": "published",
+  "recipe": "d=$(mktemp -d) && tar xzf results/published/catalog_processing/cl_scan/cl_sweep_bundle.tar.gz -C $d && k=$(mktemp -d) && tar xzf results/published/covariances/cl_cov_scan/cl_cov_sweep_bundle.tar.gz -C $k && python src/papers/bmodes/scripts/harmonic_space_pte_matrices.py --fiducial-catalog size_cut --leakage-correction applied --blind blind_a --results-dir $d --cov-dir $k --fiducial-version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --fiducial-cl-path results/published/catalog_processing/cl_bandpowers_reporting.fits --fiducial-cl-cov-path results/published/covariances/cl_cov_reporting.fits --emit matrices --out-file results/published/significance/cl_pte_per_cut.npz\n",
+  "definition_version": "sha256:7babca56c8a7f0bb1288c55e44043579a4c11f313e7879f4600a29e3f4ba07c1",
+  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
+  "data_version": "sha256:c3dbeaea0f67cd7ee9b7799fb191049d7c31475fdedd68bc69be22707896a133",
+  "decisions": {
+    "pte_definition": "chi2_tail",
+    "fiducial_catalog": "size_cut",
+    "leakage_correction": "applied",
+    "fiducial_blind": "blind_a"
+  },
+  "input_versions": {
+    "cl_sweep": "sha256:2f249f88f4d4f39357010bf800ac7f24465406a2c05e2580530c4727fef0e7e4",
+    "cl_cov_sweep": "sha256:d0b6c0df9f603a05b167ee8d46cf1589749e97622df421cfccbffbdf80c46ad6",
+    "cl_bandpowers_reporting": "sha256:2610ff5c10757a86107fe9beb12ce5edabfc2b4bf2d74605bbe2b779e668dae9",
+    "cl_cov_reporting": "sha256:4d33c2bb912fc43993a9b246fafe47720cc79d951afe04ce32e3208a978adabd"
+  },
+  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
+  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "lc_version": "0.5.1.dev32+gb8aee5b9d",
+  "hermeticity": {
+    "mechanism": "apptainer",
+    "fs": "declared",
+    "network": "allowed",
+    "landlock_abi": null,
+    "exec_allowlist_version": null
+  },
+  "started_at": "2026-11-22T20:02:32.235+00:00",
+  "finished_at": "2026-11-22T20:03:34.405+00:00",
+  "uv_version": "0.13.8",
+  "image": {
+    "tag": "lc-env-74944f7459471224",
+    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
+    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
+    "arch": "amd64"
+  }
+}

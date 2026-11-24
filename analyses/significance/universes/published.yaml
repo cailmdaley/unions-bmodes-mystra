@@ -1,0 +1,10 @@
+id: published
+description: |
+  PTE matrices over every scale-cut pair, with PTEs for both the n ≤ 6 and
+  n ≤ 20 COSEBI subsets, judged by the mock-calibrated threshold on the minimum
+  PTE.
+decisions:
+  mode_subsets: n_le_6_and_n_le_20
+  fiducial_scale_cuts: adopted
+  scale_cut_pair_grid: production_grid
+  pte_threshold: calibrated_0p01

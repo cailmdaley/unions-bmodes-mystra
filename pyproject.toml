@@ -1,0 +1,26 @@
+[project]
+name = "pure_eb"
+version = "0.0.1"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "cosmo-numba",
+    "sp-validation",
+]
+
+[tool.uv]
+required-version = ">=0.12"
+
+[tool.uv.sources]
+sp-validation = { git = "https://github.com/CosmoStat/sp_validation.git", rev = "1804f63ee273df3dfb9396bba8c92561c228ecd2" }
+cosmo-numba = { git = "https://github.com/cailmdaley/cosmo-numba", rev = "d78a189d9af75a9c113fef7647102a1bad0fd452" }
+
+# The laptop recipes start from measurements and covariances and use only
+# sp_validation's B-mode statistics and fiducial cosmology.
+[[tool.uv.dependency-metadata]]
+name = "sp-validation"
+version = "0.6.0"
+requires-dist = ["astropy", "camb", "matplotlib", "numpy", "pyccl", "pyyaml", "scipy", "seaborn", "tqdm", "treecorr"]
+
+# NumbaQuadpack compiles a small C library and needs a CMake older than 4.
+[tool.uv.extra-build-dependencies]
+numbaquadpack = ["cmake<4"]
