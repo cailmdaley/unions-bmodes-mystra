@@ -24,6 +24,13 @@ run prints. Only the outputs on the figure's path are made; the run takes about 
 
 Several can be changed at once (`name a=x b=y`).
 
+Work only in this checkout. If a request cannot run here, say so and why in two sentences, and
+suggest one from the table; do not build it another way or reach for another machine. These cannot:
+another blind (the delivered covariances are blind A), other angular binnings (one set of ξ± is
+delivered), the adaptive quadrature (its Monte Carlo covariance needs the n(z)), and anything that
+remeasures a catalog or the harmonic-space spectra. A scale cut is fixed in the code, not a decision
+this branch varies. A baseline run may commit a large `cov_integration.txt` to the annex: leave it.
+
 A change to a plot rather than a decision (colors, an axis range, a marker) is an edit to the
 script its recipe names; commit it. Code is not an input, so delete the figure and its manifest
 (`results/<universe>/<analysis>/<id>.png` and `.<id>.manifest.json`), commit that too, and
