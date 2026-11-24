@@ -18,7 +18,7 @@
     "pure_eb_covariance": "sha256:d851054d2a9841849d0ab2c1027a3dd6bc062531739d34287fb9f291ac043f65",
     "cov_reporting_ng": "sha256:6fa7373f4f0baea3945a1065961c2f65fcb8645f6cda22608d318a583c7a54b1"
   },
-  "git_sha": "59ab0c221812f390fae7fa6b5311eb1f110a7d4d",
+  "git_sha": "6e9a387538115a639d4efe6b83ff987babf0f8f4",
   "git_remote": "https://github.com/cailmdaley/unions-bmodes-mystra",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
@@ -28,8 +28,8 @@
     "landlock_abi": null,
     "exec_allowlist_version": 1
   },
-  "started_at": "2026-11-24T23:18:39.752+00:00",
-  "finished_at": "2026-11-24T23:18:43.657+00:00",
+  "started_at": "2026-11-24T23:28:47.632+00:00",
+  "finished_at": "2026-11-24T23:28:52.109+00:00",
   "uv_version": "0.12.5",
   "image": null
 }
