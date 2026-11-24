@@ -4,33 +4,28 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/cosebis_data_vector.py --plot-from-modes results/baseline/catalog_processing/cosebis_modes_data.npz --covariance results/baseline/covariances/cosebis_covariance.npz --out-file results/baseline/significance/cosebis_data_vector_figure.png\n",
   "definition_version": "sha256:316aa34ae81b097bf95512117adb36842a004c136278e2c51eb5a1721afb6ac9",
-  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
-  "data_version": "sha256:e9ee19f2dfa2f70932093fe1989227dab74caa6bfefc2bfb43a5312ba330bafd",
+  "env_version": "sha256:bac919eaaa03ff1809d3a3383f5a2c81ccc56b22fa5c017a78b25970b9f298f4",
+  "data_version": "sha256:2ca499ced76f333b383f18a0454a45674d72e6e24aaff4b739e73162be3a6ae5",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "fiducial_blind": "blind_a"
   },
   "input_versions": {
-    "cosebis_modes_data": "sha256:73575032623db6458e66df04b7a46e6b861ec77bbf18709f3c2223913df97ba5",
-    "cosebis_covariance": "sha256:ddbba1e098c9147548804e23cb2b7689d09679441c77972c77671e4330e5900f"
+    "cosebis_modes_data": "sha256:9d43ee3f1158dda5bda53f32031313befe7aa105ecab5a06caa860d2ac72ff71",
+    "cosebis_covariance": "sha256:1ce7ca76526fc8b4f7ec7f36e2888ebba0b62bd7c19dcd77e289f519b9b50be5"
   },
-  "git_sha": "f42277ef6151030849db089824370ed42089c7cd",
-  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "git_sha": "6e9a387538115a639d4efe6b83ff987babf0f8f4",
+  "git_remote": "https://github.com/cailmdaley/unions-bmodes-mystra",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
-    "mechanism": "apptainer",
+    "mechanism": "seatbelt",
     "fs": "declared",
     "network": "allowed",
     "landlock_abi": null,
-    "exec_allowlist_version": null
+    "exec_allowlist_version": 1
   },
-  "started_at": "2026-11-22T23:12:47.002+00:00",
-  "finished_at": "2026-11-22T23:13:51.120+00:00",
-  "uv_version": "0.13.8",
-  "image": {
-    "tag": "lc-env-74944f7459471224",
-    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
-    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
-    "arch": "amd64"
-  }
+  "started_at": "2026-11-24T23:29:04.877+00:00",
+  "finished_at": "2026-11-24T23:29:19.321+00:00",
+  "uv_version": "0.12.5",
+  "image": null
 }
