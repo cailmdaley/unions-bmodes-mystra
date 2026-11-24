@@ -4,8 +4,8 @@
   "universe_id": "baseline",
   "recipe": "python src/papers/bmodes/scripts/cosebis_data_vector.py --version \"$(python src/papers/bmodes/scripts/catalog_versions.py size_cut applied)\" --reporting-binning bins_20 --integration-grid bins_1000 --mode-count n_max_20 --xi-integration results/baseline/catalog_processing/xi_integration.txt --out-file results/baseline/catalog_processing/cosebis_modes_data.npz\n",
   "definition_version": "sha256:e0af73811fc5d06bf566af8dca105d12731802a5db6525ea4a30dff30c471b52",
-  "env_version": "sha256:10e6550661edee32d9a2a330426db98751a5b1db8101b082519f0ee431d20c10",
-  "data_version": "sha256:73575032623db6458e66df04b7a46e6b861ec77bbf18709f3c2223913df97ba5",
+  "env_version": "sha256:bac919eaaa03ff1809d3a3383f5a2c81ccc56b22fa5c017a78b25970b9f298f4",
+  "data_version": "sha256:9d43ee3f1158dda5bda53f32031313befe7aa105ecab5a06caa860d2ac72ff71",
   "decisions": {
     "fiducial_catalog": "size_cut",
     "mode_count": "n_max_20",
@@ -16,23 +16,18 @@
   "input_versions": {
     "xi_integration": "sha256:1f5f0f013b61307d6e5506eaea3e3bf04a2ec70bb8013594f5e1423855083e4e"
   },
-  "git_sha": "30fcd9546f158d833c8d87acf72fbd28bd49054d",
-  "git_remote": "git@github.com:LightconeResearch/Reproductions.git",
+  "git_sha": "6e9a387538115a639d4efe6b83ff987babf0f8f4",
+  "git_remote": "https://github.com/cailmdaley/unions-bmodes-mystra",
   "lc_version": "0.5.1.dev32+gb8aee5b9d",
   "hermeticity": {
-    "mechanism": "apptainer",
+    "mechanism": "seatbelt",
     "fs": "declared",
     "network": "allowed",
     "landlock_abi": null,
-    "exec_allowlist_version": null
+    "exec_allowlist_version": 1
   },
-  "started_at": "2026-11-21T03:15:37.436+00:00",
-  "finished_at": "2026-11-21T03:19:34.168+00:00",
-  "uv_version": "0.13.8",
-  "image": {
-    "tag": "lc-env-74944f7459471224",
-    "id": "0c84e534417133cbca3194bf977898a48ed40e430df764d362c7ddf57ad47b60",
-    "archive": ".datalad/environments/lc-env-74944f7459471224/image",
-    "arch": "amd64"
-  }
+  "started_at": "2026-11-24T23:27:17.066+00:00",
+  "finished_at": "2026-11-24T23:28:21.371+00:00",
+  "uv_version": "0.12.5",
+  "image": null
 }
