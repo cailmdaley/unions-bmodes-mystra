@@ -19,6 +19,9 @@ lc compute launch --wait   # a local cluster named `local`
 
 `--force` replaces an `lc` you already have. The pinned commit is the one that made the
 recorded results: released 0.5 versions do not yet run analyses with sub-analyses.
+Run from an empty directory on macOS (Apple silicon) and Linux (RHEL 9). If `lc compute launch`
+reports an "unsafe ancestor", `TMPDIR` or the clone sits under a directory others can write to: move
+the clone, or run `unset TMPDIR TMP TEMP`. If `lc init` fails building a package, run it again.
 
 **Ask an agent.** Start Claude Code, or another agent, in `paper-ii` and ask, for example:
 
