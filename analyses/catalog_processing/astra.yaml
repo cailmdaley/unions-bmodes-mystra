@@ -19,6 +19,9 @@ inputs:
   - id: xi_measurements
     from: ../xi_measurements
 
+  - id: cl_measurements
+    from: ../cl_measurements
+
 outputs:
   - id: catalog_summary
     type: data
@@ -212,20 +215,19 @@ outputs:
       Cℓ^EE, Cℓ^EB and Cℓ^BB bandpowers of the fiducial
       catalog at blind A on the
       [32-bandpower √ℓ-spaced grid](#decisions.bandpower_binning)
-      over 8 ≤ ℓ ≤ 2048, decoupled and noise-bias-corrected.
+      over 8 ≤ ℓ ≤ 2048, decoupled and noise-bias-corrected,
+      taken from the [delivered Cℓ measurements](#inputs.cl_measurements).
       They are the data vector of the
       [Cℓ figure](#../outputs.fig_cl_fiducial).
     format: fits
     decisions: [fiducial_catalog, fiducial_blind, estimator_choice, bandpower_binning, noise_bias_correction, leakage_correction]
-    inputs: [shapepipe_v14_catalogs]
+    inputs: [cl_measurements]
     recipe:
       command: >
-        python src/workflow/scripts/generate_cl.py
-        --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
-        --cat-config src/cosmo_val/cat_config.yaml
-        --nside 1024 --npatch 1 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind}
-        --out-file {output}
-      resources: { cpus: 4, memory: "8GB" }
+        tar xzOf {inputs.cl_measurements}
+        "./cl_$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})_blind=A_powspace_nbins=32.fits"
+        > {output}
+      resources: { cpus: 1, memory: "1GB" }
 
   - id: cl_bandpowers_fine
     type: data

@@ -24,6 +24,9 @@ inputs:
   - id: xi_covariances
     from: ../xi_covariances
 
+  - id: cl_covariances
+    from: ../cl_covariances
+
   - id: redshift_distributions
     from: ../redshift_distributions
     # The theory of the CosmoCov and iNKA covariances, for every catalog version.
@@ -194,21 +197,17 @@ outputs:
       Gaussian (NaMaster iNKA) covariance of the Cℓ
       bandpowers for the fiducial catalog at blind A, on the
       32-bandpower √ℓ-spaced grid of
-      [the harmonic-space data vector](#../analyses.catalog_processing.outputs.cl_bandpowers_reporting), the prescription
-      Paper IV uses for its BB and EB null tests. It takes a Planck
-      2018 theory spectrum plus analytic noise, with the weighted
-      galaxy-count map at nside 1024 as the window.
+      [the harmonic-space data vector](#../analyses.catalog_processing.outputs.cl_bandpowers_reporting),
+      taken from the [delivered Cℓ covariances](#inputs.cl_covariances).
     decisions: [fiducial_catalog, fiducial_blind, bandpower_binning, noise_bias_correction, leakage_correction, fiducial_cosmology]
-    inputs: [catalog_summary, redshift_distributions]
+    inputs: [cl_covariances]
     format: fits
     recipe:
       command: >
-        python src/workflow/scripts/generate_cl_cov.py
-        --ver "$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})"
-        --summary {inputs.catalog_summary} --cat-config src/cosmo_val/cat_config.yaml
-        --nside 1024 --binning powspace --nbins 32 --power 0.5 --blind {decisions.fiducial_blind}
-        --out-file {output}
-      resources: { cpus: 4, memory: "8GB" }
+        tar xzOf {inputs.cl_covariances}
+        "cl_cov/cl_cov_$(python src/papers/bmodes/scripts/catalog_versions.py {decisions.fiducial_catalog} {decisions.leakage_correction})_blind=A_powspace_nbins=32.fits"
+        > {output}
+      resources: { cpus: 1, memory: "1GB" }
 
   - id: cl_cov_fine
     type: data

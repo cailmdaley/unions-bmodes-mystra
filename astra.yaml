@@ -84,6 +84,24 @@ inputs:
       Delivered here so the analysis runs without CosmoCov.
     source: "data/products/xi_covariances.tar"
 
+  - id: cl_measurements
+    type: data
+    description: |
+      NaMaster C_ℓ bandpowers (EE, EB, BB) of every catalog variant, with and
+      without the object-wise PSF-leakage correction, on the 32-bandpower
+      √ℓ-spaced reporting grid over 8 ≤ ℓ ≤ 2048. Delivered here so
+      harmonic-space figures run without the shear catalogs or NaMaster.
+    source: "data/products/cl_measurements.tar.gz"
+
+  - id: cl_covariances
+    type: data
+    description: |
+      Gaussian (NaMaster iNKA) covariances of the 32-bandpower reporting-grid
+      C_ℓ bandpowers for every catalog variant, with and without the
+      object-wise PSF-leakage correction, at blind A. Delivered here so
+      harmonic-space figures run without NaMaster.
+    source: "data/products/cl_covariances.tar.gz"
+
 # -----------------------------------------------------------------------------
 # Top-level outputs: every figure, table and metric the report shows or the
 # findings cite, re-exported from the sub-analysis that computes it. Figures run
